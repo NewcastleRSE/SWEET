@@ -1,0 +1,23 @@
+<html>
+    <body>
+        <h1>Log in to the SWEET app</h1>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+        <form action="/login" method="POST">
+        <fieldset>
+            <legend>Login details:</legend>
+            <label>Email Adress: </label><input type="text" name="userID"><br />
+            <label>Password: </label><input type="password" name="password"><br/>
+            <input type="submit" value="Log In">
+        </fieldset>
+        </form>
+        <p>No account? Complete our <a href="/register">Registration Form</a>.</p>
+    </body>
+</html>

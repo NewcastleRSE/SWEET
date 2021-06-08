@@ -1,0 +1,25 @@
+<html>
+    <body>
+        <h1>Register for the SWEET app</h1>
+        <form action="/register" method="POST">
+        <fieldset>
+            <legend>Account details:</legend>
+            <label>Email Address: </label><input type="text" name="userID"><br />
+            <label>Full Name</label><input type="text" name="fullName"><br />
+            <label>Password: </label><input type="password" name="password"><br/>
+            <label>Confirm Password: </label><input type="password" name="password_conf"><br/>
+            <input type="submit" value="Register">
+        </fieldset>
+        </form>
+        <script>
+            document.querySelector("form").addEventListener("submit", e => {
+                let pass = document.querySelector("[name='password']").value;
+                let passcnf = document.querySelector("[name='password_conf']").value;
+                if (pass != passcnf) {
+                    alert("Password and confirmation do not match");
+                    e.preventDefault();
+                }
+            })
+        </script>
+    </body>
+</html>
