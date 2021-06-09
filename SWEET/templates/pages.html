@@ -200,6 +200,16 @@
                     slug: document.querySelector("#add-details input[name='add-slug']").value
                 });
 
+                // upload new structure to site:
+                fetch("/app/structure/", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(document.querySelector("#page-tree").structure)
+                }).then(response => { alert("Structure updated"); console.log(response.json())}, reject => console.log(reject))
+
+
                 refreshTree();
                 document.querySelector("#page-subpages").insertAdjacentHTML("beforeend", 
                                 `<p><span class="path">${ document.querySelector("#page-details").dataset.path}/${document.querySelector("#add-details input[name='add-slug']").value}</span> ${document.querySelector("#add-details input[name='add-title']").value}</p>`)
@@ -213,9 +223,11 @@
 
             document.querySelector("#details-save").addEventListener("click", e => {
                 e.preventDefault();
-
-                let content = { path: document.querySelector("#page-details").dataset.path, content: document.querySelector("#page-content").jsonvalue }
-                console.log(`Updating ${content.path} with ${content.content}`)
+                let details =  document.querySelector("#page-details").dataset;
+                let content = { path: details.path, content: document.querySelector("#page-content").jsonvalue }
+                if (details.path != document.querySelector("input[name='page-title']").value) {
+                    content.title = document.querySelector("input[name='page-title']").value;
+                }
 
                 fetch("/app/content/", {
                     method: "POST",
@@ -234,7 +246,7 @@
             <div id="page-details-header">
                 <button id="details-save">Save changes</button><h1>Edit content:</h1>
                 <p><label>Page title:</label><input type="text" name="page-title"></p>
-                <p><label title="A short string (containing only letters and '-') that is used to build the link to the page.">Slug:</label><input type="text" name="page-slug"></p>
+                <p><label title="A short string (containing only letters and '-') that is used to build the link to the page.">Slug:</label><input type="text" name="page-slug" disabled></p>
             </div>
             <details id="page-content-details"><summary>Content</summary><content-editor id="page-content"></content-editor></details>
             <details><summary>Sub-pages</summary>
@@ -303,6 +315,7 @@
                         e.stopPropagation();
                         let details = document.querySelector("#page-details");
                         details.dataset.path = item.pageInfo.path;
+                        details.dataset.title = item.pageInfo.title;
 
                         details.querySelector("input[name='page-title']").value = item.pageInfo.title;
                         details.querySelector("input[name='page-slug']").value = item.pageInfo.slug;

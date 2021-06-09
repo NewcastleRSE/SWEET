@@ -26,6 +26,21 @@ def updatePageContent(details):
     pages[details["path"]] = details["content"]
     save(secrets.datasource, secrets.content, json.dumps(pages))
 
+    if "title" in details:
+        struct = oldstruct = getStructure()
+        slugs = details["path"][1:].split("/")
+        for slug in slugs:
+            if slug in struct:
+                struct = struct[slug]
+            else:
+                struct = next(i for i in struct['pages'] if i['slug'] == slug)
+        
+        struct['title'] = details['title']
+
+        updateStructure(oldstruct)
+
+        
+
 #users and auth
 def isOnline(token):
     return token in __logged_in_users

@@ -33,8 +33,12 @@ def create_app():
         if request.method == "POST":
             uid = request.form['userID']
             fname = request.form['fullName']
-            role = 'user'
+            role = 'editor'
             pwd = request.form['password']
+
+            if not (uid.strip() or pwd.strip()):
+                flash("You must enter an email address and password")
+                return redirect(url_for("register"))
 
             data.registerUser(uid, pwd, fname, role)
             return redirect(url_for("login"))

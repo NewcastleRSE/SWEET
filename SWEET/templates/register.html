@@ -1,7 +1,16 @@
 <html>
     <body>
         <h1>Register for the SWEET app</h1>
-        <form action="/register" method="POST">
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul class=flashes>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+              <form action="/register" method="POST">
         <fieldset>
             <legend>Account details:</legend>
             <label>Email Address: </label><input type="text" name="userID"><br />
