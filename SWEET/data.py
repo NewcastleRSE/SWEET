@@ -15,6 +15,17 @@ def updateStructure(newStructure):
 
     save(secrets.datasource, secrets.structure, json.dumps(oldStructure))
 
+def getPageDetails(path):
+    struct = getStructure()
+        
+    for slug in path[1:].split("/"):
+        if slug in struct:
+            struct = struct[slug]
+        else:
+            struct = next(i for i in struct['pages'] if i['slug'] == slug)
+
+    return struct
+
 def getPages():
     return json.loads(getContainer(secrets.datasource).download_blob(secrets.content).readall())
 
@@ -52,7 +63,8 @@ def getLoggedInUser(token):
     return None
 
 def logout(token):
-    del __logged_in_users[token]
+    if token in __logged_in_users:
+        del __logged_in_users[token]
 
 def getUsers():
     return json.loads(getContainer(secrets.usersource).download_blob(secrets.usertable).readall())

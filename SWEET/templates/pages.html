@@ -257,6 +257,7 @@
         </div>
         <div id="page-preview">
             <button style="position: fixed; top: 0; right: 25%" id="preview-update">Update</button>
+            <a style="position: fixed; top: 0; right: 5%" target="_blank" href="/">Open in app</a>
             <div id="app-main">
                 <h1 id="page-title"></h1>
                 <div id="main-container"></div>
@@ -350,6 +351,7 @@
 
                         details.classList.remove("noload");
                         holder.classList.add("collapsed");
+                        document.querySelector("#page-preview a[target='_blank']").setAttribute("href", `/${item.pageInfo.path}`)
                     })
 
                     return item;

@@ -57,7 +57,11 @@ def create_app():
     @app.route("/")
     def index():
         if 'user' in session:
-            return render_template("index.html")
+            user = data.getLoggedInUser(session['user'])
+            if user is None:
+                return redirect(url_for("logout"))
+
+            return render_template("index.html", user=user)
         
         return redirect(url_for("login"))
 
@@ -75,7 +79,12 @@ def create_app():
             path = request.args.get("path", "")
             if path:
                 path = unquote(path)
-                return { "content": data.getPageContents(path) }
+                if path == "#":
+                    path = "#home"
+                
+                details = data.getPageDetails(path)
+                details["content"] = data.getPageContents(path) 
+                return details
             else:
                 return data.getPages()
 

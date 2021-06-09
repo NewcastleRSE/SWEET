@@ -1,6 +1,7 @@
-function init_page() {
-    const path = location.hash && location.hash.length > 1? location.hash.substr(1): "home";
-    const section = loadSection(path);
+async function init_page() {
+    const path = location.hash && location.hash.length > 1? location.hash: "#home";
+
+    const section = await loadSection(path);
 
     document.querySelector("title").innerText = document.getElementById("page-title").innerText = section.title;
 
@@ -19,31 +20,27 @@ function init_page() {
     section.content.forEach(c => app.appendChild(render(c)));
 }
 
-function loadSection(path) {
+async function loadSection(path) {
         
-        const data = JSON.parse(localStorage.getItem("SWEET"));
+        let page = JSON.parse(localStorage.getItem("SWEET"));
+        const url = `/app/content?path=${encodeURIComponent(path)}`
+        let section = await fetch(url).then(response => response.json());
 
-        pathslugs = path.split("/");
+        pathslugs = path.substr(1).split("/");
         let slug = pathslugs.shift();
-        let section = data[slug];
+        page = page[slug];
         const tree = [];
         let treepath = "#".concat(slug);
-        tree.push({"path": treepath, "title": section.title})
+        tree.push({"path": treepath, "title": page.title})
 
         while (pathslugs.length > 0) { 
             slug = pathslugs.shift();
-            section = section["subPages"][slug]
+            page = page["pages"].filter(p => p.slug == slug)[0]
             treepath = treepath.concat("/", slug);
-            tree.push({"path": treepath, "title": section.title});
+            tree.push({"path": treepath, "title": page.title});
         }
         
-        // check we're dealing with a page or sub-page:
-        if (!["page", "subPage"].includes(section.type)) {
-            console.error("unexpected non-page section");
-            return;
-        }
-
-    return { "title": section.title, "content": section.content, "subPages": section.subPages? Object.keys(section.subPages): [], "tree": tree};
+    return { "title": section.title, "content": section.content, "tree": tree};
 }
 
 function render(section, acc_level = 3) {

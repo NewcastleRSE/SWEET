@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="index.css">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/app_accordion.css') }}">
         <style>
             #app-nav {
                 display: flex;
@@ -59,6 +60,7 @@
                     <a href="calendar.html">Diary</a>
                     <a href="#profile">My HT Guide</a>
                     <a href="#myapp">My Details and Contacts</a>
+                    {% if user['role'] in ['sysadmin', 'editor'] %}<a href="/edit">Page Editor</a>{% endif%}
                 </nav>
                 <nav id="app-buttons">
                     <button name="favourites" title="My Favourites"></button>
@@ -74,20 +76,17 @@
             <nav id="breadcrumb"></nav>
             <div id="main-container"></div>
         </div>
-        <script src="app.js"></script>
+        <script src="{{ url_for('static', filename='scripts/app.js') }}"></script>
+        <script src="{{ url_for('static', filename='scripts/lz-string.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <script>
         document.addEventListener("DOMContentLoaded", dcl => {
-            /*if (localStorage.getItem("SWEET")) {
+            fetch("/app/structure")
+            .then(response => response.json())
+            .then(data => {
+                localStorage.setItem("SWEET", JSON.stringify(data));
                 init_page();
-            } else {
-                */
-                fetch("sitemap.json")
-                .then(response => response.json())
-                .then(data => {
-                    localStorage.setItem("SWEET", JSON.stringify(data));
-                    init_page();
-                })
-            //}
+            })
         });
 
         window.addEventListener("popstate", pse => {
