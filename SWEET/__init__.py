@@ -108,3 +108,6 @@ def create_app():
         return {"status": "error", "message": "Login required"}, 403
 
     return app
+
+sweetapp = create_app()
+
