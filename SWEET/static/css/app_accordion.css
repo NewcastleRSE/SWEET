@@ -1,0 +1,35 @@
+#main-container > section.accordion {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    align-content: stretch;
+    background-color: #633188;
+}
+
+.accordion > .item > header {
+    cursor: pointer;
+    text-align: left;
+    padding: 1rem;
+    margin: 0.1rem 0;
+    background-color: #e3e3e0;
+}
+
+.accordion > .item > section {
+    background-color: #e3e3e0;
+    margin: 0.5em 0;
+    padding-top: 1em;
+}
+
+.accordion > .item section {
+    padding-bottom: 0.1em;
+}
+
+.accordion > .item:not(.closed) > header {
+    position: sticky;
+    top: 0em;
+    z-index: 1;
+}
+
+.accordion > .item.closed > section {
+    display: none;
+}

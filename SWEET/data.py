@@ -1,4 +1,3 @@
-from logging import fatal
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 import json, random, string
 from . import secrets
@@ -20,7 +19,7 @@ def getPages():
     return json.loads(getContainer(secrets.datasource).download_blob(secrets.content).readall())
 
 def getPageContents(path):
-    return getPages()[path]
+    return getPages().get(path, "")
 
 def updatePageContent(details):
     pages = getPages()

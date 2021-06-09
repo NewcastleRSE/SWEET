@@ -1,1 +1,128 @@
-<html><body><h1>Hello World!</h1></body></html>
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="index.css">
+        <style>
+            #app-nav {
+                display: flex;
+                flex-direction: row;
+            }
+
+            #app-nav nav {
+                display: inline-block;
+                flex-grow: 1;
+            }
+
+            #app-buttons {
+                text-align: right;
+                height: 2em;
+                overflow-y: visible;
+            }
+            #app-buttons button {
+                font-size: inherit;
+                border: 0;
+                background-color: transparent;
+                width: 2em; height: 2em;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: 70%;
+                margin-top: 0rem;
+                vertical-align: top;
+            }
+
+
+            #app-buttons button[name='favourites'] {
+                background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMCAxMCc+PHBhdGggZmlsbD0nZ29sZCcgZD0nTTAsMyBMMywzIEw1LDAgTDcsMyBMMTAsMyBMOCw2IEw5LDEwIEw1LDggTDEsMTAsIEwyLDYgeicgLz48L3N2Zz4=");
+            }
+
+            #app-buttons button[name='recordSE'] {
+                width: 3em; height: 3em;
+                background-color: #2e2e1f;
+                border-radius: 0 0 0 1.5em;
+                background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMCAxMCc+PHBhdGggc3Ryb2tlPSdnb2xkJyBkPSdNNSwwIEw1LDEwIE0wLDUgTDEwLDUnIC8+PC9zdmc+");
+            }
+
+            #app-buttons button:hover {
+                background-size: 95%;
+
+            }
+        </style>
+        <title>SWEET</title>
+        <meta name="viewport" content="width=1024" />
+    </head>
+    <body>
+        <div id="app-main">
+            <div id="app-nav" class="active">
+                <p>Menu</p>
+                <nav id="app-links">
+                    <a href="#home">Home</a>
+                    <a href="calendar.html">Diary</a>
+                    <a href="#profile">My HT Guide</a>
+                    <a href="#myapp">My Details and Contacts</a>
+                </nav>
+                <nav id="app-buttons">
+                    <button name="favourites" title="My Favourites"></button>
+                    <button name="recordSE" title="Record a Side Effect"></button>
+                </nav>
+            </div>
+            <div id="profiler">
+                <p>We'd like to ask you some questions to see how you are getting on with your hormone therapy. Answering these questions will allow us to guide you to relevant sections of the app that you may find helpful. </p>
+                <p>Are you happy to answer these questions now?</p>
+                <p><button id="prof-yes">Yes</button><button id="prof-no">Not now</button></p>
+            </div>
+            <h1 id="page-title"></h1>
+            <nav id="breadcrumb"></nav>
+            <div id="main-container"></div>
+        </div>
+        <script src="app.js"></script>
+        <script>
+        document.addEventListener("DOMContentLoaded", dcl => {
+            /*if (localStorage.getItem("SWEET")) {
+                init_page();
+            } else {
+                */
+                fetch("sitemap.json")
+                .then(response => response.json())
+                .then(data => {
+                    localStorage.setItem("SWEET", JSON.stringify(data));
+                    init_page();
+                })
+            //}
+        });
+
+        window.addEventListener("popstate", pse => {
+            window.scroll(0,0);
+            init_page();
+        })
+
+        document.querySelectorAll("#app-nav a").forEach(a => a.addEventListener("click", () => {
+            let nav = document.querySelector("#app-nav");
+            nav.classList.remove("active");
+            window.setTimeout(() => { nav.classList.add("active");}, 2000);
+        }))
+
+        document.querySelector("#prof-no").addEventListener("click", () => {
+            document.querySelector("#profiler").classList.remove("show");
+        })
+
+        document.querySelector("#prof-yes").addEventListener("click", () => {
+            document.querySelector("#profiler").innerHTML = `
+                <p>Please indicate whether you agree or disagree with the following statements:</p>
+                <table>
+                    <tr><td>&nbsp;</td><th>Disagree</th><th>Uncertain</th><th>Agree</th></tr>
+                    <tr><th>Taking my hormone therapy is very important to me.</th><td><input type="radio" name="imp" id="imp-dis" value="disagree" /></td><td><input type="radio" name="imp" id="imp-con" value="uncertain" /></td><td><input type="radio" name="imp" id="imp-agr" value="agree" /></td></tr>
+                    <tr><th>I have concerns about my hormone therapy.</th><td><input type="radio" name="con" id="con-dis" value="disagree" /></td><td><input type="radio" name="con" id="con-unc" value="uncertain" /></td><td><input type="radio" name="con" id="con-agr" value="agree" /></td></tr>
+                    <tr><th>Taking my hormone therapy is difficult for me.</th><td><input type="radio" name="diff" id="diff-dis" value="disagree" /></td><td><input type="radio" name="diff" id="diff-unc" value="uncertain" /></td><td><input type="radio" name="diff" id="diff-agr" value="agree" /></td></tr>
+                </table>
+                <p><button id="prof-p1-submit">Next</button><button>Cancel</button></p>
+            `
+        })
+
+        if (location.search.includes("profiler=")) {
+            document.querySelector("a[href='#profile']").classList.add("highlight");
+            document.querySelector("a[href='#profile']").addEventListener("click", e => { document.querySelector('#profiler').classList.toggle('show'); e.preventDefault(); })
+            document.querySelector("#profiler").classList.add("show");
+        }
+        </script>
+    </body>
+</html>

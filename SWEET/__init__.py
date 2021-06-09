@@ -71,7 +71,7 @@ def create_app():
             path = request.args.get("path", "")
             if path:
                 path = unquote(path)
-                return data.getPageContents(path)
+                return { "content": data.getPageContents(path) }
             else:
                 return data.getPages()
 
@@ -79,6 +79,13 @@ def create_app():
 
 
     # content management
+    @app.route("/edit")
+    def edit():
+        if "user" in session:
+            return render_template("pages.html")
+
+        return redirect(url_for("login"))
+
     @app.route("/app/structure/", methods=["POST"])
     def updateStructure():
         if 'user' in session:

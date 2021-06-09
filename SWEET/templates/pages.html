@@ -1,0 +1,356 @@
+<html>
+    <head>
+        <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+        <script src="{{ url_for('static', filename='scripts/lz-string.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/app_accordion.css') }}">
+        <style>
+            html {
+                font-family: sans-serif;
+            }
+            body {
+                display: flex;
+                flex-direction: row;
+            }
+
+            #page-tree {
+                font-size: 16px;
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                height: 100vh;
+                width: 20vw;
+                min-width: 20em;
+                overflow: scroll;
+                background: silver;
+                color: purple;
+            }
+
+            #page-tree::before {
+                content: "Select a page";
+                font-size: 2em;
+                font-weight: bold;
+                position: relative;
+                top: 0.5em;
+                left: 0.5em;
+            }
+            #page-tree.collapsed:not(:hover)::before {
+                left: calc(0.5em + 5vw);
+            }
+
+            #page-tree.collapsed {
+                width: 5vw;
+                min-width: 0;
+                overflow: hidden;
+                padding-left: 5vw;
+                box-sizing: border-box;
+                z-index: 99;
+            }
+
+            #page-tree.collapsed:hover {
+                width: 20vw;
+                min-width: 20em;
+                padding-left: 0;
+                overflow-y: scroll;
+            }
+
+            #page-tree ul {
+                list-style: "-" outside;
+            }
+
+            #page-tree li.nest {
+                list-style-type: "\25BA";
+            }
+            #page-tree li > p {
+                cursor: pointer;
+                display: inline-block;
+                width: calc(100% - 2.5em);
+            }
+
+            #page-tree li.nest.open {
+                list-style-type: "\25BC";
+            }
+
+            #page-tree li.nest:not(.open) ul {
+                display: none;
+            }
+
+            #page-details {
+                position: relative;
+                left: max(25vw, 20em);
+                top: 12.5em;
+                width: 40vw;
+            }
+
+            #page-details label {display: inline-block; width: 7.5em; text-align: right; vertical-align: top;}
+            #page-details #add-slug-label { width: fit-content; }
+            #page-details label[title] {text-decoration: underline dotted;}
+            #page-details input { width: 50%; }
+            #page-details.noload * {
+                visibility: hidden;
+            }
+
+            #add-details {
+                position: relative;
+                background-color: #cfc;
+                padding: 1em;
+                margin: 1em;
+            }
+
+            #add-page {
+                position: absolute; top: 0; right: 0;
+            }
+
+            span.path { font-size: 75%; font-style: italic; }
+            #add-details input[name='add-slug'] { width: 10em;}
+
+            #page-details.noload ~ #page-preview {
+                display: none;
+            }
+            #page-tree.collapsed ~ #page-details {
+                left: 6vw;
+                width: 49vw;
+            }
+
+            #page-details-header {
+                position: fixed; top: 0; left: max(25vw, 20em); width: 40vw; z-index: 4; background-color: #e3e3e0; padding: 1em; box-sizing: border-box;
+            }
+
+            #page-tree.collapsed ~ #page-details #page-details-header {
+                left: 6vw; width: 49vw;
+            }
+
+            .tight p {
+                margin-top: 0.1em; margin-bottom: 0.1em;
+            }
+
+            #page-preview {
+                position: fixed;
+                right: 1em;
+                top: 1em;
+                left: 55vw;
+                bottom: 2vh;
+                overflow-y: scroll;
+                overflow-x: auto;
+            }
+
+            #page-preview #app-main {
+                width: auto;
+            }
+
+            button.edit {
+                display: inline;
+                height: 2em;
+                width: 2em;
+                border: 0.2em solid silver;
+                border-radius: 0.5em;
+                background-color: transparent;
+                background-image: url("data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgZm9jdXNhYmxlPSJmYWxzZSIgZGF0YS1wcmVmaXg9ImZhcyIgZGF0YS1pY29uPSJlZGl0IiBjbGFzcz0ic3ZnLWlubGluZS0tZmEgZmEtZWRpdCBmYS13LTE4IiByb2xlPSJpbWciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDU3NiA1MTIiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTQwMi42IDgzLjJsOTAuMiA5MC4yYzMuOCAzLjggMy44IDEwIDAgMTMuOEwyNzQuNCA0MDUuNmwtOTIuOCAxMC4zYy0xMi40IDEuNC0yMi45LTkuMS0yMS41LTIxLjVsMTAuMy05Mi44TDM4OC44IDgzLjJjMy44LTMuOCAxMC0zLjggMTMuOCAwem0xNjItMjIuOWwtNDguOC00OC44Yy0xNS4yLTE1LjItMzkuOS0xNS4yLTU1LjIgMGwtMzUuNCAzNS40Yy0zLjggMy44LTMuOCAxMCAwIDEzLjhsOTAuMiA5MC4yYzMuOCAzLjggMTAgMy44IDEzLjggMGwzNS40LTM1LjRjMTUuMi0xNS4zIDE1LjItNDAgMC01NS4yek0zODQgMzQ2LjJWNDQ4SDY0VjEyOGgyMjkuOGMzLjIgMCA2LjItMS4zIDguNS0zLjVsNDAtNDBjNy42LTcuNiAyLjItMjAuNS04LjUtMjAuNUg0OEMyMS41IDY0IDAgODUuNSAwIDExMnYzNTJjMCAyNi41IDIxLjUgNDggNDggNDhoMzUyYzI2LjUgMCA0OC0yMS41IDQ4LTQ4VjMwNi4yYzAtMTAuNy0xMi45LTE2LTIwLjUtOC41bC00MCA0MGMtMi4yIDIuMy0zLjUgNS4zLTMuNSA4LjV6Ij48L3BhdGg+PC9zdmc+");
+                background-size: 1.5em 1.5em;
+                background-position: center;
+                background-repeat: no-repeat;
+                cursor: pointer;
+            }
+
+            .accordion > .item.closed > section {
+                display: block;
+            }
+            content-editor {
+                background-color: #deecff;
+            }
+
+            #details-save { float: right; font-size: 200%; color: red;}
+            
+        </style>
+        <script src="{{ url_for('static', filename='scripts/app.js') }}"></script>
+        <script type="module">
+            import * as editors from '{{ url_for("static", filename="scripts/editors/editors.js") }}';
+            customElements.define('content-editor', editors.ContentEditor);
+            customElements.define('edit-inserter', editors.EditorInserter);
+            
+            document.querySelector("#page-content").registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.AccordionEditor, editors.BlockquoteEditor, editors.MenuEditor, editors.AlertEditor)
+            
+            editors.AccordionEditor.registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.BlockquoteEditor);
+            editors.AlertEditor.registerEditors(editors.MarkdownEditor, editors.BlockquoteEditor);
+            
+            document.querySelector("#preview-update").addEventListener("click", e => {
+                document.querySelector("#page-title").textContent = document.querySelector("input[name='page-title']").value;
+                document.querySelector("#main-container").innerHTML = "";
+                document.querySelector("#page-content").jsonvalue.forEach(section => {
+                    document.querySelector("#main-container").appendChild(render(section));
+                })
+            })
+
+            document.querySelector("#add-page").addEventListener("click", e => {
+                let path = document.querySelector("#page-details").dataset.path.substring(1).split("/");
+                // first path element is a root item in the structure
+                let section = document.querySelector("#page-tree").structure[path.shift()];
+                while(path.length) {
+                    let segment = path.shift();
+                    // subsequent path elements are part of the pages collection.
+                    section = section.pages.filter(p => p.slug == segment)[0];
+                }
+
+                if (!section.pages) section.pages = [];
+
+                section.pages.push({
+                    title: document.querySelector("#add-details input[name='add-title']").value,
+                    slug: document.querySelector("#add-details input[name='add-slug']").value
+                });
+
+                refreshTree();
+                document.querySelector("#page-subpages").insertAdjacentHTML("beforeend", 
+                                `<p><span class="path">${ document.querySelector("#page-details").dataset.path}/${document.querySelector("#add-details input[name='add-slug']").value}</span> ${document.querySelector("#add-details input[name='add-title']").value}</p>`)
+                
+                document.querySelector("#add-details input[name='add-title']").value = "";
+                document.querySelector("#add-details input[name='add-slug']").value = "";
+            })
+//            window.setInterval(() => {
+//                document.querySelector("#preview-update").dispatchEvent(new MouseEvent("click"));
+//            }, 60*1000)
+
+            document.querySelector("#details-save").addEventListener("click", e => {
+                e.preventDefault();
+
+                let content = { path: document.querySelector("#page-details").dataset.path, content: document.querySelector("#page-content").jsonvalue }
+                console.log(`Updating ${content.path} with ${content.content}`)
+
+                fetch("/app/content/", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(content)
+                }).then(response => { alert("Page saved!"); console.log(response.json())}, reject => console.log(reject))
+            })
+            </script>
+        
+    </head>
+    <body>
+        <div  id="page-tree"></div>
+        <div id="page-details" class="noload">
+            <div id="page-details-header">
+                <button id="details-save">Save changes</button><h1>Edit content:</h1>
+                <p><label>Page title:</label><input type="text" name="page-title"></p>
+                <p><label title="A short string (containing only letters and '-') that is used to build the link to the page.">Slug:</label><input type="text" name="page-slug"></p>
+            </div>
+            <details id="page-content-details"><summary>Content</summary><content-editor id="page-content"></content-editor></details>
+            <details><summary>Sub-pages</summary>
+                <p id="add-details">
+                    <label>Page title:</label><input type="text" name="add-title"><br />
+                    <label id="add-slug-label">Slug: <span class="path"></span></label><input type="text" name="add-slug"><br />
+                    <button id="add-page">Add page</button></p><p id="page-subpages"></p></details>
+        </div>
+        <div id="page-preview">
+            <button style="position: fixed; top: 0; right: 25%" id="preview-update">Update</button>
+            <div id="app-main">
+                <h1 id="page-title"></h1>
+                <div id="main-container"></div>
+            </div>
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                fetch("/app/structure").then(response => response.json())
+                    .then(structure => {
+                        let holder = document.querySelector("#page-tree");
+                        holder.structure = structure;
+
+                        refreshTree();
+                    })
+
+            })
+
+            refreshTree = () => {
+                let renderItem = function(page, ancestor) {
+                    let item = document.createElement("li");
+                    item.pageInfo = {
+                        title: page.title,
+                        slug: page.slug,
+                        path: `${ancestor? ancestor + "/": "#"}${page.slug}`,
+                        pages: page.pages? page.pages.map(p => { return { slug: p.slug, title: p.title}; }): null
+                    };
+
+                    let edit = item.appendChild(document.createElement("button"));
+                    edit.classList.add("edit");
+                    edit.dataset.path = item.pageInfo.path;
+
+                    let label = item.appendChild(document.createElement("p"));
+                    label.dataset.slug = page.slug;
+                    label.dataset.path = item.pageInfo.path;
+                    label.setAttribute("title", label.dataset.path);
+                    label.textContent = page.title;
+
+                    if (page.pages) {
+
+                        item.classList.add("nest");
+
+                        let subroot = item.appendChild(document.createElement("ul"));
+                        page.pages.forEach(p => {
+                            subroot.appendChild(renderItem(p, item.pageInfo.path));
+                        });
+                    }
+
+                    label.addEventListener("click", e => {
+                        e.stopPropagation();
+
+                        if (item.classList.contains("nest")) item.classList.toggle("open");
+
+                    });
+
+                    edit.addEventListener("click", e => {
+                        e.stopPropagation();
+                        let details = document.querySelector("#page-details");
+                        details.dataset.path = item.pageInfo.path;
+
+                        details.querySelector("input[name='page-title']").value = item.pageInfo.title;
+                        details.querySelector("input[name='page-slug']").value = item.pageInfo.slug;
+
+                        document.querySelector("#add-details span.path").textContent = item.pageInfo.path + "/";
+
+                        details.querySelector("#page-subpages").innerHTML = "";
+
+                        if (item.pageInfo.pages) {
+                            let subs = details.querySelector("#page-subpages");
+                            subs.classList.add("tight");
+
+                            item.pageInfo.pages.forEach(p => {
+                                subs.insertAdjacentHTML("beforeend", 
+                                `<p><span class="path">${ item.pageInfo.path}/${p.slug}</span> ${p.title}</p>`)
+                            })
+                        }
+                        
+                        let ce = details.querySelector("content-editor")
+                        ce.clear();
+                        
+                        fetch(`/app/content?path=${ encodeURIComponent(item.pageInfo.path) }`).then(response => response.json())
+                            .then(content => {
+                                if (content.content) {
+                                    ce.parentElement.setAttribute("open", "");
+                                    details.querySelector("content-editor").load(content.content);
+                                } else {
+                                    ce.parentElement.removeAttribute("open");
+                                }
+                                document.querySelector("#preview-update").dispatchEvent(new MouseEvent("click"));
+                            })
+
+                        details.classList.remove("noload");
+                        holder.classList.add("collapsed");
+                    })
+
+                    return item;
+
+                }
+
+                let holder = document.querySelector("#page-tree");
+                holder.innerHTML = "";
+
+                Object.keys(holder.structure).forEach(k => {
+                    let root = holder.appendChild(document.createElement("ul"));
+                    root.appendChild(renderItem(holder.structure[k]));
+                });
+            }
+        </script>
+    </body>
+</html>

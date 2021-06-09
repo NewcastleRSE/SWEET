@@ -1,0 +1,495 @@
+html {
+    font-family: sans-serif;
+    font-size: 1.25rem;
+    margin: 0;
+    background-color:  #e3e3e0;
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden auto;
+    margin: 1em 0 0;
+}
+
+#app-main {
+    width: 60em;
+    padding-bottom: 1rem;
+    margin: auto;
+    background-color: #633188;
+    color:  #e3e3e0;
+    position: relative;
+}
+
+#app-main > h1 { 
+    width: inherit;
+    text-align: center;
+    padding-top: 1rem;
+    margin: 0.2rem;
+}
+
+#app-nav {
+    position: sticky;
+    width: 100%;
+    background-color: #2e2e1f;
+    color: rgba(227, 227, 224);
+    top: 0; 
+    z-index: 2;
+}
+
+#breadcrumb {
+    margin-left: 1em;
+}
+
+#breadcrumb a:is(:link, :visited, :active) {
+    color:  #e3e3e0;
+    text-decoration: none;
+    font-size: 75%;
+}
+
+#breadcrumb > a::before {
+    content: " > ";
+}
+
+#breadcrumb > a:first-child::before {
+    content: none;
+}
+
+
+
+#main-container {
+    width: 95%;
+    margin: auto;
+}
+
+:not(.accordion) :is(h2, h3, h4, h5, h6) {
+    margin: 0.5em auto 0.25em;
+}
+
+header {
+    color: #633188;
+}
+
+#main-container  nav {
+    width: calc(100% - 2rem);
+    margin: 1rem auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch;
+    justify-content: space-between;
+}
+
+#main-container  nav > a {
+    box-sizing: border-box;
+    flex-basis: 100%;
+    background-color: #e3e3e0;
+    border-radius: 1em;
+    text-align: center;
+    margin: 0.5em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 3rem;
+    border: 0.2em solid transparent;
+}
+
+#main-container  nav > a:hover {
+    border: 0.2em solid #696966;
+}
+
+#main-container nav > a > label {
+    font-family: sans-serif;
+    font-size: larger;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 1em;
+    flex-basis: 100%;
+}
+
+a, a:visited, a:active {
+    text-decoration: none;
+    color: #633188;
+}
+
+img.icon {
+    width: 4em;
+    height: 4em;
+    margin: 0.1em 1em;
+    flex-basis: 4em;
+}
+
+blockquote {
+    font-size: 80%;
+    font-style: italic;
+    padding: 0.5em;
+    border: 0.25em solid #633188;
+    background-color: white;
+    color: #633188;
+    border-radius: 0.5em;
+    position: relative;
+    margin-bottom: 4em;
+}
+
+blockquote::before {
+    content: "";
+    position:absolute;
+    bottom: -1em;
+    left: 2em;
+    border-width: 1em 1em 0;
+    border-color: #633188 transparent;
+    border-style: solid;
+    display: block;
+    width: 0;
+}
+
+blockquote::after {
+    content: "";
+    position:absolute;
+    bottom: -0.67em;
+    left: 2.33em;
+    border-width: 0.66em 0.66em 0;
+    border-color: white transparent;
+    border-style: solid;
+    display: block;
+    width: 0;
+}
+
+blockquote p {
+    margin: 0 1em;
+}
+
+blockquote p::before {
+    content: "\201C";
+    font-size: 150%;
+    opacity: 0.8;
+    position: relative;
+    top: 0.25rem;
+    right: 0.1rem;
+    z-index: 0;
+}
+
+blockquote p::after {
+    content: "\201D";
+    font-size: 150%;
+    opacity: 0.8;
+    position: relative;
+    top: 0.25rem;
+    left: 0.1rem;
+    z-index: 0;
+}
+
+blockquote > cite {
+    position: absolute;
+    bottom: -2em;
+    left: 6em;
+    font-size: 80%;
+    display: block;
+    width: fit-content;
+    margin-left: auto;
+}
+
+blockquote > cite::before {
+    content: "[";
+}
+
+blockquote > cite::after {
+    content: "]";
+}
+
+
+article {
+    color: black;
+}
+
+.accordion p {
+    line-height: 1.5em;
+}
+
+section > p, section > h3 {
+    margin-left: 1em;
+}
+
+#main-container > :is(section, article) {
+    width: calc(100% - 3rem);
+    margin: 1rem auto;
+    background-color: #e3e3e0;
+    padding: 1rem;
+    color: black;
+    font-weight: lighter;
+    box-sizing: border-box;
+}
+
+#main-container > :is(section, article) a {
+    color: #bd4b89;
+}
+
+#main-container section.alert {
+    border: 0.2em solid red;
+    padding: 0.5em;
+    background-color: palegoldenrod;
+}
+
+#main-container section.alert :is(h1, h2, h3, h4, h5, h6) {
+    width: fit-content;
+}
+
+#main-container > .accordion {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-content: stretch;
+    background-color: #633188;
+}
+
+.accordion .accordion {
+    width: calc(100% - 2rem);
+    padding-left: 2rem;
+    background-color: #633188;
+}
+
+.accordion > header {
+    cursor: pointer;
+    width: calc(100% - 2rem);
+    text-align: left;
+    background-color: #e3e3e0;
+    padding: 1rem;
+    margin: 0.1rem 0;
+}
+
+.accordion > header:not(.closed) {
+    position: sticky;
+    top: 1em;
+    z-index: 1;
+}
+
+.accordion .accordion > header:not(.closed) {
+    top: 7em;
+}
+
+.accordion > header:first-child {
+    margin-top: 0;
+}
+
+.accordion > header + section {
+    width: calc(100%);
+    background-color: #e3e3e0;
+}
+
+.accordion > header + section p {
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+.accordion > header:not(.closed) + section > :not(article):first-child {
+    margin-top: 0em;
+    padding-top: 1em;
+}
+
+.accordion > header:not(.closed) + section > :not(article):last-child {
+    margin-bottom: 0em;
+    padding-bottom: 1em;
+}
+
+.accordion > header.closed + section {
+    height: 0;
+    border: 0;
+}
+
+.accordion > header.closed + section * {
+    display: none;
+}
+
+.hidden {
+    display: none;
+}
+
+section.overlay {
+    position: fixed;
+    top: 0; bottom: 0; left: 0; right: 0;
+    background-color:#e3e3e0;
+    z-index: 99;
+    text-align: center;
+}
+
+section.overlay > header {
+    width: 100%;
+}
+
+button.close-button {
+    font-size: 120%;
+    color: #900;
+    float: right;
+    margin-right: 1em;
+}
+
+h1.warning {
+    color: #900;
+}
+
+section.overlay > article > iframe {
+    width: calc(100vw - 4em);
+    height: calc((100vw - 4em) * 9/16);
+    max-height: 66vh;
+    max-width: calc(66vh * 16/9);
+    margin: auto;
+}
+
+a.youtube {
+    display: block;
+    font-weight: bold;
+    font-size: 95%;
+    margin-left: 2em;
+    cursor: pointer;
+}
+
+a.youtube::before {
+    background-image: url("video.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: inline-block;
+    width: 2em; height: 2em;
+    content: "";
+    position: relative;
+    top: 0.5em;
+}
+
+#app-nav > p:first-child {
+    display: none;
+}
+
+#app-nav a {
+    color: rgba(227, 227, 224);
+    display: inline-block;
+    padding: 0.5em;
+    box-sizing: border-box;
+    height: 100%;
+}
+
+#app-nav a:hover {
+    background-color: rgba(227, 227, 224, 0.95);
+    color:  #633188;
+}
+
+#app-nav a.highlight {
+    background-color: #f5f57a;
+    color: black;
+}
+#app-nav a.highlight:hover {
+    background-color: #f5f57a;
+    color: black;
+}
+
+#profiler {
+    position: absolute;
+    left: 1em; max-width: 36em;
+    display: none;
+    font-size: 80%;
+    padding: 0.5em;
+    border: 1em solid #f5f57a;
+    background-color: white;
+    color: #633188;
+    border-radius: 0.5em;
+    margin-bottom: 4em;
+    margin-top: 1em;
+}
+
+#profiler.show { display: block; }
+#profiler::before {
+    content: "";
+    position:absolute;
+    top: -2em;
+    left: 10em;
+    border-width: 0 2em 2em;
+    border-color: #f5f57a transparent;
+    border-style: solid;
+    display: block;
+    width: 0;
+}
+
+#profiler::after {
+    content: "";
+    position:absolute;
+    top:  -1em;
+    left: 11em;
+    border-width: 0 1em 1em;
+    border-color: white transparent;
+    border-style: solid;
+    display: block;
+    width: 0;
+}
+
+#profiler th {
+    text-align: left;
+}
+
+@media screen and (max-width: 1280px) {
+    #app-main {
+        width: 47em;
+    }
+}
+
+@media screen and (max-width: 980px), (min-resolution: 150dpi) {
+    #app-main {
+        width: 36em;
+    }
+
+    #app-nav {
+        position: absolute;
+        left: 0.2em;
+        top: 0.2em;
+        background-color: rgba(227, 227, 224, 0.95);
+        height: 2em; width: 2em;
+        overflow: hidden;
+    }
+
+    #app-nav.active:hover {
+        height: auto;
+        width: auto;
+    }
+
+    #app-nav::before {
+        content: "";
+        background-image: url("bulletlist.svg");
+        background-size: 2em 2em;
+        height: 2em; width: 2em;
+        display: inline-block;
+    }
+
+    #app-nav > p:first-child {
+        margin: 2px 0;
+        display: inline-block;
+        position: relative;
+        top: -0.5em;
+        color: black;
+        font-weight: bolder;
+        left: 0.5em;
+    }
+
+    #app-nav nav {
+        margin-left: 0.5em;
+        padding: 0 1em 0.5em 0;
+    }
+    #app-nav nav a {
+        display: block;
+        color: #633188;
+    }
+ 
+    #app-nav nav a:hover {
+        background-color: #b3b3b2;
+    }
+}
+
+@media (min-resolution: 150dpi) {
+    :root {
+        font-weight: bold;
+        font-size: 24px;
+    }
+
+    blockquote > cite {
+        font-weight: bold;
+        font-size: 100%;
+    }
+}
