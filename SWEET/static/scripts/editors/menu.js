@@ -68,7 +68,7 @@ export class MenuEditor extends HTMLElement {
 
         root.querySelector("button.subs").addEventListener("click", e => {
             e.stopPropagation();
-            this.dispatchEvent(new Event("menu:getsubs", { bubbles: true, composed: true}))
+            this.dispatchEvent(new CustomEvent("menu:getsubs", { bubbles: true, composed: true, detail: { targetMenu: this }}))
         })
     }
 

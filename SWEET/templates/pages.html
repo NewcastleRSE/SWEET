@@ -184,6 +184,11 @@
             })
 
             document.querySelector("#add-page").addEventListener("click", e => {
+                if (document.querySelector("#add-details input[name='add-slug']").value.replace(/[a-z-]/, "").length > 0) {
+                    alert("slug should contain only lower-case characters and hyphens; please amend and try again.");
+                    return false;
+                }
+                
                 let path = document.querySelector("#page-details").dataset.path.substring(1).split("/");
                 // first path element is a root item in the structure
                 let section = document.querySelector("#page-tree").structure[path.shift()];
@@ -236,6 +241,10 @@
                     },
                     body: JSON.stringify(content)
                 }).then(response => { alert("Page saved!"); console.log(response.json())}, reject => console.log(reject))
+            })
+
+            document.querySelector("#page-details").addEventListener("menu:getsubs", function(e) {
+                e.detail.targetMenu.addItems(document.querySelector("#page-subpages").pages.map(i => { return { title: i.title, link: `${this.dataset.path}/${i.slug}`}}));
             })
             </script>
         
@@ -328,6 +337,7 @@
                         if (item.pageInfo.pages) {
                             let subs = details.querySelector("#page-subpages");
                             subs.classList.add("tight");
+                            subs.pages = item.pageInfo.pages;
 
                             item.pageInfo.pages.forEach(p => {
                                 subs.insertAdjacentHTML("beforeend", 
