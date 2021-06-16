@@ -50,7 +50,21 @@ def updatePageContent(details):
 
         updateStructure(oldstruct)
 
+def getResources():
+    return json.loads(getContainer(secrets.datasource).download_blob(secrets.resources).readall())
         
+def getResource(name):
+    res = getResources()
+    if name in res:
+        return { "name": name, "source": res[name]['source'], "description": res[name]['description']}
+    
+    return None
+
+def saveResource(newres):
+    res = getResources()
+    res[newres['name']] = { 'source': newres['source'], 'description': newres['description']}
+    save(secrets.datasource, secrets.resources, json.dumps(res))
+
 
 #users and auth
 def isOnline(token):

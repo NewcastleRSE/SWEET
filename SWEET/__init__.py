@@ -1,5 +1,4 @@
-import json
-from flask import Flask, render_template, request, session, redirect, flash
+from flask import Flask, render_template, request, session, redirect, flash, abort
 from flask.helpers import url_for
 from . import data, secrets
 from urllib.parse import unquote
@@ -90,7 +89,25 @@ def create_app():
 
         return {"status": "error", "message": "Login required"}, 403
 
+    @app.route("/app/resources")
+    def resources():
+        if "user" in session:
+            return data.getResources()
 
+        return {"status": "error", "message": "Login required"}, 403
+
+    @app.route("/app/resources/<name>")
+    def getResource(name):
+        if "user" in session:
+            res = data.getResource(name)
+            if res is None:
+                abort(404)
+
+            return res
+        
+        return {"status": "error", "message": "Login required"}, 403
+
+        
     # content management
     @app.route("/edit")
     def edit():
@@ -115,6 +132,16 @@ def create_app():
         if "user" in session:
             if request.is_json:
                 data.updatePageContent(request.json)
+                return { "status": "OK"}
+            else:
+                return { "status": "error", "message": "Update request sent without json data"}, 400
+        return {"status": "error", "message": "Login required"}, 403
+
+    @app.route("/app/resources/", methods=["POST"])
+    def addResource():
+        if "user" in session:
+            if request.is_json:
+                data.saveResource(request.json)
                 return { "status": "OK"}
             else:
                 return { "status": "error", "message": "Update request sent without json data"}, 400

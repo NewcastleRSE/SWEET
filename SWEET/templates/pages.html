@@ -28,18 +28,6 @@
                 color: purple;
             }
 
-            #page-tree::before {
-                content: "Select a page";
-                font-size: 2em;
-                font-weight: bold;
-                position: relative;
-                top: 0.5em;
-                left: 0.5em;
-            }
-            #page-tree.collapsed:not(:hover)::before {
-                left: calc(0.5em + 5vw);
-            }
-
             #page-tree.collapsed {
                 width: 5vw;
                 min-width: 0;
@@ -115,7 +103,7 @@
             }
 
             #page-details-header {
-                position: fixed; top: 0; left: max(25vw, 20em); width: 40vw; z-index: 4; background-color: #e3e3e0; padding: 1em; box-sizing: border-box;
+                position: fixed; top: 0; left: 21vw; width: 40vw; z-index: 4; background-color: #e3e3e0; padding: 1em; box-sizing: border-box;
             }
 
             #page-tree.collapsed ~ #page-details #page-details-header {
@@ -162,7 +150,67 @@
             }
 
             #details-save { float: right; font-size: 200%; color: red;}
+
+            ul.tabs {
+                list-style: none;
+            }
+
+            ul.tabs li {
+                display: inline-block;
+                font-size: 120%;
+                font-weight: bold;
+                padding: 0 0.5em;
+            }
+
+            ul.tabs li.active {
+                background-color: purple;
+                color: silver;
+            }
+
+            #page-tree > div {
+                display: none;
+            }
+
+            #page-tree div.show {
+                display: block;
+            }
+
+            #add-resource {
+                position: relative;
+            }
+            #add-resource-preview {
+                display: none;
+                position: absolute;
+                object-fit: contain;
+                max-width: 100%;
+                box-sizing: border-box;
+                background-color: white;
+                border: 2em solid rgba(127,127,127,0.5);
+                z-index: 9;
+            }
+
+            #add-resource-preview.show {
+                display: block;
+            }
+
+            div.resource {
+                width: 100%;
+                position: relative;
+                font-weight: bold;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+                align-items: center;
+            }
             
+            div.resource img {
+                width: 10vw;
+                max-width: 5em;
+                height: 10vw;
+                max-height: 5em;
+                object-fit: contain;
+            }
+
         </style>
         <script src="{{ url_for('static', filename='scripts/app.js') }}"></script>
         <script type="module">
@@ -212,7 +260,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(document.querySelector("#page-tree").structure)
-                }).then(response => { alert("Structure updated"); console.log(response.json())}, reject => console.log(reject))
+                }).then(response => { alert("Structure updated")}, reject => console.log(reject))
 
 
                 refreshTree();
@@ -240,17 +288,100 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(content)
-                }).then(response => { alert("Page saved!"); console.log(response.json())}, reject => console.log(reject))
+                }).then(response => { alert("Page saved!")}, reject => console.log(reject))
             })
 
             document.querySelector("#page-details").addEventListener("menu:getsubs", function(e) {
                 e.detail.targetMenu.addItems(document.querySelector("#page-subpages").pages.map(i => { return { title: i.title, link: `${this.dataset.path}/${i.slug}`}}));
             })
+
+            document.querySelector("ul.tabs").addEventListener("click", function(e) {
+                let src = e.target;
+                while (src.tagName != "LI") src = src.parentElement;
+
+                document.querySelectorAll("div.show").forEach(div => div.classList.remove("show"));
+                document.querySelector(`#page-tree-${src.dataset.page}`).classList.add("show");
+                this.querySelectorAll("li").forEach(li => li.classList.remove("active"));
+                src.classList.add("active");
+            })
+
+            document.querySelector("#add-resource input[name='file']").addEventListener("change", function(e) {
+                let preview = document.querySelector("#add-resource-preview");
+                let type = document.querySelector("#add-resource input[name='media-type']")
+                let name = document.querySelector("#add-resource input[name='name']")
+                let f = this.files[0]
+                name.value = f.name.substr(0, f.name.lastIndexOf("."))
+                let ext = f.name.substr(f.name.lastIndexOf("."))
+
+                switch (ext) {
+                    case ".svg":
+                        type.value = "image/svg+xml";
+                        f.text().then(t => {
+                            preview.setAttribute("src", `data:image/svg+xml;base64,${btoa(t)}`)
+                        })
+                        break;
+                    case ".jpg":
+                    case ".jpeg":
+                    case ".png":
+                    case ".gif":
+                        type.value=`image/${ext.substr(1)}`;
+                        f.arrayBuffer().then(b => {
+                            let bs = Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte))
+                            preview.setAttribute("src", `data:${type.value};base64,${btoa(bs.join(""))}`)
+                        })
+                }
+
+                preview.classList.add("show");
+            })
+
+            document.querySelector("#add-resource").addEventListener("submit", function(e) {
+                e.preventDefault();
+
+                let resource = {
+                    name: this.elements['name'].value,
+                    description: this.elements['description'].value,
+                    source: this.querySelector("#add-resource-preview").src
+                }
+
+                fetch("/app/resources/", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(resource)
+                }).then(response => { 
+                    this.querySelector("#add-resource-preview").classList.remove("show");
+                    this.reset();
+                    loadResources();
+                }, reject => console.log(reject))
+
+            })
             </script>
         
     </head>
     <body>
-        <div  id="page-tree"></div>
+        <div  id="page-tree">
+            <ul class="tabs">
+                <li data-page="pages" class="active">Pages</li>
+                <li data-page="resources">Resources</li>
+            </ul>
+            <div id="page-tree-pages" class="show"></div>
+            <div id="page-tree-resources">
+                <details>
+                    <summary>Add a new resource</summary>
+                    <form id="add-resource">
+                        <fieldset>
+                            <input type="file" name="file"><br />
+                            <label>Name:</label><input type="text" name="name"><br />
+                            <label>File type:</label><input type="text" name="media-type"><br />
+                            <label>Description:</label><input type="text" name="description" length="80"><br />
+                            <input type="submit" value="Add">
+                        </fieldset>
+                        <img id="add-resource-preview" />
+                    </form>
+                </details>
+            </div>
+        </div>
         <div id="page-details" class="noload">
             <div id="page-details-header">
                 <button id="details-save">Save changes</button><h1>Edit content:</h1>
@@ -276,11 +407,13 @@
             document.addEventListener("DOMContentLoaded", () => {
                 fetch("/app/structure").then(response => response.json())
                     .then(structure => {
-                        let holder = document.querySelector("#page-tree");
+                        let holder = document.querySelector("#page-tree-pages");
                         holder.structure = structure;
 
                         refreshTree();
                     })
+
+                loadResources();
 
             })
 
@@ -360,7 +493,7 @@
                             })
 
                         details.classList.remove("noload");
-                        holder.classList.add("collapsed");
+                        document.querySelector("#page-tree").classList.add("collapsed");
                         document.querySelector("#page-preview a[target='_blank']").setAttribute("href", `/${item.pageInfo.path}`)
                     })
 
@@ -368,7 +501,7 @@
 
                 }
 
-                let holder = document.querySelector("#page-tree");
+                let holder = document.querySelector("#page-tree-pages");
                 holder.innerHTML = "";
 
                 Object.keys(holder.structure).forEach(k => {
@@ -376,6 +509,23 @@
                     root.appendChild(renderItem(holder.structure[k]));
                 });
             }
+
+            loadResources = () => {
+                fetch("/app/resources")
+                .then(response => response.json())
+                .then(data => {
+                    let holder = document.querySelector("#page-tree-resources");
+                    while(holder.firstElementChild.nextSibling) {
+                        holder.removeChild(holder.firstElementChild.nextSibling);
+                    }
+                    Object.keys(data).forEach(k => {
+                        // create a resource listing for each key
+                        holder.insertAdjacentHTML("beforeend", 
+                            `<div class="resource"><span>${k}</span><img src="${data[k].source}" class="thumbnail" alt="${data[k].description}" title="${data[k].description}" /></div>`)
+                    })
+                })
+            }
+
         </script>
     </body>
 </html>

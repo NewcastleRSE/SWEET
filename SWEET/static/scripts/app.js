@@ -138,9 +138,11 @@ function render(section, acc_level = 3) {
         
         if (section.icon && section.icon != "none") {
             const icon = document.createElement("img");
-            icon.setAttribute("src", section.icon + ".svg");
             icon.setAttribute("class", "icon")
             holder.appendChild(icon);
+            fetch(`/app/resources/${section.icon}`)
+                .then(response => response.json())
+                .then(resource =>  icon.setAttribute("src", resource.source))
         }
         
         return holder;
