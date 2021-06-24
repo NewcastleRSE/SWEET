@@ -5,3 +5,4 @@ export {ContentEditor, EditorInserter} from './content.js';
 export {BlockquoteEditor} from './blockquote.js';
 export {MenuEditor} from './menu.js';
 export {AlertEditor} from './alert.js';
+export {GoalSetter} from './goalsetter.js';

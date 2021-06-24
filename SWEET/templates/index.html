@@ -43,15 +43,40 @@
                 background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMCAxMCc+PHBhdGggc3Ryb2tlPSdnb2xkJyBkPSdNNSwwIEw1LDEwIE0wLDUgTDEwLDUnIC8+PC9zdmc+");
             }
 
+            #app-buttons button[name='logout'] {
+                background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5IDkiPjxwYXRoIHN0cm9rZT0nZ29sZCcgZD0iTTEsOCBMMSwxIEw1LDEgTDUsMy41IE0zLDQuNSBMOCw0LjUgTTYsMi41IEw4LDQuNSBMNiw2LjUgTTUsOCBMNSw2Ij48L3BhdGg+PC9zdmc+")
+            }
             #app-buttons button:hover {
                 background-size: 95%;
 
+            }
+
+            #modal-cover {
+                position: fixed;
+                top: 0; right: 0; bottom: 0; left: 0;
+                background-color: rgba(0,0,0,0.8);
+                z-index: 50;
+                display: none;
+            }
+
+            #modal-cover.show {
+                display: block;
+            }
+
+            .popover {
+                z-index: 51;
+                position: fixed;
+                top: 8em;
+                background-color: white;
+                width: 75vw;
+                left: 12.5vw;
             }
         </style>
         <title>SWEET</title>
         <meta name="viewport" content="width=1024" />
     </head>
     <body>
+        <div id="modal-cover"></div>
         <div id="app-main">
             <div id="app-nav" class="active">
                 <p>Menu</p>
@@ -63,11 +88,12 @@
                     {% if user['role'] in ['sysadmin', 'editor'] %}<a href="/edit">Page Editor</a>{% endif%}
                 </nav>
                 <nav id="app-buttons">
+                    {% if user %}<button name="logout" title="Log out" onclick="location.href='/logout'"></button>{% endif%}
                     <button name="favourites" title="My Favourites"></button>
                     <button name="recordSE" title="Record a Side Effect"></button>
                 </nav>
             </div>
-            <div id="profiler">
+            <div id="profiler" class="popover">
                 <p>We'd like to ask you some questions to see how you are getting on with your hormone therapy. Answering these questions will allow us to guide you to relevant sections of the app that you may find helpful. </p>
                 <p>Are you happy to answer these questions now?</p>
                 <p><button id="prof-yes">Yes</button><button id="prof-no">Not now</button></p>
@@ -94,34 +120,43 @@
             init_page();
         })
 
-        document.querySelectorAll("#app-nav a").forEach(a => a.addEventListener("click", () => {
-            let nav = document.querySelector("#app-nav");
-            nav.classList.remove("active");
-            window.setTimeout(() => { nav.classList.add("active");}, 2000);
-        }))
-
+    function init_profiler() {
         document.querySelector("#prof-no").addEventListener("click", () => {
             document.querySelector("#profiler").classList.remove("show");
+            document.querySelector("#modal-cover").classList.remove("show");
         })
 
         document.querySelector("#prof-yes").addEventListener("click", () => {
-            document.querySelector("#profiler").innerHTML = `
-                <p>Please indicate whether you agree or disagree with the following statements:</p>
-                <table>
-                    <tr><td>&nbsp;</td><th>Disagree</th><th>Uncertain</th><th>Agree</th></tr>
-                    <tr><th>Taking my hormone therapy is very important to me.</th><td><input type="radio" name="imp" id="imp-dis" value="disagree" /></td><td><input type="radio" name="imp" id="imp-con" value="uncertain" /></td><td><input type="radio" name="imp" id="imp-agr" value="agree" /></td></tr>
-                    <tr><th>I have concerns about my hormone therapy.</th><td><input type="radio" name="con" id="con-dis" value="disagree" /></td><td><input type="radio" name="con" id="con-unc" value="uncertain" /></td><td><input type="radio" name="con" id="con-agr" value="agree" /></td></tr>
-                    <tr><th>Taking my hormone therapy is difficult for me.</th><td><input type="radio" name="diff" id="diff-dis" value="disagree" /></td><td><input type="radio" name="diff" id="diff-unc" value="uncertain" /></td><td><input type="radio" name="diff" id="diff-agr" value="agree" /></td></tr>
-                </table>
-                <p><button id="prof-p1-submit">Next</button><button>Cancel</button></p>
-            `
-        })
+            let p =  document.querySelector("#profiler")
+            p.originalHTML = p.innerHTML;
 
-        if (location.search.includes("profiler=")) {
-            document.querySelector("a[href='#profile']").classList.add("highlight");
-            document.querySelector("a[href='#profile']").addEventListener("click", e => { document.querySelector('#profiler').classList.toggle('show'); e.preventDefault(); })
-            document.querySelector("#profiler").classList.add("show");
-        }
+            fetch("/app/profiler/", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify({ page: 0})
+            }).then(response => response.text())
+            .then(text => {
+                p.innerHTML = text;
+                p.querySelectorAll("script").forEach(s => {
+                    let src = s.getAttribute("src")
+                    let script = document.querySelector("body").appendChild(document.createElement("script"));
+                    script.setAttribute("src", src)
+                    s.remove();
+                })
+            
+            })
+        })
+    }
+        document.querySelector("a[href='#profile']").classList.add("highlight");
+        document.querySelector("a[href='#profile']").addEventListener("click", e => { 
+            document.querySelector('#profiler').classList.toggle('show'); 
+            document.querySelector('#modal-cover').classList.toggle('show'); 
+            e.preventDefault(); 
+        })
+        //document.querySelector("#profiler").classList.add("show");
+        //document.querySelector("#modal-cover").classList.add("show");
+
+        init_profiler();
         </script>
     </body>
 </html>

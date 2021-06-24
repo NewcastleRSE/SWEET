@@ -19,7 +19,8 @@ def create_app():
             success, token = data.validateUser(uid, pwd)
             if success:
                 session['user'] = token
-                return redirect(url_for("index"))
+                hash = request.form.get('fragment', None)
+                return redirect(url_for("index", _anchor=hash))
 
             flash('Incorrect username/password combination')
             flash('Your username is usually your email address')
@@ -62,7 +63,7 @@ def create_app():
 
             return render_template("index.html", user=user)
         
-        return redirect(url_for("login"))
+        return render_template("login.html", save_fragment=True)
 
 
     @app.route("/app/structure")
@@ -107,7 +108,63 @@ def create_app():
         
         return {"status": "error", "message": "Login required"}, 403
 
+    @app.route("/app/schemas/goals/activity")
+    def getActivityGoalSchema():
+        if "user" in session:
+            return {
+                "activity": ["walking", "housework", "gardening", "strength exercises", "balance exercises", "swimming", "cycling", "pilates", "yoga", "thai chi", "dancing", "bowling", "running"],
+                "frequency": [1,2,3,4,5,6,7],
+                "duration": [10, 20, 30, 40, 50, 60]
+            }
+
+        return {"status": "error", "message": "Login required"}, 403
+
+    @app.route("/app/mygoals")
+    def getAllUserGoals():
+        if 'user' in session:
+            user = data.getLoggedInUser(session['user'])
+            if user is None:
+                return redirect(url_for("logout"))
+            
+            return data.getGoals(user)
+
+        return {"status": "error", "message": "Login required"}, 403
+
+    @app.route("/app/mygoals/<goaltype>")
+    def getUserGoals(goaltype):
+        if 'user' in session:
+            user = data.getLoggedInUser(session['user'])
+            if user is None:
+                return redirect(url_for("logout"))
+            
+            goals = data.getGoals(user)
+            return {
+                "current": [g for g in goals['current'] if g['goaltype'] == goaltype],
+                "complete": [g for g in goals['complete'] if g['goaltype'] == goaltype],
+            }
         
+        return {"status": "error", "message": "Login required"}, 403
+
+    @app.route("/app/mygoals/", methods=["POST"])
+    def addOrUpdateGoal():
+        if "user"in session:
+            user = data.getLoggedInUser(session['user'])
+            if user is None:
+                return redirect(url_for("logout"))
+
+            if request.is_json:
+                goal = request.json
+                result, message = data.updateGoals(user, goal)
+
+                if result:
+                    return {"status": "OK", "action": message}
+                
+                return {"status": "error", "message": message}, 500
+
+            return {"status": "error", "message": "Update request sent without json"}, 400
+
+        return {"status": "error", "message": "Login required"}, 403
+    
     # content management
     @app.route("/edit")
     def edit():
@@ -146,6 +203,19 @@ def create_app():
             else:
                 return { "status": "error", "message": "Update request sent without json data"}, 400
         return {"status": "error", "message": "Login required"}, 403
+
+    @app.route("/app/profiler/", methods=["POST"])
+    def profiler():
+        if "user" in session:
+            if request.is_json:
+                data = request.json
+                if 'page' in data:
+                    template = f'partial/profiler-p{data["page"] + 1}.html'
+                    return render_template(template, data=data)
+
+            return { 'status': "OK" }
+        
+        return redirect(url_for("login"))
 
     return app
 

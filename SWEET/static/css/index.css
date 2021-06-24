@@ -13,7 +13,7 @@ body {
 }
 
 #app-main {
-    width: 60em;
+    width: 90vw;
     padding-bottom: 1rem;
     margin: auto;
     background-color: #633188;
@@ -71,7 +71,7 @@ header {
 }
 
 #main-container  nav {
-    width: calc(100% - 2rem);
+    width: 100%;
     margin: 1rem auto;
     display: flex;
     flex-direction: row;
@@ -383,8 +383,6 @@ a.youtube::before {
 }
 
 #profiler {
-    position: absolute;
-    left: 1em; max-width: 36em;
     display: none;
     font-size: 80%;
     padding: 0.5em;
@@ -392,95 +390,86 @@ a.youtube::before {
     background-color: white;
     color: #633188;
     border-radius: 0.5em;
-    margin-bottom: 4em;
-    margin-top: 1em;
 }
 
 #profiler.show { display: block; }
-#profiler::before {
-    content: "";
-    position:absolute;
-    top: -2em;
-    left: 10em;
-    border-width: 0 2em 2em;
-    border-color: #f5f57a transparent;
-    border-style: solid;
-    display: block;
-    width: 0;
-}
-
-#profiler::after {
-    content: "";
-    position:absolute;
-    top:  -1em;
-    left: 11em;
-    border-width: 0 1em 1em;
-    border-color: white transparent;
-    border-style: solid;
-    display: block;
-    width: 0;
-}
 
 #profiler th {
     text-align: left;
 }
 
-@media screen and (max-width: 1280px) {
-    #app-main {
-        width: 47em;
+#profiler table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#profiler table tbody {
+    border-top: 2em solid transparent;
+}
+
+#profiler td input {
+    margin: auto;
+    width: 100%;
+}
+
+#profiler table tr:hover {
+    background-color: #eee;
+}
+
+div.goal {
+    border: 0.25em solid #633188;
+    padding: 0.25em;
+    box-sizing: border-box;
+    text-align: center;
+    border-radius: 1em;
+    min-height: 4em;
+    margin: 1em 0;
+}
+
+div.goal form, div.goal section {
+    text-align: left;
+}
+
+div.goal input[list] {
+    font-weight: bold;
+    width: 19em;
+}
+
+div.goal input[type="radio"] {
+    display: none;
+}
+
+div.goal input[type="radio"] + label {
+    display: inline-block;
+    width: 1.25em;
+    height: 1.25em;
+    line-height: 1.25em;
+    border: 2px solid #633188;
+    border-radius: 4px;
+    font-weight: bold;
+    margin: 0 0.2em;
+    text-align: center;
+}
+
+div.goal input[type="radio"]:checked + label {
+    background-color: #633188;
+    color: #e3e3e0;
+}
+
+/*
+@media screen and (min-width: 1400px) {
+    #main-container nav > a {
+        flex-basis: 31%;
     }
 }
 
-@media screen and (max-width: 980px), (min-resolution: 150dpi) {
-    #app-main {
-        width: 36em;
-    }
 
-    #app-nav {
-        position: absolute;
-        left: 0.2em;
-        top: 0.2em;
-        background-color: rgba(227, 227, 224, 0.95);
-        height: 2em; width: 2em;
-        overflow: hidden;
-    }
-
-    #app-nav.active:hover {
-        height: auto;
-        width: auto;
-    }
-
-    #app-nav::before {
-        content: "";
-        background-image: url("bulletlist.svg");
-        background-size: 2em 2em;
-        height: 2em; width: 2em;
-        display: inline-block;
-    }
-
-    #app-nav > p:first-child {
-        margin: 2px 0;
-        display: inline-block;
-        position: relative;
-        top: -0.5em;
-        color: black;
-        font-weight: bolder;
-        left: 0.5em;
-    }
-
-    #app-nav nav {
-        margin-left: 0.5em;
-        padding: 0 1em 0.5em 0;
-    }
-    #app-nav nav a {
-        display: block;
-        color: #633188;
-    }
- 
-    #app-nav nav a:hover {
-        background-color: #b3b3b2;
+@media screen and (min-width: 900px) and (max-width: 1399px) {
+    #main-container nav > a {
+       flex-basis: 47%;
     }
 }
+*/
 
 @media (min-resolution: 150dpi) {
     :root {

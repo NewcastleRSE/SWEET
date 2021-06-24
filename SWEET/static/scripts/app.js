@@ -262,14 +262,17 @@ function render(section, acc_level = 3) {
 
         return trigger;
     } else if (section.type == "markdown") {
-        let holder = document.createElement("section");
+        let holder = document.createDocumentFragment();
+        let temp = document.createElement("section");
         if (section.encoding == "lz-string:UTF16") {
-            holder.innerHTML = marked(LZString.decompressFromUTF16(section.text));
+            temp.innerHTML = marked(LZString.decompressFromUTF16(section.text));
         } else {
-            holder.innerHTML = `<p class="error">Unknown markdown section encoding: ${section.encoding}</p>`;
+            temp.innerHTML = `<p class="error">Unknown markdown section encoding: ${section.encoding}</p>`;
         }
-        
+        holder.append(...temp.childNodes);
         return holder;
+    } else if (section.type == "goalsetter") {
+        return render_goals(section);
     } else if (section.type) {
         console.log("Unknown Section type: ", section.type);
         return document.createTextNode("");
@@ -518,5 +521,210 @@ function render_form(section, holder) {
         question.append(...buildinput(section.questions[currentq]));
     })
     // return
+    return holder;
+}
+
+function render_goals(section) {
+    let holder = document.createElement("section");
+    let isodate = function(d) { return d.toISOString().substr(0,10) }
+
+    let newgoaltemplate = "<h1 class='newgoal'>Set A New Goal</h1>";
+    let newgoalhandler = function(e) {
+        e.preventDefault();
+        this.removeEventListener("click", newgoalhandler);
+
+        // load appropriate schema
+        fetch(`/app/schemas/goals/${section.goaltype}`)
+        .then(response => response.json())
+        .then(schema => {
+        // set up form
+            this.classList.add("popover");
+            document.querySelector("#modal-cover").classList.add("show");
+            let goal;
+
+            let form = this.appendChild(document.createElement("form"));
+            let list = form.appendChild(document.createElement("datalist"));
+            list.setAttribute("id", "activity");
+            schema.activity.forEach(i => list.insertAdjacentHTML("beforeend", `<option>${i}</option>`))
+            let daysinput = schema.frequency.map(f => `<input type="radio" name="frequency" id="frequency-${f}" value="${f}"><label for="frequency-${f}">${f}</label>`).join("");
+            let minutesinput = schema.duration.map(f => `<input type="radio" name="duration" id="duration-${f}" value="${f}"><label for="duration-${f}">${f}</label>`).join("");
+            
+            form.appendChild(document.createElement("p")).innerHTML = "I will do some <input type='text' name='activity' list='activity' placeholder='choose an activity or type your own'> this week.";
+            form.appendChild(document.createElement("p")).innerHTML = `I will do it on ${daysinput} days.`;
+            form.appendChild(document.createElement("p")).innerHTML = `I will do it for ${minutesinput} minutes each day.`;
+            form.insertAdjacentHTML("beforeend", '<p><input type="submit" value="Next" /><button name="cancel">Cancel</button></p>')
+            form.querySelector("button").addEventListener("click", e => {
+                e.stopPropagation(); e.preventDefault();
+                this.innerHTML = newgoaltemplate;
+                this.addEventListener("click", newgoalhandler);
+
+                this.classList.remove("popover");
+                document.querySelector("#modal-cover").classList.remove("show");
+
+            })
+            form.addEventListener("submit", e => {
+                e.preventDefault();
+
+                goal = {
+                    goaltype: 'activity',
+                    status: 'active',
+                    reviewDate: isodate(((d) => { d.setDate(d.getDate()+7); return d;})(new Date())),
+                    detail: form.elements['activity'].value,
+                    days: form.elements['frequency'].value,
+                    minutes: form.elements['duration'].value,
+
+                }
+
+                console.log(goal);
+
+                this.innerHTML = `
+                <h3>You're ready to set a new goal for the next week!</h3>
+                <section>
+                <p>You can always see your goals by clicking <strong>My Goals</strong> on the Being Active homepage.</p>
+                <p>In one week, you can come back to review your goal and to get a feedback message.</p>
+                <p>You may want to stick a reminder somewhere in your house.</p>
+                <p>Your goal is: to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.</p>
+                </section>
+                <button name="back">Back</button><button name="save">Save</button>`
+                this.querySelector("[name='back']").addEventListener("click", () => {
+                    this.innerHTML = "";
+                    this.appendChild(form);
+                    goal = undefined;
+                });
+                this.querySelector("[name='save']").addEventListener("click", () => {
+                    fetch("/app/mygoals/", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(goal)
+                    }).then(response => response.json())
+                    .then(outcome => {
+                        if (outcome.status == "error") {
+                            console.log(outcome);
+                            console.log(this);
+                            this.innerHTML = `<p>We were not able to save your new goal. The error message was:</p>
+                            <p class="error">${outcome.message}</p>
+                            <button>OK</button>`;
+                            this.querySelector("button").addEventListener("click", e => {
+                                e.stopPropagation();
+
+                                this.innerHTML = newgoaltemplate;
+                                this.addEventListener("click", newgoalhandler);
+
+                                this.classList.remove("popover");
+                                document.querySelector("#modal-cover").classList.remove("show");
+                            })
+                            return;
+                        }
+                        this.innerHTML = "";
+                        let summary = this.appendChild(document.createElement("label"));
+                        summary.classList.add("goal-summary");
+                        summary.innerHTML = `My goal: to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.`;
+
+                        this.classList.add("active");
+                        // show the review date:
+                        let reviewdate = this.appendChild(document.createElement("span"));
+                        reviewdate.classList.add("goal-date");
+                        reviewdate.textContent = `Review on: ${new Date(Date.parse(goal.reviewDate)).toLocaleDateString()}`;
+
+                        this.classList.remove("popover");
+                        document.querySelector("#modal-cover").classList.remove("show");
+                    }).catch(e => console.log(e))
+                })
+            })
+        })
+    }
+
+    // get user's active goals
+    fetch("/app/mygoals")
+    .then(response => response.json())
+    .then(goals => {
+
+        goals.current.sort((a,b) => {
+            if (b.reviewDate < a.reviewDate) return 1;
+            return -1;
+        }).forEach(goal => {
+            // add a goal to the holder
+            let outer = document.createElement("div");
+            outer.classList.add("goal");
+
+            let today = isodate(new Date());
+
+            let summary = outer.appendChild(document.createElement("label"));
+            summary.classList.add("goal-summary");
+            summary.innerHTML = `My goal: to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.`;
+
+            if (goal.reviewDate <= today) {
+                outer.classList.add("review");
+                
+                // create a review button
+                let review = outer.appendChild(document.createElement("button"));
+                review.classList.add("goal-review");
+                review.textContent = "Review this goal";
+                review.addEventListener("click", e => {
+                    e.stopPropagation();
+                    outer.classList.add("popover");
+                    document.querySelector("#modal-cover").classList.add("show");
+                    let reviewbox = outer.appendChild(document.createElement("div"));
+                    reviewbox.insertAdjacentHTML("afterbegin", 
+                        `<p>Have you been successful and completed your goal?</p>
+                        <div id="review-box-buttons">
+                            <button value="y">Yes, Totally</button><button value="p">Yes, Partly</button><button value="n">No, not at all</button>
+                        </div>`
+                    );
+                    reviewbox.querySelector("#review-box-buttons").addEventListener("click", e => {
+                        e.stopPropagation();
+                        if (e.target.tagName != "BUTTON") {
+                            console.log(e.target); return;
+                        }
+
+                        goal.status = "complete"; goal.outcome = e.target.value;
+                        fetch("/app/mygoals/", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(goal)
+                        }).then(response => response.json())
+                        .then(outcome => {
+                            outer.innerHTML = "";
+                            outer.insertAdjacentHTML("afterbegin", "<h3>Thank you for reviewing your goal</h3>")
+                            let message = outer.appendChild(document.createElement("p"));
+                            message.textContent = outcome.message;
+                            let finish = outer.appendChild(document.createElement("button"));
+                            finish.classList.add("goal-review-finish");
+                            finish.textContent = "Done";
+                            finish.addEventListener("click", e => {
+                                outer.innerHTML = newgoaltemplate;
+                                outer.addEventListener("click", newgoalhandler);
+                                outer.classList.add("popover");
+                                document.querySelector("#modal-cover").classList.add("show");
+                            })
+
+                        }).catch(e => {
+                            console.log(e);
+                            outer.classList.add("popover");
+                            document.querySelector("#modal-cover").classList.add("show");
+                        })
+                    })
+                })
+            } else {
+                outer.classList.add("active");
+                // show the review date:
+                let reviewdate = outer.appendChild(document.createElement("span"));
+                reviewdate.classList.add("goal-date");
+                reviewdate.textContent = `Review on: ${new Date(Date.parse(goal.reviewDate)).toLocaleDateString()}`;
+            }
+
+            holder.appendChild(outer);
+        })
+        
+        while (holder.children.length < 3) {
+            // render a blank goal that can be completed
+            let outer = holder.appendChild(document.createElement("div"));
+            outer.classList.add("goal");
+            outer.classList.add("new");
+            outer.innerHTML = newgoaltemplate;
+            outer.addEventListener("click", newgoalhandler);
+        } 
+    })
+
     return holder;
 }

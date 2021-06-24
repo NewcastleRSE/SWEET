@@ -116,13 +116,63 @@ def registerUser(userID, password, fullName, role):
 
     return True, user
 
+# user-submitted data
+
+def getAllGoals():
+    return 
+
+def getGoals(user=None):
+    goals = json.loads(getContainer(secrets.usersource).download_blob(secrets.usergoals).readall())
+    if user is None:
+        return goals
+
+    if user['userID'] not in goals:
+        return { "current": [], "complete": []}
+
+    goals = goals[user['userID']]
+    return {
+        "current": [g for g in goals if g['status'] == "active"],
+        "complete": [g for g in goals if g['status'] == "complete"]
+    }
+
+def updateGoals(user, goal):
+    goals = getGoals()
+    id = user['userID']
+
+    if id not in goals:
+        goals[id] = []
+
+    if goal['status'] == "complete":
+        oldgoal = next([g for g in goals[id] if g['goaltype'] == goal['goaltype'] and g['reviewDate'] == goal['reviewDate'] and g['detail'] == goal['detail']], None)
+        if oldgoal is not None:
+            goals[id].remove(oldgoal)
+            
+        goals[id].append(goal)
+        save(secrets.usersource, secrets.usergoals, json.dumps(goals))
+        return True, "Update"
+
+    if goal['status'] == "active":
+        activegoals = [g for g in goals[id] if g['status'] == "active" and g['goaltype'] == goal['goaltype']]
+        if len([g for g in activegoals if g['detail'] == goal['detail']]) != 0:
+            return False, "Existing active goal of this type"
+        
+        if len(activegoals) < 3:
+            goals[id].append(goal)
+            save(secrets.usersource, secrets.usergoals, json.dumps(goals))
+            return True, "New"
+        
+        return False, "3 active goals of this type already"
+
+    return False, f"Unrecognised new goal status {goal['status']}"
+
+
+# utility methods
+
 def encryptUser(user):
     return Fernet(secrets.fernetkey).encrypt(json.dumps(user).encode("utf8")).decode("utf8")
 
 def decryptUser(data):
     return json.loads(Fernet(secrets.fernetkey).decrypt(data.encode("utf8")).decode("utf8"))
-
-# utility methods
 
 def getContainer(name):
     return BlobServiceClient.from_connection_string(secrets.connstr).get_container_client(name)
@@ -169,6 +219,8 @@ def ensureDataSources():
     usercnt = getContainer(secrets.usersource)
     if secrets.usertable not in [blob.name for blob in usercnt.list_blobs()]:
         usercnt.upload_blob(secrets.usertable, json.dumps({}))
+    if secrets.usergoals not in [blob.name for blob in usercnt.list_blobs()]:
+        usercnt.upload_blob(secrets.usergoals, json.dumps({}))
 
     if getUser(secrets.admin_user) is None:
         registerUser(secrets.admin_user, secrets.admin_password, secrets.admin_fullName, secrets.admin_role)

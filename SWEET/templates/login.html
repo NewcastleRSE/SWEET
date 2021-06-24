@@ -15,6 +15,7 @@
             <legend>Login details:</legend>
             <label>Email Adress: </label><input type="text" name="userID"><br />
             <label>Password: </label><input type="password" name="password"><br/>
+            {% if save_fragment %}<input type="hidden" name="fragment" /><script>document.querySelector("input[name='fragment']").value = location.hash.substr(1)</script>{% endif %}
             <input type="submit" value="Log In">
         </fieldset>
         </form>
