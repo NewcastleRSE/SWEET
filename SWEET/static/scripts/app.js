@@ -692,10 +692,11 @@ function render_goals(section) {
                             finish.classList.add("goal-review-finish");
                             finish.textContent = "Done";
                             finish.addEventListener("click", e => {
+                                e.stopPropagation();
                                 outer.innerHTML = newgoaltemplate;
                                 outer.addEventListener("click", newgoalhandler);
-                                outer.classList.add("popover");
-                                document.querySelector("#modal-cover").classList.add("show");
+                                outer.classList.remove("popover");
+                                document.querySelector("#modal-cover").classList.remove("show");
                             })
 
                         }).catch(e => {

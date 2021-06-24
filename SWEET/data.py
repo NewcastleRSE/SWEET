@@ -143,7 +143,7 @@ def updateGoals(user, goal):
         goals[id] = []
 
     if goal['status'] == "complete":
-        oldgoal = next([g for g in goals[id] if g['goaltype'] == goal['goaltype'] and g['reviewDate'] == goal['reviewDate'] and g['detail'] == goal['detail']], None)
+        oldgoal = next(g for g in goals[id] if g['goaltype'] == goal['goaltype'] and g['reviewDate'] == goal['reviewDate'] and g['detail'] == goal['detail'])
         if oldgoal is not None:
             goals[id].remove(oldgoal)
             
