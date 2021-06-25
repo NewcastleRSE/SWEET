@@ -20,7 +20,7 @@ SWEET extracts sensitive data (i.e. application keys, Azure conncetion details e
 
 
 ## Running SWEET
-Running SWEET locally for dvelopment purposes is the same as running any other flask app. Once you've installed the app as above and set the variables in `secrets.py`, set the FLASK_APP environment variable to 'SWEET', optionally set the FLASK_ENV environment variable, then execute `flask run`. e.g. (on linux)
+Running SWEET locally for development purposes is the same as running any other flask app. Once you've installed the app as above and set the variables in `secrets.py`, set the FLASK_APP environment variable to 'SWEET', optionally set the FLASK_ENV environment variable, then execute `flask run`. e.g. (on linux)
 
 ```bash
 (venv) [user@system sweet]$ export FLASK_APP=SWEET
