@@ -599,8 +599,6 @@ function render_goals(section) {
                     }).then(response => response.json())
                     .then(outcome => {
                         if (outcome.status == "error") {
-                            console.log(outcome);
-                            console.log(this);
                             this.innerHTML = `<p>We were not able to save your new goal. The error message was:</p>
                             <p class="error">${outcome.message}</p>
                             <button>OK</button>`;

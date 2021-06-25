@@ -157,7 +157,7 @@ def create_app():
                 result, message = data.updateGoals(user, goal)
 
                 if result:
-                    return {"status": "OK", "action": message}
+                    return {"status": "OK", "message": message}
                 
                 return {"status": "error", "message": message}, 500
 
