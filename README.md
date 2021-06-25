@@ -24,7 +24,7 @@ Running SWEET locally for development purposes is the same as running any other 
 
 ```bash
 (venv) [user@system sweet]$ export FLASK_APP=SWEET
-(venv) [user@system sweet]$ export FLASK_ENV-development
+(venv) [user@system sweet]$ export FLASK_ENV=development
 (venv) [user@system sweet]$ flask run
 ```
 
