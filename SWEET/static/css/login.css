@@ -1,0 +1,14 @@
+.sidenav {
+    background: radial-gradient(circle, rgba(99,49,136,0.75) 26%, rgba(99,49,136,0.9) 93%), url('../images/splash.jpeg');
+    background-position: center right;
+}
+
+.sidebar-text {
+    padding: 0 40px;
+    color: #fafafa;
+}
+
+.sidebar-text a, .sidebar-text a:active, .sidebar-text a:visited {
+    color: #fafafa;
+    font-weight: bold;
+}
