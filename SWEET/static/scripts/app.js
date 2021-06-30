@@ -3,6 +3,8 @@ async function init_page() {
 
     const section = await loadSection(path);
 
+    console.log(section);
+
     document.querySelector("title").innerText = document.getElementById("page-title").innerText = section.title;
 
     const breadcrumb = document.getElementById("breadcrumb");
@@ -50,7 +52,8 @@ function render(section, acc_level = 3) {
         return holder;
     } 
     else if (section.type == "menu") {
-        const holder = document.createElement("nav");
+        const holder = document.createElement("div");
+        holder.setAttribute("class", "row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 mt-3");
         holder.addEventListener("click", ce => {
 /*                        var src = ce.target;
                 while(src.tagName.toLowerCase() != "a" && src.parentNode) {
@@ -125,24 +128,35 @@ function render(section, acc_level = 3) {
         return quote;
     } 
     else if (section.type == "menu-item") {
-        const holder = document.createElement("a");
-        holder.setAttribute("href", section.link);
+        const holder = document.createElement("div");
+        holder.setAttribute("class", "d-block col");
 
-        const label = document.createElement("label");
+        const card = document.createElement("a");
+        card.setAttribute("class", "d-block card shadow-md pb-5 h-100");
+        card.setAttribute("href", section.link);
+
+        const cardBody = document.createElement("div");
+        cardBody.setAttribute("class", "card-body");
+
+        const cardTitle = document.createElement("h5");
+        cardTitle.setAttribute("class", "card-title fw-normal");
         if (section.title.indexOf("&") > -1) {
-            label.innerHTML = section.title; // assuming we have & due to html entities
+            cardTitle.innerHTML = section.title; // assuming we have & due to html entities
         } else {
-            label.textContent = section.title;
+            cardTitle.textContent = section.title;
         }
-        holder.appendChild(label);
+        cardBody.appendChild(cardTitle);
+        card.appendChild(cardBody);
+        holder.appendChild(card);
         
         if (section.icon && section.icon != "none") {
             const icon = document.createElement("img");
-            icon.setAttribute("class", "icon")
-            holder.appendChild(icon);
             fetch(`/app/resources/${section.icon}`)
                 .then(response => response.json())
-                .then(resource =>  icon.setAttribute("src", resource.source))
+                .then(resource => {
+                    icon.setAttribute("src", resource.source);
+                    card.style.backgroundImage = "url('" + resource.source + "')"; ;
+                })
         }
         
         return holder;

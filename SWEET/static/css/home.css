@@ -1,0 +1,15 @@
+main > .container {
+    padding: 80px 15px 0;
+}
+
+a.card {
+    text-decoration: none;
+    color: inherit;
+    background-repeat: no-repeat;
+    background-position: bottom -20px right 10px;
+    background-size: 120px;
+}
+
+a.card h5 {
+    margin-right: 130px;
+}
