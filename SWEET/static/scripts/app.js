@@ -125,7 +125,7 @@ function render(section, acc_level = 3) {
 
         if (section.citation) {
             const cite = document.createElement("figcaption");
-            cite.setAttribute("class", "blockquote-footer");
+            cite.setAttribute("class", "blockquote-footer mt-2");
             cite.innerText = section.citation;
             figure.appendChild(cite)
         }
