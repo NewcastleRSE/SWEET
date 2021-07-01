@@ -1,37 +1,22 @@
+nav #app-buttons {
+    position:relative;
+}
+
 nav #app-buttons i {
     color: #fafafa;
     cursor: pointer;
     font-size:24px;
 }
 
-/* #app-buttons button {
-    font-size: inherit;
-    border: 0;
-    background-color: transparent;
-    width: 2em; height: 2em;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 70%;
-    margin-top: 0rem;
-    vertical-align: top;
+nav #app-buttons .favourite:hover i {
+    color: #FEDE00
 }
 
-
-#app-buttons button[name='favourites'] {
-    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMCAxMCc+PHBhdGggZmlsbD0nZ29sZCcgZD0nTTAsMyBMMywzIEw1LDAgTDcsMyBMMTAsMyBMOCw2IEw5LDEwIEw1LDggTDEsMTAsIEwyLDYgeicgLz48L3N2Zz4=");
+nav #app-buttons .add-note {
+    position: absolute;
+    top: -.5rem;
+    bottom: -.5rem;
+    right: var(--bs-gutter-x,-.75rem);
+    padding-top: 1rem !important;
+    background-color: #633188;
 }
-
-#app-buttons button[name='recordSE'] {
-    width: 3em; height: 3em;
-    background-color: #2e2e1f;
-    border-radius: 0 0 0 1.5em;
-    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMCAxMCc+PHBhdGggc3Ryb2tlPSdnb2xkJyBkPSdNNSwwIEw1LDEwIE0wLDUgTDEwLDUnIC8+PC9zdmc+");
-}
-
-#app-buttons button[name='logout'] {
-    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5IDkiPjxwYXRoIHN0cm9rZT0nZ29sZCcgZD0iTTEsOCBMMSwxIEw1LDEgTDUsMy41IE0zLDQuNSBMOCw0LjUgTTYsMi41IEw4LDQuNSBMNiw2LjUgTTUsOCBMNSw2Ij48L3BhdGg+PC9zdmc+")
-}
-#app-buttons button:hover {
-    background-size: 95%;
-
-} */

@@ -132,7 +132,7 @@ function render(section, acc_level = 3) {
         holder.setAttribute("class", "d-block col");
 
         const card = document.createElement("a");
-        card.setAttribute("class", "d-block card shadow-md pb-5 h-100");
+        card.setAttribute("class", "d-block card shadow pb-5 h-100");
         card.setAttribute("href", section.link);
 
         const cardBody = document.createElement("div");
