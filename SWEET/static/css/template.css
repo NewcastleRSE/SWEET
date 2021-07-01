@@ -3,7 +3,7 @@ nav #app-buttons {
 }
 
 nav #app-buttons i {
-    color: #fafafa;
+    color: inherit;
     cursor: pointer;
     font-size:24px;
 }
@@ -19,4 +19,9 @@ nav #app-buttons .add-note {
     right: var(--bs-gutter-x,-.75rem);
     padding-top: 1rem !important;
     background-color: #633188;
+    color: #fafafa;
+}
+
+.card {
+    border-bottom: solid 6px #633188;
 }

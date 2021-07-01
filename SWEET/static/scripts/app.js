@@ -163,8 +163,11 @@ function render(section, acc_level = 3) {
 
     } 
     else if (section.type == "accordion") {
-        const accordion = document.createElement("section");
+        const accordion = document.createElement("div");
         accordion.classList.add("accordion");
+        accordion.setAttribute("id", "accordion")
+
+        let index = 0;
 
         section.content.forEach(item => {
             switch (item.type) {
@@ -172,32 +175,62 @@ function render(section, acc_level = 3) {
                     throw `DataError: expected type "accordion-item", received type "${item.type}"`;
                     break;
                 case "accordion-item":
-                    const holder = document.createElement("article");
-                    holder.classList.add("item")
-                    holder.classList.add("closed");
+                    const holder = document.createElement("div");
+                    holder.setAttribute("class", "accordion-item");
 
-                    const header = document.createElement("header");
-                    const heading = document.createElement("h".concat(acc_level))
-                    heading.innerText = item.header;
-                    header.appendChild(heading);
-                    header.addEventListener("click", clk => {
-                        if (holder.classList.contains("closed")) {
-                            accordion.querySelectorAll("article.item").forEach(e => {
-                                e.classList.add("closed")
-                            });
-                            holder.classList.remove("closed"); 
-                            //src.nextSibling.scrollIntoView({ behaviour: "smooth", block: "start"});
-                            //document.querySelector("html").scrollTop -= 120;
-                        } else {
-                            holder.classList.add("closed");
-                        }
-                    })
+                    const header = document.createElement("h2");
+                    header.setAttribute("id", "header-" + index);
+                    header.setAttribute("class", "accordion-header");
+
+                    const headerButton = document.createElement("button");
+                    headerButton.setAttribute("class", "accordion-button collapsed");
+                    headerButton.setAttribute("type", "button");
+                    headerButton.setAttribute("data-bs-toggle", "collapse");
+                    headerButton.setAttribute("data-bs-target", "#collapse-" + index);
+                    headerButton.setAttribute("aria-controls", "collapse-" + index);
+                    headerButton.innerText = item.header;
+
+                    header.appendChild(headerButton);
+
+                    const collapse = document.createElement("div");
+                    collapse.setAttribute("id", "collapse-" + index);
+                    collapse.setAttribute("class", "accordion-collapse collapse");
+                    collapse.setAttribute("aria-labelledby", "header-" + index);
+                    collapse.setAttribute("data-bs-parent", "#accordion");
+
+                    const body = document.createElement("div");
+                    body.setAttribute("class", "accordion-body");
+
+                    body.appendChild(render({ type: "container", content: item.content}, acc_level + 1))
+
+                    // const header = document.createElement("header");
+                    // const heading = document.createElement("h".concat(acc_level))
+                    // header.innerText = item.header;
+                    // header.appendChild(heading);
+                    // header.addEventListener("click", clk => {
+                    //     if (holder.classList.contains("closed")) {
+                    //         accordion.querySelectorAll("article.item").forEach(e => {
+                    //             e.classList.add("closed")
+                    //         });
+                    //         holder.classList.remove("closed"); 
+                    //         //src.nextSibling.scrollIntoView({ behaviour: "smooth", block: "start"});
+                    //         //document.querySelector("html").scrollTop -= 120;
+                    //     } else {
+                    //         holder.classList.add("closed");
+                    //     }
+                    // })
+                    // holder.appendChild(header);
+                    // holder.appendChild(render({ type: "container", content: item.content}, acc_level + 1));
+
+
+                    collapse.appendChild(body);
                     holder.appendChild(header);
-                    holder.appendChild(render({ type: "container", content: item.content}, acc_level + 1));
-
+                    holder.appendChild(collapse);
                     accordion.appendChild(holder);
                     break;
             }
+
+            index++;
         })
 
         return accordion;
