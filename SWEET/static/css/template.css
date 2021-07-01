@@ -25,3 +25,7 @@ nav #app-buttons .add-note {
 .card {
     border-bottom: solid 6px #633188;
 }
+
+.quote {
+    border-left: solid 6px #633188;
+}

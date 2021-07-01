@@ -112,6 +112,8 @@ function render(section, acc_level = 3) {
         return p; 
     } 
     else if (section.type == "block-quote") {
+        const figure = document.createElement("figure");
+        figure.setAttribute("class", "quote ms-4 ps-4");
         const quote = document.createElement("blockquote");
         if (section.source) quote.setAttribute("cite", section.source);
 
@@ -119,13 +121,16 @@ function render(section, acc_level = 3) {
         p.innerText = section.text;
         quote.appendChild(p);
 
+        figure.appendChild(quote);
+
         if (section.citation) {
-            const cite = document.createElement("cite");
+            const cite = document.createElement("figcaption");
+            cite.setAttribute("class", "blockquote-footer");
             cite.innerText = section.citation;
-            quote.appendChild(cite)
+            figure.appendChild(cite)
         }
 
-        return quote;
+        return figure;
     } 
     else if (section.type == "menu-item") {
         const holder = document.createElement("div");
@@ -203,30 +208,11 @@ function render(section, acc_level = 3) {
 
                     body.appendChild(render({ type: "container", content: item.content}, acc_level + 1))
 
-                    // const header = document.createElement("header");
-                    // const heading = document.createElement("h".concat(acc_level))
-                    // header.innerText = item.header;
-                    // header.appendChild(heading);
-                    // header.addEventListener("click", clk => {
-                    //     if (holder.classList.contains("closed")) {
-                    //         accordion.querySelectorAll("article.item").forEach(e => {
-                    //             e.classList.add("closed")
-                    //         });
-                    //         holder.classList.remove("closed"); 
-                    //         //src.nextSibling.scrollIntoView({ behaviour: "smooth", block: "start"});
-                    //         //document.querySelector("html").scrollTop -= 120;
-                    //     } else {
-                    //         holder.classList.add("closed");
-                    //     }
-                    // })
-                    // holder.appendChild(header);
-                    // holder.appendChild(render({ type: "container", content: item.content}, acc_level + 1));
-
-
                     collapse.appendChild(body);
                     holder.appendChild(header);
                     holder.appendChild(collapse);
                     accordion.appendChild(holder);
+
                     break;
             }
 
