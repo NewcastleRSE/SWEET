@@ -168,9 +168,12 @@ function render(section, acc_level = 3) {
 
     } 
     else if (section.type == "accordion") {
+
+        const randomID =  Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+
         const accordion = document.createElement("div");
-        accordion.classList.add("accordion");
-        accordion.setAttribute("id", "accordion")
+        accordion.setAttribute("class","accordion mt-4 mb-5");
+        accordion.setAttribute("id", "accordion-" + randomID)
 
         let index = 0;
 
@@ -191,17 +194,17 @@ function render(section, acc_level = 3) {
                     headerButton.setAttribute("class", "accordion-button collapsed");
                     headerButton.setAttribute("type", "button");
                     headerButton.setAttribute("data-bs-toggle", "collapse");
-                    headerButton.setAttribute("data-bs-target", "#collapse-" + index);
+                    headerButton.setAttribute("data-bs-target", "#collapse-" + randomID + "-" + index);
                     headerButton.setAttribute("aria-controls", "collapse-" + index);
                     headerButton.innerText = item.header;
 
                     header.appendChild(headerButton);
 
                     const collapse = document.createElement("div");
-                    collapse.setAttribute("id", "collapse-" + index);
+                    collapse.setAttribute("id", "collapse-" + randomID + "-" + index);
                     collapse.setAttribute("class", "accordion-collapse collapse");
                     collapse.setAttribute("aria-labelledby", "header-" + index);
-                    collapse.setAttribute("data-bs-parent", "#accordion");
+                    collapse.setAttribute("data-bs-parent", "#accordion-" + randomID);
 
                     const body = document.createElement("div");
                     body.setAttribute("class", "accordion-body");
