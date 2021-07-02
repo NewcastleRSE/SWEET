@@ -9,10 +9,32 @@ a:hover {
     text-decoration: underline;
 }
 
+.btn-primary {
+    color: #fff;
+    background-color: #633188;
+    border-color: #633188;
+}
+
+.btn-primary:hover {
+    color: #fff;
+    background-color: #825aa0;
+    border-color: #825aa0;
+}
+
 .btn:focus,.btn:active {
     outline: none !important;
     box-shadow: none;
- }
+}
+
+.form-check-input:checked {
+    background-color: #633188;
+    border-color: #633188;
+}
+
+.form-check-input:focus {
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgb(99 49 136 / 25%);
+}
 
 nav #app-buttons {
     position:relative;
@@ -40,6 +62,10 @@ nav #app-buttons .add-note {
 
 .card {
     border-bottom: solid 6px #633188;
+}
+
+.card:hover {
+    text-decoration: none !important;
 }
 
 .quote {

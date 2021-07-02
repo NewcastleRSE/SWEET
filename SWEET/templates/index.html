@@ -32,7 +32,7 @@
             <a class="nav-link" href="calendar.html">Diary</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#profile">My HT Guide</a>
+            <a class="nav-link" href="" data-bs-toggle="modal" data-bs-target="#profilerModal">My HT Guide</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#myapp">My Details</a>
@@ -71,10 +71,31 @@
   </div>
 </main>
 
-<footer class="footer mt-auto py-3 bg-light">
+<footer class="footer mt-auto py-3 bg-dark">
   <div class="container">
     <span class="text-muted">Place sticky footer content here.</span>
   </div>
+  <!-- Modal -->
+    <div class="modal fade" id="profilerModal" tabindex="-1" aria-labelledby="profilerLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="profilerLabel">Profiler</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="profiler">
+                <div class="modal-body">
+                    <p>We'd like to ask you some questions to see how you are getting on with your hormone therapy. Answering these questions will allow us to guide you to relevant sections of the app that you may find helpful. </p>
+                    <p>Are you happy to answer these questions now?</p>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Not Now</button>
+                <button type="button" id="prof-yes" class="btn btn-primary">Yes</button>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
 </footer>
 
 
@@ -98,10 +119,10 @@
         })
 
     function init_profiler() {
-        document.querySelector("#prof-no").addEventListener("click", () => {
-            document.querySelector("#profiler").classList.remove("show");
-            document.querySelector("#modal-cover").classList.remove("show");
-        })
+        // document.querySelector("#prof-no").addEventListener("click", () => {
+        //     document.querySelector("#profiler").classList.remove("show");
+        //     document.querySelector("#modal-cover").classList.remove("show");
+        // })
 
         document.querySelector("#prof-yes").addEventListener("click", () => {
             let p =  document.querySelector("#profiler")
@@ -124,12 +145,12 @@
             })
         })
     }
-        document.querySelector("a[href='#profile']").classList.add("highlight");
-        document.querySelector("a[href='#profile']").addEventListener("click", e => { 
-            document.querySelector('#profiler').classList.toggle('show'); 
-            document.querySelector('#modal-cover').classList.toggle('show'); 
-            e.preventDefault(); 
-        })
+        // document.querySelector("a[href='#profile']").classList.add("highlight");
+        // document.querySelector("a[href='#profile']").addEventListener("click", e => { 
+        // document.querySelector('#profiler').classList.toggle('show'); 
+        // document.querySelector('#modal-cover').classList.toggle('show'); 
+        //     e.preventDefault(); 
+        // })
         //document.querySelector("#profiler").classList.add("show");
         //document.querySelector("#modal-cover").classList.add("show");
 

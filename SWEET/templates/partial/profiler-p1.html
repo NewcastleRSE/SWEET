@@ -1,11 +1,31 @@
-<p>Please indicate whether you agree or disagree with the following statements:</p>
 <form id="prof-p1">
-    <table>
-        <tr><td>&nbsp;</td><th>Disagree</th><th>Uncertain</th><th>Agree</th></tr>
-        <tr><th>Taking my hormone therapy is very important to me.</th><td><input type="radio" name="imp" id="imp-dis" value="disagree" /></td><td><input type="radio" name="imp" id="imp-con" value="uncertain" /></td><td><input type="radio" name="imp" id="imp-agr" value="agree" /></td></tr>
-        <tr><th>I have concerns about my hormone therapy.</th><td><input type="radio" name="con" id="con-dis" value="disagree" /></td><td><input type="radio" name="con" id="con-unc" value="uncertain" /></td><td><input type="radio" name="con" id="con-agr" value="agree" /></td></tr>
-        <tr><th>Taking my hormone therapy is difficult for me.</th><td><input type="radio" name="diff" id="diff-dis" value="disagree" /></td><td><input type="radio" name="diff" id="diff-unc" value="uncertain" /></td><td><input type="radio" name="diff" id="diff-agr" value="agree" /></td></tr>
-    </table>
-    <p><input type="submit" id="prof-p1-submit" value="Next"></p>
+    <div class="modal-body">
+    <p>Please indicate whether you agree or disagree with the following statements:</p>
+        <table class="table table-borderless">
+            <tr><td>&nbsp;</td><th>Disagree</th><th>Uncertain</th><th>Agree</th></tr>
+            <tr>
+                <td class="pe-3">Taking my hormone therapy is very important to me.</td>
+                <td class="text-center align-middle"><input class="form-check-input" type="radio" name="imp" id="imp-dis" value="disagree" /></td>
+                <td class="text-center align-middle"><input class="form-check-input" type="radio" name="imp" id="imp-con" value="uncertain" /></td>
+                <td class="text-center align-middle"><input class="form-check-input" type="radio" name="imp" id="imp-agr" value="agree" /></td>
+            </tr>
+            <tr>
+                <td class="pe-3">I have concerns about my hormone therapy.</td>
+                <td class="text-center align-middle"><input class="form-check-input" type="radio" name="con" id="con-dis" value="disagree" /></td>
+                <td class="text-center align-middle"><input class="form-check-input" type="radio" name="con" id="con-unc" value="uncertain" /></td>
+                <td class="text-center align-middle"><input class="form-check-input" type="radio" name="con" id="con-agr" value="agree" /></td>
+            </tr>
+            <tr>
+                <td class="pe-3">Taking my hormone therapy is difficult for me.</td>
+                <td class="text-center align-middle"><input class="form-check-input" type="radio" name="diff" id="diff-dis" value="disagree" /></td>
+                <td class="text-center align-middle"><input class="form-check-input" type="radio" name="diff" id="diff-unc" value="uncertain" /></td>
+                <td class="text-center align-middle"><input class="form-check-input" type="radio" name="diff" id="diff-agr" value="agree" /></td>
+            </tr>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button type="button" id="prof-p1-previous" class="btn">Previous</button>
+        <button type="submit" id="prof-p1-submit" class="btn btn-primary">Next</button>
+    </div>
 </form>
 <script src="data:application/javascript;base64,DQogICAgZG9jdW1lbnQucXVlcnlTZWxlY3RvcigiI3Byb2YtcDEiKS5hZGRFdmVudExpc3RlbmVyKCJzdWJtaXQiLCBmdW5jdGlvbihlKSB7DQogICAgICAgIGUucHJldmVudERlZmF1bHQoKTsNCg0KICAgICAgICBsZXQgYW5zd2VycyA9IHsNCiAgICAgICAgICAgIHBhZ2U6IDEsDQogICAgICAgICAgICBOOiB0aGlzLmVsZW1lbnRzWydpbXAnXS52YWx1ZSwNCiAgICAgICAgICAgIEM6IHRoaXMuZWxlbWVudHNbJ2NvbiddLnZhbHVlLA0KICAgICAgICAgICAgUDogdGhpcy5lbGVtZW50c1snZGlmZiddLnZhbHVlDQogICAgICAgIH0NCg0KICAgICAgICBmZXRjaCgiL2FwcC9wcm9maWxlci8iLCB7DQogICAgICAgICAgICBtZXRob2Q6ICJQT1NUIiwNCiAgICAgICAgICAgIGhlYWRlcnM6IHsNCiAgICAgICAgICAgICAgICAnQ29udGVudC1UeXBlJzogJ2FwcGxpY2F0aW9uL2pzb24nDQogICAgICAgICAgICB9LA0KICAgICAgICAgICAgYm9keTogSlNPTi5zdHJpbmdpZnkoYW5zd2VycykNCiAgICAgICAgfSkudGhlbihyZXNwb25zZSA9PiByZXNwb25zZS50ZXh0KCkpDQogICAgICAgIC50aGVuKGh0bWwgPT4gIHsNCiAgICAgICAgICAgIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoIiNwcm9maWxlciIpLmlubmVySFRNTCA9ICBodG1sOw0KICAgICAgICAgICAgZG9jdW1lbnQucXVlcnlTZWxlY3RvcigiI3Byb2ZpbGVyIikucXVlcnlTZWxlY3RvckFsbCgic2NyaXB0IikuZm9yRWFjaChzID0+IHsNCiAgICAgICAgICAgICAgICBsZXQgc3JjID0gcy5nZXRBdHRyaWJ1dGUoInNyYyIpDQogICAgICAgICAgICAgICAgbGV0IHNjcmlwdCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoImJvZHkiKS5hcHBlbmRDaGlsZChkb2N1bWVudC5jcmVhdGVFbGVtZW50KCJzY3JpcHQiKSk7DQogICAgICAgICAgICAgICAgc2NyaXB0LnNldEF0dHJpYnV0ZSgic3JjIiwgc3JjKQ0KICAgICAgICAgICAgICAgIHMucmVtb3ZlKCk7DQogICAgICAgICAgICB9KQ0KICAgICAgICB9KQ0KICAgIH0p"></script>
