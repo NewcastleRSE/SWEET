@@ -1,3 +1,7 @@
+<div class="modal-header">
+    <h5 class="modal-title" id="profilerLabel">Profiler</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
 {% if data['N'] == 'agree' and data['C'] == 'disagree' and data['P'] == 'disagree' %}
 <div class="modal-body">
     <p>Great to hear that you are getting on with your hormone therapy. We will check in with you again in the next few months. You can also access these questions at any time in the Managing HT home page. In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within Managing HT. Alternatively you can speak to your breast cancer team or your GP.</p>
@@ -6,9 +10,8 @@
     <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
 </div>
 {% else %}
-
-<form id="prof-p2">
-    <div class="modal-body">
+ <div class="modal-body">
+    <form id="prof-p2">
         <p>We'd like to ask you for a bit more detail: please let us know if you agree or disagree with the following statements.</p>
         <table class="table table-borderless">
             <thead>
@@ -84,11 +87,11 @@
                 </tr>
             </tbody>
         </table>
-    </div>
-    <div class="modal-footer">
-        <button type="button" id="prof-p1-previous" class="btn">Previous</button>
-        <button type="submit" id="prof-p1-submit" class="btn btn-primary">Confirm</button>
-    </div>
-</form>
-<script src="data:application/javascript;base64,ZG9jdW1lbnQucXVlcnlTZWxlY3RvcigiI3Byb2YtcDIiKS5hZGRFdmVudExpc3RlbmVyKCJzdWJtaXQiLCBlID0+IHsKICAgIGUucHJldmVudERlZmF1bHQoKTsgZS5zdG9wUHJvcGFnYXRpb24oKTsKICAgIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoIiNwcm9maWxlciIpLmlubmVySFRNTCA9IGAKICAgICAgICA8ZGl2IGNsYXNzPSJtb2RhbC1ib2R5Ij4KICAgICAgICAgICAgPHA+QmFzZWQgb24geW91ciByZXNwb25zZXMsIHdl4oCZdmUgc2VsZWN0ZWQgYSBzZXJpZXMgb2YgdG9waWNzIHdoaWNoIGFyZSB0YWlsb3JlZCB0byB5b3VyIGNvbmNlcm5zIC8gcXVlc3Rpb25zLjwvcD4KICAgICAgICAgICAgPHA+WW91IGNhbiByZWFkIHRoZXNlIG5vdyBvciBzYXZlIHRoZW0gYW5kIGNvbWUgYmFjayB0byB0aGVtIGxhdGVyLiBXZSBob3BlIHRoZXNlIHdpbGwgYmUgaGVscGZ1bCBmb3IgeW91LjwvcD4KICAgICAgICAgICAgPHA+V2XigJlsbCBjaGVjayBpbiBhZ2FpbiBpbiBhIGZldyBtb250aHMuIEluIHRoZSBtZWFudGltZSwgaWYgeW91IGhhdmUgYW55IGNvbmNlcm5zIG9yIGRpZmZpY3VsdGllcywgeW91IGNhbiBmaW5kIGxvdHMgb2YgdXNlZnVsIGluZm9ybWF0aW9uIGFuZCBoZWxwZnVsIHRpcHMgd2l0aGluIE1hbmFnaW5nIEhULiBBbHRlcm5hdGl2ZWx5IHlvdSBjYW4gc3BlYWsgdG8geW91ciBicmVhc3QgY2FuY2VyIHRlYW0gb3IgeW91ciBHUC48L3A+CiAgICAgICAgICAgIDxwPkNsaWNrIG9uIGFueSBvZiB0aGUgYmVsb3cgbGlua3MgdG8gZmluZCBvdXQgbW9yZS48L3A+CiAgICAgICAgICAgIDx1bD4ke0FycmF5LmZyb20oZS50YXJnZXQuZWxlbWVudHNbJ2FncmVlJ10pLmZpbHRlcihjID0+IGMuY2hlY2tlZCkubWFwKGMgPT4gIjxsaT5MaW5rIGZvciBxdWVzdGlvbiAiICsgYy52YWx1ZSArICI8L2xpPiIpLmpvaW4oIiIpfTwvdWw+CiAgICAgICAgPC9kaXY+CiAgICAgICAgPGRpdiBjbGFzcz0ibW9kYWwtZm9vdGVyIj4KICAgICAgICA8YnV0dG9uIHR5cGU9ImJ1dHRvbiIgY2xhc3M9ImJ0biBidG4tcHJpbWFyeSIgaWQ9InByb2YtZmluaXNoIiBkYXRhLWJzLWRpc21pc3M9Im1vZGFsIj5GaW5pc2g8L2J1dHRvbj4KICAgICAgICA8L2Rpdj4KICAgIGAKICAgIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoIiNwcm9mLWZpbmlzaCIpLmFkZEV2ZW50TGlzdGVuZXIoImNsaWNrIiwgZSA9PiB7CiAgICAgICAgZS5zdG9wUHJvcGFnYXRpb24oKTsKICAgICAgICBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKCIjcHJvZmlsZXIiKS5pbm5lckhUTUwgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKCIjcHJvZmlsZXIiKS5vcmlnaW5hbEhUTUw7CiAgICAgICAgaW5pdF9wcm9maWxlcigpOwogICAgfSkKfSk="></script>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" id="prof-p1-previous" class="btn">Previous</button>
+    <button type="submit" id="prof-p1-submit" class="btn btn-primary" form="prof-p2">Confirm</button>
+</div>
+<script src="data:application/javascript;base64,ZG9jdW1lbnQucXVlcnlTZWxlY3RvcigiI3Byb2YtcDIiKS5hZGRFdmVudExpc3RlbmVyKCJzdWJtaXQiLCBlID0+IHsKICAgIGUucHJldmVudERlZmF1bHQoKTsgZS5zdG9wUHJvcGFnYXRpb24oKTsKICAgIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoIiNwcm9maWxlciIpLmlubmVySFRNTCA9IGAKICAgICAgICA8ZGl2IGNsYXNzPSJtb2RhbC1oZWFkZXIiPgogICAgICAgICAgICA8aDUgY2xhc3M9Im1vZGFsLXRpdGxlIiBpZD0icHJvZmlsZXJMYWJlbCI+UHJvZmlsZXI8L2g1PgogICAgICAgICAgICA8YnV0dG9uIHR5cGU9ImJ1dHRvbiIgY2xhc3M9ImJ0bi1jbG9zZSIgZGF0YS1icy1kaXNtaXNzPSJtb2RhbCIgYXJpYS1sYWJlbD0iQ2xvc2UiPjwvYnV0dG9uPgogICAgICAgIDwvZGl2PgogICAgICAgIDxkaXYgY2xhc3M9Im1vZGFsLWJvZHkiPgogICAgICAgICAgICA8cD5CYXNlZCBvbiB5b3VyIHJlc3BvbnNlcywgd2XigJl2ZSBzZWxlY3RlZCBhIHNlcmllcyBvZiB0b3BpY3Mgd2hpY2ggYXJlIHRhaWxvcmVkIHRvIHlvdXIgY29uY2VybnMgLyBxdWVzdGlvbnMuPC9wPgogICAgICAgICAgICA8cD5Zb3UgY2FuIHJlYWQgdGhlc2Ugbm93IG9yIHNhdmUgdGhlbSBhbmQgY29tZSBiYWNrIHRvIHRoZW0gbGF0ZXIuIFdlIGhvcGUgdGhlc2Ugd2lsbCBiZSBoZWxwZnVsIGZvciB5b3UuPC9wPgogICAgICAgICAgICA8cD5XZeKAmWxsIGNoZWNrIGluIGFnYWluIGluIGEgZmV3IG1vbnRocy4gSW4gdGhlIG1lYW50aW1lLCBpZiB5b3UgaGF2ZSBhbnkgY29uY2VybnMgb3IgZGlmZmljdWx0aWVzLCB5b3UgY2FuIGZpbmQgbG90cyBvZiB1c2VmdWwgaW5mb3JtYXRpb24gYW5kIGhlbHBmdWwgdGlwcyB3aXRoaW4gTWFuYWdpbmcgSFQuIEFsdGVybmF0aXZlbHkgeW91IGNhbiBzcGVhayB0byB5b3VyIGJyZWFzdCBjYW5jZXIgdGVhbSBvciB5b3VyIEdQLjwvcD4KICAgICAgICAgICAgPHA+Q2xpY2sgb24gYW55IG9mIHRoZSBiZWxvdyBsaW5rcyB0byBmaW5kIG91dCBtb3JlLjwvcD4KICAgICAgICAgICAgPHVsPiR7QXJyYXkuZnJvbShlLnRhcmdldC5lbGVtZW50c1snYWdyZWUnXSkuZmlsdGVyKGMgPT4gYy5jaGVja2VkKS5tYXAoYyA9PiAiPGxpPkxpbmsgZm9yIHF1ZXN0aW9uICIgKyBjLnZhbHVlICsgIjwvbGk+Iikuam9pbigiIil9PC91bD4KICAgICAgICA8L2Rpdj4KICAgICAgICA8ZGl2IGNsYXNzPSJtb2RhbC1mb290ZXIiPgogICAgICAgIDxidXR0b24gdHlwZT0iYnV0dG9uIiBjbGFzcz0iYnRuIGJ0bi1wcmltYXJ5IiBpZD0icHJvZi1maW5pc2giIGRhdGEtYnMtZGlzbWlzcz0ibW9kYWwiPkZpbmlzaDwvYnV0dG9uPgogICAgICAgIDwvZGl2PgogICAgYAogICAgZG9jdW1lbnQucXVlcnlTZWxlY3RvcigiI3Byb2YtZmluaXNoIikuYWRkRXZlbnRMaXN0ZW5lcigiY2xpY2siLCBlID0+IHsKICAgICAgICBlLnN0b3BQcm9wYWdhdGlvbigpOwogICAgICAgIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoIiNwcm9maWxlciIpLmlubmVySFRNTCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoIiNwcm9maWxlciIpLm9yaWdpbmFsSFRNTDsKICAgICAgICBpbml0X3Byb2ZpbGVyKCk7CiAgICB9KQp9KQ=="></script>
 {% endif %}
