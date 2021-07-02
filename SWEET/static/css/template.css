@@ -1,10 +1,10 @@
-a {
+p a {
     color: #633188;
     font-weight: bold;
     text-decoration: none;
 }
 
-a:hover {
+p a:hover {
     color: inherit;
     text-decoration: underline;
 }
