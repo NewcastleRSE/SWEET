@@ -108,6 +108,9 @@ def create_app():
         
         return {"status": "error", "message": "Login required"}, 403
 
+
+
+    ## SCHEMAS:
     @app.route("/app/schemas/goals/activity")
     def getActivityGoalSchema():
         if "user" in session:
@@ -118,6 +121,38 @@ def create_app():
             }
 
         return {"status": "error", "message": "Login required"}, 403
+
+    @app.route("/app/schemas/sideeffects")
+    def getSideEffectTypes():
+        if "user" in session:
+            return {
+                "types": [
+                    { "name": "hf", "description": "Hot Flush"},
+                    { "name": "arth", "description": "Arthralgia (joint pain)"},
+                    { "name": "ftg", "description": "Fatigue"}
+                ]
+            }
+        return {"status": "error", "message": "Login required"}, 403
+
+    @app.route("/app/schemas/sideeffects/<name>")
+    def getSideEffectDetails(name):
+        if "user" in session:
+            return {
+                "hf": {
+                    "title": "Hot Flushes",
+                    "embedtext": "hot flushes",
+                    "frequency": "day"
+                },
+                "arth": {
+                    "title": "Arthralgia (Joint Pain)",
+                    "embedtext": "joint pains",
+                    "frequency": "week"
+                }
+            }[name]
+        
+        return {"status": "error", "message": "Login required"}, 403
+
+    
 
     @app.route("/app/mygoals")
     def getAllUserGoals():
@@ -165,6 +200,38 @@ def create_app():
 
         return {"status": "error", "message": "Login required"}, 403
     
+    @app.route("/app/mydiary")
+    def getDiary():
+        return { "sideeffects": [], "reminders": [], "adherence": [], "notes": []}
+
+    @app.route("/app/mydiary/sideeffects/<setype>")
+    def getSideEffects(setype):
+        if "user" in session:
+            user = data.getLoggedInUser(session["user"])
+            if user is None:
+                return redirect(url_for("logout"))
+
+            return data.getSideEffects(user, setype)
+
+        return {"status": "error", "message": "Login required"}, 403
+
+    @app.route("/app/mydiary/sideeffects/", methods=["POST"])
+    def addOrUpdateSideEffect():
+        if "user"in session:
+            user = data.getLoggedInUser(session['user'])
+            if user is None:
+                return {"status": "error", "message": "Valid login required"}, 403
+
+            if request.is_json:
+                se = request.json
+                data.recordSideEffect(user, se)
+
+                return {"status": "OK", "message": "Update complete"}
+
+            return {"status": "error", "message": "Update request sent without json"}, 400
+
+        return {"status": "error", "message": "Login required"}, 403
+
     # content management
     @app.route("/edit")
     def edit():

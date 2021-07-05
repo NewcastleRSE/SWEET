@@ -43,6 +43,104 @@ async function loadSection(path) {
     return { "title": section.title, "content": section.content, "tree": tree};
 }
 
+const calendarutils = {
+    monthnames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    attributise: (d) => `${d.getFullYear()}-${d.getMonth()<9?"0":""}${d.getMonth()+1}-${d.getDate()<10?"0":""}${d.getDate()}`
+}
+
+
+function populateDays(body, basedate=new Date()) {
+    let months31 = [0,2,4,6,7,9,11]; // Jan, Mar, May, Jul, Aug, Oct, Dec
+    let day1 = new Date(basedate.getFullYear(), basedate.getMonth());
+    
+    // set rows required to fit current month: 
+    // 5 unless 
+    //   * 1st is a Sun & it's not Feb
+    //   * 1st is a Sat & month has 31 days
+    let rows = 5;
+    if ((day1.getDay() == 0 && day1.getMonth() != 1) || (day1.getDay() == 6 && months31.includes(basedate.getMonth()))) rows = 6;
+
+    // If the 1st isn't a Monday, start the calendar on the Monday before it;
+    if (day1.getDay() != 1) {
+        let countback = day1.getDay() == 0? 6: day1.getDay() - 1;
+        day1.setDate(day1.getDate() - countback);
+    }
+    
+    body.innerHTML = "";
+    for (let w=0; w<rows; w++) {
+        let row = body.appendChild(document.createElement("tr"));
+        for (let d of [0,1,2,3,4,5,6]) {
+            let days = 7*w+d;
+            let thisdate = new Date(day1.getFullYear(), day1.getMonth(), day1.getDate() + days);
+            let cell = row.appendChild(document.createElement("td"));
+            cell.setAttribute("data-thisdate", calendarutils.attributise(thisdate));
+        }
+    }
+}
+
+function populateMonths(body) {
+    body.innerHTML = "";
+    let months = [["Jan", "Feb", "Mar", "Apr"], ["May", "Jun", "Jul", "Aug"], ["Sep", "Oct", "Nov", "Dec"]]
+    for (let block of months) {
+        let row = body.appendChild(document.createElement("tr"));
+        for (let month of block) {
+            let cell = row.appendChild(document.createElement("td"));
+            cell.setAttribute("data-thismonth", month);
+            cell.textContent = month;
+        }
+    }
+}
+
+function render_calendar(selectedDate=new Date()) {
+    let cal = document.createElement("table");
+    cal.classList.add("calendar");
+
+    let caption = cal.appendChild(document.createElement("caption"));
+    caption.innerHTML = `<section><span class="prev">&lt;</span> <span id="cal-caption" data-basedate="${calendarutils.attributise(selectedDate)}">${calendarutils.monthnames[selectedDate.getMonth()]}</span><span class="next">&gt;</span></section>`;
+    let tbody = cal.appendChild(document.createElement("tbody"));
+    tbody.dataset.mode = "normal";
+    populateDays(tbody, selectedDate);
+    cal.querySelector(`[data-thisdate='${calendarutils.attributise(selectedDate)}']`).classList.add("selected");
+    
+    // prevent calendar from receiving focus:
+    cal.addEventListener("mousedown", e => e.preventDefault());
+
+    cal.addEventListener("click", e => {
+        src = e.target;
+
+        if (src.matches("caption span, caption span *")) {
+            e.preventDefault(); e.stopPropagation();
+
+            // click on span within caption: get the span to determine action:
+            while (src.tagName != "SPAN") {
+                src = src.parentElement;
+            }
+
+            if (src.hasAttribute("id")) {
+                // must be the month header, as prev & next don't get assigned ID
+                // replace calendar body with months display
+                // <awaiting implementation of new month selector below> populateMonths(c.querySelector("tbody"));
+            } else {
+                let dir = src.classList.contains("prev")? -1: src.classList.contains("next")? 1: 0;
+                
+                // no id, no prev/next class, someone's been messing with the code!
+                if (dir == 0) throw `Unknown span in calendar caption: ${src}`;
+
+                let basedate = new Date(cal.querySelector("#cal-caption").dataset.basedate + "T12:00:00Z");
+                basedate.setMonth(basedate.getMonth() + dir);
+                populateDays(cal.querySelector("tbody"), basedate);
+
+                cal.querySelector("#cal-caption").textContent = `${calendarutils.monthnames[basedate.getMonth()]} ${basedate.getFullYear()}`;
+                cal.querySelector("#cal-caption").dataset.basedate = calendarutils.attributise(basedate);
+
+                cal.dispatchEvent(new CustomEvent("redraw"));
+            }
+        }
+    })
+
+    return cal;
+}
+
 function render(section, acc_level = 3) {
     if (section.type == "container") {
         const holder = document.createElement("section");
@@ -526,6 +624,8 @@ function render_form(section, holder) {
 
 function render_goals(section) {
     let holder = document.createElement("section");
+    holder.classList.add("goalsetter");
+
     let isodate = function(d) { return d.toISOString().substr(0,10) }
 
     let newgoaltemplate = "<h1 class='newgoal'>Set A New Goal</h1>";
@@ -549,10 +649,20 @@ function render_goals(section) {
             let daysinput = schema.frequency.map(f => `<input type="radio" name="frequency" id="frequency-${f}" value="${f}"><label for="frequency-${f}">${f}</label>`).join("");
             let minutesinput = schema.duration.map(f => `<input type="radio" name="duration" id="duration-${f}" value="${f}"><label for="duration-${f}">${f}</label>`).join("");
             
-            form.appendChild(document.createElement("p")).innerHTML = "I will do some <input type='text' name='activity' list='activity' placeholder='choose an activity or type your own'> this week.";
-            form.appendChild(document.createElement("p")).innerHTML = `I will do it on ${daysinput} days.`;
-            form.appendChild(document.createElement("p")).innerHTML = `I will do it for ${minutesinput} minutes each day.`;
+            let fields = form.appendChild(document.createElement("section"));
+            fields.appendChild(document.createElement("p")).innerHTML = "I will do some <input type='text' name='activity' list='activity' placeholder='choose an activity or type your own'> this week.";
+            fields.appendChild(document.createElement("p")).innerHTML = `I will do it on ${daysinput} days.`;
+            fields.appendChild(document.createElement("p")).innerHTML = `I will do it for <input name='dur_oth' type='number' placeholder='' min='0' max='120'> minutes each day.`;
             form.insertAdjacentHTML("beforeend", '<p><input type="submit" value="Next" /><button name="cancel">Cancel</button></p>')
+            form.querySelector("[name='dur_oth']").addEventListener("input", e => {
+                form.querySelectorAll("[name='duration']:checked").forEach(r => r.checked = false);
+            })
+            form.querySelectorAll("[name='duration']").forEach(r => r.addEventListener("change", e => {
+                if (e.target.checked) {
+                    form.querySelector("[name='dur_oth']").value = "";
+                }
+            })
+            )
             form.querySelector("button").addEventListener("click", e => {
                 e.stopPropagation(); e.preventDefault();
                 this.innerHTML = newgoaltemplate;
@@ -571,11 +681,9 @@ function render_goals(section) {
                     reviewDate: isodate(((d) => { d.setDate(d.getDate()+7); return d;})(new Date())),
                     detail: form.elements['activity'].value,
                     days: form.elements['frequency'].value,
-                    minutes: form.elements['duration'].value,
+                    minutes: form.elements['dur_oth'].value,
 
                 }
-
-                console.log(goal);
 
                 this.innerHTML = `
                 <h3>You're ready to set a new goal for the next week!</h3>
@@ -649,16 +757,16 @@ function render_goals(section) {
 
             let summary = outer.appendChild(document.createElement("label"));
             summary.classList.add("goal-summary");
-            summary.innerHTML = `My goal: to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.`;
+            summary.innerHTML = `<section><strong>My goal:</strong><br />to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.`;
 
             if (goal.reviewDate <= today) {
                 outer.classList.add("review");
                 
                 // create a review button
-                let review = outer.appendChild(document.createElement("button"));
+                let review = outer.appendChild(document.createElement("h3"));
                 review.classList.add("goal-review");
                 review.textContent = "Review this goal";
-                review.addEventListener("click", e => {
+                outer.addEventListener("click", function outerclick(e) {
                     e.stopPropagation();
                     outer.classList.add("popover");
                     document.querySelector("#modal-cover").classList.add("show");
@@ -703,11 +811,12 @@ function render_goals(section) {
                             document.querySelector("#modal-cover").classList.add("show");
                         })
                     })
+                    outer.removeEventListener("click", outerclick);
                 })
             } else {
                 outer.classList.add("active");
                 // show the review date:
-                let reviewdate = outer.appendChild(document.createElement("span"));
+                let reviewdate = outer.appendChild(document.createElement("h4"));
                 reviewdate.classList.add("goal-date");
                 reviewdate.textContent = `Review on: ${new Date(Date.parse(goal.reviewDate)).toLocaleDateString()}`;
             }
@@ -726,4 +835,173 @@ function render_goals(section) {
     })
 
     return holder;
+}
+
+function render_sepicker() {
+    let holder = document.body.appendChild(document.createElement("div"));
+    holder.classList.add("popover")
+    holder.classList.add("side-effect")
+    document.querySelector("#modal-cover").classList.add("show");
+    holder.innerHTML = `<h3>Record your Side Effects</h3>
+    <select name="setype"><option>Please select a side-effect to continue...</option></select>
+    <button id="se-close">Close</button>
+    `
+    fetch("/app/schemas/sideeffects")
+    .then(response => response.json())
+    .then(schemas => {
+        const s = holder.querySelector("[name='setype']");
+        schemas.types.forEach(t => {
+            s.insertAdjacentHTML("beforeend", `<option value="${t.name}">${t.description}</option>`)
+        });
+
+        s.addEventListener("change", e => {
+            e.stopPropagation();
+            while(s.nextSibling) s.nextSibling.remove();
+            holder.appendChild(render_se({type: s.value}))
+        })
+    })
+}
+function render_se(section) {
+    let form = document.createElement("form")
+    form.setAttribute("id", `se-${section.type}-details`);
+    
+    fetch(`/app/schemas/sideeffects/${section.type}`)
+    .then(response => response.json())
+    .then(schema => {
+        form.innerHTML =  `
+            <h4>Recording your ${schema.title}</h4>
+            <section>
+            <label for="date"> Which ${ schema.frequency } do you wish to record for?</label><span id="dateinput"></span><br />
+            <label for="frequency">How frequent were your ${ schema.embedtext }?</label><span><input type="number" id="frequency" name="frequency"> per ${ schema.frequency }</span><br />
+            <label for="severity">How bad were your ${ schema.embedtext }?</label><span id="severityinput"></span>
+            <label for="impact">How much did your ${ schema.embedtext } impact your daily life?</label><span id="impactinput"></span>
+            <label for="notes">Notes: <span class="sidenote">You can use this box to record further details, e.g. the times of day, triggers, things you tried to help</span></label><br />
+            <span id="notesinput"><textarea name="notes" id="notes" cols="80" rows="10"></textarea></span>
+            </section>
+            <input type="submit" value="Save details"><button type="button" id="se-form-cancel">Close without saving</button>
+        `
+
+        form.querySelector("#severityinput").innerHTML = (() => {
+            let opts = [];
+            for (let opt of ["mild", "moderate", "severe"]) {
+                opts.push(`<input type="radio" class="hidden" id="severity-${opt}" name="severity" value="${opt}"><label for="severity-${opt}">${opt}</label>`)
+            }
+            return opts.join("");
+        })();
+
+        form.querySelector("#impactinput").innerHTML = (() => {
+            let opts = [];
+            for (let opt of ["a little", "moderately", "a lot"]) {
+                opts.push(`<input type="radio" class="hidden" id="impact-${opt}" name="impact" value="${opt}"><label for="impact-${opt}">${opt}</label>`)
+            }
+            return opts.join("");
+        })();
+
+
+        form.querySelector("#dateinput").append(...(() => {
+            let d = document.createElement("input");
+            d.setAttribute("type", "text");
+            d.setAttribute("readonly", "");
+            d.classList.add("datetext");
+            d.setAttribute("name", "date")
+
+            let c = render_calendar();
+            c.classList.add(schema.frequency);
+
+            c.addEventListener("redraw", e => {
+                c.querySelectorAll("td").forEach(td => {
+                    td.textContent = td.dataset.thisdate.substring(8)
+                    if (td.dataset.thisdate.substring(0,7) != c.querySelector("#cal-caption").dataset.basedate.substring(0,7)) {
+                        td.classList.add("faded");
+                    }
+                })
+            })
+
+            c.dispatchEvent(new CustomEvent("redraw"));
+
+            if (schema.frequency == "week") {
+                c.querySelector("td.selected").parentElement.classList.add("selected");
+                c.querySelector("td.selected").classList.remove("selected");
+            }
+            // preventing default on mousedown will stop clicking on the calendar taking focus away from 
+            // the text input, allowing us to respond to its focus status for styling.
+            c.addEventListener("click", e => {
+
+                src = e.target;
+                
+                if (src.matches("tbody *") && c.querySelector("tbody").dataset.mode == "select") {
+                    e.preventDefault(); e.stopPropagation();
+                    // click on table should select day or week based on schema,
+
+                    // first remove any existing selection:
+                    c.querySelectorAll(".selected").forEach(e => e.classList.remove("selected"))
+                    
+                    // select the apppropriate row or cell and update the input dataset and value;
+                    // the dataset values will be submitted via fetch/json while the value will be
+                    // visible to the user.
+                    if (schema.frequency == "week") {
+                        while (src.tagName != "TR") src = src.parentElement;
+
+                        src.classList.add("selected");
+                        d.dataset.datefrom = src.querySelector("td").dataset.thisdate;
+                        d.dataset.dateto = Array.from(src.querySelectorAll("td"), td => td.dataset.thisdate).filter((e,i,a) => i == a.length -1).join("");
+                        d.value = `${new Date(d.dataset.datefrom).toLocaleDateString()} to ${new Date(d.dataset.dateto).toLocaleDateString()}`;
+                        d.blur();
+                    } else {
+                        while (src.tagName != "TD") src= src.parentElement;
+                        src.classList.add("selected");
+
+                        d.dataset.date = src.dataset.thisdate;
+                        d.value = new Date(src.dataset.thisdate).toLocaleDateString();
+                        d.blur();
+                    }
+                }
+            })
+
+
+            return [d,c];
+        })())
+
+        form.querySelector("#se-form-cancel").addEventListener("click", e => {
+            form.parentElement.remove();
+            document.querySelector("#modal-cover").classList.remove("show");
+            return false;
+        })
+    
+        // fetch already completed inputs and set up datpicker validation
+        fetch(`/app/mydiary/sideeffects/${section.type}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+        })
+    })
+
+    form.addEventListener("submit", e => {
+        e.preventDefault(); e.stopPropagation();
+
+        let sideeffect = {
+            type: section.type,
+            datefrom: form.elements['date'].dataset.date? form.elements['date'].dataset.date: form.elements['date'].dataset.datefrom,
+            dateto: form.elements['date'].dataset.date? form.elements['date'].dataset.date: form.elements['date'].dataset.dateto,
+            frequency: form.elements['frequency'].value,
+            severity: form.elements['severity'].value,
+            impact: form.elements['impact'].value,
+            notes: form.elements['notes'].value
+        }
+
+        fetch("/app/mydiary/sideeffects/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(sideeffect)
+        }).then(() => {
+            form.parentElement.remove();
+            document.querySelector("#modal-cover").classList.remove("show");
+            return false;
+        })
+
+    })
+
+    return form;
 }

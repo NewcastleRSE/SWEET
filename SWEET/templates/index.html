@@ -120,33 +120,44 @@
             init_page();
         })
 
-    function init_profiler() {
-        document.querySelector("#prof-no").addEventListener("click", () => {
-            document.querySelector("#profiler").classList.remove("show");
-            document.querySelector("#modal-cover").classList.remove("show");
+        document.querySelector("#app-buttons button[name='recordSE']").addEventListener("click", e => {
+            e.stopPropagation();
+
+            let se = document.body.appendChild(document.createElement("div"));
+            se.classList.add("popover");
+            document.querySelector("#modal-cover").classList.add("show");
+
+            render_sepicker();
         })
 
-        document.querySelector("#prof-yes").addEventListener("click", () => {
-            let p =  document.querySelector("#profiler")
-            p.originalHTML = p.innerHTML;
-
-            fetch("/app/profiler/", {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json'},
-                body: JSON.stringify({ page: 0})
-            }).then(response => response.text())
-            .then(text => {
-                p.innerHTML = text;
-                p.querySelectorAll("script").forEach(s => {
-                    let src = s.getAttribute("src")
-                    let script = document.querySelector("body").appendChild(document.createElement("script"));
-                    script.setAttribute("src", src)
-                    s.remove();
-                })
-            
+        function init_profiler() {
+            document.querySelector("#prof-no").addEventListener("click", () => {
+                document.querySelector("#profiler").classList.remove("show");
+                document.querySelector("#modal-cover").classList.remove("show");
             })
-        })
-    }
+
+            document.querySelector("#prof-yes").addEventListener("click", () => {
+                let p =  document.querySelector("#profiler")
+                p.originalHTML = p.innerHTML;
+
+                fetch("/app/profiler/", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify({ page: 0})
+                }).then(response => response.text())
+                .then(text => {
+                    p.innerHTML = text;
+                    p.querySelectorAll("script").forEach(s => {
+                        let src = s.getAttribute("src")
+                        let script = document.querySelector("body").appendChild(document.createElement("script"));
+                        script.setAttribute("src", src)
+                        s.remove();
+                    })
+                
+                })
+            })
+        }
+
         document.querySelector("a[href='#profile']").classList.add("highlight");
         document.querySelector("a[href='#profile']").addEventListener("click", e => { 
             document.querySelector('#profiler').classList.toggle('show'); 
