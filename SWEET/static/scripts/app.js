@@ -98,7 +98,7 @@ function render_calendar(selectedDate=new Date()) {
     let caption = cal.appendChild(document.createElement("caption"));
     caption.innerHTML = `<section><span class="prev">&lt;</span> <span id="cal-caption" data-basedate="${calendarutils.attributise(selectedDate)}">${calendarutils.monthnames[selectedDate.getMonth()]}</span><span class="next">&gt;</span></section>`;
     let tbody = cal.appendChild(document.createElement("tbody"));
-    tbody.dataset.mode = "normal";
+    tbody.dataset.mode = "select";
     populateDays(tbody, selectedDate);
     cal.querySelector(`[data-thisdate='${calendarutils.attributise(selectedDate)}']`).classList.add("selected");
     
@@ -106,10 +106,12 @@ function render_calendar(selectedDate=new Date()) {
     cal.addEventListener("mousedown", e => e.preventDefault());
 
     cal.addEventListener("click", e => {
+        if (tbody.dataset.mode != "select") e.stopImmediatePropagation();
+
         src = e.target;
 
         if (src.matches("caption span, caption span *")) {
-            e.preventDefault(); e.stopPropagation();
+            e.stopPropagation();
 
             // click on span within caption: get the span to determine action:
             while (src.tagName != "SPAN") {
@@ -928,13 +930,12 @@ function render_se(section) {
                 c.querySelector("td.selected").parentElement.classList.add("selected");
                 c.querySelector("td.selected").classList.remove("selected");
             }
-            // preventing default on mousedown will stop clicking on the calendar taking focus away from 
-            // the text input, allowing us to respond to its focus status for styling.
+
             c.addEventListener("click", e => {
 
                 src = e.target;
                 
-                if (src.matches("tbody *") && c.querySelector("tbody").dataset.mode == "select") {
+                if (src.matches("tbody *")) {
                     e.preventDefault(); e.stopPropagation();
                     // click on table should select day or week based on schema,
 
