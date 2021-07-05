@@ -596,7 +596,9 @@ label:hover span.sidenote {
     color: #e3e3e0;
 }
 
-
+input[type='number'] {
+    max-width: 3em;
+}
 /*
 @media screen and (min-width: 1400px) {
     #main-container nav > a {

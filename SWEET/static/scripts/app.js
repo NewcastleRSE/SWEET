@@ -844,8 +844,13 @@ function render_sepicker() {
     document.querySelector("#modal-cover").classList.add("show");
     holder.innerHTML = `<h3>Record your Side Effects</h3>
     <select name="setype"><option>Please select a side-effect to continue...</option></select>
-    <button id="se-close">Close</button>
+    <button id="se-close">Cancel</button>
     `
+
+    holder.querySelector("#se-close").addEventListener("click", e => {
+        holder.remove();
+        document.querySelector("#modal-cover").classList.remove("show");
+    })
     fetch("/app/schemas/sideeffects")
     .then(response => response.json())
     .then(schemas => {
@@ -872,7 +877,7 @@ function render_se(section) {
             <h4>Recording your ${schema.title}</h4>
             <section>
             <label for="date"> Which ${ schema.frequency } do you wish to record for?</label><span id="dateinput"></span><br />
-            <label for="frequency">How frequent were your ${ schema.embedtext }?</label><span><input type="number" id="frequency" name="frequency"> per ${ schema.frequency }</span><br />
+            <label for="frequency">How frequent were your ${ schema.embedtext }?</label><span><input type="number" id="frequency" name="frequency"> ${ schema.frequency == "week"? `days per week`: `${ schema.embedtext} per day` }</span><br />
             <label for="severity">How bad were your ${ schema.embedtext }?</label><span id="severityinput"></span>
             <label for="impact">How much did your ${ schema.embedtext } impact your daily life?</label><span id="impactinput"></span>
             <label for="notes">Notes: <span class="sidenote">You can use this box to record further details, e.g. the times of day, triggers, things you tried to help</span></label><br />
