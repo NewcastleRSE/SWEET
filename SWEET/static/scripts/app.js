@@ -565,11 +565,11 @@ function render_goals(section) {
     holder.setAttribute("class", "row row-cols-1 row-cols-md-3 g-3 mt-3")
     let isodate = function(d) { return d.toISOString().substr(0,10) }
 
-    let newgoaltemplate = `<div class="col"><a class="card goal unset text-center shadow" href="" data-bs-toggle="modal" data-bs-target="#setGoalModal">
+    let newgoaltemplate = `<div class="col"><div class="card goal unset text-center shadow">
             <div class="card-body d-flex justify-content-center">
                 <div class="align-self-center">Set a new goal</div>
             </div>
-        </a></div>`;
+        </div></div>`;
 
     let newgoalhandler = function() {
 
@@ -581,10 +581,11 @@ function render_goals(section) {
 
             let goal;
             let submitButton = document.getElementById("goal-yes");
-            let setGoalWrapper = document.getElementById("setGoalWrapper");
+            let goalWrapper = document.getElementById("goalWrapper");
+            document.getElementById("goalLabel").innerHTML = "Set New Goal";
 
-            let form = setGoalWrapper.appendChild(document.createElement("form"));
-            form.setAttribute("id", "setGoal");
+            let form = goalWrapper.appendChild(document.createElement("form"));
+            form.setAttribute("id", "goalContent");
             let list = form.appendChild(document.createElement("datalist"));
             list.setAttribute("id", "activity");
             schema.activity.forEach(i => list.insertAdjacentHTML("beforeend", `<option>${i}</option>`))
@@ -610,7 +611,7 @@ function render_goals(section) {
 
                 console.log(goal);
 
-                document.getElementById("setGoalWrapper").innerHTML = `
+                document.getElementById("goalWrapper").innerHTML = `
                 <h3 class='w-75 mb-5'>You're ready to set a new goal for the next week!</h3>
                 <section>
                 <p>You can always see your goals by clicking <strong>My Goals</strong> on the Being Active homepage.</p>
@@ -634,19 +635,20 @@ function render_goals(section) {
                         if (outcome.status == "error") {
                             document.getElementById("toast-message-type").text("Error");
                             document.getElementById("toast-message").text(`We were not able to save your new goal. ${outcome.message}`);
-                            bootstrap.Modal.getInstance(document.getElementById('setGoalModal')).hide();
+                            bootstrap.Modal.getInstance(document.getElementById('goalModal')).hide();
                             return;
                         }
-                        bootstrap.Modal.getInstance(document.getElementById('setGoalModal')).hide();
-                        setGoalWrapper.innerHTML = "";
+                        bootstrap.Modal.getInstance(document.getElementById('goalModal')).hide();
+                        goalWrapper.innerHTML = "";
 
                     }).catch(e => console.log(e))
                 })
             })
+
+            const modal = new bootstrap.Modal(document.getElementById('goalModal'));
+            modal.show();
         })
     }
-
-    // newgoalhandler();
 
     // get user's active goals
     fetch("/app/mygoals")
@@ -751,7 +753,7 @@ function render_goals(section) {
             outer.classList.add("goal");
             outer.classList.add("new");
             outer.innerHTML = newgoaltemplate;
-            // outer.addEventListener("click", newgoalhandler);
+            outer.addEventListener("click", newgoalhandler);
         } 
     })
 
