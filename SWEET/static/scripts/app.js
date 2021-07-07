@@ -585,6 +585,7 @@ function render_goals(section) {
 
             goalWrapper.innerHTML = "";
             document.getElementById("goalLabel").innerHTML = "Set New Goal";
+            document.getElementById("goal-yes").innerText = "Next";
 
             let form = goalWrapper.appendChild(document.createElement("form"));
             form.setAttribute("id", "goal");
@@ -613,6 +614,7 @@ function render_goals(section) {
 
                 console.log(goal);
 
+                document.getElementById("goal-yes").innerText = "Save";
                 document.getElementById("goalWrapper").innerHTML = `
                 <h3 class='w-75 mb-5'>You're ready to set a new goal for the next week!</h3>
                 <section>
@@ -620,13 +622,7 @@ function render_goals(section) {
                 <p>In one week, you can come back to review your goal and to get a feedback message.</p>
                 <p>You may want to stick a reminder somewhere in your house.</p>
                 <p>Your goal is: to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.</p>
-                </section>
-                <button name="back">Back</button><button name="save">Save</button>`
-                // this.querySelector("[name='back']").addEventListener("click", () => {
-                //     this.innerHTML = "";
-                //     this.appendChild(form);
-                //     goal = undefined;
-                // });
+                </section>`;
                 submitButton.addEventListener("click", () => {
                     fetch("/app/mygoals/", {
                         method: "POST",
