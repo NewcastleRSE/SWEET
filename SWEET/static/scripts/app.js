@@ -145,6 +145,33 @@ function render_calendar(selectedDate=new Date()) {
     return cal;
 }
 
+
+function create_modal() {
+    let modal = new DOMParser().parseFromString(`
+    <div class="modal fade" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+        </div>
+    </div>
+    `, 'text/html').body.firstElementChild;
+
+    modal.$title = modal.querySelector(".modal-title");
+    modal.$body = modal.querySelector(".modal-body");
+    modal.$footer = modal.querySelector(".modal-footer");
+
+    console.log(window.$);
+    return modal;
+}
+
 function render(section, acc_level = 3) {
     if (section.type == "container") {
         const holder = document.createElement("section");
@@ -857,20 +884,24 @@ function render_goals(section) {
     return holder;
 }
 
-function render_sepicker() {
-    let holder = document.body.appendChild(document.createElement("div"));
-    holder.classList.add("popover")
+function render_sepicker($) {
+    let holder = document.body.appendChild(create_modal());
+    $(holder).modal()
+    $(holder).on('hidden.bs.modal', function() {
+        holder.remove();
+    })
     holder.classList.add("side-effect")
-    document.querySelector("#modal-cover").classList.add("show");
-    holder.innerHTML = `<h3>Record your Side Effects</h3>
+
+    holder.$title.textContent = "Record a Side Effect";
+    holder.$body.innerHTML = `
     <select name="setype"><option>Please select a side-effect to continue...</option></select>
-    <button id="se-close">Cancel</button>
     `
+    holder.$footer.innerHTML = "<button id='se-close'>Cancel</button>"
 
     holder.querySelector("#se-close").addEventListener("click", e => {
-        holder.remove();
-        document.querySelector("#modal-cover").classList.remove("show");
+        $(holder).modal('hide');
     })
+
     fetch("/app/schemas/sideeffects")
     .then(response => response.json())
     .then(schemas => {
@@ -882,34 +913,42 @@ function render_sepicker() {
         s.addEventListener("change", e => {
             e.stopPropagation();
             while(s.nextSibling) s.nextSibling.remove();
-            holder.appendChild(render_se({type: s.value}))
+            s.remove();
+            render_se({type: s.value}, holder)
         })
     })
+
+    $(holder).modal('show')
 }
-function render_se(section) {
+
+function render_se(section, holder) {
+
     let form = document.createElement("form")
     form.setAttribute("id", `se-${section.type}-details`);
     
     fetch(`/app/schemas/sideeffects/${section.type}`)
     .then(response => response.json())
     .then(schema => {
+        holder.$title.textContent = `Recording your ${schema.title}`
         form.innerHTML =  `
-            <h4>Recording your ${schema.title}</h4>
             <section>
             <label for="date"> Which ${ schema.frequency } do you wish to record for?</label><span id="dateinput"></span><br />
             <label for="frequency">How frequent were your ${ schema.embedtext }?</label><span><input type="number" id="frequency" name="frequency"> ${ schema.frequency == "week"? `days per week`: `${ schema.embedtext} per day` }</span><br />
             <label for="severity">How bad were your ${ schema.embedtext }?</label><span id="severityinput"></span>
             <label for="impact">How much did your ${ schema.embedtext } impact your daily life?</label><span id="impactinput"></span>
             <label for="notes">Notes: <span class="sidenote">You can use this box to record further details, e.g. the times of day, triggers, things you tried to help</span></label><br />
-            <span id="notesinput"><textarea name="notes" id="notes" cols="80" rows="10"></textarea></span>
+            <span id="notesinput"><textarea name="notes" id="notes" cols="50" rows="5"></textarea></span>
             </section>
-            <input type="submit" value="Save details"><button type="button" id="se-form-cancel">Close without saving</button>
-        `
+            `
+
+        holder.$body.appendChild(form);
+
+        holder.$footer.innerHTML = `<input type="submit" form="${form.getAttribute("id")}" value="Save details"><button type="button" id="se-form-cancel">Cancel</button>`
 
         form.querySelector("#severityinput").innerHTML = (() => {
             let opts = [];
             for (let opt of ["mild", "moderate", "severe"]) {
-                opts.push(`<input type="radio" class="hidden" id="severity-${opt}" name="severity" value="${opt}"><label for="severity-${opt}">${opt}</label>`)
+                opts.push(`<input type="radio" hidden id="severity-${opt}" name="severity" value="${opt}"><label for="severity-${opt}">${opt}</label>`)
             }
             return opts.join("");
         })();
@@ -917,7 +956,7 @@ function render_se(section) {
         form.querySelector("#impactinput").innerHTML = (() => {
             let opts = [];
             for (let opt of ["a little", "moderately", "a lot"]) {
-                opts.push(`<input type="radio" class="hidden" id="impact-${opt}" name="impact" value="${opt}"><label for="impact-${opt}">${opt}</label>`)
+                opts.push(`<input type="radio" hidden id="impact-${opt}" name="impact" value="${opt}"><label for="impact-${opt}">${opt}</label>`)
             }
             return opts.join("");
         })();
@@ -986,10 +1025,8 @@ function render_se(section) {
             return [d,c];
         })())
 
-        form.querySelector("#se-form-cancel").addEventListener("click", e => {
-            form.parentElement.remove();
-            document.querySelector("#modal-cover").classList.remove("show");
-            return false;
+        holder.querySelector("#se-form-cancel").addEventListener("click", e => {
+            $(holder).modal('hide')
         })
     
         // fetch already completed inputs and set up datpicker validation
@@ -1020,12 +1057,8 @@ function render_se(section) {
             },
             body: JSON.stringify(sideeffect)
         }).then(() => {
-            form.parentElement.remove();
-            document.querySelector("#modal-cover").classList.remove("show");
-            return false;
+            $(holder).modal('hide');
         })
 
     })
-
-    return form;
 }
