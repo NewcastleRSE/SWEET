@@ -227,9 +227,14 @@ section > p, section > h3 {
 }
 
 #main-container section.alert {
-    border: 0.2em solid red;
+    border: 0.2em solid #633188;
     padding: 0.5em;
-    background-color: palegoldenrod;
+    background-color: #f6f6f3;
+}
+
+#main-container section.important {
+    padding: 0.5em;
+    background-color: #e3e3e0;
 }
 
 #main-container section.alert :is(h1, h2, h3, h4, h5, h6) {
