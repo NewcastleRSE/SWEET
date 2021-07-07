@@ -134,6 +134,7 @@ button.accordion-button:not(.collapsed)::after {
 .card.goal.unset {
     min-height: 250px;
     border: 2px dashed lightgray;
+    cursor: pointer;
 }
 
 #goalModal form#goal p {
