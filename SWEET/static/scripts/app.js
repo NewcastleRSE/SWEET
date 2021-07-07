@@ -587,7 +587,7 @@ function render_goals(section) {
             document.getElementById("goalLabel").innerHTML = "Set New Goal";
 
             let form = goalWrapper.appendChild(document.createElement("form"));
-            form.setAttribute("id", "goalContent");
+            form.setAttribute("id", "goal");
             let list = form.appendChild(document.createElement("datalist"));
             list.setAttribute("id", "activity");
             schema.activity.forEach(i => list.insertAdjacentHTML("beforeend", `<option>${i}</option>`))

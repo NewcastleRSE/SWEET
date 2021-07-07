@@ -136,29 +136,29 @@ button.accordion-button:not(.collapsed)::after {
     border: 2px dashed lightgray;
 }
 
-#setGoalModal form#setGoal p {
+#goalModal form#goal p {
     margin-bottom: 3rem;
 }
 
-#setGoalModal input[type=radio] {
+#goalModal input[type=radio] {
     transform: scale(2);
 }
 
-#setGoalModal .form-check-inline .form-check-label {
+#goalModal .form-check-inline .form-check-label {
     position: relative;
     left: -20px;
 }
 
-#setGoalModal .form-check-inline {
+#goalModal .form-check-inline {
     margin-left: 0.5rem;
     margin-right: 0;
 }
 
-#setGoalModal .form-check-inline .form-check-input:checked[type=radio] {
+#goalModal .form-check-inline .form-check-input:checked[type=radio] {
     background-image: none;
 }
 
-#setGoalModal .form-check-inline .form-check-input:checked + .form-check-label {
+#goalModal .form-check-inline .form-check-input:checked + .form-check-label {
     color: #fafafa;
     background-color: #633188;
 }
