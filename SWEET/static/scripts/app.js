@@ -582,6 +582,8 @@ function render_goals(section) {
             let goal;
             let submitButton = document.getElementById("goal-yes");
             let goalWrapper = document.getElementById("goalWrapper");
+
+            goalWrapper.innerHTML = "";
             document.getElementById("goalLabel").innerHTML = "Set New Goal";
 
             let form = goalWrapper.appendChild(document.createElement("form"));
