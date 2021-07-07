@@ -585,7 +585,7 @@ function render_goals(section) {
 
             goalWrapper.innerHTML = "";
             document.getElementById("goalLabel").innerHTML = "Set New Goal";
-            document.getElementById("goal-yes").innerText = "Next";
+            submitButton.innerText = "Next";
 
             let form = goalWrapper.appendChild(document.createElement("form"));
             form.setAttribute("id", "goal");
@@ -690,49 +690,48 @@ function render_goals(section) {
                 review.textContent = "Review this goal";
                 review.addEventListener("click", e => {
                     e.stopPropagation();
-                    outer.classList.add("popover");
-                    document.querySelector("#modal-cover").classList.add("show");
-                    let reviewbox = outer.appendChild(document.createElement("div"));
-                    reviewbox.insertAdjacentHTML("afterbegin", 
-                        `<p>Have you been successful and completed your goal?</p>
-                        <div id="review-box-buttons">
-                            <button value="y">Yes, Totally</button><button value="p">Yes, Partly</button><button value="n">No, not at all</button>
-                        </div>`
-                    );
-                    reviewbox.querySelector("#review-box-buttons").addEventListener("click", e => {
+                    const modal = new bootstrap.Modal(document.getElementById('goalModal'));
+                    
+                    let submitButton = document.getElementById("goal-yes");
+                    let goalWrapper = document.getElementById("goalWrapper");
+
+                    goalWrapper.innerHTML = "";
+                    document.getElementById("goalLabel").innerHTML = "Review Goal";
+                    submitButton.classList.add("d-none")
+
+                    document.getElementById("goalWrapper").innerHTML = `<p>Have you been successful and completed your goal?</p>
+                    <div id="review-box-buttons" class="d-flex justify-content-evenly mt-5 mb-5">
+                        <button class="btn btn-light" value="y">Yes, Totally</button><button class="btn btn-light" value="p">Yes, Partly</button><button class="btn btn-light" value="n">No, not at all</button>
+                    </div>`;
+
+                    goalWrapper.querySelector("#review-box-buttons").addEventListener("click", e => {
                         e.stopPropagation();
                         if (e.target.tagName != "BUTTON") {
                             console.log(e.target); return;
                         }
 
-                        goal.status = "complete"; goal.outcome = e.target.value;
+                        goal.status = "complete";
+                        goal.outcome = e.target.value;
                         fetch("/app/mygoals/", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify(goal)
                         }).then(response => response.json())
                         .then(outcome => {
-                            outer.innerHTML = "";
-                            outer.insertAdjacentHTML("afterbegin", "<h3>Thank you for reviewing your goal</h3>")
-                            let message = outer.appendChild(document.createElement("p"));
-                            message.textContent = outcome.message;
-                            let finish = outer.appendChild(document.createElement("button"));
-                            finish.classList.add("goal-review-finish");
-                            finish.textContent = "Done";
-                            finish.addEventListener("click", e => {
+                            goalWrapper.innerHTML = "<h3 class='text-center mt-5 mb-5'>Thank you for reviewing your goal</h3>";
+                            submitButton.innerText = "Done";
+                            submitButton.classList.remove("d-none");
+                            submitButton.addEventListener("click", e => {
                                 e.stopPropagation();
-                                outer.innerHTML = newgoaltemplate;
-                                outer.addEventListener("click", newgoalhandler);
-                                outer.classList.remove("popover");
-                                document.querySelector("#modal-cover").classList.remove("show");
+                                modal.hide();
                             })
 
                         }).catch(e => {
                             console.log(e);
-                            outer.classList.add("popover");
-                            document.querySelector("#modal-cover").classList.add("show");
                         })
                     })
+
+                    modal.show();
                 })
             } else {
                 goalCard.classList.add("active");
