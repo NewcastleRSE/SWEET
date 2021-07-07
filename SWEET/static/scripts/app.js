@@ -3,6 +3,8 @@ async function init_page() {
 
     const section = await loadSection(path);
 
+    console.log(section);
+
     document.querySelector("title").innerText = document.getElementById("page-title").innerText = section.title;
 
     const breadcrumb = document.getElementById("breadcrumb");
@@ -50,7 +52,8 @@ function render(section, acc_level = 3) {
         return holder;
     } 
     else if (section.type == "menu") {
-        const holder = document.createElement("nav");
+        const holder = document.createElement("div");
+        holder.setAttribute("class", "row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 mt-3");
         holder.addEventListener("click", ce => {
 /*                        var src = ce.target;
                 while(src.tagName.toLowerCase() != "a" && src.parentNode) {
@@ -109,6 +112,8 @@ function render(section, acc_level = 3) {
         return p; 
     } 
     else if (section.type == "block-quote") {
+        const figure = document.createElement("figure");
+        figure.setAttribute("class", "quote ms-4 ps-4");
         const quote = document.createElement("blockquote");
         if (section.source) quote.setAttribute("cite", section.source);
 
@@ -116,41 +121,61 @@ function render(section, acc_level = 3) {
         p.innerText = section.text;
         quote.appendChild(p);
 
+        figure.appendChild(quote);
+
         if (section.citation) {
-            const cite = document.createElement("cite");
+            const cite = document.createElement("figcaption");
+            cite.setAttribute("class", "blockquote-footer mt-2");
             cite.innerText = section.citation;
-            quote.appendChild(cite)
+            figure.appendChild(cite)
         }
 
-        return quote;
+        return figure;
     } 
     else if (section.type == "menu-item") {
-        const holder = document.createElement("a");
-        holder.setAttribute("href", section.link);
+        const holder = document.createElement("div");
+        holder.setAttribute("class", "d-block col");
 
-        const label = document.createElement("label");
+        const card = document.createElement("a");
+        card.setAttribute("class", "d-block card shadow pb-5 h-100");
+        card.setAttribute("href", section.link);
+
+        const cardBody = document.createElement("div");
+        cardBody.setAttribute("class", "card-body");
+
+        const cardTitle = document.createElement("h5");
+        cardTitle.setAttribute("class", "card-title fw-normal");
         if (section.title.indexOf("&") > -1) {
-            label.innerHTML = section.title; // assuming we have & due to html entities
+            cardTitle.innerHTML = section.title; // assuming we have & due to html entities
         } else {
-            label.textContent = section.title;
+            cardTitle.textContent = section.title;
         }
-        holder.appendChild(label);
+        cardBody.appendChild(cardTitle);
+        card.appendChild(cardBody);
+        holder.appendChild(card);
         
         if (section.icon && section.icon != "none") {
             const icon = document.createElement("img");
-            icon.setAttribute("class", "icon")
-            holder.appendChild(icon);
             fetch(`/app/resources/${section.icon}`)
                 .then(response => response.json())
-                .then(resource =>  icon.setAttribute("src", resource.source))
+                .then(resource => {
+                    icon.setAttribute("src", resource.source);
+                    card.style.backgroundImage = "url('" + resource.source + "')"; ;
+                })
         }
         
         return holder;
 
     } 
     else if (section.type == "accordion") {
-        const accordion = document.createElement("section");
-        accordion.classList.add("accordion");
+
+        const randomID =  Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+
+        const accordion = document.createElement("div");
+        accordion.setAttribute("class","accordion mt-4 mb-5");
+        accordion.setAttribute("id", "accordion-" + randomID)
+
+        let index = 0;
 
         section.content.forEach(item => {
             switch (item.type) {
@@ -158,32 +183,43 @@ function render(section, acc_level = 3) {
                     throw `DataError: expected type "accordion-item", received type "${item.type}"`;
                     break;
                 case "accordion-item":
-                    const holder = document.createElement("article");
-                    holder.classList.add("item")
-                    holder.classList.add("closed");
+                    const holder = document.createElement("div");
+                    holder.setAttribute("class", "accordion-item");
 
-                    const header = document.createElement("header");
-                    const heading = document.createElement("h".concat(acc_level))
-                    heading.innerText = item.header;
-                    header.appendChild(heading);
-                    header.addEventListener("click", clk => {
-                        if (holder.classList.contains("closed")) {
-                            accordion.querySelectorAll("article.item").forEach(e => {
-                                e.classList.add("closed")
-                            });
-                            holder.classList.remove("closed"); 
-                            //src.nextSibling.scrollIntoView({ behaviour: "smooth", block: "start"});
-                            //document.querySelector("html").scrollTop -= 120;
-                        } else {
-                            holder.classList.add("closed");
-                        }
-                    })
+                    const header = document.createElement("h2");
+                    header.setAttribute("id", "header-" + index);
+                    header.setAttribute("class", "accordion-header");
+
+                    const headerButton = document.createElement("button");
+                    headerButton.setAttribute("class", "accordion-button collapsed");
+                    headerButton.setAttribute("type", "button");
+                    headerButton.setAttribute("data-bs-toggle", "collapse");
+                    headerButton.setAttribute("data-bs-target", "#collapse-" + randomID + "-" + index);
+                    headerButton.setAttribute("aria-controls", "collapse-" + index);
+                    headerButton.innerText = item.header;
+
+                    header.appendChild(headerButton);
+
+                    const collapse = document.createElement("div");
+                    collapse.setAttribute("id", "collapse-" + randomID + "-" + index);
+                    collapse.setAttribute("class", "accordion-collapse collapse");
+                    collapse.setAttribute("aria-labelledby", "header-" + index);
+                    collapse.setAttribute("data-bs-parent", "#accordion-" + randomID);
+
+                    const body = document.createElement("div");
+                    body.setAttribute("class", "accordion-body");
+
+                    body.appendChild(render({ type: "container", content: item.content}, acc_level + 1))
+
+                    collapse.appendChild(body);
                     holder.appendChild(header);
-                    holder.appendChild(render({ type: "container", content: item.content}, acc_level + 1));
-
+                    holder.appendChild(collapse);
                     accordion.appendChild(holder);
+
                     break;
             }
+
+            index++;
         })
 
         return accordion;
@@ -526,43 +562,45 @@ function render_form(section, holder) {
 
 function render_goals(section) {
     let holder = document.createElement("section");
+    holder.setAttribute("class", "row row-cols-1 row-cols-md-3 g-3 mt-3")
     let isodate = function(d) { return d.toISOString().substr(0,10) }
 
-    let newgoaltemplate = "<h1 class='newgoal'>Set A New Goal</h1>";
-    let newgoalhandler = function(e) {
-        e.preventDefault();
-        this.removeEventListener("click", newgoalhandler);
+    let newgoaltemplate = `<div class="col"><div class="card goal unset text-center shadow">
+            <div class="card-body d-flex justify-content-center">
+                <div class="align-self-center">Set a new goal</div>
+            </div>
+        </div></div>`;
+
+    let newgoalhandler = function() {
 
         // load appropriate schema
         fetch(`/app/schemas/goals/${section.goaltype}`)
         .then(response => response.json())
         .then(schema => {
         // set up form
-            this.classList.add("popover");
-            document.querySelector("#modal-cover").classList.add("show");
-            let goal;
 
-            let form = this.appendChild(document.createElement("form"));
+            let goal;
+            let submitButton = document.getElementById("goal-yes");
+            let goalWrapper = document.getElementById("goalWrapper");
+
+            goalWrapper.innerHTML = "";
+            document.getElementById("goalLabel").innerHTML = "Set New Goal";
+            submitButton.innerText = "Next";
+
+            let form = goalWrapper.appendChild(document.createElement("form"));
+            form.setAttribute("id", "goal");
             let list = form.appendChild(document.createElement("datalist"));
             list.setAttribute("id", "activity");
             schema.activity.forEach(i => list.insertAdjacentHTML("beforeend", `<option>${i}</option>`))
-            let daysinput = schema.frequency.map(f => `<input type="radio" name="frequency" id="frequency-${f}" value="${f}"><label for="frequency-${f}">${f}</label>`).join("");
-            let minutesinput = schema.duration.map(f => `<input type="radio" name="duration" id="duration-${f}" value="${f}"><label for="duration-${f}">${f}</label>`).join("");
+
+            let daysInput = schema.frequency.map(f => `<div class="form-check form-check-inline"><input class="form-check-input" type="radio" name="frequency" id="frequency-${f}" value="${f}"><label class="form-check-label" for="frequency-${f}">${f}</label></div>`).join("");
+   
+            form.appendChild(document.createElement("p")).innerHTML = "I will do some <input class='form-control w-50 d-inline-block' type='text' name='activity' list='activity' placeholder='choose an activity or type your own'> this week.";
+            form.appendChild(document.createElement("p")).innerHTML = `I will do it on &nbsp;${daysInput} days.`;
+            form.appendChild(document.createElement("p")).innerHTML = `I will do it for <input class='form-control w-25 d-inline-block' type='number' name='duration' list='duration'/> minutes each day.`;
+            // form.insertAdjacentHTML("beforeend", '<p><input type="submit" value="Next" /></p>')
             
-            form.appendChild(document.createElement("p")).innerHTML = "I will do some <input type='text' name='activity' list='activity' placeholder='choose an activity or type your own'> this week.";
-            form.appendChild(document.createElement("p")).innerHTML = `I will do it on ${daysinput} days.`;
-            form.appendChild(document.createElement("p")).innerHTML = `I will do it for ${minutesinput} minutes each day.`;
-            form.insertAdjacentHTML("beforeend", '<p><input type="submit" value="Next" /><button name="cancel">Cancel</button></p>')
-            form.querySelector("button").addEventListener("click", e => {
-                e.stopPropagation(); e.preventDefault();
-                this.innerHTML = newgoaltemplate;
-                this.addEventListener("click", newgoalhandler);
-
-                this.classList.remove("popover");
-                document.querySelector("#modal-cover").classList.remove("show");
-
-            })
-            form.addEventListener("submit", e => {
+            submitButton.addEventListener("click", e => {
                 e.preventDefault();
 
                 goal = {
@@ -572,26 +610,20 @@ function render_goals(section) {
                     detail: form.elements['activity'].value,
                     days: form.elements['frequency'].value,
                     minutes: form.elements['duration'].value,
-
                 }
 
                 console.log(goal);
 
-                this.innerHTML = `
-                <h3>You're ready to set a new goal for the next week!</h3>
+                document.getElementById("goal-yes").innerText = "Save";
+                document.getElementById("goalWrapper").innerHTML = `
+                <h3 class='w-75 mb-5'>You're ready to set a new goal for the next week!</h3>
                 <section>
                 <p>You can always see your goals by clicking <strong>My Goals</strong> on the Being Active homepage.</p>
                 <p>In one week, you can come back to review your goal and to get a feedback message.</p>
                 <p>You may want to stick a reminder somewhere in your house.</p>
                 <p>Your goal is: to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.</p>
-                </section>
-                <button name="back">Back</button><button name="save">Save</button>`
-                this.querySelector("[name='back']").addEventListener("click", () => {
-                    this.innerHTML = "";
-                    this.appendChild(form);
-                    goal = undefined;
-                });
-                this.querySelector("[name='save']").addEventListener("click", () => {
+                </section>`;
+                submitButton.addEventListener("click", () => {
                     fetch("/app/mygoals/", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -599,36 +631,20 @@ function render_goals(section) {
                     }).then(response => response.json())
                     .then(outcome => {
                         if (outcome.status == "error") {
-                            this.innerHTML = `<p>We were not able to save your new goal. The error message was:</p>
-                            <p class="error">${outcome.message}</p>
-                            <button>OK</button>`;
-                            this.querySelector("button").addEventListener("click", e => {
-                                e.stopPropagation();
-
-                                this.innerHTML = newgoaltemplate;
-                                this.addEventListener("click", newgoalhandler);
-
-                                this.classList.remove("popover");
-                                document.querySelector("#modal-cover").classList.remove("show");
-                            })
+                            document.getElementById("toast-message-type").text("Error");
+                            document.getElementById("toast-message").text(`We were not able to save your new goal. ${outcome.message}`);
+                            bootstrap.Modal.getInstance(document.getElementById('goalModal')).hide();
                             return;
                         }
-                        this.innerHTML = "";
-                        let summary = this.appendChild(document.createElement("label"));
-                        summary.classList.add("goal-summary");
-                        summary.innerHTML = `My goal: to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.`;
+                        bootstrap.Modal.getInstance(document.getElementById('goalModal')).hide();
+                        goalWrapper.innerHTML = "";
 
-                        this.classList.add("active");
-                        // show the review date:
-                        let reviewdate = this.appendChild(document.createElement("span"));
-                        reviewdate.classList.add("goal-date");
-                        reviewdate.textContent = `Review on: ${new Date(Date.parse(goal.reviewDate)).toLocaleDateString()}`;
-
-                        this.classList.remove("popover");
-                        document.querySelector("#modal-cover").classList.remove("show");
                     }).catch(e => console.log(e))
                 })
             })
+
+            const modal = new bootstrap.Modal(document.getElementById('goalModal'));
+            modal.show();
         })
     }
 
@@ -643,72 +659,85 @@ function render_goals(section) {
         }).forEach(goal => {
             // add a goal to the holder
             let outer = document.createElement("div");
-            outer.classList.add("goal");
+            outer.classList.add("col");
+
+            let goalCard = document.createElement("div");
+            goalCard.setAttribute("class", "card goal text-center shadow h-100");
+
+            let goalCardBody = document.createElement("div");
+            goalCardBody.setAttribute("class", "card-body d-flex justify-content-center");
+
+            let goalCardContent = document.createElement("div");
+            goalCardContent.setAttribute("class", "align-self-center");
+
+
+            goalCardContent.innerHTML = `<h5 class="goal-summary">
+                        Do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.
+                    </h5>`;
+
+            goalCardBody.appendChild(goalCardContent);
+            goalCard.appendChild(goalCardBody);        
+            outer.appendChild(goalCard);
 
             let today = isodate(new Date());
 
-            let summary = outer.appendChild(document.createElement("label"));
-            summary.classList.add("goal-summary");
-            summary.innerHTML = `My goal: to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.`;
-
             if (goal.reviewDate <= today) {
-                outer.classList.add("review");
+                goalCard.classList.add("review");
                 
                 // create a review button
-                let review = outer.appendChild(document.createElement("button"));
-                review.classList.add("goal-review");
+                let review = goalCardContent.appendChild(document.createElement("button"));
+                review.setAttribute("class", "goal-review btn btn-primary mt-4 mb-3");
                 review.textContent = "Review this goal";
                 review.addEventListener("click", e => {
                     e.stopPropagation();
-                    outer.classList.add("popover");
-                    document.querySelector("#modal-cover").classList.add("show");
-                    let reviewbox = outer.appendChild(document.createElement("div"));
-                    reviewbox.insertAdjacentHTML("afterbegin", 
-                        `<p>Have you been successful and completed your goal?</p>
-                        <div id="review-box-buttons">
-                            <button value="y">Yes, Totally</button><button value="p">Yes, Partly</button><button value="n">No, not at all</button>
-                        </div>`
-                    );
-                    reviewbox.querySelector("#review-box-buttons").addEventListener("click", e => {
+                    const modal = new bootstrap.Modal(document.getElementById('goalModal'));
+                    
+                    let submitButton = document.getElementById("goal-yes");
+                    let goalWrapper = document.getElementById("goalWrapper");
+
+                    goalWrapper.innerHTML = "";
+                    document.getElementById("goalLabel").innerHTML = "Review Goal";
+                    submitButton.classList.add("d-none")
+
+                    document.getElementById("goalWrapper").innerHTML = `<p>Have you been successful and completed your goal?</p>
+                    <div id="review-box-buttons" class="d-flex justify-content-evenly mt-5 mb-5">
+                        <button class="btn btn-light" value="y">Yes, Totally</button><button class="btn btn-light" value="p">Yes, Partly</button><button class="btn btn-light" value="n">No, not at all</button>
+                    </div>`;
+
+                    goalWrapper.querySelector("#review-box-buttons").addEventListener("click", e => {
                         e.stopPropagation();
                         if (e.target.tagName != "BUTTON") {
                             console.log(e.target); return;
                         }
 
-                        goal.status = "complete"; goal.outcome = e.target.value;
+                        goal.status = "complete";
+                        goal.outcome = e.target.value;
                         fetch("/app/mygoals/", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify(goal)
                         }).then(response => response.json())
                         .then(outcome => {
-                            outer.innerHTML = "";
-                            outer.insertAdjacentHTML("afterbegin", "<h3>Thank you for reviewing your goal</h3>")
-                            let message = outer.appendChild(document.createElement("p"));
-                            message.textContent = outcome.message;
-                            let finish = outer.appendChild(document.createElement("button"));
-                            finish.classList.add("goal-review-finish");
-                            finish.textContent = "Done";
-                            finish.addEventListener("click", e => {
+                            goalWrapper.innerHTML = "<h3 class='text-center mt-5 mb-5'>Thank you for reviewing your goal</h3>";
+                            submitButton.innerText = "Done";
+                            submitButton.classList.remove("d-none");
+                            submitButton.addEventListener("click", e => {
                                 e.stopPropagation();
-                                outer.innerHTML = newgoaltemplate;
-                                outer.addEventListener("click", newgoalhandler);
-                                outer.classList.remove("popover");
-                                document.querySelector("#modal-cover").classList.remove("show");
+                                modal.hide();
                             })
 
                         }).catch(e => {
                             console.log(e);
-                            outer.classList.add("popover");
-                            document.querySelector("#modal-cover").classList.add("show");
                         })
                     })
+
+                    modal.show();
                 })
             } else {
-                outer.classList.add("active");
+                goalCard.classList.add("active");
                 // show the review date:
-                let reviewdate = outer.appendChild(document.createElement("span"));
-                reviewdate.classList.add("goal-date");
+                let reviewdate = goalCardContent.appendChild(document.createElement("h6"));
+                reviewdate.setAttribute("class", "mt-4 goal-date");
                 reviewdate.textContent = `Review on: ${new Date(Date.parse(goal.reviewDate)).toLocaleDateString()}`;
             }
 

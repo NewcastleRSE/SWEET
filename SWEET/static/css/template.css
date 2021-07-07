@@ -1,0 +1,165 @@
+main > .container {
+    padding: 90px 15px 0;
+}
+
+.sidenav {
+    background: radial-gradient(circle, rgba(99,49,136,0.75) 26%, rgba(99,49,136,0.9) 93%), url('../images/splash.jpeg');
+    background-position: center right;
+}
+
+.sidebar-text {
+    padding: 0 40px;
+    color: #fafafa;
+}
+
+.sidebar-text a, .sidebar-text a:active, .sidebar-text a:visited {
+    color: #fafafa;
+    font-weight: bold;
+}
+
+a.card {
+    text-decoration: none;
+    color: inherit;
+    background-repeat: no-repeat;
+    background-position: bottom -20px right 10px;
+    background-size: 120px;
+}
+
+a.card h5 {
+    margin-right: 130px;
+}
+
+p a {
+    color: #633188;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+p a:hover {
+    color: inherit;
+    text-decoration: underline;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #633188;
+    border-color: #633188;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    color: #fff;
+    background-color: #825aa0;
+    border-color: #825aa0;
+}
+
+.btn:focus,.btn:active {
+    outline: none !important;
+    box-shadow: none;
+}
+
+.form-check-input:checked {
+    background-color: #633188;
+    border-color: #633188;
+}
+
+.form-check-input:focus {
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgb(99 49 136 / 25%);
+}
+
+nav.navbar-dark {
+    background-color: #633188 !important;
+}
+
+nav #app-buttons {
+    position:relative;
+}
+
+nav #app-buttons i {
+    color: inherit;
+    cursor: pointer;
+    font-size:24px;
+    color: #fafafa;
+}
+
+nav #app-buttons .favourite:hover i {
+    color: #FEDE00
+}
+
+nav #app-buttons .add-note {
+    position: absolute;
+    top: -.5rem;
+    bottom: -.5rem;
+    right: var(--bs-gutter-x,-.75rem);
+    padding-top: 1rem !important;
+    background-color: #633188;
+    color: #fafafa;
+}
+
+.card {
+    border-bottom: solid 6px #633188;
+}
+
+.card:hover {
+    text-decoration: none !important;
+}
+
+.quote {
+    border-left: solid 6px #633188;
+}
+
+.quote p {
+    font-style: italic;
+}
+
+button.accordion-button {
+    font-weight: bold;
+}
+
+button.accordion-button:focus {
+    border: none;
+    box-shadow: none;
+}
+
+button.accordion-button:not(.collapsed) {
+    color: #fafafa;
+    background-color: #633188;
+}
+
+button.accordion-button:not(.collapsed)::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23633188'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+.card.goal.unset {
+    min-height: 250px;
+    border: 2px dashed lightgray;
+    cursor: pointer;
+}
+
+#goalModal form#goal p {
+    margin-bottom: 3rem;
+}
+
+#goalModal input[type=radio] {
+    transform: scale(2);
+}
+
+#goalModal .form-check-inline .form-check-label {
+    position: relative;
+    left: -20px;
+}
+
+#goalModal .form-check-inline {
+    margin-left: 0.5rem;
+    margin-right: 0;
+}
+
+#goalModal .form-check-inline .form-check-input:checked[type=radio] {
+    background-image: none;
+}
+
+#goalModal .form-check-inline .form-check-input:checked + .form-check-label {
+    color: #fafafa;
+    background-color: #633188;
+}

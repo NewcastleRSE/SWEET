@@ -1,24 +1,61 @@
-<html>
-    <body>
-        <h1>Log in to the SWEET app</h1>
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class=flashes>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-        <form action="/login" method="POST">
-        <fieldset>
-            <legend>Login details:</legend>
-            <label>Email Adress: </label><input type="text" name="userID"><br />
-            <label>Password: </label><input type="password" name="password"><br/>
-            {% if save_fragment %}<input type="hidden" name="fragment" /><script>document.querySelector("input[name='fragment']").value = location.hash.substr(1)</script>{% endif %}
-            <input type="submit" value="Log In">
-        </fieldset>
-        </form>
-        <p>No account? Complete our <a href="/register">Registration Form</a>.</p>
-    </body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <!-- App CSS -->
+    <link href="../static/css/template.css" rel="stylesheet">
+    <title>SWEET</title>
+  </head>
+  <body>
+    <div class="row">
+      <div class="sidenav col-sm-3 d-none d-sm-block">
+        <div class="sidebar-text d-flex flex-column min-vh-100 justify-content-center">
+           <h1>Login</h1>
+           <p>Use this page to login or <a href="/register">register here</a> to request access.</p>
+        </div>
+     </div>
+     <div class="col-sm-9 col-xs-12">
+        <div class="col-md-6 offset-md-1 col-lg-4 offset-lg-1 d-flex flex-column min-vh-100 justify-content-center align-items-left">
+           <div class="login-form m-4">
+             <img src="../static/images/logo-1.png" class="img-fluid" alt="logo" />
+              <form action="/login" method="POST">
+                 <div class="mb-3">
+                    <label>Email Address</label>
+                    <input type="text" class="form-control" placeholder="Email" name="userID">
+                 </div>
+                 <div class="mb-3">
+                    <label>Password</label>
+                    <input type="password" class="form-control" placeholder="Password" name="password">
+                 </div>
+                 {% if save_fragment %}<input type="hidden" name="fragment" /><script>document.querySelector("input[name='fragment']").value = location.hash.substr(1)</script>{% endif %}
+                 <div class="d-grid gap-2 mt-4">
+                  <button class="btn btn-primary" type="submit">Login</button>
+                </div>
+              </form>
+              {% with messages = get_flashed_messages() %}
+            {% if messages %}
+              <div class="alert alert-danger mt-4" role="alert">
+                <h4 class="alert-heading">Login Error</h4>
+                <p>There was a problem logging you in.</p>
+                <hr>
+                <ul class=flashes>
+                  {% for message in messages %}
+                    <li>{{ message }}</li>
+                  {% endfor %}
+                  </ul>
+              </div>
+            {% endif %}
+          {% endwith %}
+           </div>
+        </div>
+     </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  </body>
 </html>

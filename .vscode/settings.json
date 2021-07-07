@@ -1,4 +1,5 @@
 {
     "appService.defaultWebAppToDeploy": "/subscriptions/48109e19-5570-4488-87cc-5f768f1a2fd7/resourceGroups/Samples/providers/Microsoft.Web/sites/NCLSWEETv1",
-    "appService.deploySubpath": "."
+    "appService.deploySubpath": ".",
+    "python.pythonPath": "venv/bin/python"
 }

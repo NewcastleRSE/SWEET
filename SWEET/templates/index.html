@@ -1,3 +1,181 @@
+<!doctype html>
+<html lang="en" class="h-100">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sweet</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/template.css') }}">
+  </head>
+  <body class="d-flex flex-column h-100 bg-light">
+    
+<header>
+  <!-- Fixed navbar -->
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top shadow">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#home"><img src="{{ url_for('static', filename='images/logo-2.png') }}" alt="logo" height="36" class="d-inline-block align-text-top"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#home">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="calendar.html">Diary</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="" data-bs-toggle="modal" data-bs-target="#profilerModal">My HT Guide</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#myapp">My Details</a>
+          </li>
+          {% if user['role'] in ['sysadmin', 'editor'] %}
+          <li class="nav-item">
+            <a class="nav-link" href="/edit">Editor</a>
+          </li>
+          {% endif%}
+        </ul>
+        <div id="app-buttons" class="d-flex">
+            <!-- <button name="favourites" title="My Favourites" class="btn btn-link"></button>
+            <button name="recordSE" title="Record a Side Effect" class="btn btn-link"></button> -->
+            {% if user %}
+            <div class="logout p-2" onclick="location.href='/logout'">
+                <i class="bi-box-arrow-right"></i>
+            </div>
+            {% endif %}
+            <div class="favourite p-2 me-5">
+                <i class="bi-star-fill"></i>
+            </div>
+            <div class="add-note px-3">
+                <i class="bi-plus-circle-fill"></i>
+            </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- Begin page content -->
+<main class="flex-shrink-0">
+  <div class="container">
+    <h1 id="page-title"></h1>
+    <nav id="breadcrumb"></nav>
+    <div id="main-container"></div>
+  </div>
+</main>
+
+<footer class="footer mt-auto py-3 bg-dark">
+  <div class="container">
+    <span class="text-muted">Place sticky footer content here.</span>
+  </div>
+  <!-- Modals -->
+    <div class="modal fade" id="profilerModal" tabindex="-1" aria-labelledby="profilerLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" id="profiler">
+            <div class="modal-header">
+                <h5 class="modal-title" id="profilerLabel">Profiler</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>We'd like to ask you some questions to see how you are getting on with your hormone therapy. Answering these questions will allow us to guide you to relevant sections of the app that you may find helpful. </p>
+                <p>Are you happy to answer these questions now?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Not Now</button>
+                <button type="button" id="prof-yes" class="btn btn-primary">Yes</button>
+            </div>
+        </div>
+        </div>
+    </div>
+    <div class="modal fade" id="goalModal" tabindex="-1" aria-labelledby="goalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" id="goalContent">
+            <div class="modal-header">
+                <h5 class="modal-title" id="goalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="goalWrapper">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" id="goal-yes" class="btn btn-primary">Next</button>
+            </div>
+        </div>
+        </div>
+    </div>
+  <!-- Toast -->
+  <div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <img src="..." class="rounded me-2" alt="...">
+        <strong class="me-auto" id="toast-message-type"></strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body" id="toast-message"></div>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="{{ url_for('static', filename='scripts/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/lz-string.js') }}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", dcl => {
+            fetch("/app/structure")
+            .then(response => response.json())
+            .then(data => {
+                localStorage.setItem("SWEET", JSON.stringify(data));
+                init_page();
+            })
+        });
+
+        window.addEventListener("popstate", pse => {
+            window.scroll(0,0);
+            init_page();
+        })
+
+    function init_profiler() {
+
+        document.querySelector("#prof-yes").addEventListener("click", () => {
+            let p =  document.querySelector("#profiler")
+            p.originalHTML = p.innerHTML;
+
+            fetch("/app/profiler/", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify({ page: 0})
+            }).then(response => response.text())
+            .then(text => {
+                p.innerHTML = text;
+                p.querySelectorAll("script").forEach(s => {
+                    let src = s.getAttribute("src")
+                    let script = document.querySelector("body").appendChild(document.createElement("script"));
+                    script.setAttribute("src", src)
+                    s.remove();
+                })
+            
+            })
+        })
+    }
+
+        init_profiler();
+        </script>
+      
+  </body>
+</html>
+
+
+
+<!--
 <!DOCTYPE html>
 <html>
     <head>
@@ -105,58 +283,6 @@
         <script src="{{ url_for('static', filename='scripts/app.js') }}"></script>
         <script src="{{ url_for('static', filename='scripts/lz-string.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-        <script>
-        document.addEventListener("DOMContentLoaded", dcl => {
-            fetch("/app/structure")
-            .then(response => response.json())
-            .then(data => {
-                localStorage.setItem("SWEET", JSON.stringify(data));
-                init_page();
-            })
-        });
-
-        window.addEventListener("popstate", pse => {
-            window.scroll(0,0);
-            init_page();
-        })
-
-    function init_profiler() {
-        document.querySelector("#prof-no").addEventListener("click", () => {
-            document.querySelector("#profiler").classList.remove("show");
-            document.querySelector("#modal-cover").classList.remove("show");
-        })
-
-        document.querySelector("#prof-yes").addEventListener("click", () => {
-            let p =  document.querySelector("#profiler")
-            p.originalHTML = p.innerHTML;
-
-            fetch("/app/profiler/", {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json'},
-                body: JSON.stringify({ page: 0})
-            }).then(response => response.text())
-            .then(text => {
-                p.innerHTML = text;
-                p.querySelectorAll("script").forEach(s => {
-                    let src = s.getAttribute("src")
-                    let script = document.querySelector("body").appendChild(document.createElement("script"));
-                    script.setAttribute("src", src)
-                    s.remove();
-                })
-            
-            })
-        })
-    }
-        document.querySelector("a[href='#profile']").classList.add("highlight");
-        document.querySelector("a[href='#profile']").addEventListener("click", e => { 
-            document.querySelector('#profiler').classList.toggle('show'); 
-            document.querySelector('#modal-cover').classList.toggle('show'); 
-            e.preventDefault(); 
-        })
-        //document.querySelector("#profiler").classList.add("show");
-        //document.querySelector("#modal-cover").classList.add("show");
-
-        init_profiler();
-        </script>
+        
     </body>
-</html>
+</html>-->
