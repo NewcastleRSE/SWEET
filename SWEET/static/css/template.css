@@ -2,6 +2,21 @@ main > .container {
     padding: 90px 15px 0;
 }
 
+.sidenav {
+    background: radial-gradient(circle, rgba(99,49,136,0.75) 26%, rgba(99,49,136,0.9) 93%), url('../images/splash.jpeg');
+    background-position: center right;
+}
+
+.sidebar-text {
+    padding: 0 40px;
+    color: #fafafa;
+}
+
+.sidebar-text a, .sidebar-text a:active, .sidebar-text a:visited {
+    color: #fafafa;
+    font-weight: bold;
+}
+
 a.card {
     text-decoration: none;
     color: inherit;
@@ -31,7 +46,8 @@ p a:hover {
     border-color: #633188;
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.btn-primary:focus {
     color: #fff;
     background-color: #825aa0;
     border-color: #825aa0;
@@ -52,6 +68,10 @@ p a:hover {
     box-shadow: 0 0 0 0.25rem rgb(99 49 136 / 25%);
 }
 
+nav.navbar-dark {
+    background-color: #633188 !important;
+}
+
 nav #app-buttons {
     position:relative;
 }
@@ -60,6 +80,7 @@ nav #app-buttons i {
     color: inherit;
     cursor: pointer;
     font-size:24px;
+    color: #fafafa;
 }
 
 nav #app-buttons .favourite:hover i {
@@ -108,4 +129,36 @@ button.accordion-button:not(.collapsed) {
 
 button.accordion-button:not(.collapsed)::after {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23633188'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+.card.goal.unset {
+    min-height: 250px;
+    border: 2px dashed lightgray;
+}
+
+#setGoalModal form#setGoal p {
+    margin-bottom: 3rem;
+}
+
+#setGoalModal input[type=radio] {
+    transform: scale(2);
+}
+
+#setGoalModal .form-check-inline .form-check-label {
+    position: relative;
+    left: -20px;
+}
+
+#setGoalModal .form-check-inline {
+    margin-left: 0.5rem;
+    margin-right: 0;
+}
+
+#setGoalModal .form-check-inline .form-check-input:checked[type=radio] {
+    background-image: none;
+}
+
+#setGoalModal .form-check-inline .form-check-input:checked + .form-check-label {
+    color: #fafafa;
+    background-color: #633188;
 }

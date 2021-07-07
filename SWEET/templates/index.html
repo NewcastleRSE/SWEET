@@ -16,7 +16,7 @@
     
 <header>
   <!-- Fixed navbar -->
-  <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top shadow">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top shadow">
     <div class="container-fluid">
       <a class="navbar-brand" href="#home"><img src="{{ url_for('static', filename='images/logo-2.png') }}" alt="logo" height="36" class="d-inline-block align-text-top"></a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +46,7 @@
             <!-- <button name="favourites" title="My Favourites" class="btn btn-link"></button>
             <button name="recordSE" title="Record a Side Effect" class="btn btn-link"></button> -->
             {% if user %}
-            <div class="logout p-2">
+            <div class="logout p-2" onclick="location.href='/logout'">
                 <i class="bi-box-arrow-right"></i>
             </div>
             {% endif %}
@@ -74,7 +74,7 @@
   <div class="container">
     <span class="text-muted">Place sticky footer content here.</span>
   </div>
-  <!-- Modal -->
+  <!-- Modals -->
     <div class="modal fade" id="profilerModal" tabindex="-1" aria-labelledby="profilerLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content" id="profiler">
@@ -93,6 +93,34 @@
         </div>
         </div>
     </div>
+    <div class="modal fade" id="setGoalModal" tabindex="-1" aria-labelledby="setGoalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" id="setGoal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="setGoalLabel">Set New Goal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="setGoalWrapper">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" id="goal-yes" class="btn btn-primary">Next</button>
+            </div>
+        </div>
+        </div>
+    </div>
+  <!-- Toast -->
+  <div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <img src="..." class="rounded me-2" alt="...">
+        <strong class="me-auto" id="toast-message-type"></strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body" id="toast-message"></div>
+    </div>
+  </div>
 </footer>
 
 
@@ -116,10 +144,6 @@
         })
 
     function init_profiler() {
-        // document.querySelector("#prof-no").addEventListener("click", () => {
-        //     document.querySelector("#profiler").classList.remove("show");
-        //     document.querySelector("#modal-cover").classList.remove("show");
-        // })
 
         document.querySelector("#prof-yes").addEventListener("click", () => {
             let p =  document.querySelector("#profiler")
@@ -142,14 +166,6 @@
             })
         })
     }
-        // document.querySelector("a[href='#profile']").classList.add("highlight");
-        // document.querySelector("a[href='#profile']").addEventListener("click", e => { 
-        // document.querySelector('#profiler').classList.toggle('show'); 
-        // document.querySelector('#modal-cover').classList.toggle('show'); 
-        //     e.preventDefault(); 
-        // })
-        //document.querySelector("#profiler").classList.add("show");
-        //document.querySelector("#modal-cover").classList.add("show");
 
         init_profiler();
         </script>
