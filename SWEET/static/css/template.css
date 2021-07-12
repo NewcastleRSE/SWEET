@@ -1,5 +1,10 @@
+:root {
+    font-size: 20px;
+}
+
+
 main > .container {
-    padding: 90px 15px 0;
+    padding: 90px 15px 15px;
 }
 
 .sidenav {

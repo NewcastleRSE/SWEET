@@ -1,7 +1,11 @@
-.side-effect {
+.side-effect .modal-dialog {
+    max-width: 90%;
+    width: 45em;
+}
+
+.side-effect .modal-content {
     border: 0.2em solid #bd4b89;
     border-radius: 1em;
-    padding: 1em;
 }
 
 select[name='setype'] + form > section > label {
