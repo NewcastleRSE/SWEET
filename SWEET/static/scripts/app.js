@@ -1077,7 +1077,7 @@ function render_home_menu(section) {
     }
 
     let menu = document.createElement("div");
-    menu.setAttribute("class", "row");
+    menu.setAttribute("class", "row homemenu");
 
     menu.innerHTML = `
     <div class="col-12 col-xl-8 row row-cols-1 row-cols-lg-2 g-3 mt-3 hmpg-sects"></div>
