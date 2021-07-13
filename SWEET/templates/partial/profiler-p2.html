@@ -1,84 +1,97 @@
+<div class="modal-header">
+    <h5 class="modal-title" id="profilerLabel">Profiler</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
 {% if data['N'] == 'agree' and data['C'] == 'disagree' and data['P'] == 'disagree' %}
-<p>Great to hear that you are getting on with your hormone therapy. We will check in with you again in the next few months. You can also access these questions at any time in the Managing HT home page. In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within Managing HT. Alternatively you can speak to your breast cancer team or your GP.</p>
-<p><button id="prof-ok-close" onclick="document.querySelector('#profiler').classList.remove('show')">Close</button></p>
+<div class="modal-body">
+    <p>Great to hear that you are getting on with your hormone therapy. We will check in with you again in the next few months. You can also access these questions at any time in the Managing HT home page. In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within Managing HT. Alternatively you can speak to your breast cancer team or your GP.</p>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+</div>
 {% else %}
-<p>We'd like to ask you for a bit more detail: please let us know if you agree or disagree with the following statements.</p>
-<form id="prof-p2">
-<table>
-    <thead>
-        <tr>
-            <th>&nbsp;</th>
-            <th>Agree</th>
-        </tr>
-    </thead>
-    {% if data['N'] != "agree" %}
-    <tbody>
-        <tr>
-            <td>I sometimes doubt that I need to take hormone therapy</td>
-            <td><input type="checkbox" name="agree" value="N1">
-        </tr>
-        <tr>
-            <td>I’m not convinced that I need to take hormone therapy for 5-10 years </td>
-            <td><input type="checkbox" name="agree" value="N2"></td>
-        </tr>
-        <tr>
-            <td>I would prefer to use other methods to protect myself from cancer (e.g. diet, exercise)</td>
-            <td><input type="checkbox" name="agree" value="N3"></td>
-        </tr>
-        <tr>
-            <td>I’m not convinced that hormone therapy is worth it for me </td>
-            <td><input type="checkbox" name="agreee" value="N4"></td>
-        </tr>
-    </tbody>
-    {% endif %}
-    {% if data['C'] != "disagree" %}
-    <tbody>
-        <tr>
-            <td>I am concerned about getting side effects in the future </td>
-            <td><input type="checkbox" name="agree" value="C1"></td>
-        </tr>
-        <tr>
-            <td>I am concerned about the side effects I am experiencing now</td>
-            <td><input type="checkbox" name="agree" value="C2"></td>
-        </tr>
-        <tr>
-            <td>I am concerned about the possible long-term effects of taking hormone therapy</td>
-            <td><input type="checkbox" name="agree" value="C3"></td>
-        </tr>
-        <tr>
-            <td>Hormone therapy is an unwelcome reminder that I have had breast cancer</td>
-            <td><input type="checkbox" name="agree" value="C4"></td>
-        </tr>
-        <tr>
-            <td>My hormone therapy has been changed to a brand which doesn’t suit me</td>
-            <td><input type="checkbox" name="agree" value="C5"></td>
-        </tr>
-    </tbody>
-    {% endif %}
-    {% if data['P'] != "disagree" %}
-    <tbody>
-        <tr>
-            <td>I am not clear on how to take my hormone therapy</td>
-            <td><input type="checkbox" name="agree" value="P1"></td>
-        </tr>
-        <tr>
-            <td>I sometimes forget to take my hormone therapy</td>
-            <td><input type="checkbox" name="agree" value="P2"></td>
-        </tr>
-        <tr>
-            <td>I need support with my prescriptions (e.g. remembering to collect prescriptions)</td>
-            <td><input type="checkbox" name="agree" value="P3"></td>
-        </tr>
-    </tbody>
-    {% endif %}
-    <tbody>
-        <tr>
-            <td>I have another concern which isn’t listed above</td>
-            <td><input type="checkbox" name="agree" value="G1"></td>
-        </tr>
-    </tbody>
-</table>
-<input type="submit" value="Confirm">
-</form>
-<script src="data:application/javascript;base64,ICAgIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoIiNwcm9mLXAyIikuYWRkRXZlbnRMaXN0ZW5lcigic3VibWl0IiwgZSA9PiB7DQogICAgICAgIGUucHJldmVudERlZmF1bHQoKTsgZS5zdG9wUHJvcGFnYXRpb24oKTsNCiAgICAgICAgZG9jdW1lbnQucXVlcnlTZWxlY3RvcigiI3Byb2ZpbGVyIikuaW5uZXJIVE1MID0gYA0KICAgICAgICAgICAgPHA+QmFzZWQgb24geW91ciByZXNwb25zZXMsIHdl4oCZdmUgc2VsZWN0ZWQgYSBzZXJpZXMgb2YgdG9waWNzIHdoaWNoIGFyZSB0YWlsb3JlZCB0byB5b3VyIGNvbmNlcm5zIC8gcXVlc3Rpb25zLjwvcD4NCiAgICAgICAgICAgIDxwPllvdSBjYW4gcmVhZCB0aGVzZSBub3cgb3Igc2F2ZSB0aGVtIGFuZCBjb21lIGJhY2sgdG8gdGhlbSBsYXRlci4gV2UgaG9wZSB0aGVzZSB3aWxsIGJlIGhlbHBmdWwgZm9yIHlvdS48L3A+DQogICAgICAgICAgICA8cD5XZeKAmWxsIGNoZWNrIGluIGFnYWluIGluIGEgZmV3IG1vbnRocy4gSW4gdGhlIG1lYW50aW1lLCBpZiB5b3UgaGF2ZSBhbnkgY29uY2VybnMgb3IgZGlmZmljdWx0aWVzLCB5b3UgY2FuIGZpbmQgbG90cyBvZiB1c2VmdWwgaW5mb3JtYXRpb24gYW5kIGhlbHBmdWwgdGlwcyB3aXRoaW4gTWFuYWdpbmcgSFQuIEFsdGVybmF0aXZlbHkgeW91IGNhbiBzcGVhayB0byB5b3VyIGJyZWFzdCBjYW5jZXIgdGVhbSBvciB5b3VyIEdQLjwvcD4NCiAgICAgICAgICAgIDxwPkNsaWNrIG9uIGFueSBvZiB0aGUgYmVsb3cgbGlua3MgdG8gZmluZCBvdXQgbW9yZS48L3A+DQogICAgICAgICAgICA8dWw+JHtBcnJheS5mcm9tKGUudGFyZ2V0LmVsZW1lbnRzWydhZ3JlZSddKS5maWx0ZXIoYyA9PiBjLmNoZWNrZWQpLm1hcChjID0+ICI8bGk+TGluayBmb3IgcXVlc3Rpb24gIiArIGMudmFsdWUgKyAiPC9saT4iKS5qb2luKCIiKX08L3VsPg0KICAgICAgICAgICAgPGJ1dHRvbiBpZD0icHJvZi1maW5pc2giPkNsb3NlPC9idXR0b24+DQogICAgICAgIGANCiAgICAgICAgZG9jdW1lbnQucXVlcnlTZWxlY3RvcigiI3Byb2YtZmluaXNoIikuYWRkRXZlbnRMaXN0ZW5lcigiY2xpY2siLCBlID0+IHsNCiAgICAgICAgICAgIGUuc3RvcFByb3BhZ2F0aW9uKCk7DQogICAgICAgICAgICBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKCIjcHJvZmlsZXIiKS5jbGFzc0xpc3QucmVtb3ZlKCJzaG93Iik7DQogICAgICAgICAgICBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKCIjbW9kYWwtY292ZXIiKS5jbGFzc0xpc3QucmVtb3ZlKCJzaG93Iik7DQoNCiAgICAgICAgICAgIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoIiNwcm9maWxlciIpLmlubmVySFRNTCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoIiNwcm9maWxlciIpLm9yaWdpbmFsSFRNTDsNCiAgICAgICAgICAgIGluaXRfcHJvZmlsZXIoKTsNCiAgICAgICAgfSkNCiAgICB9KQ=="></script>
+ <div class="modal-body">
+    <form id="prof-p2">
+        <p>We'd like to ask you for a bit more detail: please let us know if you agree or disagree with the following statements.</p>
+        <table class="table table-borderless">
+            <thead>
+                <tr>
+                    <th>&nbsp;</th>
+                    <th>Agree</th>
+                </tr>
+            </thead>
+            {% if data['N'] != "agree" %}
+            <tbody>
+                <tr>
+                    <td class="pe-3">I sometimes doubt that I need to take hormone therapy</td>
+                    <td class="text-center align-middle"><input type="checkbox" name="agree" value="N1" class="form-check-input">
+                </tr>
+                <tr>
+                    <td class="pe-3">I’m not convinced that I need to take hormone therapy for 5-10 years </td>
+                    <td class="text-center align-middle"><input type="checkbox" name="agree" value="N2" class="form-check-input"></td>
+                </tr>
+                <tr>
+                    <td class="pe-3">I would prefer to use other methods to protect myself from cancer (e.g. diet, exercise)</td>
+                    <td class="text-center align-middle"><input type="checkbox" name="agree" value="N3" class="form-check-input"></td>
+                </tr>
+                <tr>
+                    <td class="pe-3">I’m not convinced that hormone therapy is worth it for me </td>
+                    <td class="text-center align-middle"><input type="checkbox" name="agreee" value="N4" class="form-check-input"></td>
+                </tr>
+            </tbody>
+            {% endif %}
+            {% if data['C'] != "disagree" %}
+            <tbody>
+                <tr>
+                    <td class="pe-3">I am concerned about getting side effects in the future </td>
+                    <td class="text-center align-middle"><input type="checkbox" name="agree" value="C1" class="form-check-input"></td>
+                </tr>
+                <tr>
+                    <td class="pe-3">I am concerned about the side effects I am experiencing now</td>
+                    <td class="text-center align-middle"><input type="checkbox" name="agree" value="C2" class="form-check-input"></td>
+                </tr>
+                <tr>
+                    <td class="pe-3">I am concerned about the possible long-term effects of taking hormone therapy</td>
+                    <td class="text-center align-middle"><input type="checkbox" name="agree" value="C3" class="form-check-input"></td>
+                </tr>
+                <tr>
+                    <td class="pe-3">Hormone therapy is an unwelcome reminder that I have had breast cancer</td>
+                    <td class="text-center align-middle"><input type="checkbox" name="agree" value="C4" class="form-check-input"></td>
+                </tr>
+                <tr>
+                    <td class="pe-3">My hormone therapy has been changed to a brand which doesn’t suit me</td>
+                    <td class="text-center align-middle"><input type="checkbox" name="agree" value="C5" class="form-check-input"></td>
+                </tr>
+            </tbody>
+            {% endif %}
+            {% if data['P'] != "disagree" %}
+            <tbody>
+                <tr>
+                    <td class="pe-3">I am not clear on how to take my hormone therapy</td>
+                    <td class="text-center align-middle"><input type="checkbox" name="agree" value="P1" class="form-check-input"></td>
+                </tr>
+                <tr>
+                    <td class="pe-3">I sometimes forget to take my hormone therapy</td>
+                    <td class="text-center align-middle"><input type="checkbox" name="agree" value="P2" class="form-check-input"></td>
+                </tr>
+                <tr>
+                    <td class="pe-3">I need support with my prescriptions (e.g. remembering to collect prescriptions)</td>
+                    <td class="text-center align-middle"><input type="checkbox" name="agree" value="P3" class="form-check-input"></td>
+                </tr>
+            </tbody>
+            {% endif %}
+            <tbody>
+                <tr>
+                    <td class="pe-3">I have another concern which isn’t listed above</td>
+                    <td class="text-center align-middle"><input type="checkbox" name="agree" value="G1" class="form-check-input"></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" id="prof-p1-previous" class="btn">Previous</button>
+    <button type="submit" id="prof-p1-submit" class="btn btn-primary" form="prof-p2">Confirm</button>
+</div>
+<script src="data:application/javascript;base64,ZG9jdW1lbnQucXVlcnlTZWxlY3RvcigiI3Byb2YtcDIiKS5hZGRFdmVudExpc3RlbmVyKCJzdWJtaXQiLCBlID0+IHsKICAgIGUucHJldmVudERlZmF1bHQoKTsgZS5zdG9wUHJvcGFnYXRpb24oKTsKICAgIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoIiNwcm9maWxlciIpLmlubmVySFRNTCA9IGAKICAgICAgICA8ZGl2IGNsYXNzPSJtb2RhbC1oZWFkZXIiPgogICAgICAgICAgICA8aDUgY2xhc3M9Im1vZGFsLXRpdGxlIiBpZD0icHJvZmlsZXJMYWJlbCI+UHJvZmlsZXI8L2g1PgogICAgICAgICAgICA8YnV0dG9uIHR5cGU9ImJ1dHRvbiIgY2xhc3M9ImJ0bi1jbG9zZSIgZGF0YS1icy1kaXNtaXNzPSJtb2RhbCIgYXJpYS1sYWJlbD0iQ2xvc2UiPjwvYnV0dG9uPgogICAgICAgIDwvZGl2PgogICAgICAgIDxkaXYgY2xhc3M9Im1vZGFsLWJvZHkiPgogICAgICAgICAgICA8cD5CYXNlZCBvbiB5b3VyIHJlc3BvbnNlcywgd2XigJl2ZSBzZWxlY3RlZCBhIHNlcmllcyBvZiB0b3BpY3Mgd2hpY2ggYXJlIHRhaWxvcmVkIHRvIHlvdXIgY29uY2VybnMgLyBxdWVzdGlvbnMuPC9wPgogICAgICAgICAgICA8cD5Zb3UgY2FuIHJlYWQgdGhlc2Ugbm93IG9yIHNhdmUgdGhlbSBhbmQgY29tZSBiYWNrIHRvIHRoZW0gbGF0ZXIuIFdlIGhvcGUgdGhlc2Ugd2lsbCBiZSBoZWxwZnVsIGZvciB5b3UuPC9wPgogICAgICAgICAgICA8cD5XZeKAmWxsIGNoZWNrIGluIGFnYWluIGluIGEgZmV3IG1vbnRocy4gSW4gdGhlIG1lYW50aW1lLCBpZiB5b3UgaGF2ZSBhbnkgY29uY2VybnMgb3IgZGlmZmljdWx0aWVzLCB5b3UgY2FuIGZpbmQgbG90cyBvZiB1c2VmdWwgaW5mb3JtYXRpb24gYW5kIGhlbHBmdWwgdGlwcyB3aXRoaW4gTWFuYWdpbmcgSFQuIEFsdGVybmF0aXZlbHkgeW91IGNhbiBzcGVhayB0byB5b3VyIGJyZWFzdCBjYW5jZXIgdGVhbSBvciB5b3VyIEdQLjwvcD4KICAgICAgICAgICAgPHA+Q2xpY2sgb24gYW55IG9mIHRoZSBiZWxvdyBsaW5rcyB0byBmaW5kIG91dCBtb3JlLjwvcD4KICAgICAgICAgICAgPHVsPiR7QXJyYXkuZnJvbShlLnRhcmdldC5lbGVtZW50c1snYWdyZWUnXSkuZmlsdGVyKGMgPT4gYy5jaGVja2VkKS5tYXAoYyA9PiAiPGxpPkxpbmsgZm9yIHF1ZXN0aW9uICIgKyBjLnZhbHVlICsgIjwvbGk+Iikuam9pbigiIil9PC91bD4KICAgICAgICA8L2Rpdj4KICAgICAgICA8ZGl2IGNsYXNzPSJtb2RhbC1mb290ZXIiPgogICAgICAgIDxidXR0b24gdHlwZT0iYnV0dG9uIiBjbGFzcz0iYnRuIGJ0bi1wcmltYXJ5IiBpZD0icHJvZi1maW5pc2giIGRhdGEtYnMtZGlzbWlzcz0ibW9kYWwiPkZpbmlzaDwvYnV0dG9uPgogICAgICAgIDwvZGl2PgogICAgYAogICAgZG9jdW1lbnQucXVlcnlTZWxlY3RvcigiI3Byb2YtZmluaXNoIikuYWRkRXZlbnRMaXN0ZW5lcigiY2xpY2siLCBlID0+IHsKICAgICAgICBlLnN0b3BQcm9wYWdhdGlvbigpOwogICAgICAgIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoIiNwcm9maWxlciIpLmlubmVySFRNTCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoIiNwcm9maWxlciIpLm9yaWdpbmFsSFRNTDsKICAgICAgICBpbml0X3Byb2ZpbGVyKCk7CiAgICB9KQp9KQ=="></script>
 {% endif %}

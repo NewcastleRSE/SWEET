@@ -3,17 +3,9 @@ async function init_page() {
 
     const section = await loadSection(path);
 
+    console.log(section);
+
     document.querySelector("title").innerText = document.getElementById("page-title").innerText = section.title;
-
-    const breadcrumb = document.getElementById("breadcrumb");
-    while (breadcrumb.firstChild) breadcrumb.removeChild(breadcrumb.lastChild);
-
-    section.tree.forEach(step => {
-        let a = document.createElement("a");
-        a.setAttribute("href", step.path);
-        a.innerText = step.title;
-        breadcrumb.appendChild(a);
-    })
 
     var app = document.getElementById("main-container");
     while (app.firstChild) app.removeChild(app.lastChild);
@@ -43,6 +35,133 @@ async function loadSection(path) {
     return { "title": section.title, "content": section.content, "tree": tree};
 }
 
+const calendarutils = {
+    monthnames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    attributise: (d) => `${d.getFullYear()}-${d.getMonth()<9?"0":""}${d.getMonth()+1}-${d.getDate()<10?"0":""}${d.getDate()}`
+}
+
+
+function populateDays(body, basedate=new Date()) {
+    let months31 = [0,2,4,6,7,9,11]; // Jan, Mar, May, Jul, Aug, Oct, Dec
+    let day1 = new Date(basedate.getFullYear(), basedate.getMonth());
+    
+    // set rows required to fit current month: 
+    // 5 unless 
+    //   * 1st is a Sun & it's not Feb
+    //   * 1st is a Sat & month has 31 days
+    let rows = 5;
+    if ((day1.getDay() == 0 && day1.getMonth() != 1) || (day1.getDay() == 6 && months31.includes(basedate.getMonth()))) rows = 6;
+
+    // If the 1st isn't a Monday, start the calendar on the Monday before it;
+    if (day1.getDay() != 1) {
+        let countback = day1.getDay() == 0? 6: day1.getDay() - 1;
+        day1.setDate(day1.getDate() - countback);
+    }
+    
+    body.innerHTML = "";
+    for (let w=0; w<rows; w++) {
+        let row = body.appendChild(document.createElement("tr"));
+        for (let d of [0,1,2,3,4,5,6]) {
+            let days = 7*w+d;
+            let thisdate = new Date(day1.getFullYear(), day1.getMonth(), day1.getDate() + days);
+            let cell = row.appendChild(document.createElement("td"));
+            cell.setAttribute("data-thisdate", calendarutils.attributise(thisdate));
+        }
+    }
+}
+
+function populateMonths(body) {
+    body.innerHTML = "";
+    let months = [["Jan", "Feb", "Mar", "Apr"], ["May", "Jun", "Jul", "Aug"], ["Sep", "Oct", "Nov", "Dec"]]
+    for (let block of months) {
+        let row = body.appendChild(document.createElement("tr"));
+        for (let month of block) {
+            let cell = row.appendChild(document.createElement("td"));
+            cell.setAttribute("data-thismonth", month);
+            cell.textContent = month;
+        }
+    }
+}
+
+function render_calendar(selectedDate=new Date()) {
+    let cal = document.createElement("table");
+    cal.classList.add("calendar");
+
+    let caption = cal.appendChild(document.createElement("caption"));
+    caption.innerHTML = `<section><span class="prev">&lt;</span> <span id="cal-caption" data-basedate="${calendarutils.attributise(selectedDate)}">${calendarutils.monthnames[selectedDate.getMonth()]}</span><span class="next">&gt;</span></section>`;
+    let tbody = cal.appendChild(document.createElement("tbody"));
+    tbody.dataset.mode = "select";
+    populateDays(tbody, selectedDate);
+    cal.querySelector(`[data-thisdate='${calendarutils.attributise(selectedDate)}']`).classList.add("selected");
+    
+    // prevent calendar from receiving focus:
+    cal.addEventListener("mousedown", e => e.preventDefault());
+
+    cal.addEventListener("click", e => {
+        if (tbody.dataset.mode != "select") e.stopImmediatePropagation();
+
+        src = e.target;
+
+        if (src.matches("caption span, caption span *")) {
+            e.stopPropagation();
+
+            // click on span within caption: get the span to determine action:
+            while (src.tagName != "SPAN") {
+                src = src.parentElement;
+            }
+
+            if (src.hasAttribute("id")) {
+                // must be the month header, as prev & next don't get assigned ID
+                // replace calendar body with months display
+                // <awaiting implementation of new month selector below> populateMonths(c.querySelector("tbody"));
+            } else {
+                let dir = src.classList.contains("prev")? -1: src.classList.contains("next")? 1: 0;
+                
+                // no id, no prev/next class, someone's been messing with the code!
+                if (dir == 0) throw `Unknown span in calendar caption: ${src}`;
+
+                let basedate = new Date(cal.querySelector("#cal-caption").dataset.basedate + "T12:00:00Z");
+                basedate.setMonth(basedate.getMonth() + dir);
+                populateDays(cal.querySelector("tbody"), basedate);
+
+                cal.querySelector("#cal-caption").textContent = `${calendarutils.monthnames[basedate.getMonth()]} ${basedate.getFullYear()}`;
+                cal.querySelector("#cal-caption").dataset.basedate = calendarutils.attributise(basedate);
+
+                cal.dispatchEvent(new CustomEvent("redraw"));
+            }
+        }
+    })
+
+    return cal;
+}
+
+
+function create_modal() {
+    let modal = new DOMParser().parseFromString(`
+    <div class="modal fade" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+        </div>
+    </div>
+    `, 'text/html').body.firstElementChild;
+
+    modal.$title = modal.querySelector(".modal-title");
+    modal.$body = modal.querySelector(".modal-body");
+    modal.$footer = modal.querySelector(".modal-footer");
+
+    console.log(window.$);
+    return modal;
+}
+
 function render(section, acc_level = 3) {
     if (section.type == "container") {
         const holder = document.createElement("section");
@@ -50,7 +169,8 @@ function render(section, acc_level = 3) {
         return holder;
     } 
     else if (section.type == "menu") {
-        const holder = document.createElement("nav");
+        const holder = document.createElement("div");
+        holder.setAttribute("class", "row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 mt-3");
         holder.addEventListener("click", ce => {
 /*                        var src = ce.target;
                 while(src.tagName.toLowerCase() != "a" && src.parentNode) {
@@ -109,6 +229,8 @@ function render(section, acc_level = 3) {
         return p; 
     } 
     else if (section.type == "block-quote") {
+        const figure = document.createElement("figure");
+        figure.setAttribute("class", "quote ms-4 ps-4");
         const quote = document.createElement("blockquote");
         if (section.source) quote.setAttribute("cite", section.source);
 
@@ -116,41 +238,61 @@ function render(section, acc_level = 3) {
         p.innerText = section.text;
         quote.appendChild(p);
 
+        figure.appendChild(quote);
+
         if (section.citation) {
-            const cite = document.createElement("cite");
+            const cite = document.createElement("figcaption");
+            cite.setAttribute("class", "blockquote-footer mt-2");
             cite.innerText = section.citation;
-            quote.appendChild(cite)
+            figure.appendChild(cite)
         }
 
-        return quote;
+        return figure;
     } 
     else if (section.type == "menu-item") {
-        const holder = document.createElement("a");
-        holder.setAttribute("href", section.link);
+        const holder = document.createElement("div");
+        holder.setAttribute("class", "d-block col");
 
-        const label = document.createElement("label");
+        const card = document.createElement("a");
+        card.setAttribute("class", "d-block card shadow pb-5 h-100");
+        card.setAttribute("href", section.link);
+
+        const cardBody = document.createElement("div");
+        cardBody.setAttribute("class", "card-body");
+
+        const cardTitle = document.createElement("h5");
+        cardTitle.setAttribute("class", "card-title fw-normal");
         if (section.title.indexOf("&") > -1) {
-            label.innerHTML = section.title; // assuming we have & due to html entities
+            cardTitle.innerHTML = section.title; // assuming we have & due to html entities
         } else {
-            label.textContent = section.title;
+            cardTitle.textContent = section.title;
         }
-        holder.appendChild(label);
+        cardBody.appendChild(cardTitle);
+        card.appendChild(cardBody);
+        holder.appendChild(card);
         
         if (section.icon && section.icon != "none") {
             const icon = document.createElement("img");
-            icon.setAttribute("class", "icon")
-            holder.appendChild(icon);
             fetch(`/app/resources/${section.icon}`)
                 .then(response => response.json())
-                .then(resource =>  icon.setAttribute("src", resource.source))
+                .then(resource => {
+                    icon.setAttribute("src", resource.source);
+                    card.style.backgroundImage = "url('" + resource.source + "')"; ;
+                })
         }
         
         return holder;
 
     } 
     else if (section.type == "accordion") {
-        const accordion = document.createElement("section");
-        accordion.classList.add("accordion");
+
+        const randomID =  Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+
+        const accordion = document.createElement("div");
+        accordion.setAttribute("class","accordion mt-4 mb-5");
+        accordion.setAttribute("id", "accordion-" + randomID)
+
+        let index = 0;
 
         section.content.forEach(item => {
             switch (item.type) {
@@ -158,32 +300,43 @@ function render(section, acc_level = 3) {
                     throw `DataError: expected type "accordion-item", received type "${item.type}"`;
                     break;
                 case "accordion-item":
-                    const holder = document.createElement("article");
-                    holder.classList.add("item")
-                    holder.classList.add("closed");
+                    const holder = document.createElement("div");
+                    holder.setAttribute("class", "accordion-item");
 
-                    const header = document.createElement("header");
-                    const heading = document.createElement("h".concat(acc_level))
-                    heading.innerText = item.header;
-                    header.appendChild(heading);
-                    header.addEventListener("click", clk => {
-                        if (holder.classList.contains("closed")) {
-                            accordion.querySelectorAll("article.item").forEach(e => {
-                                e.classList.add("closed")
-                            });
-                            holder.classList.remove("closed"); 
-                            //src.nextSibling.scrollIntoView({ behaviour: "smooth", block: "start"});
-                            //document.querySelector("html").scrollTop -= 120;
-                        } else {
-                            holder.classList.add("closed");
-                        }
-                    })
+                    const header = document.createElement("h2");
+                    header.setAttribute("id", "header-" + index);
+                    header.setAttribute("class", "accordion-header");
+
+                    const headerButton = document.createElement("button");
+                    headerButton.setAttribute("class", "accordion-button collapsed");
+                    headerButton.setAttribute("type", "button");
+                    headerButton.setAttribute("data-bs-toggle", "collapse");
+                    headerButton.setAttribute("data-bs-target", "#collapse-" + randomID + "-" + index);
+                    headerButton.setAttribute("aria-controls", "collapse-" + index);
+                    headerButton.innerText = item.header;
+
+                    header.appendChild(headerButton);
+
+                    const collapse = document.createElement("div");
+                    collapse.setAttribute("id", "collapse-" + randomID + "-" + index);
+                    collapse.setAttribute("class", "accordion-collapse collapse");
+                    collapse.setAttribute("aria-labelledby", "header-" + index);
+                    collapse.setAttribute("data-bs-parent", "#accordion-" + randomID);
+
+                    const body = document.createElement("div");
+                    body.setAttribute("class", "accordion-body");
+
+                    body.appendChild(render({ type: "container", content: item.content}, acc_level + 1))
+
+                    collapse.appendChild(body);
                     holder.appendChild(header);
-                    holder.appendChild(render({ type: "container", content: item.content}, acc_level + 1));
-
+                    holder.appendChild(collapse);
                     accordion.appendChild(holder);
+
                     break;
             }
+
+            index++;
         })
 
         return accordion;
@@ -273,6 +426,8 @@ function render(section, acc_level = 3) {
         return holder;
     } else if (section.type == "goalsetter") {
         return render_goals(section);
+    } else if (section.type=="homepage-menu") {
+        return render_home_menu(section);
     } else if (section.type) {
         console.log("Unknown Section type: ", section.type);
         return document.createTextNode("");
@@ -526,43 +681,45 @@ function render_form(section, holder) {
 
 function render_goals(section) {
     let holder = document.createElement("section");
+    holder.setAttribute("class", "row row-cols-1 row-cols-md-3 g-3 mt-3")
     let isodate = function(d) { return d.toISOString().substr(0,10) }
 
-    let newgoaltemplate = "<h1 class='newgoal'>Set A New Goal</h1>";
-    let newgoalhandler = function(e) {
-        e.preventDefault();
-        this.removeEventListener("click", newgoalhandler);
+    let newgoaltemplate = `<div class="col"><div class="card goal unset text-center shadow">
+            <div class="card-body d-flex justify-content-center">
+                <div class="align-self-center">Set a new goal</div>
+            </div>
+        </div></div>`;
+
+    let newgoalhandler = function() {
 
         // load appropriate schema
         fetch(`/app/schemas/goals/${section.goaltype}`)
         .then(response => response.json())
         .then(schema => {
         // set up form
-            this.classList.add("popover");
-            document.querySelector("#modal-cover").classList.add("show");
-            let goal;
 
-            let form = this.appendChild(document.createElement("form"));
+            let goal;
+            let submitButton = document.getElementById("goal-yes");
+            let goalWrapper = document.getElementById("goalWrapper");
+
+            goalWrapper.innerHTML = "";
+            document.getElementById("goalLabel").innerHTML = "Set New Goal";
+            submitButton.innerText = "Next";
+
+            let form = goalWrapper.appendChild(document.createElement("form"));
+            form.setAttribute("id", "goal");
             let list = form.appendChild(document.createElement("datalist"));
             list.setAttribute("id", "activity");
             schema.activity.forEach(i => list.insertAdjacentHTML("beforeend", `<option>${i}</option>`))
-            let daysinput = schema.frequency.map(f => `<input type="radio" name="frequency" id="frequency-${f}" value="${f}"><label for="frequency-${f}">${f}</label>`).join("");
-            let minutesinput = schema.duration.map(f => `<input type="radio" name="duration" id="duration-${f}" value="${f}"><label for="duration-${f}">${f}</label>`).join("");
+
+            let daysInput = schema.frequency.map(f => `<div class="form-check form-check-inline"><input class="form-check-input" type="radio" name="frequency" id="frequency-${f}" value="${f}"><label class="form-check-label" for="frequency-${f}">${f}</label></div>`).join("");
+   
+            form.appendChild(document.createElement("p")).innerHTML = "I will do some <input class='form-control w-50 d-inline-block' type='text' name='activity' list='activity' placeholder='choose an activity or type your own'> this week.";
+            form.appendChild(document.createElement("p")).innerHTML = `I will do it on &nbsp;${daysInput} days.`;
+            form.appendChild(document.createElement("p")).innerHTML = `I will do it for <input class='form-control w-25 d-inline-block' type='number' name='duration' list='duration'/> minutes each day.`;
+            // form.insertAdjacentHTML("beforeend", '<p><input type="submit" value="Next" /></p>')
             
-            form.appendChild(document.createElement("p")).innerHTML = "I will do some <input type='text' name='activity' list='activity' placeholder='choose an activity or type your own'> this week.";
-            form.appendChild(document.createElement("p")).innerHTML = `I will do it on ${daysinput} days.`;
-            form.appendChild(document.createElement("p")).innerHTML = `I will do it for ${minutesinput} minutes each day.`;
-            form.insertAdjacentHTML("beforeend", '<p><input type="submit" value="Next" /><button name="cancel">Cancel</button></p>')
-            form.querySelector("button").addEventListener("click", e => {
-                e.stopPropagation(); e.preventDefault();
-                this.innerHTML = newgoaltemplate;
-                this.addEventListener("click", newgoalhandler);
-
-                this.classList.remove("popover");
-                document.querySelector("#modal-cover").classList.remove("show");
-
-            })
-            form.addEventListener("submit", e => {
+            submitButton.addEventListener("click", e => {
                 e.preventDefault();
 
                 goal = {
@@ -572,26 +729,20 @@ function render_goals(section) {
                     detail: form.elements['activity'].value,
                     days: form.elements['frequency'].value,
                     minutes: form.elements['duration'].value,
-
                 }
 
                 console.log(goal);
 
-                this.innerHTML = `
-                <h3>You're ready to set a new goal for the next week!</h3>
+                document.getElementById("goal-yes").innerText = "Save";
+                document.getElementById("goalWrapper").innerHTML = `
+                <h3 class='w-75 mb-5'>You're ready to set a new goal for the next week!</h3>
                 <section>
                 <p>You can always see your goals by clicking <strong>My Goals</strong> on the Being Active homepage.</p>
                 <p>In one week, you can come back to review your goal and to get a feedback message.</p>
                 <p>You may want to stick a reminder somewhere in your house.</p>
                 <p>Your goal is: to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.</p>
-                </section>
-                <button name="back">Back</button><button name="save">Save</button>`
-                this.querySelector("[name='back']").addEventListener("click", () => {
-                    this.innerHTML = "";
-                    this.appendChild(form);
-                    goal = undefined;
-                });
-                this.querySelector("[name='save']").addEventListener("click", () => {
+                </section>`;
+                submitButton.addEventListener("click", () => {
                     fetch("/app/mygoals/", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -599,36 +750,20 @@ function render_goals(section) {
                     }).then(response => response.json())
                     .then(outcome => {
                         if (outcome.status == "error") {
-                            this.innerHTML = `<p>We were not able to save your new goal. The error message was:</p>
-                            <p class="error">${outcome.message}</p>
-                            <button>OK</button>`;
-                            this.querySelector("button").addEventListener("click", e => {
-                                e.stopPropagation();
-
-                                this.innerHTML = newgoaltemplate;
-                                this.addEventListener("click", newgoalhandler);
-
-                                this.classList.remove("popover");
-                                document.querySelector("#modal-cover").classList.remove("show");
-                            })
+                            document.getElementById("toast-message-type").text("Error");
+                            document.getElementById("toast-message").text(`We were not able to save your new goal. ${outcome.message}`);
+                            bootstrap.Modal.getInstance(document.getElementById('goalModal')).hide();
                             return;
                         }
-                        this.innerHTML = "";
-                        let summary = this.appendChild(document.createElement("label"));
-                        summary.classList.add("goal-summary");
-                        summary.innerHTML = `My goal: to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.`;
+                        bootstrap.Modal.getInstance(document.getElementById('goalModal')).hide();
+                        goalWrapper.innerHTML = "";
 
-                        this.classList.add("active");
-                        // show the review date:
-                        let reviewdate = this.appendChild(document.createElement("span"));
-                        reviewdate.classList.add("goal-date");
-                        reviewdate.textContent = `Review on: ${new Date(Date.parse(goal.reviewDate)).toLocaleDateString()}`;
-
-                        this.classList.remove("popover");
-                        document.querySelector("#modal-cover").classList.remove("show");
                     }).catch(e => console.log(e))
                 })
             })
+
+            const modal = new bootstrap.Modal(document.getElementById('goalModal'));
+            modal.show();
         })
     }
 
@@ -643,72 +778,85 @@ function render_goals(section) {
         }).forEach(goal => {
             // add a goal to the holder
             let outer = document.createElement("div");
-            outer.classList.add("goal");
+            outer.classList.add("col");
+
+            let goalCard = document.createElement("div");
+            goalCard.setAttribute("class", "card goal text-center shadow h-100");
+
+            let goalCardBody = document.createElement("div");
+            goalCardBody.setAttribute("class", "card-body d-flex justify-content-center");
+
+            let goalCardContent = document.createElement("div");
+            goalCardContent.setAttribute("class", "align-self-center");
+
+
+            goalCardContent.innerHTML = `<h5 class="goal-summary">
+                        Do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.
+                    </h5>`;
+
+            goalCardBody.appendChild(goalCardContent);
+            goalCard.appendChild(goalCardBody);        
+            outer.appendChild(goalCard);
 
             let today = isodate(new Date());
 
-            let summary = outer.appendChild(document.createElement("label"));
-            summary.classList.add("goal-summary");
-            summary.innerHTML = `My goal: to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.`;
-
             if (goal.reviewDate <= today) {
-                outer.classList.add("review");
+                goalCard.classList.add("review");
                 
                 // create a review button
-                let review = outer.appendChild(document.createElement("button"));
-                review.classList.add("goal-review");
+                let review = goalCardContent.appendChild(document.createElement("button"));
+                review.setAttribute("class", "goal-review btn btn-primary mt-4 mb-3");
                 review.textContent = "Review this goal";
-                review.addEventListener("click", e => {
+                outer.addEventListener("click", function outerclick(e) {
                     e.stopPropagation();
-                    outer.classList.add("popover");
-                    document.querySelector("#modal-cover").classList.add("show");
-                    let reviewbox = outer.appendChild(document.createElement("div"));
-                    reviewbox.insertAdjacentHTML("afterbegin", 
-                        `<p>Have you been successful and completed your goal?</p>
-                        <div id="review-box-buttons">
-                            <button value="y">Yes, Totally</button><button value="p">Yes, Partly</button><button value="n">No, not at all</button>
-                        </div>`
-                    );
-                    reviewbox.querySelector("#review-box-buttons").addEventListener("click", e => {
+                    const modal = new bootstrap.Modal(document.getElementById('goalModal'));
+                    
+                    let submitButton = document.getElementById("goal-yes");
+                    let goalWrapper = document.getElementById("goalWrapper");
+
+                    goalWrapper.innerHTML = "";
+                    document.getElementById("goalLabel").innerHTML = "Review Goal";
+                    submitButton.classList.add("d-none")
+
+                    document.getElementById("goalWrapper").innerHTML = `<p>Have you been successful and completed your goal?</p>
+                    <div id="review-box-buttons" class="d-flex justify-content-evenly mt-5 mb-5">
+                        <button class="btn btn-light" value="y">Yes, Totally</button><button class="btn btn-light" value="p">Yes, Partly</button><button class="btn btn-light" value="n">No, not at all</button>
+                    </div>`;
+
+                    goalWrapper.querySelector("#review-box-buttons").addEventListener("click", e => {
                         e.stopPropagation();
                         if (e.target.tagName != "BUTTON") {
                             console.log(e.target); return;
                         }
 
-                        goal.status = "complete"; goal.outcome = e.target.value;
+                        goal.status = "complete";
+                        goal.outcome = e.target.value;
                         fetch("/app/mygoals/", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify(goal)
                         }).then(response => response.json())
                         .then(outcome => {
-                            outer.innerHTML = "";
-                            outer.insertAdjacentHTML("afterbegin", "<h3>Thank you for reviewing your goal</h3>")
-                            let message = outer.appendChild(document.createElement("p"));
-                            message.textContent = outcome.message;
-                            let finish = outer.appendChild(document.createElement("button"));
-                            finish.classList.add("goal-review-finish");
-                            finish.textContent = "Done";
-                            finish.addEventListener("click", e => {
+                            goalWrapper.innerHTML = "<h3 class='text-center mt-5 mb-5'>Thank you for reviewing your goal</h3>";
+                            submitButton.innerText = "Done";
+                            submitButton.classList.remove("d-none");
+                            submitButton.addEventListener("click", e => {
                                 e.stopPropagation();
-                                outer.innerHTML = newgoaltemplate;
-                                outer.addEventListener("click", newgoalhandler);
-                                outer.classList.remove("popover");
-                                document.querySelector("#modal-cover").classList.remove("show");
+                                modal.hide();
                             })
 
                         }).catch(e => {
                             console.log(e);
-                            outer.classList.add("popover");
-                            document.querySelector("#modal-cover").classList.add("show");
                         })
                     })
+
+                    modal.show();
                 })
             } else {
-                outer.classList.add("active");
+                goalCard.classList.add("active");
                 // show the review date:
-                let reviewdate = outer.appendChild(document.createElement("span"));
-                reviewdate.classList.add("goal-date");
+                let reviewdate = goalCardContent.appendChild(document.createElement("h6"));
+                reviewdate.setAttribute("class", "mt-4 goal-date");
                 reviewdate.textContent = `Review on: ${new Date(Date.parse(goal.reviewDate)).toLocaleDateString()}`;
             }
 
@@ -726,4 +874,277 @@ function render_goals(section) {
     })
 
     return holder;
+}
+
+function render_sepicker($) {
+    let holder = document.body.appendChild(create_modal());
+    $(holder).modal()
+    $(holder).on('hidden.bs.modal', function() {
+        holder.remove();
+    })
+    holder.classList.add("side-effect")
+
+    holder.$title.textContent = "Record a Side Effect";
+    holder.$body.innerHTML = `
+    <select name="setype"><option>Please select a side-effect to continue...</option></select>
+    `
+    holder.$footer.innerHTML = "<button id='se-close'>Cancel</button>"
+
+    holder.querySelector("#se-close").addEventListener("click", e => {
+        $(holder).modal('hide');
+    })
+
+    fetch("/app/schemas/sideeffects")
+    .then(response => response.json())
+    .then(schemas => {
+        const s = holder.querySelector("[name='setype']");
+        schemas.types.forEach(t => {
+            s.insertAdjacentHTML("beforeend", `<option value="${t.name}">${t.description}</option>`)
+        });
+
+        s.addEventListener("change", e => {
+            e.stopPropagation();
+            while(s.nextSibling) s.nextSibling.remove();
+            s.remove();
+            render_se({type: s.value}, holder)
+        })
+    })
+
+    $(holder).modal('show')
+}
+
+function render_se(section, holder) {
+
+    let form = document.createElement("form")
+    form.setAttribute("id", `se-${section.type}-details`);
+    
+    fetch(`/app/schemas/sideeffects/${section.type}`)
+    .then(response => response.json())
+    .then(schema => {
+        holder.$title.textContent = `Recording your ${schema.title}`
+        form.innerHTML =  `
+            <section>
+            <label for="date"> Which ${ schema.frequency } do you wish to record for?</label><span id="dateinput"></span><br />
+            <label for="frequency">How frequent were your ${ schema.embedtext }?</label><span><input type="number" id="frequency" name="frequency"> ${ schema.frequency == "week"? `days per week`: `${ schema.embedtext} per day` }</span><br />
+            <label for="severity">How bad were your ${ schema.embedtext }?</label><span id="severityinput"></span>
+            <label for="impact">How much did your ${ schema.embedtext } impact your daily life?</label><span id="impactinput"></span>
+            <label for="notes">Notes: <span class="sidenote">You can use this box to record further details, e.g. the times of day, triggers, things you tried to help</span></label><br />
+            <span id="notesinput"><textarea name="notes" id="notes" cols="50" rows="5"></textarea></span>
+            </section>
+            `
+
+        holder.$body.appendChild(form);
+
+        holder.$footer.innerHTML = `<input type="submit" form="${form.getAttribute("id")}" value="Save details"><button type="button" id="se-form-cancel">Cancel</button>`
+
+        form.querySelector("#severityinput").innerHTML = (() => {
+            let opts = [];
+            for (let opt of ["mild", "moderate", "severe"]) {
+                opts.push(`<input type="radio" hidden id="severity-${opt}" name="severity" value="${opt}"><label for="severity-${opt}">${opt}</label>`)
+            }
+            return opts.join("");
+        })();
+
+        form.querySelector("#impactinput").innerHTML = (() => {
+            let opts = [];
+            for (let opt of ["a little", "moderately", "a lot"]) {
+                opts.push(`<input type="radio" hidden id="impact-${opt}" name="impact" value="${opt}"><label for="impact-${opt}">${opt}</label>`)
+            }
+            return opts.join("");
+        })();
+
+
+        form.querySelector("#dateinput").append(...(() => {
+            let d = document.createElement("input");
+            d.setAttribute("type", "text");
+            d.setAttribute("readonly", "");
+            d.classList.add("datetext");
+            d.setAttribute("name", "date")
+
+            let c = render_calendar();
+            c.classList.add(schema.frequency);
+
+            c.addEventListener("redraw", e => {
+                c.querySelectorAll("td").forEach(td => {
+                    td.textContent = td.dataset.thisdate.substring(8)
+                    if (td.dataset.thisdate.substring(0,7) != c.querySelector("#cal-caption").dataset.basedate.substring(0,7)) {
+                        td.classList.add("faded");
+                    }
+                })
+            })
+
+            c.dispatchEvent(new CustomEvent("redraw"));
+
+            if (schema.frequency == "week") {
+                c.querySelector("td.selected").parentElement.classList.add("selected");
+                c.querySelector("td.selected").classList.remove("selected");
+            }
+
+            c.addEventListener("click", e => {
+
+                src = e.target;
+                
+                if (src.matches("tbody *")) {
+                    e.preventDefault(); e.stopPropagation();
+                    // click on table should select day or week based on schema,
+
+                    // first remove any existing selection:
+                    c.querySelectorAll(".selected").forEach(e => e.classList.remove("selected"))
+                    
+                    // select the apppropriate row or cell and update the input dataset and value;
+                    // the dataset values will be submitted via fetch/json while the value will be
+                    // visible to the user.
+                    if (schema.frequency == "week") {
+                        while (src.tagName != "TR") src = src.parentElement;
+
+                        src.classList.add("selected");
+                        d.dataset.datefrom = src.querySelector("td").dataset.thisdate;
+                        d.dataset.dateto = Array.from(src.querySelectorAll("td"), td => td.dataset.thisdate).filter((e,i,a) => i == a.length -1).join("");
+                        d.value = `${new Date(d.dataset.datefrom).toLocaleDateString()} to ${new Date(d.dataset.dateto).toLocaleDateString()}`;
+                        d.blur();
+                    } else {
+                        while (src.tagName != "TD") src= src.parentElement;
+                        src.classList.add("selected");
+
+                        d.dataset.date = src.dataset.thisdate;
+                        d.value = new Date(src.dataset.thisdate).toLocaleDateString();
+                        d.blur();
+                    }
+                }
+            })
+
+
+            return [d,c];
+        })())
+
+        holder.querySelector("#se-form-cancel").addEventListener("click", e => {
+            $(holder).modal('hide')
+        })
+    
+        // fetch already completed inputs and set up datpicker validation
+        fetch(`/app/mydiary/sideeffects/${section.type}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+        })
+    })
+
+    form.addEventListener("submit", e => {
+        e.preventDefault(); e.stopPropagation();
+
+        let sideeffect = {
+            type: section.type,
+            datefrom: form.elements['date'].dataset.date? form.elements['date'].dataset.date: form.elements['date'].dataset.datefrom,
+            dateto: form.elements['date'].dataset.date? form.elements['date'].dataset.date: form.elements['date'].dataset.dateto,
+            frequency: form.elements['frequency'].value,
+            severity: form.elements['severity'].value,
+            impact: form.elements['impact'].value,
+            notes: form.elements['notes'].value
+        }
+
+        fetch("/app/mydiary/sideeffects/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(sideeffect)
+        }).then(() => {
+            $(holder).modal('hide');
+        })
+
+    })
+}
+
+function render_home_menu(section) {
+    if (section.type != "homepage-menu") return null;
+
+    function createItem() {
+        let holder = document.createElement("div");
+        holder.setAttribute("class", "d-block col");
+        holder.innerHTML = `
+        <a class="d-block card shadow h-100" href="">
+            <div class="card-body">
+                <h5 class="card-title"></h5>
+                <p class="card-text"></p>
+            </div>
+        </a>`
+
+        holder.$link = holder.querySelector("a");
+        holder.$title = holder.querySelector(".card-title");
+        holder.$subtitle = holder.querySelector(".card-text");
+
+        return holder;
+    }
+
+    let menu = document.createElement("div");
+    menu.setAttribute("class", "row homemenu");
+
+    menu.innerHTML = `
+    <div class="col-12 col-xl-8 row row-cols-1 row-cols-lg-2 g-3 mt-3 hmpg-sects"></div>
+    <div class="col-12 col-xl-4 row row-cols-1 row-cols-lg-2 row-cols-xl-1 g-3 mt-3 hmpg-acts"></div>
+    <div class="col-12 row row-cols-1 g-3 mt-3 hmpg-prof"></div>
+    `
+
+    menu.$sections = menu.querySelector(".hmpg-sects");
+    menu.$actions = menu.querySelector(".hmpg-acts");
+    menu.$profiler = menu.querySelector(".hmpg-prof");
+
+    section.mainitems.forEach(i => {
+        let item = createItem();
+        item.$title.textContent = i.title;
+        item.$subtitle.textContent = i.description;
+        item.$link.setAttribute("href", i.link);
+        item.$link.classList.add("pb-5");
+
+        if (i.icon && i.icon != "none") {
+
+            fetch(`/app/resources/${i.icon}`)
+            .then(response => response.json())
+            .then(resource => {
+                item.$link.style.backgroundImage = `url("${resource.source}")`;
+            })
+        }
+
+        menu.$sections.appendChild(item);
+    })
+
+    section.sideitems.forEach(i => {
+        let item = createItem();
+        item.$title.textContent = i.title;
+        item.$subtitle.textContent = i.description;
+        item.$link.setAttribute("href", i.link);
+        item.$link.classList.add("pb-5");
+
+        if (i.icon && i.icon != "none") {
+
+            fetch(`/app/resources/${i.icon}`)
+            .then(response => response.json())
+            .then(resource => {
+                item.$link.style.backgroundImage = `url("${resource.source}")`;
+            })
+        }
+
+        menu.$actions.appendChild(item);
+    })
+
+    let profiler = createItem();
+    profiler.$title.textContent = section.profiler.title;
+    profiler.$subtitle.textContent = section.profiler.description;
+    profiler.$link.setAttribute("href", "#");
+    profiler.$link.classList.remove("h-100");
+
+
+    if (section.profiler.icon && section.profiler.icon != "none") {
+        profiler.$link.classList.add("pb-5");
+
+        fetch(`/app/resources/${i.icon}`)
+        .then(response => response.json())
+        .then(resource => {
+            profiler.$link.style.backgroundImage = `url("${resource.source}")`;
+        })
+    }
+
+    menu.$profiler.appendChild(profiler);
+
+    return menu;
 }

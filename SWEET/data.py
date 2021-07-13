@@ -118,9 +118,6 @@ def registerUser(userID, password, fullName, role):
 
 # user-submitted data
 
-def getAllGoals():
-    return 
-
 def getGoals(user=None):
     goals = json.loads(getContainer(secrets.usersource).download_blob(secrets.usergoals).readall())
     if user is None:
@@ -164,6 +161,46 @@ def updateGoals(user, goal):
         return False, "3 active goals of this type already"
 
     return False, f"Unrecognised new goal status {goal['status']}"
+
+def getDiary(user=None):
+    diary = json.loads(getContainer(secrets.usersource).download_blob(secrets.userdiary).readall())
+    if user is None:
+        return diary
+
+    if user['userID'] not in diary:
+        diary[user["userID"]] = {"sideeffects": [], "reminders": [], "adherence": [], "notes": []}
+        save(secrets.usersource, secrets.userdiary, json.dumps(diary))
+
+    return diary[user['userID']]
+
+
+def getSideEffects(user=None, type=None):
+    diary = getDiary(user)
+    if user is None:
+        return { "sideeffects": [ s for u in diary.values() for s in u["sideeffects"] ]}
+
+    if type is None:
+        return { "sideeffects": diary["sideeffects"] }
+    else:
+        return { "sideeffects": [s for s in diary['sideeffects'] if s['type'] == type]}
+
+def recordSideEffect(user, sideeffect):
+    diary = getDiary()
+    id = user['userID']
+
+    if id not in diary:
+       diary[id] = {"sideeffects": [], "reminders": [], "adherence": [], "notes": []}
+
+    userse = diary[id]['sideeffects']
+
+    existing = next((s for s in userse if s['type'] == sideeffect['type'] and s['todate'] == sideeffect['todate']), False)
+
+    if existing:
+        existing.update(sideeffect)
+    else:
+        userse.append(sideeffect)
+
+    save(secrets.usersource, secrets.userdiary, json.dumps(diary))
 
 
 # utility methods
@@ -221,6 +258,8 @@ def ensureDataSources():
         usercnt.upload_blob(secrets.usertable, json.dumps({}))
     if secrets.usergoals not in [blob.name for blob in usercnt.list_blobs()]:
         usercnt.upload_blob(secrets.usergoals, json.dumps({}))
+    if secrets.userdiary not in [blob.name for blob in usercnt.list_blobs()]:
+        usercnt.upload_blob(secrets.userdiary, json.dumps({}))
 
     if getUser(secrets.admin_user) is None:
         registerUser(secrets.admin_user, secrets.admin_password, secrets.admin_fullName, secrets.admin_role)
