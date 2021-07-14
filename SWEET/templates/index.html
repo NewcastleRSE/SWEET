@@ -127,10 +127,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="{{ url_for('static', filename='scripts/app.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/lz-string.js') }}"></script>
-    <script>
+    <script type="module">
+    import {renderProfiler} from '{{ url_for('static', filename='scripts/profiler.js') }}'
+
         document.addEventListener("DOMContentLoaded", dcl => {
             fetch("/app/structure")
             .then(response => response.json())
@@ -141,7 +142,7 @@
         });
 
         document.querySelector("#app-buttons .add-note").addEventListener("click", e => {
-            render_sepicker($);
+            renderProfiler({});
         });
 
         window.addEventListener("popstate", pse => {

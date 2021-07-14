@@ -154,12 +154,17 @@ function create_modal() {
     </div>
     `, 'text/html').body.firstElementChild;
 
-    modal.$title = modal.querySelector(".modal-title");
-    modal.$body = modal.querySelector(".modal-body");
-    modal.$footer = modal.querySelector(".modal-footer");
+    document.body.appendChild(modal);
+    bs = new bootstrap.Modal(modal);
 
-    console.log(window.$);
-    return modal;
+    return {
+        get title() { return modal.querySelector(".modal-title")},
+        get body() { return modal.querySelector(".modal-body")},
+        get footer() { return modal.querySelector(".modal-footer")},
+        set size(v) {modal.querySelector(".modal-dialog").classList.add(`modal-${v}`)},
+        show: function() { bs.show() },
+        hide: function(destroy=false) { bs.hide(); if (destroy) modal.remove(); }
+    };
 }
 
 function render(section, acc_level = 3) {
@@ -876,10 +881,11 @@ function render_goals(section) {
     return holder;
 }
 
-function render_sepicker($) {
+function render_sepicker() {
     let holder = document.body.appendChild(create_modal());
-    $(holder).modal()
-    $(holder).on('hidden.bs.modal', function() {
+    holder.$size = 'lg';
+
+    holder.addEventListener('hidden.bs.modal', function() {
         holder.remove();
     })
     holder.classList.add("side-effect")
@@ -891,7 +897,7 @@ function render_sepicker($) {
     holder.$footer.innerHTML = "<button id='se-close'>Cancel</button>"
 
     holder.querySelector("#se-close").addEventListener("click", e => {
-        $(holder).modal('hide');
+        holder.$$.hide();
     })
 
     fetch("/app/schemas/sideeffects")
@@ -910,7 +916,7 @@ function render_sepicker($) {
         })
     })
 
-    $(holder).modal('show')
+    holder.$$.show();
 }
 
 function render_se(section, holder) {
@@ -1018,7 +1024,7 @@ function render_se(section, holder) {
         })())
 
         holder.querySelector("#se-form-cancel").addEventListener("click", e => {
-            $(holder).modal('hide')
+            holder.$$.hide();
         })
     
         // fetch already completed inputs and set up datpicker validation
@@ -1049,7 +1055,7 @@ function render_se(section, holder) {
             },
             body: JSON.stringify(sideeffect)
         }).then(() => {
-            $(holder).modal('hide');
+            holder.$$.hide();
         })
 
     })
