@@ -4,5 +4,5 @@ export {} from './accordion.js';
 export {} from './blockquote.js';
 export {} from './menu.js';
 export {alertRenderer} from './alert.js';
-export {} from './goalsetter.js';
+export {goalRenderer} from './goalsetter.js';
 export {popupRenderer} from './popup.js';

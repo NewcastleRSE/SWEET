@@ -29,7 +29,7 @@ export class GoalSetter extends HTMLElement {
 
 }
 
-export function render_goals(section) {
+export function goalRenderer(section) {
     let holder = document.createElement("section");
     holder.setAttribute("class", "row row-cols-1 row-cols-md-3 g-3 mt-3")
     let isodate = function(d) { return d.toISOString().substr(0,10) }
