@@ -1,8 +1,8 @@
 export {markdownRenderer} from './markdown.js';
 export {embedRenderer} from './embed.js';
-export {} from './accordion.js';
-export {} from './blockquote.js';
-export {} from './menu.js';
+export {popupRenderer} from './popup.js';
+export {blockquoteRenderer} from './blockquote.js';
 export {alertRenderer} from './alert.js';
 export {goalRenderer} from './goalsetter.js';
-export {popupRenderer} from './popup.js';
+export {accordionRenderer} from './accordion.js';
+export {menuRenderer, menuItemRenderer} from './menu.js';

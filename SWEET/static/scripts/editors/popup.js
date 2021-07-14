@@ -57,7 +57,7 @@ export class PopupEditor extends HTMLElement {
         this.$.byline.setAttribute("name", "byline");
         fields.insertAdjacentHTML("beforeend", "<br />");
 
-        fields.insertAdjacentHTML("beforeend", "<label>Source</label>");
+        fields.insertAdjacentHTML("beforeend", "<label>Content:</label>");
         this.$.content = fields.appendChild(document.createElement("content-editor"));
         fields.insertAdjacentHTML("beforeend", "<br />");
     }

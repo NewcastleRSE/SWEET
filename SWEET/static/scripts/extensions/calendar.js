@@ -46,7 +46,7 @@ function populateMonths(body) {
     }
 }
 
-export function renderCalendar(selectedDate=new Date()) {
+export function createCalendar(selectedDate=new Date()) {
     let cal = document.createElement("table");
     cal.classList.add("calendar");
 

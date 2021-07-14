@@ -1,4 +1,4 @@
-export function renderProfiler(section) {
+export function profilerModalRenderer(section) {
     function create_modal() {
         let modal = new DOMParser().parseFromString(`
         <div class="modal fade" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
