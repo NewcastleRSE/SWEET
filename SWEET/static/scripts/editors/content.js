@@ -73,6 +73,8 @@ export class ContentEditor extends HTMLElement {
             }
 
             .uneditable {
+                box-sizing: border-box;
+                padding: 1em;
                 width: 100%;
                 background-color: rgba(0,0,0,0.5);
             }
@@ -241,7 +243,7 @@ export class ContentEditor extends HTMLElement {
                     u.classList.add("uneditable");
 
                     u.innerHTML = `<h1>Predefined Content Block</h1>
-                    <h3>Content-Type: ${ e.contentType }</h3>
+                    <h3>Content-Type: ${ c.type }</h3>
                     <h5>This content cannot be edited or moved, but you can place other content around it</h5>`
 
                     Object.defineProperty(u, "jsonvalue", { get: function() { return c; }});
