@@ -1,0 +1,100 @@
+
+const calendarutils = {
+    monthnames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    attributise: (d) => `${d.getFullYear()}-${d.getMonth()<9?"0":""}${d.getMonth()+1}-${d.getDate()<10?"0":""}${d.getDate()}`
+}
+
+function populateDays(body, basedate=new Date()) {
+    let months31 = [0,2,4,6,7,9,11]; // Jan, Mar, May, Jul, Aug, Oct, Dec
+    let day1 = new Date(basedate.getFullYear(), basedate.getMonth());
+    
+    // set rows required to fit current month: 
+    // 5 unless 
+    //   * 1st is a Sun & it's not Feb
+    //   * 1st is a Sat & month has 31 days
+    let rows = 5;
+    if ((day1.getDay() == 0 && day1.getMonth() != 1) || (day1.getDay() == 6 && months31.includes(basedate.getMonth()))) rows = 6;
+
+    // If the 1st isn't a Monday, start the calendar on the Monday before it;
+    if (day1.getDay() != 1) {
+        let countback = day1.getDay() == 0? 6: day1.getDay() - 1;
+        day1.setDate(day1.getDate() - countback);
+    }
+    
+    body.innerHTML = "";
+    for (let w=0; w<rows; w++) {
+        let row = body.appendChild(document.createElement("tr"));
+        for (let d of [0,1,2,3,4,5,6]) {
+            let days = 7*w+d;
+            let thisdate = new Date(day1.getFullYear(), day1.getMonth(), day1.getDate() + days);
+            let cell = row.appendChild(document.createElement("td"));
+            cell.setAttribute("data-thisdate", calendarutils.attributise(thisdate));
+        }
+    }
+}
+
+function populateMonths(body) {
+    body.innerHTML = "";
+    let months = [["Jan", "Feb", "Mar", "Apr"], ["May", "Jun", "Jul", "Aug"], ["Sep", "Oct", "Nov", "Dec"]]
+    for (let block of months) {
+        let row = body.appendChild(document.createElement("tr"));
+        for (let month of block) {
+            let cell = row.appendChild(document.createElement("td"));
+            cell.setAttribute("data-thismonth", month);
+            cell.textContent = month;
+        }
+    }
+}
+
+export function renderCalendar(selectedDate=new Date()) {
+    let cal = document.createElement("table");
+    cal.classList.add("calendar");
+
+    let caption = cal.appendChild(document.createElement("caption"));
+    caption.innerHTML = `<section><span class="prev">&lt;</span> <span id="cal-caption" data-basedate="${calendarutils.attributise(selectedDate)}">${calendarutils.monthnames[selectedDate.getMonth()]}</span><span class="next">&gt;</span></section>`;
+    let tbody = cal.appendChild(document.createElement("tbody"));
+    tbody.dataset.mode = "select";
+    populateDays(tbody, selectedDate);
+    cal.querySelector(`[data-thisdate='${calendarutils.attributise(selectedDate)}']`).classList.add("selected");
+    
+    // prevent calendar from receiving focus:
+    cal.addEventListener("mousedown", e => e.preventDefault());
+
+    cal.addEventListener("click", e => {
+        if (tbody.dataset.mode != "select") e.stopImmediatePropagation();
+
+        src = e.target;
+
+        if (src.matches("caption span, caption span *")) {
+            e.stopPropagation();
+
+            // click on span within caption: get the span to determine action:
+            while (src.tagName != "SPAN") {
+                src = src.parentElement;
+            }
+
+            if (src.hasAttribute("id")) {
+                // must be the month header, as prev & next don't get assigned ID
+                // replace calendar body with months display
+                // <awaiting implementation of new month selector below> populateMonths(c.querySelector("tbody"));
+            } else {
+                let dir = src.classList.contains("prev")? -1: src.classList.contains("next")? 1: 0;
+                
+                // no id, no prev/next class, someone's been messing with the code!
+                if (dir == 0) throw `Unknown span in calendar caption: ${src}`;
+
+                let basedate = new Date(cal.querySelector("#cal-caption").dataset.basedate + "T12:00:00Z");
+                basedate.setMonth(basedate.getMonth() + dir);
+                populateDays(cal.querySelector("tbody"), basedate);
+
+                cal.querySelector("#cal-caption").textContent = `${calendarutils.monthnames[basedate.getMonth()]} ${basedate.getFullYear()}`;
+                cal.querySelector("#cal-caption").dataset.basedate = calendarutils.attributise(basedate);
+
+                cal.dispatchEvent(new CustomEvent("redraw"));
+            }
+        }
+    })
+
+    return cal;
+}
+
