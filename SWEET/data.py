@@ -202,6 +202,20 @@ def recordSideEffect(user, sideeffect):
 
     save(secrets.usersource, secrets.userdiary, json.dumps(diary))
 
+def recordProfiler(user, profiler):
+    diary = getDiary()
+    id = user['userID']
+
+    if id not in diary:
+        diary[id] = {"sideeffects": [], "reminders": [], "adherence": [], "notes": [], "profilers": []}
+
+    userdiary = diary[id]
+    if "profilers" not in userdiary:
+        userdiary["profilers"] = []
+
+    userdiary["profilers"].append(profiler)
+    save(secrets.usersource, secrets.userdiary, json.dumps(diary))
+
 
 # utility methods
 
