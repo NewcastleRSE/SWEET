@@ -20,7 +20,7 @@
   <!-- Fixed navbar -->
   <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top shadow">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#home"><img src="{{ url_for('static', filename='images/logo-2.png') }}" alt="logo" height="36" class="d-inline-block align-text-top"></a>
+      <a class="navbar-brand" href="#home"><img src="{{ url_for('static', filename='images/logo-3.png') }}" alt="logo" height="36" class="d-inline-block align-text-top"></a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -30,14 +30,20 @@
             <a class="nav-link active" aria-current="page" href="#home">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="calendar.html">Diary</a>
+            <a class="nav-link" href="">My Account</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="">My Contacts</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">About</a>
+          </li>
+          <!-- <li class="nav-item">
             <a class="nav-link" href="" data-bs-toggle="modal" data-bs-target="#profilerModal">My HT Guide</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#myapp">My Details</a>
-          </li>
+          </li> -->
           {% if user['role'] in ['sysadmin', 'editor'] %}
           <li class="nav-item">
             <a class="nav-link" href="/edit">Editor</a>
