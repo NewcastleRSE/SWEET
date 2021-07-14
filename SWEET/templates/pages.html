@@ -435,7 +435,7 @@
                     label.dataset.slug = page.slug;
                     label.dataset.path = item.pageInfo.path;
                     label.setAttribute("title", label.dataset.path);
-                    label.textContent = page.title;
+                    label.textContent = page.title? page.title: "No page title";
 
                     if (page.pages) {
 
