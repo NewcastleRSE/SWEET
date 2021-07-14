@@ -1,3 +1,5 @@
+import { renderProfiler } from "./profiler.js";
+
 async function init_page() {
     const path = location.hash && location.hash.length > 1? location.hash: "#home";
 
@@ -18,7 +20,7 @@ async function loadSection(path) {
         const url = `/app/content?path=${encodeURIComponent(path)}`
         let section = await fetch(url).then(response => response.json());
 
-        pathslugs = path.substr(1).split("/");
+        const pathslugs = path.substr(1).split("/");
         let slug = pathslugs.shift();
         page = page[slug];
         const tree = [];
@@ -1139,6 +1141,11 @@ function render_home_menu(section) {
     profiler.$link.setAttribute("href", "#");
     profiler.$link.classList.remove("h-100");
 
+    profiler.addEventListener("click", e => {
+        e.preventDefault(); e.stopPropagation();
+
+        renderProfiler({ type: "profiler", dueDate: "2021-07-14" })
+    })
 
     if (section.profiler.icon && section.profiler.icon != "none") {
         profiler.$link.classList.add("pb-5");
@@ -1154,3 +1161,5 @@ function render_home_menu(section) {
 
     return menu;
 }
+
+export { init_page, loadSection, render, render_calendar, render_goals, render_sepicker, render_home_menu, create_modal}

@@ -127,27 +127,29 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="{{ url_for('static', filename='scripts/app.js') }}"></script>
+    <!-- script src="{{ url_for('static', filename='scripts/app.js') }}" type="module"></script -->
     <script src="{{ url_for('static', filename='scripts/lz-string.js') }}"></script>
     <script type="module">
-    import {renderProfiler} from '{{ url_for('static', filename='scripts/profiler.js') }}'
+    import * as app from "{{ url_for('static', filename='scripts/app.js') }}"
+    import { renderProfiler } from "{{ url_for('static', filename='scripts/profiler.js') }}"
+    
 
         document.addEventListener("DOMContentLoaded", dcl => {
             fetch("/app/structure")
             .then(response => response.json())
             .then(data => {
                 localStorage.setItem("SWEET", JSON.stringify(data));
-                init_page();
+                app.init_page();
             })
         });
 
         document.querySelector("#app-buttons .add-note").addEventListener("click", e => {
-            renderProfiler({});
+            renderProfiler({ type: "profiler", dueDate: "2021-07-14" });
         });
 
         window.addEventListener("popstate", pse => {
             window.scroll(0,0);
-            init_page();
+            app.init_page();
         })
 
     function init_profiler() {

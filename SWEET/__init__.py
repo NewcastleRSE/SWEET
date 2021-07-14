@@ -202,7 +202,7 @@ def create_app():
     
     @app.route("/app/mydiary")
     def getDiary():
-        return { "sideeffects": [], "reminders": [], "adherence": [], "notes": []}
+        return { "sideeffects": [], "reminders": [], "adherence": [], "notes": [], "profilers": []}
 
     @app.route("/app/mydiary/sideeffects/<setype>")
     def getSideEffects(setype):
@@ -228,6 +228,24 @@ def create_app():
 
                 return {"status": "OK", "message": "Update complete"}
 
+            return {"status": "error", "message": "Update request sent without json"}, 400
+
+        return {"status": "error", "message": "Login required"}, 403
+
+    @app.route("/app/profiler/", methods=["POST"])
+    def profiler():
+        if "user" in session:
+            user = data.getLoggedInUser(session['user'])
+            if user is None:
+                return {"status": "error", "message": "Valid login required"}, 403
+
+            if request.is_json:
+                prof = request.json
+                result, output = data.recordProfiler(user, prof)
+
+                if result:
+                    return { "status": "OK", "details": output }
+    
             return {"status": "error", "message": "Update request sent without json"}, 400
 
         return {"status": "error", "message": "Login required"}, 403
@@ -271,18 +289,6 @@ def create_app():
                 return { "status": "error", "message": "Update request sent without json data"}, 400
         return {"status": "error", "message": "Login required"}, 403
 
-    @app.route("/app/profiler/", methods=["POST"])
-    def profiler():
-        if "user" in session:
-            if request.is_json:
-                data = request.json
-                if 'page' in data:
-                    template = f'partial/profiler-p{data["page"] + 1}.html'
-                    return render_template(template, data=data)
-
-            return { 'status': "OK" }
-        
-        return redirect(url_for("login"))
 
     return app
 

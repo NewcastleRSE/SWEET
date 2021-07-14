@@ -1,4 +1,34 @@
 export function renderProfiler(section) {
+    function create_modal() {
+        let modal = new DOMParser().parseFromString(`
+        <div class="modal fade" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+            </div>
+        </div>
+        `, 'text/html').body.firstElementChild;
+    
+        document.body.appendChild(modal);
+        let bs = new bootstrap.Modal(modal);
+    
+        return {
+            get title() { return modal.querySelector(".modal-title")},
+            get body() { return modal.querySelector(".modal-body")},
+            get footer() { return modal.querySelector(".modal-footer")},
+            set size(v) {modal.querySelector(".modal-dialog").classList.add(`modal-${v}`)},
+            show: function() { bs.show() },
+            hide: function(destroy=false) { bs.hide(); if (destroy) modal.remove(); }
+        };
+    }
     // create the modal 
     if (!section.modal) {
         section.modal = create_modal();
@@ -40,7 +70,8 @@ export function renderProfiler(section) {
                 
                 // post section back to server
                 const profilerResponse = {
-                    result: "delayed",
+                    dueDate: section.dueDate,
+                    result: "postponed",
                     reminderDate: "",
                 }
                 
@@ -53,6 +84,7 @@ export function renderProfiler(section) {
                 section.modal.footer.querySelector("#prof-no").addEventListener("click", () => {
 
                     const profilerResponse = {
+                        dueDate: section.dueDate,
                         dateComplete: "",
                         result: "refused",
                         reason: "value"
@@ -70,7 +102,6 @@ export function renderProfiler(section) {
         () => { 
             /* page 1 renderer */
             
-            if (section.answers[0]) {
                 section.modal.title.textContent = `Profiler`;
                 section.modal.body.innerHTML = `<form id="prof-p1">
                     <p>Please indicate whether you agree or disagree with the following statements:</p>
@@ -122,12 +153,12 @@ export function renderProfiler(section) {
                     e.stopPropagation();
                     section.modal.hide(true);
                 })
-            }
+
         },
         () => {
             /* page 2  renderer */
             let answers = section.answers[1];
-            const concerns = (answers.N && answers.C && answers.P);
+            const concerns = (answers.N || answers.C || answers.P);
 
             if (concerns) {
                 // render further questions:
@@ -146,7 +177,7 @@ export function renderProfiler(section) {
                                 <td class="text-center align-middle"><input type="checkbox" name="agree" value="N1" class="form-check-input">
                             </tr>
                             <tr>
-                                <td class="pe-3">I’m not convinced that I need to take hormone therapy for 5-10 years </td>
+                                <td class="pe-3">I’m not convinced that I need to take hormone therapy for 5-10 years</td>
                                 <td class="text-center align-middle"><input type="checkbox" name="agree" value="N2" class="form-check-input"></td>
                             </tr>
                             <tr>
@@ -154,7 +185,7 @@ export function renderProfiler(section) {
                                 <td class="text-center align-middle"><input type="checkbox" name="agree" value="N3" class="form-check-input"></td>
                             </tr>
                             <tr>
-                                <td class="pe-3">I’m not convinced that hormone therapy is worth it for me </td>
+                                <td class="pe-3">I’m not convinced that hormone therapy is worth it for me</td>
                                 <td class="text-center align-middle"><input type="checkbox" name="agreee" value="N4" class="form-check-input"></td>
                             </tr>
                         </tbody>
@@ -220,17 +251,19 @@ export function renderProfiler(section) {
 
                     // post completed profiler;
                     const profilerResponse = {
+                        dueDate: section.dueDate,
                         dateComplete: "",
                         result: "complete",
                         concernAreas: ((n,c,p) => {let a = []; if (n) a.push("Necessity"); if (c) a.push("Concern"); if (p) a.push("Practicality"); return a.join(",")})(answers.N, answers.C, answers.P),
-                        concernSpecifics: Array.from(e.target.elements['agree']).filter(c => c.checked).map(c = c.value).join(",")
+                        concernSpecifics: Array.from(e.target.elements['agree']).filter(c => c.checked).map(c => c.value)
                     }
 
                     post(profilerResponse).then(response => response.json())
                     .then(result => {
+                        console.log(result);
                         if (result.status == "OK") {
                             section.modal.body.innerHTML = "";
-                            result.content.forEach(c => section.modal.body.appendChild(render(c)))
+                            result.details.content.forEach(c => section.modal.body.appendChild(app.render(c)))
 
                             section.modal.footer.innerHTML = `<button type="button" class="btn btn-primary" id="prof-finish">Finish</button>`;
                             section.modal.footer.querySelector("#prof-finish").addEventListener("click", e => {
@@ -262,12 +295,13 @@ export function renderProfiler(section) {
             } else {
                 // post a 'no concerns' response to the server
                 const profilerResponse = {
+                    dueDate: section.dueDate,
                     dateCompleted: "",
                     result: "no-concerns"
                 }
 
                 // post response
-
+                post(profilerResponse)
 
                 // display a closing message.
                 section.modal.body.innerHTML = `<p>Great to hear that you are getting on with your hormone therapy. We will check in with you again in the next few months.</p><p>You can also access these questions at any time from the SWEET home page.</p><p>In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within Managing HT. Alternatively you can speak to your breast cancer team or your GP.</p>`
