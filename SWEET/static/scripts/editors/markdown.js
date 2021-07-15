@@ -74,6 +74,8 @@ export function markdownRenderer(section) {
     let holder = document.createElement("section");
     if (section.encoding == "lz-string:UTF16") {
         holder.innerHTML = marked(LZString.decompressFromUTF16(section.text));
+    } else if (section.encoding == "raw") {
+        holder.innerHTML = marked(section.text);
     } else {
         holder.innerHTML = `<p class="error">Unknown markdown section encoding: ${section.encoding}</p>`;
     }

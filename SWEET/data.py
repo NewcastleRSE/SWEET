@@ -202,6 +202,43 @@ def recordSideEffect(user, sideeffect):
 
     save(secrets.usersource, secrets.userdiary, json.dumps(diary))
 
+def recordProfiler(user, profiler):
+    diary = getDiary()
+    id = user['userID']
+
+    if id not in diary:
+        diary[id] = {"sideeffects": [], "reminders": [], "adherence": [], "notes": [], "profilers": []}
+
+    userdiary = diary[id]
+    if "profilers" not in userdiary:
+        userdiary["profilers"] = []
+
+    existing = next((p for p in userdiary["profilers"] if p["dueDate"] == profiler["dueDate"]), None)
+
+    if existing:
+        existing.update(profiler)
+    else:
+        userdiary["profilers"].append(profiler)
+
+    save(secrets.usersource, secrets.userdiary, json.dumps(diary))
+
+    if profiler["result"] in ["postponed", "refused", "no-concerns"]:
+        return True, { "result": profiler["result"] }
+    else:
+        # open profilerResponses.json
+        profRes = json.loads(getContainer(secrets.usersource).download_blob("profilerResponses.json").readall())
+        # filter appropriate response content
+        output = { "content": [
+            { "type": "markdown", "encoding": "raw", "text": "Based on your responses, we’ve selected a series of topics which are tailored to your concerns / questions.\n\nYou can read these now or save them and come back to them later. We hope these will be helpful for you.\n\nWe’ll check in again in a few months. In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within Managing HT. Alternatively you can speak to your breast cancer team or your GP.\n\nClick on any of the below links to find out more." },
+            { "type": "accordion", "content": []}
+        ] }
+
+        for c in profiler["concernSpecifics"]:
+            output["content"][1]["content"].append(profRes[c])
+
+        # create page dictionary and return with result
+        return True, output
+
 
 # utility methods
 

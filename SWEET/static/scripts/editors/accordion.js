@@ -143,3 +143,62 @@ export class AccordionEditor extends HTMLElement {
 
     get isContainer() { return true; }
 }
+
+export function accordionRenderer(section) {
+    
+    const randomID =  Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+
+    const accordion = document.createElement("div");
+    accordion.setAttribute("class","accordion mt-4 mb-5");
+    accordion.setAttribute("id", "accordion-" + randomID)
+
+    let index = 0;
+
+    section.content.forEach(item => {
+        switch (item.type) {
+            default:
+                throw `DataError: expected type "accordion-item", received type "${item.type}"`;
+                break;
+            case "accordion-item":
+                const holder = document.createElement("div");
+                holder.setAttribute("class", "accordion-item");
+
+                const header = document.createElement("h2");
+                header.setAttribute("id", "header-" + index);
+                header.setAttribute("class", "accordion-header");
+
+                const headerButton = document.createElement("button");
+                headerButton.setAttribute("class", "accordion-button collapsed");
+                headerButton.setAttribute("type", "button");
+                headerButton.setAttribute("data-bs-toggle", "collapse");
+                headerButton.setAttribute("data-bs-target", "#collapse-" + randomID + "-" + index);
+                headerButton.setAttribute("aria-controls", "collapse-" + index);
+                headerButton.innerText = item.header;
+
+                header.appendChild(headerButton);
+
+                const collapse = document.createElement("div");
+                collapse.setAttribute("id", "collapse-" + randomID + "-" + index);
+                collapse.setAttribute("class", "accordion-collapse collapse");
+                collapse.setAttribute("aria-labelledby", "header-" + index);
+                collapse.setAttribute("data-bs-parent", "#accordion-" + randomID);
+
+                const body = document.createElement("div");
+                body.setAttribute("class", "accordion-body");
+
+                body.appendChild(this.render({ type: "container", content: item.content}))
+
+                collapse.appendChild(body);
+                holder.appendChild(header);
+                holder.appendChild(collapse);
+                accordion.appendChild(holder);
+
+                break;
+        }
+
+        index++;
+    })
+
+    return accordion;
+
+}

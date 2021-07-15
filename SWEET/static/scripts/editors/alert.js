@@ -1,7 +1,7 @@
 export class AlertEditor extends HTMLElement {
-    static get contentType() { return "alert"; }
-    static get tagName() { return "alert-editor"; }
-    static get description() { return "Alert: a standout block of important content"; }
+    static get contentType() { return "standout"; }
+    static get tagName() { return "standout-editor"; }
+    static get description() { return "Standout: a block of content with special formatting"; }
     
     static editors = []
     static registerEditor(type) {
@@ -35,6 +35,10 @@ export class AlertEditor extends HTMLElement {
                 background-color: silver;
             }
         </style>
+        <div><select name="class">
+            <option value="important" selected>important</option>
+            <option value="alert">very important</option>
+        </select></div>
         <content-editor></content-editor>
         `;
         this.constructor.editors.forEach(e => root.querySelector("content-editor").registerEditor(e));
@@ -43,6 +47,7 @@ export class AlertEditor extends HTMLElement {
     get jsonvalue() {
         return {
             type: this.constructor.contentType,
+            class: this.$.root.querySelector("select").value,
             content: this.$.root.querySelector("content-editor").jsonvalue
         }
     }
@@ -55,4 +60,11 @@ export class AlertEditor extends HTMLElement {
     }
 
     get isContainer() { return true; }
+}
+
+export function alertRenderer(section) {
+    let holder = document.createElement("section");
+    holder.classList.add(section.class);
+    section.content.forEach(s => holder.appendChild(this.render(s)));
+    return holder;
 }

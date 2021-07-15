@@ -136,3 +136,49 @@ export class MenuEditor extends HTMLElement {
         return item;
     }
 }
+
+export function menuRenderer(section) {
+    const holder = document.createElement("div");
+    holder.setAttribute("class", "row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 mt-3");
+
+    section.content.forEach(item => {
+        if (item.type != "menu-item") throw `DataError: expected type "menu-item", received type "${item.type}"`;
+        holder.appendChild(this.render(item));
+    });
+    return holder;
+}
+
+export function menuItemRenderer(section) {
+    const holder = document.createElement("div");
+    holder.setAttribute("class", "d-block col");
+
+    const card = document.createElement("a");
+    card.setAttribute("class", "d-block card shadow pb-5 h-100");
+    card.setAttribute("href", section.link);
+
+    const cardBody = document.createElement("div");
+    cardBody.setAttribute("class", "card-body");
+
+    const cardTitle = document.createElement("h5");
+    cardTitle.setAttribute("class", "card-title fw-normal");
+    if (section.title.indexOf("&") > -1) {
+        cardTitle.innerHTML = section.title; // assuming we have & due to html entities
+    } else {
+        cardTitle.textContent = section.title;
+    }
+    cardBody.appendChild(cardTitle);
+    card.appendChild(cardBody);
+    holder.appendChild(card);
+    
+    if (section.icon && section.icon != "none") {
+        const icon = document.createElement("img");
+        fetch(`/app/resources/${section.icon}`)
+            .then(response => response.json())
+            .then(resource => {
+                icon.setAttribute("src", resource.source);
+                card.style.backgroundImage = "url('" + resource.source + "')"; ;
+            })
+    }
+    
+    return holder;
+}

@@ -133,54 +133,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <script src="{{ url_for('static', filename='scripts/app.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/lz-string.js') }}"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", dcl => {
-            fetch("/app/structure")
-            .then(response => response.json())
-            .then(data => {
-                localStorage.setItem("SWEET", JSON.stringify(data));
-                init_page();
-            })
-        });
-
-        document.querySelector("#app-buttons .add-note").addEventListener("click", e => {
-            render_sepicker($);
-        });
-
-        window.addEventListener("popstate", pse => {
-            window.scroll(0,0);
-            init_page();
-        })
-
-    function init_profiler() {
-
-        document.querySelector("#prof-yes").addEventListener("click", () => {
-            let p =  document.querySelector("#profiler")
-            p.originalHTML = p.innerHTML;
-
-            fetch("/app/profiler/", {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json'},
-                body: JSON.stringify({ page: 0})
-            }).then(response => response.text())
-            .then(text => {
-                p.innerHTML = text;
-                p.querySelectorAll("script").forEach(s => {
-                    let src = s.getAttribute("src")
-                    let script = document.querySelector("body").appendChild(document.createElement("script"));
-                    script.setAttribute("src", src)
-                    s.remove();
-                })
-            
-            })
-        })
-    }
-
-        init_profiler();
-        </script>
-      
+    <script type="module">
+      import "{{url_for('static', filename='scripts/SWEET.js') }}";
+    </script>
   </body>
 </html>
