@@ -1,4 +1,4 @@
-export function render_home_menu(section) {
+export function homepageMenuRenderer(section) {
     if (section.type != "homepage-menu") return null;
 
     function createItem() {
@@ -79,7 +79,7 @@ export function render_home_menu(section) {
     profiler.addEventListener("click", e => {
         e.preventDefault(); e.stopPropagation();
 
-        renderProfiler({ type: "profiler", dueDate: "2021-07-14" })
+        this.render({ type: "profiler", dueDate: "2021-07-14" })
     })
 
     if (section.profiler.icon && section.profiler.icon != "none") {

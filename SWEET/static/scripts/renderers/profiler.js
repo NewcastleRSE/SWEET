@@ -1,53 +1,15 @@
 export function profilerModalRenderer(section) {
-    function create_modal() {
-        let modal = new DOMParser().parseFromString(`
-        <div class="modal fade" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalLabel"></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                </div>
-                <div class="modal-footer">
-                </div>
-            </div>
-            </div>
-        </div>
-        `, 'text/html').body.firstElementChild;
-    
-        document.body.appendChild(modal);
-        let bs = new bootstrap.Modal(modal);
-    
-        return {
-            get title() { return modal.querySelector(".modal-title")},
-            get body() { return modal.querySelector(".modal-body")},
-            get footer() { return modal.querySelector(".modal-footer")},
-            set size(v) {modal.querySelector(".modal-dialog").classList.add(`modal-${v}`)},
-            show: function() { bs.show() },
-            hide: function(destroy=false) { bs.hide(); if (destroy) modal.remove(); }
-        };
-    }
     // create the modal 
     if (!section.modal) {
-        section.modal = create_modal();
+        section.modal = this.createModal();
     }
 
     section.modal.size = 'lg';
 
     if (!section.answers) section.answers = [];
     let page = section.answers.length;
+    let url = "/app/profiler/";
 
-    function post(content) {
-        return fetch("/app/profiler/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(content)
-        })
-    }
     // define the rendering logic for each page:
     const renderers = [
         () => { /* page 0 renderer */ 
@@ -63,8 +25,7 @@ export function profilerModalRenderer(section) {
                 section.answers.push({
                     continue: "yes"
                 });
-                //this.render(section);
-                renderProfiler(section);
+                this.render(section);
             });
             section.modal.footer.querySelector("#prof-later").addEventListener("click", () => {
                 
@@ -75,7 +36,7 @@ export function profilerModalRenderer(section) {
                     reminderDate: "",
                 }
                 
-                post(profilerResponse);
+                this.post(url, profilerResponse);
                 // clear the modal
                 section.modal.hide(true);
             });
@@ -91,7 +52,7 @@ export function profilerModalRenderer(section) {
                     }
 
                     // post section back to server
-                    post(profilerResponse)
+                    this.post(url, profilerResponse)
                     // clear the modal
                     section.modal.hide(true);
                 });
@@ -132,20 +93,20 @@ export function profilerModalRenderer(section) {
                 <button type="submit" id="prof-p1-submit" class="btn btn-primary" form="prof-p1">Next</button>
                 `
 
-                section.modal.body.querySelector("#prof-p1").addEventListener("submit", function(e) {
+                section.modal.body.querySelector("#prof-p1").addEventListener("submit", e => {
                     // on submit ad this page's answers to the section:
                     e.preventDefault();
+                    let form = e.currentTarget;
 
                     section.answers.push({
                         page: 1,
-                        N: this.elements['imp'].value != "agree",
-                        C: this.elements['con'].value != "disagree",
-                        P: this.elements['diff'].value != "disagree"
+                        N: form.elements['imp'].value != "agree",
+                        C: form.elements['con'].value != "disagree",
+                        P: form.elements['diff'].value != "disagree"
                     })
 
                     // then re-call the renderer to show the next page.
-                    //this.render(section);
-                    renderProfiler(section);
+                    this.render(section);
                 });
 
                 // set up the cancel button
@@ -258,39 +219,20 @@ export function profilerModalRenderer(section) {
                         concernSpecifics: Array.from(e.target.elements['agree']).filter(c => c.checked).map(c => c.value)
                     }
 
-                    post(profilerResponse).then(response => response.json())
+                    this.post(url, profilerResponse).then(response => response.json())
                     .then(result => {
                         console.log(result);
                         if (result.status == "OK") {
                             section.modal.body.innerHTML = "";
-                            result.details.content.forEach(c => section.modal.body.appendChild(app.render(c)))
+                            result.details.content.forEach(c => section.modal.body.appendChild(this.render(c)))
 
                             section.modal.footer.innerHTML = `<button type="button" class="btn btn-primary" id="prof-finish">Finish</button>`;
                             section.modal.footer.querySelector("#prof-finish").addEventListener("click", e => {
                                 e.preventDefault(); e.stopPropagation();
                                 section.modal.hide(true);
                             })
-                                }
+                        }
                     })
-/*
-
-                    document.querySelector("#profiler").innerHTML = `
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="profilerLabel">Profiler</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Based on your responses, we’ve selected a series of topics which are tailored to your concerns / questions.</p>
-                            <p>You can read these now or save them and come back to them later. We hope these will be helpful for you.</p>
-                            <p>We’ll check in again in a few months. In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within Managing HT. Alternatively you can speak to your breast cancer team or your GP.</p>
-                            <p>Click on any of the below links to find out more.</p>
-                            <ul>${Array.from(e.target.elements['agree']).filter(c => c.checked).map(c => "<li>Link for question " + c.value + "</li>").join("")}</ul>
-                        </div>
-                        <div class="modal-footer">
-                        </div>
-                    `
-*/
-
                 })
             } else {
                 // post a 'no concerns' response to the server
@@ -301,7 +243,7 @@ export function profilerModalRenderer(section) {
                 }
 
                 // post response
-                post(profilerResponse)
+                this.post(url, profilerResponse)
 
                 // display a closing message.
                 section.modal.body.innerHTML = `<p>Great to hear that you are getting on with your hormone therapy. We will check in with you again in the next few months.</p><p>You can also access these questions at any time from the SWEET home page.</p><p>In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within Managing HT. Alternatively you can speak to your breast cancer team or your GP.</p>`
@@ -311,5 +253,5 @@ export function profilerModalRenderer(section) {
     ]
 
     // call the appropriate renderer:
-    renderers[page](section);
+    renderers[page].call(this, section);
 }

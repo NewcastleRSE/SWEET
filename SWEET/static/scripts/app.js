@@ -86,7 +86,7 @@ export function createApp(options={}) {
         let renderer = settings.renderers[content.type];
 
         // if we've found a renderer we call it
-        if (renderer) return renderer(content);
+        if (renderer) return renderer.call(this, content);
         
         if (content instanceof String) return document.createTextNode(` ${content} `);
         
@@ -114,13 +114,15 @@ export function createApp(options={}) {
             document.querySelector("title").textContent = page.title? page.title: settings.name;
 
             while (settings.contentHolder.firstChild) settings.contentHolder.removeChild(settings.contentHolder.lastChild);
-            section.content.forEach(c => settings.contentHolder.appendChild(this.render(c)));
+            page.content.forEach(c => settings.contentHolder.appendChild(this.render(c)));
         })
     }
 
     const app = {
         addRenderer: function(name, fn) { settings.renderers[name] = fn; },
-        addExtension: function(name, fn) { Object.defineProperty(this, name, { value: fn }) },
+        addExtension: function(name, fn) { Object.defineProperty(this, name, { value: function(...args) {
+            return fn.call(this, ...args);
+        }})},
 
         render: function(section) { return render.call(this, section) },
 
@@ -134,57 +136,59 @@ export function createApp(options={}) {
 
         get defaultPath() { return settings.defaultPath; }, set defaultPath(v) { settings.defaultPath = v; },
 
-        load: function() { refresh.call(this)},
-        start: (function() {
-            let start = () => {
-                // set up link handling
-                if (settings.embed) {
-                    // if the app's embedded we can't use fragments in the location
-                    // so we intercept fragment links and add them to an app history:
-                    settings.history = [];
-
-                    // we could do something with local storage here to remember the app
-                    // history between visits? not sure how useful that would be.
-                    
-                    document.addEventListener("click", e => {
-                        let src = e.target;
-                        
-                        while (src.tagName != "A" && src.parentNode) src = src.parentNode;
-                        if (src.tagName != "A") return true;
-                        let path = src.getAttribute("href");
-                        if (path.charAt(0) != '#') return true;
-            
-                        e.preventDefault(); e.stopPropagation();
-                        // handle a click on a fragment <a>
-                        settings.history.unshift(path);
-                        window.scroll(0,0);
-                        this.load();
-                    })
-                } else { 
-                    // not embeded so we can allow fragment links to perform their default action
-                    // and listen for the ensuing popstate events:
-                    window.addEventListener("popstate", pse => {
-                        window.scroll(0,0);
-                        this.load();
-                    })
-                }
-                // load the app content (the load function automatically handles opening the default page)
-                this.load();
-            }
-
-            if (settings.autostart) {
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', start);
-                } else { 
-                    start();
-                }
-
-                return null;
-            } else {
-                return start;
-            }
-        })()
+        load: function() { refresh.call(this)}
     }
+
+    Object.defineProperty(app, "start", { value: (function() {
+        let start = () => {
+            // set up link handling
+            if (settings.embed) {
+                // if the app's embedded we can't use fragments in the location
+                // so we intercept fragment links and add them to an app history:
+                settings.history = [];
+
+                // we could do something with local storage here to remember the app
+                // history between visits? not sure how useful that would be.
+                
+                document.addEventListener("click", e => {
+                    let src = e.target;
+                    
+                    while (src.tagName != "A" && src.parentNode) src = src.parentNode;
+                    if (src.tagName != "A") return true;
+                    let path = src.getAttribute("href");
+                    if (path.charAt(0) != '#') return true;
+        
+                    e.preventDefault(); e.stopPropagation();
+                    // handle a click on a fragment <a>
+                    settings.history.unshift(path);
+                    window.scroll(0,0);
+                    this.load();
+                })
+            } else { 
+                // not embeded so we can allow fragment links to perform their default action
+                // and listen for the ensuing popstate events:
+                window.addEventListener("popstate", pse => {
+                    window.scroll(0,0);
+                    this.load();
+                })
+            }
+            // load the app content (the load function automatically handles opening the default page)
+            this.load();
+        }
+
+        if (settings.autostart) {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', start.bind(this));
+            } else { 
+                start.call(this);
+            }
+
+            return null;
+        } else {
+            return start.bind(this);
+        }
+    }).call(app)
+})
 
     Object.keys(settings.extensions).forEach(k => app.addExtension(k, settings.extensions[k]));
 

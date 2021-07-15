@@ -186,7 +186,7 @@ export function accordionRenderer(section) {
                 const body = document.createElement("div");
                 body.setAttribute("class", "accordion-body");
 
-                body.appendChild(render({ type: "container", content: item.content}, acc_level + 1))
+                body.appendChild(this.render({ type: "container", content: item.content}))
 
                 collapse.appendChild(body);
                 holder.appendChild(header);
