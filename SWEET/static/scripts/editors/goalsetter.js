@@ -93,7 +93,7 @@ export function goalRenderer(section) {
                 <p>Your goal is: to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.</p>
                 </section>`;
                 submitButton.addEventListener("click", () => {
-                    fetch("/app/mygoals/", {
+                    fetch("/myapp/mygoals/", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(goal)
@@ -118,7 +118,7 @@ export function goalRenderer(section) {
     }
 
     // get user's active goals
-    fetch("/app/mygoals")
+    fetch("/myapp/mygoals")
     .then(response => response.json())
     .then(goals => {
 
@@ -181,7 +181,7 @@ export function goalRenderer(section) {
 
                         goal.status = "complete";
                         goal.outcome = e.target.value;
-                        fetch("/app/mygoals/", {
+                        fetch("/myapp/mygoals/", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify(goal)

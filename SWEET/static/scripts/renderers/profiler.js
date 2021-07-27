@@ -8,7 +8,7 @@ export function profilerModalRenderer(section) {
 
     if (!section.answers) section.answers = [];
     let page = section.answers.length;
-    let url = "/app/profiler/";
+    let url = "/myapp/profiler/";
 
     // define the rendering logic for each page:
     const renderers = [
