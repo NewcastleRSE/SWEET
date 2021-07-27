@@ -44,9 +44,9 @@
           <li class="nav-item">
             <a class="nav-link" href="#myapp">My Details</a>
           </li> -->
-          {% if user['role'] in ['sysadmin', 'editor'] %}
+          {% if g.user['role'] in ['sysadmin', 'editor'] %}
           <li class="nav-item">
-            <a class="nav-link" href="/edit">Editor</a>
+            <a class="nav-link" href="{{url_for('admin.edit')}}">Editor</a>
           </li>
           {% endif%}
         </ul>

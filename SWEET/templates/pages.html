@@ -254,7 +254,7 @@
                 });
 
                 // upload new structure to site:
-                fetch("/app/structure/", {
+                fetch("/admin/structure/", {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
@@ -282,7 +282,7 @@
                     content.title = document.querySelector("input[name='page-title']").value;
                 }
 
-                fetch("/app/content/", {
+                fetch("/admin/content/", {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
@@ -343,7 +343,7 @@
                     source: this.querySelector("#add-resource-preview").src
                 }
 
-                fetch("/app/resources/", {
+                fetch("/admin/resources/", {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
