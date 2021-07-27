@@ -2,8 +2,8 @@ from flask import (
     Blueprint, request, abort
 )
 
-from data.content import (
-    getStructure, getPageContents, getPageDetails, getResource, getResources, getPages
+from .data.content import (
+    getStructure, getPageContents, getPageDetails, getResource as getNamedResource, getResources, getPages
 )
 
 from .auth import login_required
@@ -40,7 +40,7 @@ def resources():
 @bp.route("/resources/<name>")
 @login_required
 def getResource(name):
-    res = getResource(name)
+    res = getNamedResource(name)
     if res is None:
         abort(404)
 

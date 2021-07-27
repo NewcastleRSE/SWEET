@@ -35,7 +35,7 @@ def getToken(N):
 
 # setup
 def ensureDataSources():
-    from users import getUser, registerUser
+    from .users import getUser, registerUser
     
     service = BlobServiceClient.from_connection_string(secrets.connstr)
     existing_containers = [container['name'] for container in service.list_containers()]

@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from . import data, secrets
-from auth import login_required
+from .auth import login_required
 
 def create_app():
     app = Flask(__name__)

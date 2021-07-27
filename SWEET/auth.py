@@ -74,25 +74,25 @@ def load_logged_in_user():
 
 def login_required(view):
     @functools.wraps(view)
-    def wrapped_view(**kwargs):
+    def wrapped_view(*args, **kwargs):
         if g.user is None:
             return redirect(url_for('auth.login'))
 
-        return view(**kwargs)
+        return view(*args, **kwargs)
 
     return wrapped_view
 
 def role_required(roles=[]):
     def decorator(view):
         @functools.wraps(view)
-        def wrapped_view(**kwargs):
+        def wrapped_view(*args, **kwargs):
             if g.user is None:
                 return redirect(url_for('auth.login'))
             elif g.user['role'] not in roles:
                 flash(f"You do not have the correct permissions to access {request.url}.")
                 return redirect(url_for("index"))
 
-            return view(**kwargs)
+            return view(*args, **kwargs)
 
         return wrapped_view
     
