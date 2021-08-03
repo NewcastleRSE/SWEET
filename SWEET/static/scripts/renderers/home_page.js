@@ -24,13 +24,11 @@ export function homepageMenuRenderer(section) {
 
     menu.innerHTML = `
     <div class="col-12 col-xl-8 row row-cols-1 row-cols-lg-2 g-3 mt-3 hmpg-sects"></div>
-    <div class="col-12 col-xl-4 row row-cols-1 row-cols-lg-2 row-cols-xl-1 g-3 mt-3 hmpg-acts"></div>
-    <div class="col-12 row row-cols-1 g-3 mt-3 hmpg-prof"></div>
+    <div class="col-12 col-xl-4 row row-cols-1 row-cols-lg-3 row-cols-xl-1 g-3 mt-3 hmpg-acts"></div>
     `
 
     menu.$sections = menu.querySelector(".hmpg-sects");
     menu.$actions = menu.querySelector(".hmpg-acts");
-    menu.$profiler = menu.querySelector(".hmpg-prof");
 
     section.mainitems.forEach(i => {
         let item = createItem();
@@ -74,12 +72,12 @@ export function homepageMenuRenderer(section) {
     profiler.$title.textContent = section.profiler.title;
     profiler.$subtitle.textContent = section.profiler.description;
     profiler.$link.setAttribute("href", "#");
-    profiler.$link.classList.remove("h-100");
 
     profiler.addEventListener("click", e => {
         e.preventDefault(); e.stopPropagation();
 
-        this.render({ type: "profiler", dueDate: "2021-07-14" })
+        // fix this up ASAP!
+        this.render({ type: "profiler", dueDate: this.calendarDate(new Date()), reminderDate: ((d) => { d.setDate(d.getDate() + 3); return d; })(new Date()) })
     })
 
     if (section.profiler.icon && section.profiler.icon != "none") {
@@ -92,7 +90,7 @@ export function homepageMenuRenderer(section) {
         })
     }
 
-    menu.$profiler.appendChild(profiler);
+    menu.$actions.appendChild(profiler);
 
     return menu;
 }

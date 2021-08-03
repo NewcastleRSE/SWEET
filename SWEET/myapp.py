@@ -4,7 +4,7 @@ from flask import (
 
 from .data import users
 from .data.userdata import (
-    getGoals, updateGoals, getSideEffects as getUserSideEffects, recordSideEffect, recordProfiler, getDiary as getUserDiary
+    getGoals, updateGoals, getSideEffects as getUserSideEffects, recordSideEffect, recordProfiler, getDiary as getUserDiary, addNote, getNotes, recordAdherence
 )
 
 from .auth import login_required
@@ -70,5 +70,30 @@ def profiler():
 
         if result:
             return { "status": "OK", "details": output }
+
+    return {"status": "error", "message": "Update request sent without json"}, 400
+
+@bp.route("/notes")
+@login_required
+def get_notes():
+    return {"notes": getNotes(g.user) }
+
+@bp.route("/notes/", methods=["POST"])
+@login_required
+def add_notes():
+    if request.is_json:
+        note = request.json
+        addNote(g.user, note)
+        return {"status": "OK", "message": "Note added"}
+
+    return {"status": "error", "message": "Update request sent without json"}, 400
+
+@bp.route("/adherence/", methods=["POST"])
+@login_required
+def record_adherence():
+    if request.is_json:
+        adh = request.json
+        recordAdherence(g.user, adh)
+        return {"status": "OK", "message": "Adherence added"}
 
     return {"status": "error", "message": "Update request sent without json"}, 400

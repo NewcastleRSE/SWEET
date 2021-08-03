@@ -5,6 +5,8 @@ from . import getProfilerResponses
 __diary = AzurePersitentDict(az_connection, "users", "diary.json")
 __goals = AzurePersitentDict(az_connection, "users", "goals.json")
 
+def newdiary():
+    return {"sideeffects": [], "reminders": [], "adherence": [], "notes": [], "profilers": []}
 
 def getGoals(user=None):
     if user is None:
@@ -56,7 +58,7 @@ def getDiary(user=None):
         return __diary
 
     if user['userID'] not in __diary:
-        __diary[user["userID"]] = {"sideeffects": [], "reminders": [], "adherence": [], "notes": [], "profilers": []}
+        __diary[user["userID"]] = newdiary()
         __diary.commit()
 
     return __diary[user['userID']]
@@ -76,11 +78,11 @@ def recordSideEffect(user, sideeffect):
     id = user['userID']
 
     if id not in __diary:
-       __diary[id] = {"sideeffects": [], "reminders": [], "adherence": [], "notes": []}
+       __diary[id] = newdiary()
 
     userse = __diary[id]['sideeffects']
 
-    existing = next((s for s in userse if s['type'] == sideeffect['type'] and s['todate'] == sideeffect['todate']), False)
+    existing = next((s for s in userse if s['type'] == sideeffect['type'] and s['date'] == sideeffect['date']), False)
 
     if existing:
         existing.update(sideeffect)
@@ -125,4 +127,28 @@ def recordProfiler(user, profiler):
         # create page dictionary and return with result
         return True, output
 
+def addNote(user, note):
+    id = user["userID"]
 
+    if id not in __diary:
+       __diary[id] = newdiary
+
+    usernotes = __diary[id]['notes']
+    usernotes.append(note)
+    __diary.commit()
+
+def getNotes(user):
+    id = user["userID"]
+    if id not in __diary:
+        __diary[id] = newdiary()
+
+    return __diary[id]['notes']
+
+def recordAdherence(user, adh):
+    id = user["userID"]
+
+    if id not in __diary:
+       __diary[id] = newdiary
+
+    __diary[id]['adherence'].append(adh)
+    __diary.commit()

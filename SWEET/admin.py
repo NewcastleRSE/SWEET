@@ -3,13 +3,18 @@ from .auth import role_required
 from .data.content import updateStructure, updatePageContent, saveResource
 
 bp = Blueprint("admin", __name__, url_prefix="/admin")
-admin_required = role_required(roles=["editor", "admin"])
+admin_required = role_required(roles=["editor", "sysadmin"])
 
 # content management
 @bp.route("/edit")
 @role_required(roles=["editor", "admin", "sysadmin"])
 def edit():
     return render_template("pages.html")
+
+@bp.route("/edit/preview")
+@admin_required
+def previewEdit():
+    return render_template("preview.html")
 
 @bp.route("/structure/", methods=["POST"])
 @admin_required

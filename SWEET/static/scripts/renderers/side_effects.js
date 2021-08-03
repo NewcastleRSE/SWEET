@@ -1,26 +1,44 @@
-function render_se(section, holder) {
+export function sideEffectFormRenderer(section) {
 
     let form = document.createElement("form")
-    form.setAttribute("id", `se-${section.type}-details`);
     
-    fetch(`/app/schemas/sideeffects/${section.type}`)
+    fetch(`/app/schemas/sideeffects`)
     .then(response => response.json())
     .then(schema => {
-        holder.title.textContent = `Recording your ${schema.title}`
         form.innerHTML =  `
             <section>
-            <label for="date"> Which ${ schema.frequency } do you wish to record for?</label><span id="dateinput"></span><br />
-            <label for="frequency">How frequent were your ${ schema.embedtext }?</label><span><input type="number" id="frequency" name="frequency"> ${ schema.frequency == "week"? `days per week`: `${ schema.embedtext} per day` }</span><br />
-            <label for="severity">How bad were your ${ schema.embedtext }?</label><span id="severityinput"></span>
-            <label for="impact">How much did your ${ schema.embedtext } impact your daily life?</label><span id="impactinput"></span>
-            <label for="notes">Notes: <span class="sidenote">You can use this box to record further details, e.g. the times of day, triggers, things you tried to help</span></label><br />
-            <span id="notesinput"><textarea name="notes" id="notes" cols="50" rows="5"></textarea></span>
+            <span id="form-se-type"><label for="type">What side effect do you want to record?</label><select id="form-se-type-input" name="type"><option value="">Choose a side effect...</option></select><input type="hidden" name="description"><br></span>
+            <span id="form-se-date" hidden><label for="date"> Which day do you wish to record for?</label><span id="dateinput"></span><br></span>
+            <span id="form-se-frequency" hidden><label for="frequency">How many <span data-replace="embedtext"></span> did you have?</label><span><input type="number" id="frequency" name="frequency"></span><br></span>
+            <span id="form-se-severity" hidden><label for="severity">How bad <span data-switch="embedplural" data-true="were" data-false="was"></span> your <span data-replace="embedtext"></span>?</label><span id="severityinput"></span><br></span>
+            <span id="form-se-impact" hidden><label for="impact">How much did your <span data-replace="embedtext"></span> impact your daily life?</label><span id="impactinput"></span><br></span>
+            <span id="form-se-notes" hidden><label for="notes">Notes: <span class="sidenote">You can use this box to record further details, e.g. the times of day, triggers, things you tried to help</span></label><br>
+            <span id="notesinput"><textarea name="notes" id="notes" cols="50" rows="5"></textarea></span></span>
             </section>
             `
 
-        holder.body.appendChild(form);
+        form.querySelector("#form-se-type-input").insertAdjacentHTML('beforeend', schema.types.map(t => `<option value="${t.name}">${t.description}</option>`).join(""));
+        form.querySelector("#form-se-type-input").addEventListener("change", e => {
+            let type = e.target.value;
+            let scheme = schema.types.filter(t => t.name == type)[0];
+            
+            if (!scheme) return;
 
-        holder.footer.innerHTML = `<input type="submit" form="${form.getAttribute("id")}" value="Save details"><button type="button" id="se-form-cancel">Cancel</button>`
+            form.querySelector("input[name='description']").value = scheme.description;
+            form.querySelectorAll("span[data-replace]").forEach(s => s.textContent = scheme[s.dataset.replace]);
+            form.querySelectorAll("span[data-switch]").forEach(s => s.textContent = scheme[s.dataset.switch]? s.dataset.true: s.dataset.false);
+
+            ["frequency", "severity", "impact", "notes"].forEach(s => {
+                let q = form.querySelector(`#form-se-${s}`);
+
+                if (scheme.questions.includes(s)) {
+                    q.removeAttribute("hidden")
+                } else {
+                    q.setAttribute("hidden", "")
+                }
+            })
+            scheme.questions.forEach(q => form.querySelector(`#form-se-${q}`).removeAttribute("hidden"));
+        })
 
         form.querySelector("#severityinput").innerHTML = (() => {
             let opts = [];
@@ -38,56 +56,38 @@ function render_se(section, holder) {
             return opts.join("");
         })();
 
+        if (section.date) {
+            form.querySelector("#dateinput").innerHTML = `<input type="hidden" name="date" value="${section.date}" data-date="${section.date}" />`;
+        } else {
+            form.querySelector("#dateinput").append(...(() => {
+                let d = document.createElement("input");
+                d.setAttribute("type", "text");
+                d.setAttribute("readonly", "");
+                d.classList.add("datetext");
+                d.setAttribute("name", "date")
 
-        form.querySelector("#dateinput").append(...(() => {
-            let d = document.createElement("input");
-            d.setAttribute("type", "text");
-            d.setAttribute("readonly", "");
-            d.classList.add("datetext");
-            d.setAttribute("name", "date")
+                let c = this.createCalendar();
 
-            let c = render_calendar();
-            c.classList.add(schema.frequency);
-
-            c.addEventListener("redraw", e => {
-                c.querySelectorAll("td").forEach(td => {
-                    td.textContent = td.dataset.thisdate.substring(8)
-                    if (td.dataset.thisdate.substring(0,7) != c.querySelector("#cal-caption").dataset.basedate.substring(0,7)) {
-                        td.classList.add("faded");
-                    }
+                c.addEventListener("redraw", e => {
+                    c.querySelectorAll("td").forEach(td => {
+                        td.textContent = td.dataset.thisdate.substring(8)
+                        if (td.dataset.thisdate.substring(0,7) != c.querySelector("#cal-caption").dataset.basedate.substring(0,7)) {
+                            td.classList.add("faded");
+                        }
+                    })
                 })
-            })
 
-            c.dispatchEvent(new CustomEvent("redraw"));
+                c.dispatchEvent(new CustomEvent("redraw"));
 
-            if (schema.frequency == "week") {
-                c.querySelector("td.selected").parentElement.classList.add("selected");
-                c.querySelector("td.selected").classList.remove("selected");
-            }
+                c.addEventListener("click", e => {
 
-            c.addEventListener("click", e => {
-
-                src = e.target;
-                
-                if (src.matches("tbody *")) {
-                    e.preventDefault(); e.stopPropagation();
-                    // click on table should select day or week based on schema,
-
-                    // first remove any existing selection:
-                    c.querySelectorAll(".selected").forEach(e => e.classList.remove("selected"))
+                    src = e.target;
                     
-                    // select the apppropriate row or cell and update the input dataset and value;
-                    // the dataset values will be submitted via fetch/json while the value will be
-                    // visible to the user.
-                    if (schema.frequency == "week") {
-                        while (src.tagName != "TR") src = src.parentElement;
+                    if (src.matches("tbody *")) {
+                        e.preventDefault(); e.stopPropagation();
 
-                        src.classList.add("selected");
-                        d.dataset.datefrom = src.querySelector("td").dataset.thisdate;
-                        d.dataset.dateto = Array.from(src.querySelectorAll("td"), td => td.dataset.thisdate).filter((e,i,a) => i == a.length -1).join("");
-                        d.value = `${new Date(d.dataset.datefrom).toLocaleDateString()} to ${new Date(d.dataset.dateto).toLocaleDateString()}`;
-                        d.blur();
-                    } else {
+                        c.querySelectorAll(".selected").forEach(e => e.classList.remove("selected"))
+                        
                         while (src.tagName != "TD") src= src.parentElement;
                         src.classList.add("selected");
 
@@ -95,49 +95,32 @@ function render_se(section, holder) {
                         d.value = new Date(src.dataset.thisdate).toLocaleDateString();
                         d.blur();
                     }
-                }
-            })
+                })
 
-
-            return [d,c];
-        })())
-
-        holder.footer.querySelector("#se-form-cancel").addEventListener("click", e => {
-            holder.hide(true);
-        })
+                return [d,c];
+            })())
+            form.querySelector("#form-se-date").removeAttribute("hidden")
+        }
     
-        // fetch already completed inputs and set up datpicker validation
-        fetch(`/app/mydiary/sideeffects/${section.type}`)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-        })
     })
 
     form.addEventListener("submit", e => {
         e.preventDefault(); e.stopPropagation();
 
         let sideeffect = {
-            type: section.type,
-            datefrom: form.elements['date'].dataset.date? form.elements['date'].dataset.date: form.elements['date'].dataset.datefrom,
-            dateto: form.elements['date'].dataset.date? form.elements['date'].dataset.date: form.elements['date'].dataset.dateto,
+            type: form.elements['type'].value,
+            description: form.elements['description'].value,
+            date: form.elements['date'].dataset.date,
             frequency: form.elements['frequency'].value,
             severity: form.elements['severity'].value,
             impact: form.elements['impact'].value,
             notes: form.elements['notes'].value
         }
 
-        fetch("/app/mydiary/sideeffects/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(sideeffect)
-        }).then(() => {
-            holder.hide(true);
-        })
-
+        this.post("/myapp/mydiary/sideeffects/",sideeffect)
     })
+
+    return form;
 }
 
 export function sideEffectModalRenderer() {
@@ -146,28 +129,13 @@ export function sideEffectModalRenderer() {
     holder.size = 'lg';
 
     holder.title.textContent = "Record a Side Effect";
-    holder.body.innerHTML = `
-    <select name="setype"><option>Please select a side-effect to continue...</option></select>
-    `
-    holder.footer.innerHTML = "<button id='se-close'>Cancel</button>"
 
-    holder.footer.querySelector("#se-close").addEventListener("click", e => {
-        holder.hide(true);
-    })
-
-    fetch("/app/schemas/sideeffects")
-    .then(response => response.json())
-    .then(schemas => {
-        const s = holder.body.querySelector("[name='setype']");
-        schemas.types.forEach(t => {
-            s.insertAdjacentHTML("beforeend", `<option value="${t.name}">${t.description}</option>`)
-        });
-
-        s.addEventListener("change", e => {
-            e.stopPropagation();
-            while(s.nextSibling) s.nextSibling.remove();
-            s.remove();
-            render_se({type: s.value}, holder)
+    this.render({type: "sideeffectform"}).then(form => {
+        form.setAttribute("id", "modal-se-form")
+        holder.body.appendChild(form)
+        holder.footer.innerHTML = `<input type="submit" form="${form.getAttribute("id")}" value="Save details"><button type="button" id="se-form-cancel">Cancel</button>`
+        holder.footer.querySelector("#se-close").addEventListener("click", e => {
+            holder.hide(true);
         })
     })
 

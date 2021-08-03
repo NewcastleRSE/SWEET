@@ -17,9 +17,14 @@ export function profilerModalRenderer(section) {
             section.modal.title.textContent = "Profiler";
             section.modal.body.innerHTML = `<p>Hi there, we'd like to ask you some questions to see how you are getting on with your hormone therapy. Answering these questions will allow us to guide you to relevant sections of the web-app that you may find helpful.</p>
             <p>Are you happy to answer these questions?</p>`;
-            section.modal.footer.innerHTML = `<button type="button" id="prof-yes" class="btn btn-primary">Complete Now</button>
+            section.modal.footer.innerHTML = `<button type="button" id="prof-yes" class="btn btn-primary">Yes</button>
             <button type="button" id="prof-later" class="btn btn-secondary">Complete Later</button>
-            ${ section.reminder? `<button type="button" id="prof-no" class="btn btn-secondary">No...</button>`:""}`;
+            ${ section.reminderDate? `<select id="prof-no" class="btn btn-primary">
+                <option>No...</option>
+                <option value="no-concerns">I don't have any concerns</option>
+                <option value="no-time">I don't have time for this</option>
+                <option value="no-already">My questions have already been answered</option>    
+            </button>`:""}`;
 
             section.modal.footer.querySelector("#prof-yes").addEventListener("click", () => {
                 section.answers.push({
@@ -33,7 +38,7 @@ export function profilerModalRenderer(section) {
                 const profilerResponse = {
                     dueDate: section.dueDate,
                     result: "postponed",
-                    reminderDate: "",
+                    reminderDate: this.calendarDate(((d) => {d.setDate(d.getDate()+3); return d})(new Date())),
                 }
                 
                 this.post(url, profilerResponse);
@@ -41,14 +46,14 @@ export function profilerModalRenderer(section) {
                 section.modal.hide(true);
             });
 
-            if (section.reminder) {
-                section.modal.footer.querySelector("#prof-no").addEventListener("click", () => {
+            if (section.reminderDate) {
+                section.modal.footer.querySelector("#prof-no").addEventListener("change", (e) => {
 
                     const profilerResponse = {
                         dueDate: section.dueDate,
-                        dateComplete: "",
+                        dateComplete: this.calendarDate(new Date()),
                         result: "refused",
-                        reason: "value"
+                        reason: e.currentTarget.value
                     }
 
                     // post section back to server
@@ -213,7 +218,7 @@ export function profilerModalRenderer(section) {
                     // post completed profiler;
                     const profilerResponse = {
                         dueDate: section.dueDate,
-                        dateComplete: "",
+                        dateComplete: this.calendarDate(new Date()),
                         result: "complete",
                         concernAreas: ((n,c,p) => {let a = []; if (n) a.push("Necessity"); if (c) a.push("Concern"); if (p) a.push("Practicality"); return a.join(",")})(answers.N, answers.C, answers.P),
                         concernSpecifics: Array.from(e.target.elements['agree']).filter(c => c.checked).map(c => c.value)
@@ -224,7 +229,7 @@ export function profilerModalRenderer(section) {
                         console.log(result);
                         if (result.status == "OK") {
                             section.modal.body.innerHTML = "";
-                            result.details.content.forEach(c => section.modal.body.appendChild(this.render(c)))
+                            result.details.content.forEach(c => this.render(c).then(node => section.modal.body.appendChild(node)))
 
                             section.modal.footer.innerHTML = `<button type="button" class="btn btn-primary" id="prof-finish">Finish</button>`;
                             section.modal.footer.querySelector("#prof-finish").addEventListener("click", e => {
@@ -238,8 +243,9 @@ export function profilerModalRenderer(section) {
                 // post a 'no concerns' response to the server
                 const profilerResponse = {
                     dueDate: section.dueDate,
-                    dateCompleted: "",
-                    result: "no-concerns"
+                    dateCompleted: this.calendarDate(new Date()),
+                    result: "complete",
+                    concernAreas: "none"
                 }
 
                 // post response

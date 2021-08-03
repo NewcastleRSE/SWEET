@@ -161,7 +161,7 @@ export function accordionRenderer(section) {
                 break;
             case "accordion-item":
                 const holder = document.createElement("div");
-                holder.setAttribute("class", "accordion-item");
+                holder.classList.add("accordion-item", "mb-2");
 
                 const header = document.createElement("h2");
                 header.setAttribute("id", "header-" + index);
@@ -186,7 +186,7 @@ export function accordionRenderer(section) {
                 const body = document.createElement("div");
                 body.setAttribute("class", "accordion-body");
 
-                body.appendChild(this.render({ type: "container", content: item.content}))
+                this.render({ type: "container", content: item.content}).then(node => body.appendChild(node));
 
                 collapse.appendChild(body);
                 holder.appendChild(header);

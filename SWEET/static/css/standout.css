@@ -1,0 +1,23 @@
+[class^='so-'] {
+    padding-left: 0.2em;
+    margin-left: 0.5em;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    margin: 1em auto;
+}
+
+.so-important {
+    background-color: var(--SWEET-lilac);
+    color: var(--SWEET-off-white);
+}
+
+.so-alert {
+    background-color: var(--SWEET-pink);
+    border: 0.2em solid var(--SWEET-purple);
+    border-radius: 0.5em;
+    padding: 0.5em;
+}
+
+.so-alert ul > li:before {
+    color: var(--SWEET-purple)
+}

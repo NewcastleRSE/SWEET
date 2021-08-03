@@ -51,7 +51,7 @@ export function createCalendar(selectedDate=new Date()) {
     cal.classList.add("calendar");
 
     let caption = cal.appendChild(document.createElement("caption"));
-    caption.innerHTML = `<section><span class="prev">&lt;</span> <span id="cal-caption" data-basedate="${calendarutils.attributise(selectedDate)}">${calendarutils.monthnames[selectedDate.getMonth()]}</span><span class="next">&gt;</span></section>`;
+    caption.innerHTML = `<section><span class="prev">&lt;</span> <span id="cal-caption" data-basedate="${calendarutils.attributise(selectedDate)}">${calendarutils.monthnames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}</span><span class="next">&gt;</span></section>`;
     let tbody = cal.appendChild(document.createElement("tbody"));
     tbody.dataset.mode = "select";
     populateDays(tbody, selectedDate);
@@ -63,7 +63,7 @@ export function createCalendar(selectedDate=new Date()) {
     cal.addEventListener("click", e => {
         if (tbody.dataset.mode != "select") e.stopImmediatePropagation();
 
-        src = e.target;
+        let src = e.target;
 
         if (src.matches("caption span, caption span *")) {
             e.stopPropagation();

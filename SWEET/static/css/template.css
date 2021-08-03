@@ -1,5 +1,12 @@
 :root {
     font-size: 20px;
+
+    --SWEET-purple: #633188;
+    --SWEET-grey: #b3b3b2;
+    --SWEET-gold: #f0c048;
+    --SWEET-pink: #d2c0d9;
+    --SWEET-lilac: #a08db0;
+    --SWEET-off-white: #fafafa;
 }
 
 
@@ -14,11 +21,11 @@ main > .container {
 
 .sidebar-text {
     padding: 0 40px;
-    color: #fafafa;
+    color: var(--SWEET-off-white);
 }
 
 .sidebar-text a, .sidebar-text a:active, .sidebar-text a:visited {
-    color: #fafafa;
+    color: var(--SWEET-off-white);
     font-weight: bold;
 }
 
@@ -29,13 +36,13 @@ a.card {
     background-position: bottom -20px right 10px;
     background-size: 120px;
 }
-
+/*
 a.card h5 {
     margin-right: 130px;
 }
-
+*/
 p a {
-    color: #633188;
+    color: var(--SWEET-purple);
     font-weight: bold;
     text-decoration: none;
 }
@@ -47,15 +54,15 @@ p a:hover {
 
 .btn-primary {
     color: #fff;
-    background-color: #633188;
-    border-color: #633188;
+    background-color: var(--SWEET-purple);
+    border-color: var(--SWEET-purple);
 }
 
 .btn-primary:hover,
 .btn-primary:focus {
     color: #fff;
-    background-color: #825aa0;
-    border-color: #825aa0;
+    background-color: var(--SWEET-lilac);
+    border-color: var(--SWEET-lilac);
 }
 
 .btn:focus,.btn:active {
@@ -64,8 +71,8 @@ p a:hover {
 }
 
 .form-check-input:checked {
-    background-color: #633188;
-    border-color: #633188;
+    background-color: var(--SWEET-purple);
+    border-color: var(--SWEET-purple);
 }
 
 .form-check-input:focus {
@@ -73,8 +80,8 @@ p a:hover {
     box-shadow: 0 0 0 0.25rem rgb(99 49 136 / 25%);
 }
 
-nav.navbar-dark {
-    background-color: #633188 !important;
+nav.navbar-dark, footer.footer-dark {
+    background-color: var(--SWEET-purple) !important;
 }
 
 nav #app-buttons {
@@ -85,11 +92,11 @@ nav #app-buttons i {
     color: inherit;
     cursor: pointer;
     font-size:24px;
-    color: #fafafa;
+    color: var(--SWEET-off-white);
 }
 
 nav #app-buttons .favourite:hover i {
-    color: #FEDE00
+    color: var(--SWEET-gold);
 }
 
 nav #app-buttons .add-note {
@@ -98,24 +105,44 @@ nav #app-buttons .add-note {
     bottom: -.5rem;
     right: var(--bs-gutter-x,-.75rem);
     padding-top: 1rem !important;
-    background-color: #633188;
-    color: #fafafa;
+    background-color: var(--SWEET-purple);
+    color: var(--SWEET-off-white);
 }
 
 .card {
-    border-bottom: solid 6px #633188;
+    border-bottom: solid 6px var(--SWEET-purple);
 }
 
 .card:hover {
     text-decoration: none !important;
 }
 
+.card.shadow:hover {
+    box-shadow: 0 .5rem 1rem 0.5rem rgba(0,0,0,0.15) !important;
+}
+
 .quote {
-    border-left: solid 6px #633188;
+    border-left: solid 6px var(--SWEET-purple);
 }
 
 .quote p {
     font-style: italic;
+    color: var(--SWEET-purple);
+}
+
+section ul {
+    list-style: none;
+}
+
+section ul > li:before {
+    content: "\2022";
+    color: var(--SWEET-gold);
+    font-weight: bold;
+    font-size: 36px;
+    line-height: 1em;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
 }
 
 button.accordion-button {
@@ -127,9 +154,13 @@ button.accordion-button:focus {
     box-shadow: none;
 }
 
+button.accordion-button.collapsed {
+    border-left: 0.15em solid var(--SWEET-gold);
+}
+
 button.accordion-button:not(.collapsed) {
-    color: #fafafa;
-    background-color: #633188;
+    color: var(--SWEET-off-white);
+    background-color: var(--SWEET-purple);
 }
 
 button.accordion-button:not(.collapsed)::after {
@@ -138,7 +169,7 @@ button.accordion-button:not(.collapsed)::after {
 
 .card.goal.unset {
     min-height: 250px;
-    border: 2px dashed lightgray;
+    border: 2px dashed var(--SWEET-pale-grey);
     cursor: pointer;
 }
 
@@ -165,6 +196,6 @@ button.accordion-button:not(.collapsed)::after {
 }
 
 #goalModal .form-check-inline .form-check-input:checked + .form-check-label {
-    color: #fafafa;
-    background-color: #633188;
+    color: var(--SWEET-off-white);
+    background-color: var(--SWEET-purple);
 }

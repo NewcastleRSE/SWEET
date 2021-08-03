@@ -34,10 +34,12 @@ export class AlertEditor extends HTMLElement {
                 margin-left: 1em;
                 background-color: silver;
             }
+            div { text-align: center; }
+            h4 { display: inline-block; }
         </style>
-        <div><select name="class">
-            <option value="important" selected>important</option>
-            <option value="alert">very important</option>
+        <div><h4>Select a paragraph style:</h4><select name="class">
+            <option value="so-important" selected>important</option>
+            <option value="so-alert">seek help</option>
         </select></div>
         <content-editor></content-editor>
         `;
@@ -55,6 +57,7 @@ export class AlertEditor extends HTMLElement {
     load(content) {
         if (content.type != this.constructor.contentType) return;
 
+        this.$.root.querySelector("select").value = content.class;
         this.$.root.querySelector("content-editor").load(content.content);
         
     }
@@ -65,6 +68,6 @@ export class AlertEditor extends HTMLElement {
 export function alertRenderer(section) {
     let holder = document.createElement("section");
     holder.classList.add(section.class);
-    section.content.forEach(s => holder.appendChild(this.render(s)));
+    section.content.forEach(s => this.render(s).then(node => holder.appendChild(node)));
     return holder;
 }

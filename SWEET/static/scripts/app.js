@@ -4,7 +4,7 @@ export function createApp(options={}) {
         renderers: {
             container: function(section) {
                 const holder = document.createElement("section");
-                section.content.forEach(item => holder.appendChild(this.render(item)));
+                section.content.forEach(item => this.render(item).then(node => holder.appendChild(node)));
                 return holder;
             },
             header: function(section) {
@@ -16,7 +16,7 @@ export function createApp(options={}) {
                 const p = document.createElement("p");
 
                 if (section.content) {
-                    section.content.forEach(s => p.appendChild(this.render(s)));
+                    section.content.forEach(s => this.render(s).then(node => p.appendChild(node)));
                 } else if (section.formats) {
                     const formats = section.formats.split(section.separator);
                     const texts = section.text.split(section.separator);
@@ -54,7 +54,7 @@ export function createApp(options={}) {
                 let list = document.createElement(tag);
                 section.items.forEach(i => {
                     item = list.appendChild(document.createElement("li"));
-                    item.appendChild(render(i));
+                    this.render(i).then(node => item.appendChild(node));
                 });
                 return list;
             }
@@ -80,23 +80,19 @@ export function createApp(options={}) {
     if (!(settings.contentHolder instanceof HTMLElement)) settings.contentHolder = document.querySelector(settings.contentHolder);
     if (!(settings.titleHolder instanceof HTMLElement)) settings.titleHolder = document.querySelector(settings.titleHolder);
     
-    if (!document.querySelector("title")) document.head.appendChild(document.createElement(title));
-  
+    if (!document.querySelector("title")) document.head.appendChild(document.createElement("title"));
+
     function render(content) {
         let renderer = settings.renderers[content.type];
+        let rendered = null;
 
-        // if we've found a renderer we call it
-        if (renderer) return renderer.call(this, content);
-        
-        if (content instanceof String) return document.createTextNode(` ${content} `);
-        
-        if (content instanceof Object) {
-            console.error("Attempt to render unrecognised content section:", content);
-            return document.createTextNode("");
-        }
+        if (renderer) { rendered = renderer.call(this, content); } 
+        else if (content instanceof String) { rendered = document.createTextNode(` ${content} `); } 
+        else if (content instanceof Object) { console.error("Attempt to render unrecognised content section:", content); }
+        else { rendered = document.createTextNode(` ${content} `); }
 
-        // non-String non-Object contents must be some kind of literal(?): 
-        return document.createTextNode(` ${content} `);
+        if (renderer instanceof Promise) return rendered
+        else return Promise.resolve(rendered);
     }
 
     function refresh() {
@@ -104,17 +100,17 @@ export function createApp(options={}) {
 
         if (settings.history) {
             if (!settings.history[0]) settings.history.push(settings.defaultPath);
-            path = settings.history(0);
+            path = settings.history[0];
         } else {
             path = location.hash && location.hash.length > 1? location.hash: settings.defaultPath;
         }
 
         settings.load(path).then(page => {
-            settings.titleHolder.texContent = page.title;
+            settings.titleHolder.textContent = page.title;
             document.querySelector("title").textContent = page.title? page.title: settings.name;
 
             while (settings.contentHolder.firstChild) settings.contentHolder.removeChild(settings.contentHolder.lastChild);
-            page.content.forEach(c => settings.contentHolder.appendChild(this.render(c)));
+            page.content.forEach(c => this.render(c).then(node => settings.contentHolder.appendChild(node)));
         })
     }
 
