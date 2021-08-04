@@ -21,9 +21,11 @@ def getActivityGoalSchema():
 def getSideEffectTypes():
     return {
         "types": [
-            { "name": "hf", "description": "Hot Flush"},
-            { "name": "arth", "description": "Arthralgia (joint pain)"},
-            { "name": "ftg", "description": "Fatigue"}
+            { "name": "hf", "description": "Hot Flush", "embedtext": "hot flushes", "embedplural": True, "questions": ["frequency", "severity", "impact", "notes"]},
+            { "name": "arth", "description": "Arthralgia (joint pain)", "embedtext": "joint pain", "questions": ["severity", "impact", "notes"]},
+            { "name": "ftg", "description": "Fatigue", "embedtext": "fatigue", "questions": ["severity", "impact", "notes"]},
+            { "name": "mood", "description": "Low Mood", "embedtext": "mood", "questions": ["severity", "impact", "notes"]},
+            { "name": "sleep", "description": "Sleep Disruption", "embedtext": "sleep disruption", "questions": ["severity", "impact", "notes"]}
         ]
     }
 

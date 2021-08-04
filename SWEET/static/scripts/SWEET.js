@@ -2,7 +2,8 @@ import { createApp } from "./app.js";
 import * as r from './editors/renderers.js';
 import { homepageMenuRenderer } from './renderers/home_page.js'
 import { profilerModalRenderer } from './renderers/profiler.js'
-import { sideEffectModalRenderer } from './renderers/side_effects.js'
+import { sideEffectModalRenderer, sideEffectFormRenderer } from './renderers/side_effects.js'
+import { diaryCalendarRenderer } from "./renderers/diary-page.js";
 import { createModal } from './extensions/modal.js'
 import { createCalendar } from './extensions/calendar.js'
 
@@ -18,7 +19,8 @@ createApp({
                 body: JSON.stringify(data)
             })
         },
-        createCalendar: createCalendar
+        createCalendar: createCalendar,
+        calendarDate: function(d) { return `${d.getFullYear()}-${d.getMonth()<9?"0":""}${d.getMonth()+1}-${d.getDate()<10?"0":""}${d.getDate()}` }
     },
     renderers: {
         markdown: r.markdownRenderer,
@@ -32,7 +34,9 @@ createApp({
         "menu-item": r.menuItemRenderer,
         'homepage-menu': homepageMenuRenderer,
         sideeffect: sideEffectModalRenderer,
-        profiler: profilerModalRenderer
+        sideeffectform: sideEffectFormRenderer,
+        profiler: profilerModalRenderer,
+        "diary-calendar": diaryCalendarRenderer
     },
     load: function(path) {
         let url = `/app/content?path=${encodeURIComponent(path)}`;
@@ -40,5 +44,6 @@ createApp({
     },
     titleHolder: "#page-title",
     contentHolder: "#main-container",
+    name: "SWEET",
     autostart: true
 });

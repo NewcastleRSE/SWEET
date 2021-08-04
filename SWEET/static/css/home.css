@@ -6,12 +6,33 @@
     align-content: stretch;
 }
 
+a.card {
+    overflow: hidden;
+    min-height: 7em;
+}
+
 .hmpg-acts a.card {
-    border-bottom-color: #f5f57a;
+    border-bottom-color: var(--SWEET-gold);
+    min-height: 4.5em;
 }
 
 .hmpg-prof a.card {
-    border-bottom-color: #b6b6b3;
+    border-bottom-color: var(--SWEET-lilac);
     text-align: center;
     font-size: 125%;
+}
+
+img.card-icon {
+    display: block;
+    position: absolute;
+    width: 7.5em;
+    object-fit: contain;
+    bottom: -0.5em;
+    right: 0.25em;
+    opacity: 0.1;
+}
+
+.hmpg-acts img.card-icon {
+    width: 5em;
+    bottom: 0;
 }

@@ -59,6 +59,7 @@ export class PopupEditor extends HTMLElement {
 
         fields.insertAdjacentHTML("beforeend", "<label>Content:</label>");
         this.$.content = fields.appendChild(document.createElement("content-editor"));
+        this.constructor.editors.forEach(e => this.$.content.registerEditor(e));
         fields.insertAdjacentHTML("beforeend", "<br />");
     }
 
@@ -84,55 +85,22 @@ export class PopupEditor extends HTMLElement {
 }
 
 export function popupRenderer(section) {
-    // let overlay = app.createPopup();
 
+    let modal = this.createModal(true);
+    modal.size = "fs";
 
-    /* amend this section to place content into popup */
-    let overlay = document.createElement("section");
-    overlay.classList.add("overlay");
-
-    let warning = overlay.appendChild(document.createElement("header"));
-    let close = warning.appendChild(document.createElement("button"));
-    close.textContent = "return to app";
-    close.classList.add("close-button");
-    close.addEventListener("click", function(e) {
-        overlay.remove();
-    });
-
-    let warnheading = warning.appendChild(document.createElement("h1"));
-    warnheading.textContent = "You are currently viewing external content";
-    warnheading.classList.add("warning");
-
-    let holder = overlay.appendChild(document.createElement("article"));
-
-    let heading = holder.appendChild(document.createElement("h2"));
-    heading.textContent = section.title;
-
-    let byline = holder.appendChild(document.createElement("p"));
-    byline.textContent = section.byline;
-
-    let embed = document.createElement("iframe");
-
-    switch (section.source) {
-        case "youtube":
-            embed.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
-            embed.setAttribute("allowfullscreen", "");
-            break;
-
-    }
-
-    embed.src = section.link;
-    holder.appendChild(embed);
-    /* end content loading section */
-
+    modal.title.textContent = section.title;
+    section.content.forEach(s => this.render(s).then(node => modal.body.appendChild(node)));
+    modal.footer.innerHTML = "<button type='button' class='btn btn-primary'>Close</button>";
+    modal.footer.querySelector("button").addEventListener("click", () => modal.hide(true));
+    
     let trigger = document.createElement("a");
-    trigger.classList.add(section.source);
+    trigger.classList.add("popup-trigger");
     trigger.textContent = section.byline;
 
     trigger.addEventListener("click", function(e) {
-        // this click handler should show the popup (maybe just add it to the document? or 'show' it if that's the preferred bs way to do it...)
-        e.preventDefault();
-        document.querySelector("#app-main").appendChild(overlay);
+        e.preventDefault(); e.stopPropagation();
+        modal.show();
     })
 
     return trigger;

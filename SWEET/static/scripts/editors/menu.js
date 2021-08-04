@@ -143,7 +143,7 @@ export function menuRenderer(section) {
 
     section.content.forEach(item => {
         if (item.type != "menu-item") throw `DataError: expected type "menu-item", received type "${item.type}"`;
-        holder.appendChild(this.render(item));
+        this.render(item).then(node => holder.appendChild(node));
     });
     return holder;
 }

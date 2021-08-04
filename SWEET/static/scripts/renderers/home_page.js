@@ -24,27 +24,27 @@ export function homepageMenuRenderer(section) {
 
     menu.innerHTML = `
     <div class="col-12 col-xl-8 row row-cols-1 row-cols-lg-2 g-3 mt-3 hmpg-sects"></div>
-    <div class="col-12 col-xl-4 row row-cols-1 row-cols-lg-2 row-cols-xl-1 g-3 mt-3 hmpg-acts"></div>
-    <div class="col-12 row row-cols-1 g-3 mt-3 hmpg-prof"></div>
+    <div class="col-12 col-xl-4 row row-cols-1 row-cols-lg-3 row-cols-xl-1 g-3 mt-3 hmpg-acts"></div>
     `
 
     menu.$sections = menu.querySelector(".hmpg-sects");
     menu.$actions = menu.querySelector(".hmpg-acts");
-    menu.$profiler = menu.querySelector(".hmpg-prof");
 
     section.mainitems.forEach(i => {
         let item = createItem();
         item.$title.textContent = i.title;
         item.$subtitle.textContent = i.description;
         item.$link.setAttribute("href", i.link);
-        item.$link.classList.add("pb-5");
+        //item.$link.classList.add("pb-5");
 
         if (i.icon && i.icon != "none") {
 
             fetch(`/app/resources/${i.icon}`)
             .then(response => response.json())
             .then(resource => {
-                item.$link.style.backgroundImage = `url("${resource.source}")`;
+                let img = item.$link.appendChild(document.createElement("img"))
+                img.src = resource.source;
+                img.classList.add("card-icon");
             })
         }
 
@@ -56,14 +56,16 @@ export function homepageMenuRenderer(section) {
         item.$title.textContent = i.title;
         item.$subtitle.textContent = i.description;
         item.$link.setAttribute("href", i.link);
-        item.$link.classList.add("pb-5");
+        //item.$link.classList.add("pb-5");
 
         if (i.icon && i.icon != "none") {
 
             fetch(`/app/resources/${i.icon}`)
             .then(response => response.json())
             .then(resource => {
-                item.$link.style.backgroundImage = `url("${resource.source}")`;
+                let img = item.$link.appendChild(document.createElement("img"))
+                img.src = resource.source;
+                img.classList.add("card-icon");
             })
         }
 
@@ -74,25 +76,27 @@ export function homepageMenuRenderer(section) {
     profiler.$title.textContent = section.profiler.title;
     profiler.$subtitle.textContent = section.profiler.description;
     profiler.$link.setAttribute("href", "#");
-    profiler.$link.classList.remove("h-100");
 
     profiler.addEventListener("click", e => {
         e.preventDefault(); e.stopPropagation();
 
-        this.render({ type: "profiler", dueDate: "2021-07-14" })
+        // fix this up ASAP!
+        this.render({ type: "profiler", dueDate: this.calendarDate(new Date()), reminderDate: ((d) => { d.setDate(d.getDate() + 3); return d; })(new Date()) })
     })
 
     if (section.profiler.icon && section.profiler.icon != "none") {
-        profiler.$link.classList.add("pb-5");
+        //profiler.$link.classList.add("pb-5");
 
-        fetch(`/app/resources/${i.icon}`)
+        fetch(`/app/resources/${section.profiler.icon}`)
         .then(response => response.json())
         .then(resource => {
-            profiler.$link.style.backgroundImage = `url("${resource.source}")`;
+            let img = profiler.$link.appendChild(document.createElement("img"))
+            img.src = resource.source;
+            img.classList.add("card-icon");
         })
     }
 
-    menu.$profiler.appendChild(profiler);
+    menu.$actions.appendChild(profiler);
 
     return menu;
 }

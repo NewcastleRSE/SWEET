@@ -158,6 +158,10 @@ export class ContentEditor extends HTMLElement {
         console.log("clearing...");
         console.log(this.$.root.querySelectorAll("button.delete"))
         this.$.root.querySelectorAll("button.delete").forEach(bin => { bin.dispatchEvent(new MouseEvent("click", { bubbles: true })); })
+        this.$.root.querySelectorAll(".uneditable").forEach(u => {
+            u.nextSibling.remove();
+            u.remove();
+        })
     }
 
     load(content) {

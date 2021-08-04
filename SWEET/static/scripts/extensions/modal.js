@@ -1,4 +1,4 @@
-export function createModal() {
+export function createModal(autodestroy=false) {
     let modal = new DOMParser().parseFromString(`
     <div class="modal fade" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -18,16 +18,17 @@ export function createModal() {
 
     document.body.appendChild(modal);
     let bs = new bootstrap.Modal(modal);
+    if (autodestroy) modal.addEventListener("hidden.bs.modal", () => modal.remove())
 
     return {
         get title() { return modal.querySelector(".modal-title")},
         get body() { return modal.querySelector(".modal-body")},
         get footer() { return modal.querySelector(".modal-footer")},
-        set size(v) {modal.querySelector(".modal-dialog").classList.add(`modal-${v}`)},
+        set size(v) { modal.querySelector(".modal-dialog").classList.remove("modal-sm", "modal-lg", "modal-xl", "modal-fs"); if (["sm", "lg", "xl", "fs"].includes(v)) modal.querySelector(".modal-dialog").classList.add(`modal-${v}`)},
         set id(v) {modal.setAttribute("id", v)},
         get id() { return modal.getAttribute("id")},
         show: function() { bs.show() },
-        hide: function(destroy=false) { bs.hide(); if (destroy) modal.remove(); }
+        hide: function(destroy=false) { bs.hide(); if (destroy && !autodestroy) modal.remove(); }
     };
 }
 

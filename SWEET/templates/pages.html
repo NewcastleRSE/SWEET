@@ -3,8 +3,7 @@
         <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
         <script src="{{ url_for('static', filename='scripts/lz-string.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/app_accordion.css') }}">
+
         <style>
             html {
                 font-family: sans-serif;
@@ -29,10 +28,10 @@
             }
 
             #page-tree.collapsed {
-                width: 5vw;
+                width: 10vw;
                 min-width: 0;
                 overflow: hidden;
-                padding-left: 5vw;
+                padding-left: 10vw;
                 box-sizing: border-box;
                 z-index: 99;
             }
@@ -67,9 +66,8 @@
 
             #page-details {
                 position: relative;
-                left: max(25vw, 20em);
                 top: 12.5em;
-                width: 40vw;
+                display: none;
             }
 
             #page-details label {display: inline-block; width: 7.5em; text-align: right; vertical-align: top;}
@@ -97,17 +95,15 @@
             #page-details.noload ~ #page-preview {
                 display: none;
             }
+            
             #page-tree.collapsed ~ #page-details {
-                left: 6vw;
-                width: 49vw;
+                display: block;
+                left: 12.5vw;
+                width: 75vw;
             }
 
             #page-details-header {
-                position: fixed; top: 0; left: 21vw; width: 40vw; z-index: 4; background-color: #e3e3e0; padding: 1em; box-sizing: border-box;
-            }
-
-            #page-tree.collapsed ~ #page-details #page-details-header {
-                left: 6vw; width: 49vw;
+                position: fixed; top: 0; left: 12.5vw; width: 76vw; z-index: 4; background-color: #e3e3e0; padding: 1em; box-sizing: border-box;
             }
 
             .tight p {
@@ -115,17 +111,43 @@
             }
 
             #page-preview {
+                z-index: 99;
+                box-sizing: border-box;
                 position: fixed;
-                right: 1em;
-                top: 1em;
-                left: 55vw;
-                bottom: 2vh;
-                overflow-y: scroll;
-                overflow-x: auto;
+                right: 0;
+                top: 0;
+                width: 10vw;
+                padding-right: 10vw;
+                bottom: 0;
+                overflow: hidden;
+                background-color: #d2c0d9;
             }
 
-            #page-preview #app-main {
+            #page-preview:hover {
+                left: 25vw;
+                background-color: rgba(255,255,255,0.8);
+                padding: 0 5em;
                 width: auto;
+            }
+
+            #page-preview > div {
+                box-sizing: border-box;
+                text-align: center;
+                overflow: hidden;
+                padding: 1em;
+                display: none;
+            }
+
+            #page-preview:hover > div {
+                display: block;
+            }
+
+            #page-preview > div > a {
+                color: #633188;
+                cursor: pointer;
+            }
+            #page-preview iframe {
+                width: 100%; height: 95%;
             }
 
             button.edit {
@@ -142,9 +164,6 @@
                 cursor: pointer;
             }
 
-            .accordion > .item.closed > section {
-                display: block;
-            }
             content-editor {
                 background-color: #deecff;
             }
@@ -178,6 +197,7 @@
             #add-resource {
                 position: relative;
             }
+
             #add-resource-preview {
                 display: none;
                 position: absolute;
@@ -201,6 +221,7 @@
                 flex-direction: row;
                 justify-content: space-around;
                 align-items: center;
+                overflow: hidden;
             }
             
             div.resource img {
@@ -212,24 +233,17 @@
             }
 
         </style>
-        <script src="{{ url_for('static', filename='scripts/app.js') }}"></script>
         <script type="module">
             import * as editors from '{{ url_for("static", filename="scripts/editors/editors.js") }}';
             customElements.define('content-editor', editors.ContentEditor);
             customElements.define('edit-inserter', editors.EditorInserter);
             
-            document.querySelector("#page-content").registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.AccordionEditor, editors.BlockquoteEditor, editors.MenuEditor, editors.AlertEditor, editors.GoalSetter)
+            document.querySelector("#page-content").registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.AccordionEditor, editors.BlockquoteEditor, editors.MenuEditor, editors.AlertEditor, editors.GoalSetter, editors.PopupEditor)
             
             editors.AccordionEditor.registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.BlockquoteEditor);
             editors.AlertEditor.registerEditors(editors.MarkdownEditor, editors.BlockquoteEditor);
+            editors.PopupEditor.registerEditors(editors.AccordionEditor, editors.MarkdownEditor, editors.BlockquoteEditor, editors.AlertEditor);
             
-            document.querySelector("#preview-update").addEventListener("click", e => {
-                document.querySelector("#page-title").textContent = document.querySelector("input[name='page-title']").value;
-                document.querySelector("#main-container").innerHTML = "";
-                document.querySelector("#page-content").jsonvalue.forEach(section => {
-                    document.querySelector("#main-container").appendChild(render(section));
-                })
-            })
 
             document.querySelector("#add-page").addEventListener("click", e => {
                 if (document.querySelector("#add-details input[name='add-slug']").value.replace(/[a-z-]*/, "").length > 0) {
@@ -356,8 +370,20 @@
                 }, reject => console.log(reject))
 
             })
-            </script>
-        
+
+
+            function preview(target) {
+                window.open("{{ url_for('admin.previewEdit') }}", target);
+            }
+            document.querySelector("#preview-update").addEventListener("click", e => {
+                preview("inline-preview");
+            })
+            document.querySelector("#preview-launch").addEventListener("click", e => {
+                e.preventDefault();
+                preview("_blank");
+            })
+
+        </script>
     </head>
     <body>
         <div  id="page-tree">
@@ -396,12 +422,11 @@
                     <button id="add-page">Add page</button></p><p id="page-subpages"></p></details>
         </div>
         <div id="page-preview">
-            <button style="position: fixed; top: 0; right: 25%" id="preview-update">Update</button>
-            <a style="position: fixed; top: 0; right: 5%" target="_blank" href="/">Open in app</a>
-            <div id="app-main">
-                <h1 id="page-title"></h1>
-                <div id="main-container"></div>
+            <div>
+                <button type="button" id="preview-update">Update</button>
+                <a id="preview-launch">Open in new tab</a>
             </div>
+            <iframe id="page-preview-window" name="inline-preview"></iframe>
         </div>
         <script>
             document.addEventListener("DOMContentLoaded", () => {
@@ -486,6 +511,7 @@
                                 if (content.content) {
                                     ce.parentElement.setAttribute("open", "");
                                     details.querySelector("content-editor").load(content.content);
+                                    window.scroll(0,0);
                                 } else {
                                     ce.parentElement.removeAttribute("open");
                                 }
@@ -494,7 +520,7 @@
 
                         details.classList.remove("noload");
                         document.querySelector("#page-tree").classList.add("collapsed");
-                        document.querySelector("#page-preview a[target='_blank']").setAttribute("href", `/${item.pageInfo.path}`)
+                        //document.querySelector("#page-preview a[target='_blank']").setAttribute("href", `/${item.pageInfo.path}`)
                     })
 
                     return item;
