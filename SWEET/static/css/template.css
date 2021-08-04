@@ -1,12 +1,21 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope&family=Gothic+A1&family=Montserrat&family=Barlow+Semi+Condensed&family=Manjari");
+
 :root {
     font-size: 20px;
 
+    --bs-font-sans-serif: "Manrope", "Manjari", "Roboto", Arial, sans-serif;
+
     --SWEET-purple: #633188;
     --SWEET-grey: #b3b3b2;
+    --SWEET-light-grey: #e6e6e3;
     --SWEET-gold: #f0c048;
     --SWEET-pink: #d2c0d9;
     --SWEET-lilac: #a08db0;
     --SWEET-off-white: #fafafa;
+}
+
+h5 {
+    font-weight: 600;
 }
 
 

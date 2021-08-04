@@ -35,14 +35,16 @@ export function homepageMenuRenderer(section) {
         item.$title.textContent = i.title;
         item.$subtitle.textContent = i.description;
         item.$link.setAttribute("href", i.link);
-        item.$link.classList.add("pb-5");
+        //item.$link.classList.add("pb-5");
 
         if (i.icon && i.icon != "none") {
 
             fetch(`/app/resources/${i.icon}`)
             .then(response => response.json())
             .then(resource => {
-                item.$link.style.backgroundImage = `url("${resource.source}")`;
+                let img = item.$link.appendChild(document.createElement("img"))
+                img.src = resource.source;
+                img.classList.add("card-icon");
             })
         }
 
@@ -54,14 +56,16 @@ export function homepageMenuRenderer(section) {
         item.$title.textContent = i.title;
         item.$subtitle.textContent = i.description;
         item.$link.setAttribute("href", i.link);
-        item.$link.classList.add("pb-5");
+        //item.$link.classList.add("pb-5");
 
         if (i.icon && i.icon != "none") {
 
             fetch(`/app/resources/${i.icon}`)
             .then(response => response.json())
             .then(resource => {
-                item.$link.style.backgroundImage = `url("${resource.source}")`;
+                let img = item.$link.appendChild(document.createElement("img"))
+                img.src = resource.source;
+                img.classList.add("card-icon");
             })
         }
 
@@ -81,12 +85,14 @@ export function homepageMenuRenderer(section) {
     })
 
     if (section.profiler.icon && section.profiler.icon != "none") {
-        profiler.$link.classList.add("pb-5");
+        //profiler.$link.classList.add("pb-5");
 
-        fetch(`/app/resources/${i.icon}`)
+        fetch(`/app/resources/${section.profiler.icon}`)
         .then(response => response.json())
         .then(resource => {
-            profiler.$link.style.backgroundImage = `url("${resource.source}")`;
+            let img = profiler.$link.appendChild(document.createElement("img"))
+            img.src = resource.source;
+            img.classList.add("card-icon");
         })
     }
 
