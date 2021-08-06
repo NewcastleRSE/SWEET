@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/home.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/diary.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/standout.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/goal.css') }}">
   </head>
   <body class="d-flex flex-column h-100 bg-light">
     
@@ -63,44 +64,8 @@
 
 <footer class="footer mt-auto py-3 footer-dark">
   <div class="container">
-    <span class="text-muted">Place sticky footer content here.</span>
+    <span><a href="#">USER GUIDE</a></span><span><a href="#">Privacy Notice</a></span><span>... logos ...</span>
   </div>
-  <!-- Modals -->
-    <div class="modal fade" id="profilerModal" tabindex="-1" aria-labelledby="profilerLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content" id="profiler">
-            <div class="modal-header">
-                <h5 class="modal-title" id="profilerLabel">Profiler</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>We'd like to ask you some questions to see how you are getting on with your hormone therapy. Answering these questions will allow us to guide you to relevant sections of the app that you may find helpful. </p>
-                <p>Are you happy to answer these questions now?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Not Now</button>
-                <button type="button" id="prof-yes" class="btn btn-primary">Yes</button>
-            </div>
-        </div>
-        </div>
-    </div>
-    <div class="modal fade" id="goalModal" tabindex="-1" aria-labelledby="goalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content" id="goalContent">
-            <div class="modal-header">
-                <h5 class="modal-title" id="goalLabel"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="goalWrapper">
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" id="goal-yes" class="btn btn-primary">Next</button>
-            </div>
-        </div>
-        </div>
-    </div>
   <!-- Toast -->
   <div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
     <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">

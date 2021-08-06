@@ -40,7 +40,89 @@ export function goalRenderer(section) {
             </div>
         </div></div>`;
 
-    let newgoalhandler = function() {
+    let fillGoal = (goal) => {
+        let goalCard = document.createElement("div");
+        goalCard.setAttribute("class", "card goal text-center shadow h-100");
+
+        let goalCardBody = goalCard.appendChild(document.createElement("div"));
+        goalCardBody.setAttribute("class", "card-body d-flex justify-content-center");
+
+        let goalCardContent = goalCardBody.appendChild(document.createElement("div"));
+        goalCardContent.setAttribute("class", "align-self-center");
+
+
+        goalCardContent.innerHTML = `<h5 class="goal-summary">
+                    Do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.
+                </h5>`;
+
+        let today = this.calendarDate(new Date());
+
+        if (goal.reviewDate <= today) {
+            goalCard.classList.add("review");
+            
+            // create a review button
+            let review = goalCardContent.appendChild(document.createElement("button"));
+            review.setAttribute("class", "goal-review btn btn-primary mt-4 mb-3");
+            review.textContent = "Review this goal";
+            review.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const modal = this.createModal(true);
+                modal.size = "lg";
+                
+                modal.title.innerHTML = "Review Goal";
+                modal.body.innerHTML = `
+                <p><em>${goal.detail}; ${goal.days} days; ${goal.minutes} minutes per day</em></p>
+                <p>Have you been successful and completed your goal?</p>
+                <div id="review-box-buttons" class="d-flex justify-content-evenly mt-5 mb-5">
+                    <button class="btn btn-light" value="y">Yes, Totally</button><button class="btn btn-light" value="p">Yes, Partly</button><button class="btn btn-light" value="n">No, not at all</button>
+                </div>`;
+                modal.footer.innerHTML = '<button class="btn btn-primary" hidden>Close</button>'
+                
+                modal.body.querySelector("#review-box-buttons").addEventListener("click", e => {
+                    e.stopPropagation();
+                    if (e.target.tagName != "BUTTON") {
+                        console.log(e.target); return;
+                    }
+
+                    goal.status = "complete";
+                    goal.outcome = e.target.value;
+                    this.post("/myapp/mygoals/", goal).then(response => response.json())
+                    .then(outcome => {
+                        modal.body.innerHTML = "<h3 class='text-center mt-5 mb-5'>Thank you for reviewing your goal</h3>";
+                        modal.footer.querySelector("button").removeAttribute("hidden");
+                        modal.footer.querySelector("button").addEventListener("click", e => {
+                            e.stopPropagation();
+
+                            let outer = goalCard.parentElement;
+
+                            outer.classList.add("goal", "new")
+                            outer.classList.remove("col")
+                            outer.innerHTML = newgoaltemplate;
+                            outer.addEventListener("click", newgoalhandler);
+
+                            modal.hide();
+                        })
+
+                    }).catch(e => {
+                        console.log(e);
+                    })
+                })
+
+                modal.show();
+            })
+        } else {
+            goalCard.classList.add("active");
+            // show the review date:
+            let reviewdate = goalCardContent.appendChild(document.createElement("h6"));
+            reviewdate.setAttribute("class", "mt-4 goal-date");
+            reviewdate.textContent = `Review on: ${new Date(Date.parse(goal.reviewDate)).toLocaleDateString()}`;
+        }
+
+        return goalCard;
+    }
+
+    let newgoalhandler = (nge) => {
+        let source = nge.currentTarget;
 
         // load appropriate schema
         fetch(`/app/schemas/goals/${section.goaltype}`)
@@ -48,29 +130,33 @@ export function goalRenderer(section) {
         .then(schema => {
         // set up form
 
-            let goal;
-            let submitButton = document.getElementById("goal-yes");
-            let goalWrapper = document.getElementById("goalWrapper");
+            const modal = this.createModal(true);
+            modal.size = "lg";
 
-            goalWrapper.innerHTML = "";
-            document.getElementById("goalLabel").innerHTML = "Set New Goal";
-            submitButton.innerText = "Next";
+            let goal = {};
+
+            modal.title.innerHTML = "Set New Goal";
 
             let form = goalWrapper.appendChild(document.createElement("form"));
-            form.setAttribute("id", "goal");
+            form.setAttribute("id", "goal-setup-form");
             let list = form.appendChild(document.createElement("datalist"));
             list.setAttribute("id", "activity");
             schema.activity.forEach(i => list.insertAdjacentHTML("beforeend", `<option>${i}</option>`))
 
-            let daysInput = schema.frequency.map(f => `<div class="form-check form-check-inline"><input class="form-check-input" type="radio" name="frequency" id="frequency-${f}" value="${f}"><label class="form-check-label" for="frequency-${f}">${f}</label></div>`).join("");
+            let daysInput = schema.frequency.map(f => `<input class="form-check-input" type="radio" name="frequency" id="frequency-${f}" value="${f}"><label class="form-check-label" for="frequency-${f}">${f}</label>`).join("");
    
-            form.appendChild(document.createElement("p")).innerHTML = "I will do some <input class='form-control w-50 d-inline-block' type='text' name='activity' list='activity' placeholder='choose an activity or type your own'> this week.";
-            form.appendChild(document.createElement("p")).innerHTML = `I will do it on &nbsp;${daysInput} days.`;
-            form.appendChild(document.createElement("p")).innerHTML = `I will do it for <input class='form-control w-25 d-inline-block' type='number' name='duration' list='duration'/> minutes each day.`;
-            // form.insertAdjacentHTML("beforeend", '<p><input type="submit" value="Next" /></p>')
+            form.appendChild(document.createElement("p")).innerHTML = "<label>Activity: </label><input class='form-control w-50 d-inline-block' type='text' name='activity' list='activity' placeholder='choose an activity'><br><em>You can choose from the list or type your own</em>";
+            form.appendChild(document.createElement("p")).innerHTML = `<label>How many days?</label>${daysInput}`;
+            form.appendChild(document.createElement("p")).innerHTML = `<label>How many minutes per day? </label><input class='form-control d-inline-block' type='number' name='duration' list='duration'>`;
+            modal.body.appendChild(form);
+
+            modal.footer.innerHTML = `<button type="button" class="btn btn-secondary">Cancel</button><button type="submit" form="${form.getAttribute("id")}" class="btn btn-primary">Next</button>`
+            modal.footer.querySelector("button[type='button']").addEventListener("click", () => {
+                modal.hide();
+            })
             
-            submitButton.addEventListener("click", e => {
-                e.preventDefault();
+            form.addEventListener("submit", e => {
+                e.preventDefault(); e.stopImmediatePropagation();
 
                 goal = {
                     goaltype: 'activity',
@@ -81,38 +167,37 @@ export function goalRenderer(section) {
                     minutes: form.elements['duration'].value,
                 }
 
-                console.log(goal);
 
-                document.getElementById("goal-yes").innerText = "Save";
-                document.getElementById("goalWrapper").innerHTML = `
-                <h3 class='w-75 mb-5'>You're ready to set a new goal for the next week!</h3>
+                modal.body.innerHTML = `
+                <h3 class='mb-5'>You're ready to set a new goal for the next week!</h3>
                 <section>
                 <p>You can always see your goals by clicking <strong>My Goals</strong> on the Being Active homepage.</p>
                 <p>In one week, you can come back to review your goal and to get a feedback message.</p>
                 <p>You may want to stick a reminder somewhere in your house.</p>
                 <p>Your goal is: to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.</p>
                 </section>`;
+
+                let submitButton = modal.footer.querySelector("button[type='submit']");
+                submitButton.setAttribute("type", "button");
+                submitButton.textContent = "Save";
+
                 submitButton.addEventListener("click", () => {
-                    fetch("/myapp/mygoals/", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(goal)
-                    }).then(response => response.json())
+                    this.post("/myapp/mygoals/", goal).then(response => response.json())
                     .then(outcome => {
                         if (outcome.status == "error") {
                             document.getElementById("toast-message-type").text("Error");
                             document.getElementById("toast-message").text(`We were not able to save your new goal. ${outcome.message}`);
-                            bootstrap.Modal.getInstance(document.getElementById('goalModal')).hide();
-                            return;
+                        } else {
+                            source.innerHTML = "";
+                            source.appendChild(fillGoal(goal));
+                            source.removeEventListener("click", newgoalhandler);
                         }
-                        bootstrap.Modal.getInstance(document.getElementById('goalModal')).hide();
-                        goalWrapper.innerHTML = "";
 
+                        modal.hide();
                     }).catch(e => console.log(e))
                 })
             })
 
-            const modal = new bootstrap.Modal(document.getElementById('goalModal'));
             modal.show();
         })
     }
@@ -130,85 +215,7 @@ export function goalRenderer(section) {
             let outer = document.createElement("div");
             outer.classList.add("col");
 
-            let goalCard = document.createElement("div");
-            goalCard.setAttribute("class", "card goal text-center shadow h-100");
-
-            let goalCardBody = document.createElement("div");
-            goalCardBody.setAttribute("class", "card-body d-flex justify-content-center");
-
-            let goalCardContent = document.createElement("div");
-            goalCardContent.setAttribute("class", "align-self-center");
-
-
-            goalCardContent.innerHTML = `<h5 class="goal-summary">
-                        Do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.
-                    </h5>`;
-
-            goalCardBody.appendChild(goalCardContent);
-            goalCard.appendChild(goalCardBody);        
-            outer.appendChild(goalCard);
-
-            let today = isodate(new Date());
-
-            if (goal.reviewDate <= today) {
-                goalCard.classList.add("review");
-                
-                // create a review button
-                let review = goalCardContent.appendChild(document.createElement("button"));
-                review.setAttribute("class", "goal-review btn btn-primary mt-4 mb-3");
-                review.textContent = "Review this goal";
-                outer.addEventListener("click", function outerclick(e) {
-                    e.stopPropagation();
-                    const modal = new bootstrap.Modal(document.getElementById('goalModal'));
-                    
-                    let submitButton = document.getElementById("goal-yes");
-                    let goalWrapper = document.getElementById("goalWrapper");
-
-                    goalWrapper.innerHTML = "";
-                    document.getElementById("goalLabel").innerHTML = "Review Goal";
-                    submitButton.classList.add("d-none")
-
-                    document.getElementById("goalWrapper").innerHTML = `<p>Have you been successful and completed your goal?</p>
-                    <div id="review-box-buttons" class="d-flex justify-content-evenly mt-5 mb-5">
-                        <button class="btn btn-light" value="y">Yes, Totally</button><button class="btn btn-light" value="p">Yes, Partly</button><button class="btn btn-light" value="n">No, not at all</button>
-                    </div>`;
-
-                    goalWrapper.querySelector("#review-box-buttons").addEventListener("click", e => {
-                        e.stopPropagation();
-                        if (e.target.tagName != "BUTTON") {
-                            console.log(e.target); return;
-                        }
-
-                        goal.status = "complete";
-                        goal.outcome = e.target.value;
-                        fetch("/myapp/mygoals/", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(goal)
-                        }).then(response => response.json())
-                        .then(outcome => {
-                            goalWrapper.innerHTML = "<h3 class='text-center mt-5 mb-5'>Thank you for reviewing your goal</h3>";
-                            submitButton.innerText = "Done";
-                            submitButton.classList.remove("d-none");
-                            submitButton.addEventListener("click", e => {
-                                e.stopPropagation();
-                                modal.hide();
-                            })
-
-                        }).catch(e => {
-                            console.log(e);
-                        })
-                    })
-
-                    modal.show();
-                })
-            } else {
-                goalCard.classList.add("active");
-                // show the review date:
-                let reviewdate = goalCardContent.appendChild(document.createElement("h6"));
-                reviewdate.setAttribute("class", "mt-4 goal-date");
-                reviewdate.textContent = `Review on: ${new Date(Date.parse(goal.reviewDate)).toLocaleDateString()}`;
-            }
+            outer.appendChild(fillGoal(goal));
 
             holder.appendChild(outer);
         })
@@ -216,8 +223,7 @@ export function goalRenderer(section) {
         while (holder.children.length < 3) {
             // render a blank goal that can be completed
             let outer = holder.appendChild(document.createElement("div"));
-            outer.classList.add("goal");
-            outer.classList.add("new");
+            outer.classList.add("goal", "new");
             outer.innerHTML = newgoaltemplate;
             outer.addEventListener("click", newgoalhandler);
         } 

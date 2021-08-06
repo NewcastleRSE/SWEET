@@ -1,0 +1,26 @@
+#goal-setup-form input[type="radio"] {
+    display: none;
+}
+
+#goal-setup-form input[type="radio"] + label {
+    display: inline-block;
+    width: 1.4em;
+    height: 1.4em;
+    line-height: 1.25em;
+    border: 2px solid var(--SWEET-purple);
+    border-radius: 4px;
+    font-weight: bold;
+    margin: 0 0.2em;
+    text-align: center;
+    cursor: pointer;
+}
+
+#goal-setup-form input[type="radio"]:checked + label {
+    background-color: var(--SWEET-purple);
+    color: var(--SWEET-light-grey);
+}
+
+#goal-setup-form input[type='number'] {
+    max-width: 4em;
+    margin-left: 0.25em;
+}
