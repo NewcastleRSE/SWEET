@@ -139,7 +139,7 @@ export class MenuEditor extends HTMLElement {
 
 export function menuRenderer(section) {
     const holder = document.createElement("div");
-    holder.setAttribute("class", "row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 mt-3");
+    holder.setAttribute("class", "row g-3 mt-3 nav-normal");
 
     section.content.forEach(item => {
         if (item.type != "menu-item") throw `DataError: expected type "menu-item", received type "${item.type}"`;
@@ -153,7 +153,7 @@ export function menuItemRenderer(section) {
     holder.setAttribute("class", "d-block col");
 
     const card = document.createElement("a");
-    card.setAttribute("class", "d-block card shadow pb-5 h-100");
+    card.setAttribute("class", "d-block card");
     card.setAttribute("href", section.link);
 
     const cardBody = document.createElement("div");

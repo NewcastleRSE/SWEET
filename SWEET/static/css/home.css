@@ -6,7 +6,7 @@
     align-content: stretch;
 }
 
-a.card {
+.hmpg-sects a.card, .hmpg-acts a.card {
     overflow: hidden;
     min-height: 7em;
 }
@@ -14,12 +14,6 @@ a.card {
 .hmpg-acts a.card {
     border-bottom-color: var(--SWEET-gold);
     min-height: 4.5em;
-}
-
-.hmpg-prof a.card {
-    border-bottom-color: var(--SWEET-lilac);
-    text-align: center;
-    font-size: 125%;
 }
 
 img.card-icon {

@@ -1,0 +1,18 @@
+.nav-normal .card-title {
+    white-space: nowrap;
+}
+
+.nav-normal .card-body {
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.nav-normal .card {
+    border: 0.2em solid var(--SWEET-purple);
+    border-radius: 0.5em;
+}
+
+.nav-normal .card:hover {
+    border-color: var(--SWEET-gold);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+}
