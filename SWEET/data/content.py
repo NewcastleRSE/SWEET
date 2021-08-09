@@ -36,7 +36,8 @@ def updatePageContent(details):
     __content[details["path"]] = details["content"]
     __content.commit()
 
-    if "title" in details:
+    #check for structure updates:
+    if "title" in details or "prev" in details or "next" in details:
         struct = __structure
         slugs = details["path"][1:].split("/")
         for slug in slugs:
@@ -45,7 +46,14 @@ def updatePageContent(details):
             else:
                 struct = next(i for i in struct['pages'] if i['slug'] == slug)
         
-        struct['title'] = details['title']
+        if "title" in details:
+            struct['title'] = details['title']
+
+        if "prev" in details:
+            struct['prev'] = details['prev']
+
+        if "next" in details:
+            struct['next'] = details['next']
 
         __structure.commit()
 

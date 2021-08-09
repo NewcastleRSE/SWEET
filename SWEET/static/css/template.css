@@ -24,6 +24,32 @@ main > .container {
     padding: 90px 15px 15px;
 }
 
+main header, main footer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: space-between;
+    align-items: center;
+}
+
+main header {
+    margin-bottom: 1.5em;
+}
+main footer {
+    margin-top: 1.5em;
+}
+
+#page-title {
+    margin-left: 1em; margin-right: 1em;
+    text-align: center;
+}
+
+main :is(header, footer) a.hidden {
+    visibility: hidden;
+}
+
+
 .sidenav {
     background: radial-gradient(circle, rgba(99,49,136,0.75) 26%, rgba(99,49,136,0.9) 93%), url('../images/splash.jpeg');
     background-position: center right;
@@ -166,15 +192,21 @@ section ul {
     list-style: none;
 }
 
+section ul > li {
+    margin-bottom: 0.5em;
+}
+
 section ul > li:before {
     content: "\2022";
     color: var(--SWEET-gold);
     font-weight: bold;
     font-size: 36px;
-    line-height: 1em;
+    line-height: 0.9em;
     display: inline-block;
     width: 1em;
     margin-left: -1em;
+    position: relative;
+    top: 0.1em;
 }
 
 button.accordion-button {

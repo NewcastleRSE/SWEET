@@ -109,6 +109,58 @@ export function createApp(options={}) {
             settings.titleHolder.textContent = page.title;
             document.querySelector("title").textContent = page.title? page.title: settings.name;
 
+            // handle sequential navigation if set up
+            // i.e. template has buttons with data-rel attribute:
+            const relbuttons = Array.from(document.querySelectorAll("[data-rel]"))
+            let prevlink = document.head.querySelector("link[rel='prev']");
+            let nextlink = document.head.querySelector("link[rel='next']");
+
+            if (relbuttons.length) { 
+                if (page.prev) {
+                    // we are using sequence navigation & have a 'prev' link in the page info:
+                    if (!prevlink) {
+                        prevlink = document.head.appendChild(document.createElement("link"));
+                        prevlink.setAttribute("rel", "prev");
+                    }
+                    
+
+                    relbuttons.filter(b => b.dataset.rel == "prev").forEach(prev => {
+                        prev.setAttribute("href", page.prev);
+                        prev.classList.remove("hidden");
+                    })
+                    prevlink.setAttribute("href", page.prev);
+                } else {
+                    relbuttons.filter(b => b.dataset.rel == "prev").forEach(prev => {
+                        prev.classList.add("hidden");
+                        prev.removeAttribute("href");
+                    })
+                    
+                    if (prevlink) prevlink.remove();
+                }
+
+                if (page.next) {
+                    // we are using sequence navigation & have a 'next' link in the page info:
+                    if (!nextlink) {
+                        nextlink = document.head.appendChild(document.createElement("link"));
+                        nextlink.setAttribute("rel", "next");
+                    }
+                    relbuttons.filter(b => b.dataset.rel == "next").forEach(nextButton => {
+                        nextButton.setAttribute("href", page.next);
+                        nextButton.classList.remove("hidden");
+                    })
+
+                    nextlink.setAttribute("href", page.next);
+                } else {
+                    relbuttons.filter(b => b.dataset.rel == "next").forEach(nextButton => {
+                        nextButton.classList.add("hidden");
+                        nextButton.removeAttribute("href");
+                    })
+                    if (nextlink) nextlink.remove();
+                }
+                
+                relbuttons.forEach(b => b.blur());
+            }
+
             while (settings.contentHolder.firstChild) settings.contentHolder.removeChild(settings.contentHolder.lastChild);
             page.content.forEach(c => this.render(c).then(node => settings.contentHolder.appendChild(node)));
         })

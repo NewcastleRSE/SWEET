@@ -7,6 +7,8 @@
             previewer.loader = () => {
                 return Promise.resolve({
                     title: window.opener.document.querySelector("input[name='page-title']").value,
+                    prev: window.opener.document.querySelector("input[name='page-prev']").value,
+                    next: window.opener.document.querySelector("input[name='page-next']").value,
                     content: window.opener.document.querySelector("#page-content").jsonvalue
                 })
             }

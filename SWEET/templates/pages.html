@@ -66,18 +66,20 @@
 
             #page-details {
                 position: relative;
-                top: 12.5em;
+                top: 15em;
                 display: none;
             }
 
-            #page-details label {display: inline-block; width: 7.5em; text-align: right; vertical-align: top;}
+            #page-details label {display: inline-block; width: 5em; text-align: right; vertical-align: top;}
             #page-details #add-slug-label { width: fit-content; }
             #page-details label[title] {text-decoration: underline dotted;}
-            #page-details input { width: 50%; }
+            #page-details input { min-width: 20em; }
             #page-details.noload * {
                 visibility: hidden;
             }
 
+            #fs-page-details { width: 45%; float: left; }
+            #fs-seq-details { width: 45%; float: right; }
             #add-details {
                 position: relative;
                 background-color: #cfc;
@@ -292,8 +294,15 @@
                 e.preventDefault();
                 let details =  document.querySelector("#page-details").dataset;
                 let content = { path: details.path, content: document.querySelector("#page-content").jsonvalue }
+
                 if (details.path != document.querySelector("input[name='page-title']").value) {
                     content.title = document.querySelector("input[name='page-title']").value;
+                }
+                if (details.prev != document.querySelector("input[name='page-prev']").value) {
+                    content.prev = document.querySelector("input[name='page-prev']").value;
+                }
+                if (details.next != document.querySelector("input[name='page-next']").value) {
+                    content.next = document.querySelector("input[name='page-next']").value;
                 }
 
                 fetch("/admin/content/", {
@@ -411,8 +420,15 @@
         <div id="page-details" class="noload">
             <div id="page-details-header">
                 <button id="details-save">Save changes</button><h1>Edit content:</h1>
+                <fieldset id="fs-page-details">
+                    <legend>Page Details:</legend>
                 <p><label>Page title:</label><input type="text" name="page-title"></p>
                 <p><label title="A short string (containing only letters and '-') that is used to build the link to the page.">Slug:</label><input type="text" name="page-slug" disabled></p>
+                </fieldset>
+                <fieldset id="fs-seq-details"><legend>Page Sequencing:</legend>
+                    <p><label title="The path the the previous page">Previous:</label><input type="text" name="page-prev"></p>
+                    <p><label title="The path to the next page in sequence">Next:</label><input type="text" name="page-next"></p>
+                </fieldset>
             </div>
             <details id="page-content-details"><summary>Content</summary><content-editor id="page-content"></content-editor></details>
             <details><summary>Sub-pages</summary>
@@ -449,7 +465,9 @@
                         title: page.title,
                         slug: page.slug,
                         path: `${ancestor? ancestor + "/": "#"}${page.slug}`,
-                        pages: page.pages? page.pages.map(p => { return { slug: p.slug, title: p.title}; }): null
+                        pages: page.pages? page.pages.map(p => { return { slug: p.slug, title: p.title}; }): null,
+                        prev: page.prev || "",
+                        next: page.next || ""
                     };
 
                     let edit = item.appendChild(document.createElement("button"));
@@ -483,10 +501,14 @@
                         e.stopPropagation();
                         let details = document.querySelector("#page-details");
                         details.dataset.path = item.pageInfo.path;
-                        details.dataset.title = item.pageInfo.title;
+                        details.dataset.title = item.pageInfo.title || "";
+                        details.dataset.prev = item.pageInfo.prev;
+                        details.dataset.next = item.pageInfo.next;
 
                         details.querySelector("input[name='page-title']").value = item.pageInfo.title;
                         details.querySelector("input[name='page-slug']").value = item.pageInfo.slug;
+                        details.querySelector("input[name='page-prev']").value = item.pageInfo.prev;
+                        details.querySelector("input[name='page-next']").value = item.pageInfo.next;
 
                         document.querySelector("#add-details span.path").textContent = item.pageInfo.path + "/";
 
