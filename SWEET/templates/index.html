@@ -16,6 +16,8 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/diary.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/standout.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/goal.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/menu.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/fillin.css') }}">
   </head>
   <body class="d-flex flex-column h-100 bg-light">
     
@@ -57,8 +59,9 @@
 <!-- Begin page content -->
 <main class="flex-shrink-0">
   <div class="container">
-    <h1 id="page-title"></h1>
+    <header><a data-rel="prev" class="btn btn-primary hidden">Back</a><h1 id="page-title"></h1><a data-rel="next" class="btn btn-primary hidden">Next</a></header>
     <div id="main-container"></div>
+    <footer><a data-rel="prev" class="btn btn-primary hidden">Back</a><a data-rel="next" class="btn btn-primary hidden">Next</a></footer>
   </div>
 </main>
 

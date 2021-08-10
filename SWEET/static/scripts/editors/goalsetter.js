@@ -137,7 +137,7 @@ export function goalRenderer(section) {
 
             modal.title.innerHTML = "Set New Goal";
 
-            let form = goalWrapper.appendChild(document.createElement("form"));
+            let form = modal.body.appendChild(document.createElement("form"));
             form.setAttribute("id", "goal-setup-form");
             let list = form.appendChild(document.createElement("datalist"));
             list.setAttribute("id", "activity");

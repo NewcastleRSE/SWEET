@@ -95,19 +95,79 @@ export function createApp(options={}) {
         else return Promise.resolve(rendered);
     }
 
-    function refresh() {
-        let path;
+    function navigateTo(path) {
+        if (settings.history) {
+            settings.history.unshift(path);
+            window.scroll(0,0);
+            this.load();
+        } else {
+            window.location.hash = path;
+        }
+    }
 
+    function refresh() {
         if (settings.history) {
             if (!settings.history[0]) settings.history.push(settings.defaultPath);
-            path = settings.history[0];
+            settings.path = settings.history[0];
         } else {
-            path = location.hash && location.hash.length > 1? location.hash: settings.defaultPath;
+            settings.path = location.hash && location.hash.length > 1? location.hash: settings.defaultPath;
         }
 
-        settings.load(path).then(page => {
+        settings.load(settings.path).then(page => {
             settings.titleHolder.textContent = page.title;
             document.querySelector("title").textContent = page.title? page.title: settings.name;
+
+            // handle sequential navigation if set up
+            // i.e. template has buttons with data-rel attribute:
+            const relbuttons = Array.from(document.querySelectorAll("[data-rel]"))
+            let prevlink = document.head.querySelector("link[rel='prev']");
+            let nextlink = document.head.querySelector("link[rel='next']");
+
+            if (relbuttons.length) { 
+                if (page.prev) {
+                    // we are using sequence navigation & have a 'prev' link in the page info:
+                    if (!prevlink) {
+                        prevlink = document.head.appendChild(document.createElement("link"));
+                        prevlink.setAttribute("rel", "prev");
+                    }
+                    
+
+                    relbuttons.filter(b => b.dataset.rel == "prev").forEach(prev => {
+                        prev.setAttribute("href", page.prev);
+                        prev.classList.remove("hidden");
+                    })
+                    prevlink.setAttribute("href", page.prev);
+                } else {
+                    relbuttons.filter(b => b.dataset.rel == "prev").forEach(prev => {
+                        prev.classList.add("hidden");
+                        prev.removeAttribute("href");
+                    })
+                    
+                    if (prevlink) prevlink.remove();
+                }
+
+                if (page.next) {
+                    // we are using sequence navigation & have a 'next' link in the page info:
+                    if (!nextlink) {
+                        nextlink = document.head.appendChild(document.createElement("link"));
+                        nextlink.setAttribute("rel", "next");
+                    }
+                    relbuttons.filter(b => b.dataset.rel == "next").forEach(nextButton => {
+                        nextButton.setAttribute("href", page.next);
+                        nextButton.classList.remove("hidden");
+                    })
+
+                    nextlink.setAttribute("href", page.next);
+                } else {
+                    relbuttons.filter(b => b.dataset.rel == "next").forEach(nextButton => {
+                        nextButton.classList.add("hidden");
+                        nextButton.removeAttribute("href");
+                    })
+                    if (nextlink) nextlink.remove();
+                }
+                
+                relbuttons.forEach(b => b.blur());
+            }
 
             while (settings.contentHolder.firstChild) settings.contentHolder.removeChild(settings.contentHolder.lastChild);
             page.content.forEach(c => this.render(c).then(node => settings.contentHolder.appendChild(node)));
@@ -126,7 +186,7 @@ export function createApp(options={}) {
 
         // general properties
         get name() { return settings.name; }, set name(v) { settings.name = v; },
-
+        get path() { return settings.path; }, set path(v) { navigateTo.call(this, v) },
         get contentHolder() { return settings.contentHolder; }, set contentHolder(v) { if (v instanceof HTMLElement) { settings.contentHolder = v } else { settings.contentHolder = document.querySelector(v) } },
         get titleHolder() { return settings.titleHolder }, set titleHolder(v) { if (v instanceof HTMLElement) { settings.titleHolder = v } else { settings.titleHolder = document.querySelector(v) } },
 
@@ -135,58 +195,56 @@ export function createApp(options={}) {
         load: function() { refresh.call(this)}
     }
 
-    Object.defineProperty(app, "start", { value: (function() {
-        let start = () => {
-            // set up link handling
-            if (settings.embed) {
-                // if the app's embedded we can't use fragments in the location
-                // so we intercept fragment links and add them to an app history:
-                settings.history = [];
+    function init() {
+        // set up link handling
+        if (settings.embed) {
+            // if the app's embedded we can't use fragments in the location
+            // so we intercept fragment links and add them to an app history:
+            settings.history = [];
 
-                // we could do something with local storage here to remember the app
-                // history between visits? not sure how useful that would be.
+            // we could do something with local storage here to remember the app
+            // history between visits? not sure how useful that would be.
+            
+            document.addEventListener("click", e => {
+                let src = e.target;
                 
-                document.addEventListener("click", e => {
-                    let src = e.target;
-                    
-                    while (src.tagName != "A" && src.parentNode) src = src.parentNode;
-                    if (src.tagName != "A") return true;
-                    let path = src.getAttribute("href");
-                    if (path.charAt(0) != '#') return true;
-        
-                    e.preventDefault(); e.stopPropagation();
-                    // handle a click on a fragment <a>
-                    settings.history.unshift(path);
-                    window.scroll(0,0);
-                    this.load();
-                })
-            } else { 
-                // not embeded so we can allow fragment links to perform their default action
-                // and listen for the ensuing popstate events:
-                window.addEventListener("popstate", pse => {
-                    window.scroll(0,0);
-                    this.load();
-                })
-            }
-            // load the app content (the load function automatically handles opening the default page)
-            this.load();
+                while (src.tagName != "A" && src.parentNode) src = src.parentNode;
+                if (src.tagName != "A") return true;
+                let path = src.getAttribute("href");
+                if (path.charAt(0) != '#') return true;
+    
+                e.preventDefault(); e.stopPropagation();
+                // handle a click on a fragment <a>
+                settings.history.unshift(path);
+                window.scroll(0,0);
+                this.load();
+            })
+        } else { 
+            // not embeded so we can allow fragment links to perform their default action
+            // and listen for the ensuing popstate events:
+            window.addEventListener("popstate", pse => {
+                window.scroll(0,0);
+                this.load();
+            })
         }
-
-        if (settings.autostart) {
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', start.bind(this));
-            } else { 
-                start.call(this);
-            }
-
-            return null;
-        } else {
-            return start.bind(this);
-        }
-    }).call(app)
-})
+    }
+    
+    init.call(app)
 
     Object.keys(settings.extensions).forEach(k => app.addExtension(k, settings.extensions[k]));
+
+
+    // either autostart the app or add a start property (which actually just duplicates the load() function)
+    // now we've added path setting (which also loads the app) this gives consumers of the app more flexibility
+    if (settings.autostart) {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', app.load)
+        } else {
+            app.load();
+        }
+    } else {
+        Object.defineProperty(app, "start", app.load);
+    }
 
     return app;
 }

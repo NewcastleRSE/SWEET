@@ -1,0 +1,22 @@
+.fill-in {
+    display: block;
+    margin: auto;
+    width: 80%;
+}
+
+.fill-in form {
+    display: flex;
+    width: 100%;
+}
+
+.fill-in.large form {
+    flex-direction: column;
+    align-items: flex-end;
+}
+.fill-in.large form textarea {
+    width: 100%;
+}
+
+.fill-in form input[type='text'] {
+    flex-grow: 1;
+}

@@ -37,11 +37,13 @@ export function SWEETPreviewer() {
                 sideeffect: sideEffectModalRenderer,
                 sideeffectform: sideEffectFormRenderer,
                 profiler: profilerModalRenderer,
-                "diary-calendar": diaryCalendarRenderer
+                "diary-calendar": diaryCalendarRenderer,
+                fillin: r.fillInBoxRenderer
             },
             titleHolder: "#page-title",
             contentHolder: "#main-container",
             autostart: false,
-            embed: true
+            embed: true,
+            name: "SWEET Preview"
         });
 }

@@ -36,7 +36,8 @@ createApp({
         sideeffect: sideEffectModalRenderer,
         sideeffectform: sideEffectFormRenderer,
         profiler: profilerModalRenderer,
-        "diary-calendar": diaryCalendarRenderer
+        "diary-calendar": diaryCalendarRenderer,
+        fillin: r.fillInBoxRenderer
     },
     load: function(path) {
         let url = `/app/content?path=${encodeURIComponent(path)}`;

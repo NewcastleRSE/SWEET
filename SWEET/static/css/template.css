@@ -1,9 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope&family=Gothic+A1&family=Montserrat&family=Barlow+Semi+Condensed&family=Manjari");
+@import url("https://fonts.googleapis.com/css2?family=Manrope");
 
 :root {
     font-size: 20px;
 
-    --bs-font-sans-serif: "Manrope", "Manjari", "Roboto", Arial, sans-serif;
+    --bs-font-sans-serif: "Manrope", "Roboto", Arial, sans-serif;
 
     --SWEET-purple: #633188;
     --SWEET-grey: #b3b3b2;
@@ -23,6 +23,32 @@ p { margin-bottom: 1.5em; }
 main > .container {
     padding: 90px 15px 15px;
 }
+
+main header, main footer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: space-between;
+    align-items: center;
+}
+
+main header {
+    margin-bottom: 1.5em;
+}
+main footer {
+    margin-top: 1.5em;
+}
+
+#page-title {
+    margin-left: 1em; margin-right: 1em;
+    text-align: center;
+}
+
+main :is(header, footer) a.hidden {
+    visibility: hidden;
+}
+
 
 .sidenav {
     background: radial-gradient(circle, rgba(99,49,136,0.75) 26%, rgba(99,49,136,0.9) 93%), url('../images/splash.jpeg');
@@ -166,15 +192,21 @@ section ul {
     list-style: none;
 }
 
+section ul > li {
+    margin-bottom: 0.5em;
+}
+
 section ul > li:before {
     content: "\2022";
     color: var(--SWEET-gold);
     font-weight: bold;
     font-size: 36px;
-    line-height: 1em;
+    line-height: 0.9em;
     display: inline-block;
     width: 1em;
     margin-left: -1em;
+    position: relative;
+    top: 0.1em;
 }
 
 button.accordion-button {
@@ -203,4 +235,8 @@ button.accordion-button:not(.collapsed)::after {
     min-height: 250px;
     border: 2px dashed var(--SWEET-pale-grey);
     cursor: pointer;
+}
+
+.shadow-hover:hover {
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
 }
