@@ -6,7 +6,7 @@ __diary = AzurePersitentDict(az_connection, "users", "diary.json")
 __goals = AzurePersitentDict(az_connection, "users", "goals.json")
 
 def newdiary():
-    return {"sideeffects": [], "reminders": [], "adherence": [], "notes": [], "profilers": []}
+    return {"sideeffects": [], "reminders": [], "adherence": [], "notes": [], "profilers": [], "fillins": {}}
 
 def getGoals(user=None):
     if user is None:
@@ -152,3 +152,39 @@ def recordAdherence(user, adh):
 
     __diary[id]['adherence'].append(adh)
     __diary.commit()
+
+def saveFillin(user, fillin):
+    id = user['userID']
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+
+    if "fillins" not in __diary[id]:
+        __diary[id]['fillins'] = {}
+
+    if fillin['path'] not in __diary[id]['fillins']:
+        __diary[id]['fillins'][fillin['path']] = {}
+
+    __diary[id]['fillins'][fillin['path']][fillin['name']] = fillin['response']
+    __diary.commit()
+
+    return True, "Update complete"
+
+def getFillin(user, path, name):
+    id = user['userID']
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+        return ""
+
+    if 'fillins' not in __diary[id]:
+        __diary[id]['fillins'] = {}
+        return ""
+
+    if path not in __diary[id]['fillins']:
+        return ""
+
+    if name not in __diary[id]['fillins'][path]:
+        return ""
+
+    return __diary[id]['fillins'][path][name]

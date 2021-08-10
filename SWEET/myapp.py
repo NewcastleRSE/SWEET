@@ -4,10 +4,13 @@ from flask import (
 
 from .data import users
 from .data.userdata import (
-    getGoals, updateGoals, getSideEffects as getUserSideEffects, recordSideEffect, recordProfiler, getDiary as getUserDiary, addNote, getNotes, recordAdherence
+    getGoals, updateGoals, getSideEffects as getUserSideEffects, recordSideEffect, recordProfiler, 
+    getDiary as getUserDiary, addNote, getNotes, recordAdherence, saveFillin as saveUserFillin, getFillin as getUserFillin
 )
 
 from .auth import login_required
+
+from urllib.parse import unquote
 
 bp = Blueprint('myapp', __name__, url_prefix='/myapp')
 
@@ -97,3 +100,27 @@ def record_adherence():
         return {"status": "OK", "message": "Adherence added"}
 
     return {"status": "error", "message": "Update request sent without json"}, 400
+
+@bp.route("/fillins/", methods=["POST"])
+@login_required
+def saveFillin():
+    if request.is_json:
+        fillin = request.json
+        
+        saveUserFillin(g.user, fillin)
+
+        return {"status": "OK", "message": "Adherence added"}
+
+    return {"status": "error", "message": "Update request sent without json"}, 400
+
+@bp.route("/fillins")
+@login_required
+def getFillin():
+    path = request.args.get("path", "")
+    name = request.args.get("name", "")
+
+    if path and name:
+        path = unquote(path)
+        return { "response": getUserFillin(g.user, path, name) }
+
+    return {"status": "error", "message": "Missing url parameters; 'path' and 'name' expected." }, 400

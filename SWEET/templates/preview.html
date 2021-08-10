@@ -13,7 +13,7 @@
                 })
             }
 
-            previewer.start();
+            previewer.path = window.opener.document.querySelector("#page-details").dataset.path;
 
     </script>
 {% endblock %}

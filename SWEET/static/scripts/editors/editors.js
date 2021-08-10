@@ -7,3 +7,4 @@ export {MenuEditor} from './menu.js';
 export {AlertEditor} from './alert.js';
 export {GoalSetter} from './goalsetter.js';
 export {PopupEditor} from './popup.js';
+export {FillInBoxEditor} from './fillinbox.js';

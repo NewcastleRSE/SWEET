@@ -72,7 +72,7 @@
 
             #page-details label {display: inline-block; width: 5em; text-align: right; vertical-align: top;}
             #page-details #add-slug-label { width: fit-content; }
-            #page-details label[title] {text-decoration: underline dotted;}
+            #page-details label[title], *::part(label)[title] {text-decoration: underline dotted;}
             #page-details input { min-width: 20em; }
             #page-details.noload * {
                 visibility: hidden;
@@ -234,17 +234,18 @@
                 object-fit: contain;
             }
 
+
         </style>
         <script type="module">
             import * as editors from '{{ url_for("static", filename="scripts/editors/editors.js") }}';
             customElements.define('content-editor', editors.ContentEditor);
             customElements.define('edit-inserter', editors.EditorInserter);
             
-            document.querySelector("#page-content").registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.AccordionEditor, editors.BlockquoteEditor, editors.MenuEditor, editors.AlertEditor, editors.GoalSetter, editors.PopupEditor)
+            document.querySelector("#page-content").registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.AccordionEditor, editors.BlockquoteEditor, editors.MenuEditor, editors.AlertEditor, editors.GoalSetter, editors.PopupEditor, editors.FillInBoxEditor)
             
-            editors.AccordionEditor.registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.BlockquoteEditor);
+            editors.AccordionEditor.registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.BlockquoteEditor, editors.FillInBoxEditor);
             editors.AlertEditor.registerEditors(editors.MarkdownEditor, editors.BlockquoteEditor);
-            editors.PopupEditor.registerEditors(editors.AccordionEditor, editors.MarkdownEditor, editors.BlockquoteEditor, editors.AlertEditor);
+            editors.PopupEditor.registerEditors(editors.AccordionEditor, editors.MarkdownEditor, editors.BlockquoteEditor, editors.AlertEditor, editors.FillInBoxEditor);
             
 
             document.querySelector("#add-page").addEventListener("click", e => {
