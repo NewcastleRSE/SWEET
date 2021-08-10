@@ -40,12 +40,12 @@ export class FillInBoxEditor extends HTMLElement {
 
 export function fillInBoxRenderer(section) {
     let holder = document.createElement("section");
-    holder.classList.add("fill-in");
+    holder.classList.add("fill-in", section.boxsize);
     let form = holder.appendChild(document.createElement("form"));
     form.innerHTML = section.boxsize == "small"? 
-            `<input type="text" name="response"><input type="submit" value="Save">`:
+            `<input type="text" name="response" class="form-control shadow-hover"><input type="submit" value="Save" class="btn btn-primary">`:
             section.boxsize == "large"?
-                `<textarea name="response" rows="5" cols="40"></textarea><br><input type="submit" value="Save">`:
+                `<textarea name="response" rows="5" cols="40" class="form-control shadow-hover"></textarea><input type="submit" value="Save" class="btn btn-primary">`:
                 console.log("Unknown boxsize:", section.boxsize);
 
     form.addEventListener("submit", e => {

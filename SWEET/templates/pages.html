@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
         <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
@@ -72,7 +73,7 @@
 
             #page-details label {display: inline-block; width: 5em; text-align: right; vertical-align: top;}
             #page-details #add-slug-label { width: fit-content; }
-            #page-details label[title], *::part(label)[title] {text-decoration: underline dotted;}
+            #page-details label[title] {text-decoration: underline dotted;}
             #page-details input { min-width: 20em; }
             #page-details.noload * {
                 visibility: hidden;
@@ -106,6 +107,14 @@
 
             #page-details-header {
                 position: fixed; top: 0; left: 12.5vw; width: 76vw; z-index: 4; background-color: #e3e3e0; padding: 1em; box-sizing: border-box;
+            }
+
+            fieldset > p {
+                display: flex;
+            }
+
+            fieldset > p > input {
+                flex-grow: 1;
             }
 
             .tight p {
