@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template
 from .auth import role_required
-from .data.content import updateStructure, updatePageContent, saveResource
+from .data.content import updateStructure as updateAppStructure, updatePageContent, saveResource
 
 bp = Blueprint("admin", __name__, url_prefix="/admin")
 admin_required = role_required(roles=["editor", "sysadmin"])
@@ -20,7 +20,7 @@ def previewEdit():
 @admin_required
 def updateStructure():
     if request.is_json:
-        updateStructure(request.json)
+        updateAppStructure(request.json)
         return { "status": "OK"}
     else:
         return { "status": "error", "message": "Update request sent without json data"}, 400
