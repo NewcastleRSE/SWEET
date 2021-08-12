@@ -265,7 +265,7 @@
 
                 let path = document.querySelector("#page-details").dataset.path.substring(1).split("/");
                 // first path element is a root item in the structure
-                let section = document.querySelector("#page-tree").structure[path.shift()];
+                let section = document.querySelector("#page-tree-pages").structure[path.shift()];
                 while(path.length) {
                     let segment = path.shift();
                     // subsequent path elements are part of the pages collection.
@@ -285,7 +285,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(document.querySelector("#page-tree").structure)
+                    body: JSON.stringify(document.querySelector("#page-tree-pages").structure)
                 }).then(response => { alert("Structure updated")}, reject => console.log(reject))
 
 

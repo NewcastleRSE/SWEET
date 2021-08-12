@@ -28,7 +28,7 @@ def updateStructure():
     
 @bp.route("/content/", methods=["POST"])
 @admin_required
-def updatePageContent():
+def updatePage():
     if request.is_json:
         updatePageContent(request.json)
         return { "status": "OK"}
