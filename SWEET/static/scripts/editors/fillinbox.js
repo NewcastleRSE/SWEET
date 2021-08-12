@@ -14,7 +14,7 @@ export class FillInBoxEditor extends HTMLElement {
 
         root.querySelector("input[name='name']").addEventListener("change", e => {
             if (e.currentTarget.value.replace(/[a-z-]*/, "").length > 0) {
-                window.alert("Fill in box bname must only contain lower-case letters and hyphens ('-')!")
+                window.alert("Fill in box name must only contain lower-case letters and hyphens ('-')!")
                 e.preventDefault();
                 e.currentTarget.focus();
             }
