@@ -71,6 +71,17 @@ export class ContentEditor extends HTMLElement {
             .dropactive {
                 border: 2px inset silver;
             }
+
+            .uneditable {
+                box-sizing: border-box;
+                padding: 1em;
+                width: 100%;
+                background-color: rgba(0,0,0,0.5);
+            }
+
+            .uneditable :is(h1, h2, h3, h4, h5) {
+                color: white;
+            }
         </style>
         `
 
@@ -147,6 +158,10 @@ export class ContentEditor extends HTMLElement {
         console.log("clearing...");
         console.log(this.$.root.querySelectorAll("button.delete"))
         this.$.root.querySelectorAll("button.delete").forEach(bin => { bin.dispatchEvent(new MouseEvent("click", { bubbles: true })); })
+        this.$.root.querySelectorAll(".uneditable").forEach(u => {
+            u.nextSibling.remove();
+            u.remove();
+        })
     }
 
     load(content) {
@@ -226,11 +241,28 @@ export class ContentEditor extends HTMLElement {
             } else  {
                 let type = this.$.editors.filter(e => e.contentType == c.type)[0];
                 
-                let editor = document.createElement(type.tagName);
-                editor.load(c);
+                if (!type) {
+                    let u = document.createElement("div");
+                    u.classList.add("content");
+                    u.classList.add("uneditable");
 
-                root.append(...this.createEditor(editor));
+                    u.innerHTML = `<h1>Predefined Content Block</h1>
+                    <h3>Content-Type: ${ c.type }</h3>
+                    <h5>This content cannot be edited or moved, but you can place other content around it</h5>`
 
+                    Object.defineProperty(u, "jsonvalue", { get: function() { return c; }});
+
+                    let i = document.createElement(this.$.inserter);
+                    this.$.editors.forEach(t => i.addContentType(t.description, t.tagName));
+
+                    root.append(u,i);
+             
+                } else {
+                    let editor = document.createElement(type.tagName);
+                    editor.load(c);
+
+                    root.append(...this.createEditor(editor));
+                }
             }
 
         }

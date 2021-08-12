@@ -1,7 +1,7 @@
-export class MenuEditor extends HTMLElement {
-    static get contentType() { return "menu"; }
-    static get tagName() { return "menu-editor"; }
-    static get description() { return "Menu (large button-style links)"; }
+export class DescribedMenuEditor extends HTMLElement {
+    static get contentType() { return "described-menu"; }
+    static get tagName() { return "described-menu-editor"; }
+    static get description() { return "Described Menu (explanatory text plus small link button)"; }
 
     constructor() {
         super();
@@ -58,7 +58,7 @@ export class MenuEditor extends HTMLElement {
             }
 
         </style>
-        <button class="add">Add Item</button><button class="subs">Add sub-pages</button>
+        <button class="add">Add Item</button>
         `
         this.$.add = root.querySelector("button.add");
         this.$.add.addEventListener("click", e => {
@@ -66,10 +66,6 @@ export class MenuEditor extends HTMLElement {
             this._addItem();
         })
 
-        root.querySelector("button.subs").addEventListener("click", e => {
-            e.stopPropagation();
-            this.dispatchEvent(new CustomEvent("menu:getsubs", { bubbles: true, composed: true, detail: { targetMenu: this }}))
-        })
     }
 
     get isContainer() { return true }
@@ -79,9 +75,9 @@ export class MenuEditor extends HTMLElement {
         i.classList.add("item");
         i.innerHTML = `
         <button class="move-up"></button><button class="move-down"></button><button class="delete"></button>
-        <label title="The text shown on the button">Display Text:</label><input name="title" type="text"></input><br />
-        <label>Link target:</label><input name="link" type="text"></input><br />
-        <label>Icon:</label><input name="icon" type="text" value="none"></input>`
+        <label title="Descriptive text for the button's target"></label><markdown-editor></markdown-editor><br>
+        <label title="The text shown on the button">Button Text:</label><input name="title" type="text" value=">>>"></input><br>
+        <label>Link target:</label><input name="link" type="text"></input>`
         i.addEventListener("click", e => { 
             e.preventDefault(); e.stopPropagation();
 
@@ -100,14 +96,14 @@ export class MenuEditor extends HTMLElement {
 
     addItems(items) {
         if (!Array.isArray(items)) {
-            console.log("non-array argument passed to addSubpages"); return;
+            console.log("non-array argument passed to addItems"); return;
         }
 
         items.forEach(i => {
             let item = this._addItem();
             item.querySelector("input[name='title']").value = i.title;
             item.querySelector("input[name='link']").value = i.link;
-            item.querySelector("input[name='icon']").value = i.icon? i.icon: "none";
+            item.querySelector("markdown-editor").load(i.description);
         })
     }
 
@@ -126,10 +122,10 @@ export class MenuEditor extends HTMLElement {
 
         this.$.root.querySelectorAll(".item").forEach(i => {
             item.content.push({
-                type: "menu-item",
+                type: "described-menu-item",
                 title: i.querySelector("input[name='title']").value,
                 link: i.querySelector("input[name='link']").value,
-                icon: i.querySelector("input[name='icon']").value
+                description: i.querySelector("markdown-editor").jsonvalue
             })
         })
 
@@ -137,23 +133,27 @@ export class MenuEditor extends HTMLElement {
     }
 }
 
-export function menuRenderer(section) {
+export function describedMenuRenderer(section) {
     const holder = document.createElement("div");
-    holder.setAttribute("class", "row row-cols-xl-3 row-cols-2 row-cols-sm-1 g-3 mt-3 nav-normal");
+    holder.setAttribute("class", "row g-3 mt-3 nav-described");
 
     section.content.forEach(item => {
-        if (item.type != "menu-item") throw `DataError: expected type "menu-item", received type "${item.type}"`;
+        if (item.type != "described-menu-item") throw `DataError: expected type "menu-item", received type "${item.type}"`;
         this.render(item).then(node => holder.appendChild(node));
     });
     return holder;
 }
 
-export function menuItemRenderer(section) {
+export async function describedMenuItemRenderer(section) {
     const holder = document.createElement("div");
-    holder.setAttribute("class", "d-block col");
+    holder.setAttribute("class", "col-12 row");
+
+    const md = await this.render(section.description);
+    md.classList.add("col-9", "col-lg-10", "col-xl-11");
+    holder.appendChild(md);
 
     const card = document.createElement("a");
-    card.setAttribute("class", "d-block card");
+    card.classList.add("d-block", "card", "col-3", "col-md-2", "col-lg-1");
     card.setAttribute("href", section.link);
 
     const cardBody = document.createElement("div");
@@ -169,16 +169,6 @@ export function menuItemRenderer(section) {
     cardBody.appendChild(cardTitle);
     card.appendChild(cardBody);
     holder.appendChild(card);
-    
-    if (section.icon && section.icon != "none") {
-        const icon = document.createElement("img");
-        fetch(`/app/resources/${section.icon}`)
-            .then(response => response.json())
-            .then(resource => {
-                icon.setAttribute("src", resource.source);
-                card.style.backgroundImage = "url('" + resource.source + "')"; ;
-            })
-    }
     
     return holder;
 }

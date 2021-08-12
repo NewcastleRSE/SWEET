@@ -1,0 +1,19 @@
+{% extends 'index.html' %}
+{% block bodyscript %}
+    <script type="module">
+            import { SWEETPreviewer } from '../../../static/scripts/editors/SWEET-editor.js'
+            
+            const previewer = SWEETPreviewer();
+            previewer.loader = () => {
+                return Promise.resolve({
+                    title: window.opener.document.querySelector("input[name='page-title']").value,
+                    prev: window.opener.document.querySelector("input[name='page-prev']").value,
+                    next: window.opener.document.querySelector("input[name='page-next']").value,
+                    content: window.opener.document.querySelector("#page-content").jsonvalue
+                })
+            }
+
+            previewer.path = window.opener.document.querySelector("#page-details").dataset.path;
+
+    </script>
+{% endblock %}

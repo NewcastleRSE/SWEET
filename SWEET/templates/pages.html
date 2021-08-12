@@ -1,10 +1,10 @@
+<!DOCTYPE html>
 <html>
     <head>
         <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
         <script src="{{ url_for('static', filename='scripts/lz-string.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/app_accordion.css') }}">
+
         <style>
             html {
                 font-family: sans-serif;
@@ -29,10 +29,10 @@
             }
 
             #page-tree.collapsed {
-                width: 5vw;
+                width: 10vw;
                 min-width: 0;
                 overflow: hidden;
-                padding-left: 5vw;
+                padding-left: 10vw;
                 box-sizing: border-box;
                 z-index: 99;
             }
@@ -67,19 +67,20 @@
 
             #page-details {
                 position: relative;
-                left: max(25vw, 20em);
-                top: 12.5em;
-                width: 40vw;
+                top: 15em;
+                display: none;
             }
 
-            #page-details label {display: inline-block; width: 7.5em; text-align: right; vertical-align: top;}
+            #page-details label {display: inline-block; width: 5em; text-align: right; vertical-align: top;}
             #page-details #add-slug-label { width: fit-content; }
             #page-details label[title] {text-decoration: underline dotted;}
-            #page-details input { width: 50%; }
+            #page-details input { min-width: 20em; }
             #page-details.noload * {
                 visibility: hidden;
             }
 
+            #fs-page-details { width: 45%; float: left; }
+            #fs-seq-details { width: 45%; float: right; }
             #add-details {
                 position: relative;
                 background-color: #cfc;
@@ -97,17 +98,23 @@
             #page-details.noload ~ #page-preview {
                 display: none;
             }
+            
             #page-tree.collapsed ~ #page-details {
-                left: 6vw;
-                width: 49vw;
+                display: block;
+                left: 12.5vw;
+                width: 75vw;
             }
 
             #page-details-header {
-                position: fixed; top: 0; left: 21vw; width: 40vw; z-index: 4; background-color: #e3e3e0; padding: 1em; box-sizing: border-box;
+                position: fixed; top: 0; left: 12.5vw; width: 76vw; z-index: 4; background-color: #e3e3e0; padding: 1em; box-sizing: border-box;
             }
 
-            #page-tree.collapsed ~ #page-details #page-details-header {
-                left: 6vw; width: 49vw;
+            fieldset > p {
+                display: flex;
+            }
+
+            fieldset > p > input {
+                flex-grow: 1;
             }
 
             .tight p {
@@ -115,17 +122,43 @@
             }
 
             #page-preview {
+                z-index: 99;
+                box-sizing: border-box;
                 position: fixed;
-                right: 1em;
-                top: 1em;
-                left: 55vw;
-                bottom: 2vh;
-                overflow-y: scroll;
-                overflow-x: auto;
+                right: 0;
+                top: 0;
+                width: 10vw;
+                padding-right: 10vw;
+                bottom: 0;
+                overflow: hidden;
+                background-color: #d2c0d9;
             }
 
-            #page-preview #app-main {
+            #page-preview:hover {
+                left: 25vw;
+                background-color: rgba(255,255,255,0.8);
+                padding: 0 5em;
                 width: auto;
+            }
+
+            #page-preview > div {
+                box-sizing: border-box;
+                text-align: center;
+                overflow: hidden;
+                padding: 1em;
+                display: none;
+            }
+
+            #page-preview:hover > div {
+                display: block;
+            }
+
+            #page-preview > div > a {
+                color: #633188;
+                cursor: pointer;
+            }
+            #page-preview iframe {
+                width: 100%; height: 95%;
             }
 
             button.edit {
@@ -142,9 +175,6 @@
                 cursor: pointer;
             }
 
-            .accordion > .item.closed > section {
-                display: block;
-            }
             content-editor {
                 background-color: #deecff;
             }
@@ -178,6 +208,7 @@
             #add-resource {
                 position: relative;
             }
+
             #add-resource-preview {
                 display: none;
                 position: absolute;
@@ -201,6 +232,7 @@
                 flex-direction: row;
                 justify-content: space-around;
                 align-items: center;
+                overflow: hidden;
             }
             
             div.resource img {
@@ -211,25 +243,19 @@
                 object-fit: contain;
             }
 
+
         </style>
-        <script src="{{ url_for('static', filename='scripts/app.js') }}"></script>
         <script type="module">
             import * as editors from '{{ url_for("static", filename="scripts/editors/editors.js") }}';
             customElements.define('content-editor', editors.ContentEditor);
             customElements.define('edit-inserter', editors.EditorInserter);
             
-            document.querySelector("#page-content").registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.AccordionEditor, editors.BlockquoteEditor, editors.MenuEditor, editors.AlertEditor, editors.GoalSetter)
+            document.querySelector("#page-content").registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.AccordionEditor, editors.BlockquoteEditor, editors.MenuEditor, editors.AlertEditor, editors.GoalSetter, editors.PopupEditor, editors.FillInBoxEditor, editors.DescribedMenuEditor)
             
-            editors.AccordionEditor.registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.BlockquoteEditor);
+            editors.AccordionEditor.registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.BlockquoteEditor, editors.FillInBoxEditor);
             editors.AlertEditor.registerEditors(editors.MarkdownEditor, editors.BlockquoteEditor);
+            editors.PopupEditor.registerEditors(editors.AccordionEditor, editors.MarkdownEditor, editors.BlockquoteEditor, editors.AlertEditor, editors.FillInBoxEditor);
             
-            document.querySelector("#preview-update").addEventListener("click", e => {
-                document.querySelector("#page-title").textContent = document.querySelector("input[name='page-title']").value;
-                document.querySelector("#main-container").innerHTML = "";
-                document.querySelector("#page-content").jsonvalue.forEach(section => {
-                    document.querySelector("#main-container").appendChild(render(section));
-                })
-            })
 
             document.querySelector("#add-page").addEventListener("click", e => {
                 if (document.querySelector("#add-details input[name='add-slug']").value.replace(/[a-z-]*/, "").length > 0) {
@@ -239,7 +265,7 @@
 
                 let path = document.querySelector("#page-details").dataset.path.substring(1).split("/");
                 // first path element is a root item in the structure
-                let section = document.querySelector("#page-tree").structure[path.shift()];
+                let section = document.querySelector("#page-tree-pages").structure[path.shift()];
                 while(path.length) {
                     let segment = path.shift();
                     // subsequent path elements are part of the pages collection.
@@ -254,12 +280,12 @@
                 });
 
                 // upload new structure to site:
-                fetch("/app/structure/", {
+                fetch("/admin/structure/", {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(document.querySelector("#page-tree").structure)
+                    body: JSON.stringify(document.querySelector("#page-tree-pages").structure)
                 }).then(response => { alert("Structure updated")}, reject => console.log(reject))
 
 
@@ -278,11 +304,18 @@
                 e.preventDefault();
                 let details =  document.querySelector("#page-details").dataset;
                 let content = { path: details.path, content: document.querySelector("#page-content").jsonvalue }
+
                 if (details.path != document.querySelector("input[name='page-title']").value) {
                     content.title = document.querySelector("input[name='page-title']").value;
                 }
+                if (details.prev != document.querySelector("input[name='page-prev']").value) {
+                    content.prev = document.querySelector("input[name='page-prev']").value;
+                }
+                if (details.next != document.querySelector("input[name='page-next']").value) {
+                    content.next = document.querySelector("input[name='page-next']").value;
+                }
 
-                fetch("/app/content/", {
+                fetch("/admin/content/", {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
@@ -343,7 +376,7 @@
                     source: this.querySelector("#add-resource-preview").src
                 }
 
-                fetch("/app/resources/", {
+                fetch("/admin/resources/", {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
@@ -356,8 +389,20 @@
                 }, reject => console.log(reject))
 
             })
-            </script>
-        
+
+
+            function preview(target) {
+                window.open("{{ url_for('admin.previewEdit') }}", target);
+            }
+            document.querySelector("#preview-update").addEventListener("click", e => {
+                preview("inline-preview");
+            })
+            document.querySelector("#preview-launch").addEventListener("click", e => {
+                e.preventDefault();
+                preview("_blank");
+            })
+
+        </script>
     </head>
     <body>
         <div  id="page-tree">
@@ -385,8 +430,15 @@
         <div id="page-details" class="noload">
             <div id="page-details-header">
                 <button id="details-save">Save changes</button><h1>Edit content:</h1>
+                <fieldset id="fs-page-details">
+                    <legend>Page Details:</legend>
                 <p><label>Page title:</label><input type="text" name="page-title"></p>
                 <p><label title="A short string (containing only letters and '-') that is used to build the link to the page.">Slug:</label><input type="text" name="page-slug" disabled></p>
+                </fieldset>
+                <fieldset id="fs-seq-details"><legend>Page Sequencing:</legend>
+                    <p><label title="The path the the previous page">Previous:</label><input type="text" name="page-prev"></p>
+                    <p><label title="The path to the next page in sequence">Next:</label><input type="text" name="page-next"></p>
+                </fieldset>
             </div>
             <details id="page-content-details"><summary>Content</summary><content-editor id="page-content"></content-editor></details>
             <details><summary>Sub-pages</summary>
@@ -396,12 +448,11 @@
                     <button id="add-page">Add page</button></p><p id="page-subpages"></p></details>
         </div>
         <div id="page-preview">
-            <button style="position: fixed; top: 0; right: 25%" id="preview-update">Update</button>
-            <a style="position: fixed; top: 0; right: 5%" target="_blank" href="/">Open in app</a>
-            <div id="app-main">
-                <h1 id="page-title"></h1>
-                <div id="main-container"></div>
+            <div>
+                <button type="button" id="preview-update">Update</button>
+                <a id="preview-launch">Open in new tab</a>
             </div>
+            <iframe id="page-preview-window" name="inline-preview"></iframe>
         </div>
         <script>
             document.addEventListener("DOMContentLoaded", () => {
@@ -424,7 +475,9 @@
                         title: page.title,
                         slug: page.slug,
                         path: `${ancestor? ancestor + "/": "#"}${page.slug}`,
-                        pages: page.pages? page.pages.map(p => { return { slug: p.slug, title: p.title}; }): null
+                        pages: page.pages? page.pages.map(p => { return { slug: p.slug, title: p.title}; }): null,
+                        prev: page.prev || "",
+                        next: page.next || ""
                     };
 
                     let edit = item.appendChild(document.createElement("button"));
@@ -435,7 +488,7 @@
                     label.dataset.slug = page.slug;
                     label.dataset.path = item.pageInfo.path;
                     label.setAttribute("title", label.dataset.path);
-                    label.textContent = page.title;
+                    label.textContent = page.title? page.title: "No page title";
 
                     if (page.pages) {
 
@@ -458,10 +511,14 @@
                         e.stopPropagation();
                         let details = document.querySelector("#page-details");
                         details.dataset.path = item.pageInfo.path;
-                        details.dataset.title = item.pageInfo.title;
+                        details.dataset.title = item.pageInfo.title || "";
+                        details.dataset.prev = item.pageInfo.prev;
+                        details.dataset.next = item.pageInfo.next;
 
                         details.querySelector("input[name='page-title']").value = item.pageInfo.title;
                         details.querySelector("input[name='page-slug']").value = item.pageInfo.slug;
+                        details.querySelector("input[name='page-prev']").value = item.pageInfo.prev;
+                        details.querySelector("input[name='page-next']").value = item.pageInfo.next;
 
                         document.querySelector("#add-details span.path").textContent = item.pageInfo.path + "/";
 
@@ -486,6 +543,7 @@
                                 if (content.content) {
                                     ce.parentElement.setAttribute("open", "");
                                     details.querySelector("content-editor").load(content.content);
+                                    window.scroll(0,0);
                                 } else {
                                     ce.parentElement.removeAttribute("open");
                                 }
@@ -494,7 +552,7 @@
 
                         details.classList.remove("noload");
                         document.querySelector("#page-tree").classList.add("collapsed");
-                        document.querySelector("#page-preview a[target='_blank']").setAttribute("href", `/${item.pageInfo.path}`)
+                        //document.querySelector("#page-preview a[target='_blank']").setAttribute("href", `/${item.pageInfo.path}`)
                     })
 
                     return item;
