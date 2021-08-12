@@ -2,17 +2,37 @@
     white-space: nowrap;
 }
 
-.nav-normal .card-body {
+:is(.nav-normal, .nav-described) .card-body {
     width: fit-content;
     margin: 0 auto;
 }
 
-.nav-normal .card {
+:is(.nav-normal, .nav-described) .card {
     border: 0.2em solid var(--SWEET-purple);
     border-radius: 0.5em;
 }
 
-.nav-normal .card:hover {
+:is(.nav-normal, .nav-described) .card:hover {
     border-color: var(--SWEET-gold);
     box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+}
+
+.nav-described .row {
+    align-items: flex-start;
+    justify-content: center;
+    margin-bottom: 1em;
+    padding: 0.25em 0;
+}
+
+.nav-described .row p {
+    margin: 0.25em auto;
+}
+
+.nav-described .row:hover {
+    background-image: linear-gradient(180deg, white 2em, rgba(255,255,255,0));
+    border-radius: 1em;
+}
+
+.nav-described .card, .nav-described .card-body {
+    padding: 0.2em;
 }

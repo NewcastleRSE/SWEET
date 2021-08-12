@@ -35,7 +35,8 @@ export class MarkdownEditor extends HTMLElement {
             element: text,
             toolbar: ["heading-1", "heading-2", "heading-3", "|", "bold", "italic", "|", "unordered-list", "ordered-list", "|", "image", "link", "|", "preview", "guide"],
             spellChecker: false,
-            lineWrapping: true
+            lineWrapping: true,
+            insertTexts: { image: ["![](", ")"]}
         });
     }
 
@@ -67,11 +68,12 @@ export class MarkdownEditor extends HTMLElement {
         this.$.mde.codemirror.focus();
     }
 
-    get isContainer() { return false; }
+    get isContainer() { return true; }
 }
 
 export function markdownRenderer(section) {
     let holder = document.createElement("section");
+    holder.classList.add("markdown")
     if (section.encoding == "lz-string:UTF16") {
         holder.innerHTML = marked(LZString.decompressFromUTF16(section.text));
     } else if (section.encoding == "raw") {
@@ -80,5 +82,18 @@ export function markdownRenderer(section) {
         holder.innerHTML = `<p class="error">Unknown markdown section encoding: ${section.encoding}</p>`;
     }
     
+    holder.querySelectorAll("img").forEach(img => {
+        if (img.getAttribute("src").startsWith("http")) return; //ignore absolute image paths
+
+        let [name, position] = img.getAttribute("src").split(":");
+
+        fetch(`/app/resources/${name}`).then(response => response.json())
+        .then(resource => {
+            img.setAttribute("src", resource.source);
+            img.setAttribute("alt", resource.description);
+            if (position) img.classList.add(position);
+        })
+    })
+
     return holder;
 }

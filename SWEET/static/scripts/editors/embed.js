@@ -26,22 +26,22 @@ export class EmbedEditor extends HTMLElement {
         header.textContent = "Embedded External Content";
 
         let fields = root.appendChild(document.createElement("fieldset"));
-        fields.insertAdjacentHTML("beforeend", "<label>Title</label>");
+        fields.insertAdjacentHTML("beforeend", "<label>Popup Title</label>");
         this.$.title = fields.appendChild(document.createElement("input"));
         this.$.title.setAttribute("type", "text");
         this.$.title.setAttribute("name", "title");
         fields.insertAdjacentHTML("beforeend", "<br />");
 
-        fields.insertAdjacentHTML("beforeend", "<label>Byline</label>");
+        fields.insertAdjacentHTML("beforeend", "<label>Link Text</label>");
         this.$.byline = fields.appendChild(document.createElement("input"));
         this.$.byline.setAttribute("type", "text");
         this.$.byline.setAttribute("name", "byline");
         fields.insertAdjacentHTML("beforeend", "<br />");
 
-        fields.insertAdjacentHTML("beforeend", "<label>Source</label>");
-        this.$.source = fields.appendChild(document.createElement("input"));
-        this.$.source.setAttribute("type", "text");
-        this.$.source.setAttribute("name", "source");
+        fields.insertAdjacentHTML("beforeend", "<label>Content Type</label>");
+        this.$.source = fields.appendChild(document.createElement("select"));
+        this.$.source.setAttribute("name", "contenttype");
+        this.$.source.innerHTML = "<option value='video'>Video</option><option value='html'>Website/Forum</option>"
         fields.insertAdjacentHTML("beforeend", "<br />");
 
         fields.insertAdjacentHTML("beforeend", "<label>Link</label>");
@@ -56,7 +56,7 @@ export class EmbedEditor extends HTMLElement {
             type: "external",
             title: this.$.title.value,
             byline: this.$.byline.value,
-            source: this.$.source.value,
+            contenttype: this.$.source.value,
             link: this.$.link.value
         }
     }
@@ -64,60 +64,42 @@ export class EmbedEditor extends HTMLElement {
     load(content) {
         if (content.type != this.constructor.contentType) return;
 
-        this.$.title.value = content.value;
+        this.$.title.value = content.title;
         this.$.byline.value = content.byline;
-        this.$.source.value = content.source;
+        this.$.contenttype.value = content.contenttype;
         this.$.link.value = content.link;
-
     }
 
     get isContainer() { return false; }
 }
 
 export function embedRenderer(section) {
-    let overlay = document.createElement("section");
-    overlay.classList.add("overlay");
+    let overlay = this.createModal(true);
+    overlay.size = "lg";
 
-    let warning = overlay.appendChild(document.createElement("header"));
-    let close = warning.appendChild(document.createElement("button"));
-    close.textContent = "return to app";
-    close.classList.add("close-button");
-    close.addEventListener("click", function(e) {
-        overlay.remove();
-    });
+    overlay.title.textContent = section.title;
 
-    let warnheading = warning.appendChild(document.createElement("h1"));
-    warnheading.textContent = "You are currently viewing external content";
-    warnheading.classList.add("warning");
-
-    let holder = overlay.appendChild(document.createElement("article"));
-
-    let heading = holder.appendChild(document.createElement("h2"));
-    heading.textContent = section.title;
-
-    let byline = holder.appendChild(document.createElement("p"));
-    byline.textContent = section.byline;
+    overlay.footer.innerHTML = "<button type='button' class='btn btn-primary'>Close</button>";
+    overlay.footer.querySelector("button").addEventListener("click", () => overlay.hide());
 
     let embed = document.createElement("iframe");
+    embed.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+    embed.setAttribute("allowfullscreen", "");
 
-    switch (section.source) {
-        case "youtube":
-            embed.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
-            embed.setAttribute("allowfullscreen", "");
-            break;
+    embed.classList.add(section.contenttype);
 
-    }
+    if (section.link.indexOf("autoplay=1") == -1) embed.src = section.link;
 
-    embed.src = section.link;
-    holder.appendChild(embed);
+    overlay.body.appendChild(embed);
 
     let trigger = document.createElement("a");
-    trigger.classList.add(section.source);
+    trigger.classList.add(`embed-${section.contenttype}`);
     trigger.textContent = section.byline;
 
     trigger.addEventListener("click", function(e) {
         e.preventDefault();
-        document.querySelector("#app-main").appendChild(overlay);
+        if (!embed.src) overlay.addEventListener("shown.bs.modal", () => embed.src = section.link)
+        overlay.show();
     })
 
     return trigger;

@@ -27,8 +27,9 @@ export function createModal(autodestroy=false) {
         set size(v) { modal.querySelector(".modal-dialog").classList.remove("modal-sm", "modal-lg", "modal-xl", "modal-fs"); if (["sm", "lg", "xl", "fs"].includes(v)) modal.querySelector(".modal-dialog").classList.add(`modal-${v}`)},
         set id(v) {modal.setAttribute("id", v)},
         get id() { return modal.getAttribute("id")},
-        show: function() { bs.show() },
-        hide: function(destroy=false) { bs.hide(); if (destroy && !autodestroy) modal.remove(); }
+        show: function() { if(!modal.parentElement) document.body.appendChild(modal); bs.show() },
+        hide: function(destroy=false) { bs.hide(); if (destroy && !autodestroy) modal.remove(); },
+        addEventListener: function(e, fn) { modal.addEventListener(e, fn); }
     };
 }
 

@@ -38,7 +38,9 @@ export function SWEETPreviewer() {
                 sideeffectform: sideEffectFormRenderer,
                 profiler: profilerModalRenderer,
                 "diary-calendar": diaryCalendarRenderer,
-                fillin: r.fillInBoxRenderer
+                fillin: r.fillInBoxRenderer,
+                "described-menu": r.describedMenuRenderer,
+                "described-menu-item": r.describedMenuItemRenderer
             },
             titleHolder: "#page-title",
             contentHolder: "#main-container",
