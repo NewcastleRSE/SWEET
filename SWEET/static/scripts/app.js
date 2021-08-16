@@ -79,6 +79,30 @@ export function createApp(options={}) {
 
     if (!settings.store) settings.store = {};
 
+    settings.listeners = {
+        "preload": [],
+        "prerender": [],
+        "postrender": []
+    }
+
+    function addEvent(name, fn) {
+        settings.listeners[name].push(fn);
+        
+        return this;
+    }
+
+    function delEvent(name, fn) {
+        if (settings.listeners[name].includes(fn)) {
+            let list = settings.listeners[name];
+            let loc = list.indexOf(fn);
+            list = list.slice(0,loc).concat(list.slice(loc+1))
+        }
+    }
+
+    function dispatchEvent(name, ...args) {
+        settings.listeners[name].forEach(l => l.call(this, ...args))
+    }
+
     if (!(settings.contentHolder instanceof HTMLElement)) settings.contentHolder = document.querySelector(settings.contentHolder);
     if (!(settings.titleHolder instanceof HTMLElement)) settings.titleHolder = document.querySelector(settings.titleHolder);
     
@@ -93,7 +117,7 @@ export function createApp(options={}) {
         else if (content instanceof Object) { console.error("Attempt to render unrecognised content section:", content); }
         else { rendered = document.createTextNode(` ${content} `); }
 
-        if (renderer instanceof Promise) return rendered
+        if (rendered instanceof Promise) return rendered
         else return Promise.resolve(rendered);
     }
 
@@ -114,6 +138,8 @@ export function createApp(options={}) {
         } else {
             settings.path = location.hash && location.hash.length > 1? location.hash: settings.defaultPath;
         }
+
+        dispatchEvent.call(this, "preload");
 
         settings.load(settings.path).then(page => {
             settings.titleHolder.textContent = page.title;
@@ -171,8 +197,10 @@ export function createApp(options={}) {
                 relbuttons.forEach(b => b.blur());
             }
 
+            dispatchEvent.call(this, "prerender", page);
             while (settings.contentHolder.firstChild) settings.contentHolder.removeChild(settings.contentHolder.lastChild);
-            page.content.forEach(c => this.render(c).then(node => settings.contentHolder.appendChild(node)));
+            Promise.allSettled(page.content.map(c => this.render(c).then(node => settings.contentHolder.appendChild(node))))
+            .then(() => dispatchEvent.call(this, "postrender"));
         })
     }
 
@@ -204,7 +232,10 @@ export function createApp(options={}) {
         store: {
             set: function(k,v) { store.call(this, k, v) },
             get: function(k) { store.call(this, k) }
-        }
+        },
+
+        addEventListener: function(name, fn) { addEvent.call(this, name, fn); },
+        removeEventListener: function(name, fn) { delEvent.call(this, name, fn); }
     }
 
     function init() {
