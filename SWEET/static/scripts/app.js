@@ -198,6 +198,7 @@ export function createApp(options={}) {
             }
 
             dispatchEvent.call(this, "prerender", page);
+            
             while (settings.contentHolder.firstChild) settings.contentHolder.removeChild(settings.contentHolder.lastChild);
             Promise.allSettled(page.content.map(c => this.render(c).then(node => settings.contentHolder.appendChild(node))))
             .then(() => dispatchEvent.call(this, "postrender"));
@@ -234,8 +235,8 @@ export function createApp(options={}) {
             get: function(k) { store.call(this, k) }
         },
 
-        addEventListener: function(name, fn) { addEvent.call(this, name, fn); },
-        removeEventListener: function(name, fn) { delEvent.call(this, name, fn); }
+        addEventListener: function(name, fn) { return addEvent.call(this, name, fn); },
+        removeEventListener: function(name, fn) { return delEvent.call(this, name, fn); }
     }
 
     function init() {
@@ -286,7 +287,7 @@ export function createApp(options={}) {
             app.load();
         }
     } else {
-        Object.defineProperty(app, "start", app.load);
+        Object.defineProperty(app, "start", { value: app.load });
     }
 
     return app;

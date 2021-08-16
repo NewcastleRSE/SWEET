@@ -7,7 +7,7 @@ import { diaryCalendarRenderer } from "./renderers/diary-page.js";
 import { createModal } from './extensions/modal.js'
 import { createCalendar } from './extensions/calendar.js'
 
-createApp({
+let SWEET = createApp({
     extensions: {
         createModal: createModal,
         post: function(url, data) {
@@ -45,6 +45,11 @@ createApp({
     },
     titleHolder: "#page-title",
     contentHolder: "#main-container",
-    name: "SWEET",
-    autostart: true
+    name: "SWEET"
 });
+
+SWEET.addEventListener("prerender", function(page) { 
+    console.log("prerender event", page)
+});
+
+SWEET.start();
