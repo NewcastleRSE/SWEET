@@ -77,6 +77,8 @@ export function createApp(options={}) {
     // merge defaults and incoming options into single settings object
     let settings = Object.assign({}, defaults, options);
 
+    if (!settings.store) settings.store = {};
+
     if (!(settings.contentHolder instanceof HTMLElement)) settings.contentHolder = document.querySelector(settings.contentHolder);
     if (!(settings.titleHolder instanceof HTMLElement)) settings.titleHolder = document.querySelector(settings.titleHolder);
     
@@ -174,6 +176,11 @@ export function createApp(options={}) {
         })
     }
 
+    function store(key, value=null) {
+        if (value == null) return settings.store[key];
+        else settings[key] = value;
+    }
+
     const app = {
         addRenderer: function(name, fn) { settings.renderers[name] = fn; },
         addExtension: function(name, fn) { Object.defineProperty(this, name, { value: function(...args) {
@@ -192,7 +199,12 @@ export function createApp(options={}) {
 
         get defaultPath() { return settings.defaultPath; }, set defaultPath(v) { settings.defaultPath = v; },
 
-        load: function() { refresh.call(this)}
+        load: function() { refresh.call(this)},
+
+        store: {
+            set: function(k,v) { store.call(this, k, v) },
+            get: function(k) { store.call(this, k) }
+        }
     }
 
     function init() {
