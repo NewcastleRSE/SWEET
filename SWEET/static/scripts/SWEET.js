@@ -48,8 +48,16 @@ let SWEET = createApp({
     name: "SWEET"
 });
 
+fetch("/myapp/mydetails").then(response => response.json()).then(profile => SWEET.store.set("currentUser", profile));
+
 SWEET.addEventListener("prerender", function(page) { 
-    console.log("prerender event", page)
+    if (page.pages && page.pages.find(p => p.slug == "welcome")) {
+        // this section uses tunnelling; set tunnelling pathway and redirect to welcome page:
+        let profile = SWEET.store.get("currentUser");
+        if (!profile.tunnelsVisited.includes(SWEET.path)) {
+            SWEET.path = SWEET.path + "/welcome";
+        }
+    }
 });
 
 SWEET.start();

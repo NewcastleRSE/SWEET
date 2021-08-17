@@ -232,7 +232,7 @@ export function createApp(options={}) {
 
         store: {
             set: function(k,v) { store.call(this, k, v) },
-            get: function(k) { store.call(this, k) }
+            get: function(k) { return store.call(this, k) }
         },
 
         addEventListener: function(name, fn) { return addEvent.call(this, name, fn); },
