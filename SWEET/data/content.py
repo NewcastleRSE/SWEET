@@ -24,7 +24,16 @@ def getPageDetails(path):
         else:
             struct = next(i for i in struct['pages'] if i['slug'] == slug)
 
-    return struct
+    # need to return a copy of the information to avoid contaminating the underlying data
+    output = { "title": struct['title'], "slug": struct['slug']}
+    if 'prev' in struct:
+        output['prev'] = struct['prev']
+    if 'next' in struct:
+        output['next'] = struct['next']
+    if 'pages' in struct:
+        output['pages'] = [{"slug": p['slug'], 'title': p['title']} for p in struct['pages']]
+
+    return output
 
 def getPages():
     return __content
