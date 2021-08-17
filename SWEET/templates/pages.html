@@ -280,16 +280,48 @@
                 });
 
                 // upload new structure to site:
-                fetch("/admin/structure/", {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(document.querySelector("#page-tree-pages").structure)
-                }).then(response => { alert("Structure updated")}, reject => console.log(reject))
+                // first download latest structure and merge changes so we're not going to overwrite someone else's subpages!!
+                fetch("/app/structure").then(response => response.json())
+                .then(serverstructure => {
+                    let clientstructure = document.querySelector("#page-tree-pages").structure;
+
+                    let updatepage = function(source, target) {
+                        if (source.title && source.title != target.title) target.title = source.title;
+                        if (source.prev && source.prev != target.prev) target.prev = source.prev;
+                        if (source.next && source.next != target.next) target.next = source.next;
+
+                        if (source.pages) {
+                            if (!target.pages) { target.pages = source.pages; }
+                            else {
+                                source.pages.forEach(sp => {
+                                    let tp = target.pages.find(p => p.slug == sp.slug);
+                                    if (tp) updatepage(sp, tp);
+                                    else target.pages.push(sp);
+                                })
+                            }
+                        }
+                    }
+
+                    Object.keys(serverstructure).forEach(ssk => {
+                        if (clientstructure[ssk]) {
+                            updatepage(serverstructure[ssk], clientstructure[ssk]);
+                        } else {
+                            clientstructure[ssk] = serverstructure[ssk];
+                        }
+                    }) 
+
+                    fetch("/admin/structure/", {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(clientstructure)
+                    }).then(response => { alert("Structure updated")}, reject => console.log(reject))
+
+                    refreshTree();
+                })
 
 
-                refreshTree();
                 document.querySelector("#page-subpages").insertAdjacentHTML("beforeend", 
                                 `<p><span class="path">${ document.querySelector("#page-details").dataset.path}/${document.querySelector("#add-details input[name='add-slug']").value}</span> ${document.querySelector("#add-details input[name='add-title']").value}</p>`)
                 
@@ -305,7 +337,7 @@
                 let details =  document.querySelector("#page-details").dataset;
                 let content = { path: details.path, content: document.querySelector("#page-content").jsonvalue }
 
-                if (details.path != document.querySelector("input[name='page-title']").value) {
+                if (details.title != document.querySelector("input[name='page-title']").value) {
                     content.title = document.querySelector("input[name='page-title']").value;
                 }
                 if (details.prev != document.querySelector("input[name='page-prev']").value) {
