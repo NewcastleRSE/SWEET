@@ -48,15 +48,73 @@ let SWEET = createApp({
     name: "SWEET"
 });
 
-fetch("/myapp/mydetails").then(response => response.json()).then(profile => SWEET.store.set("currentUser", profile));
+//fetch("/myapp/mydetails").then(response => response.json()).then(profile => SWEET.store.set("currentUser", profile));
+SWEET.store.set("tunnelsComplete", []);
 
 SWEET.addEventListener("prerender", function(page) { 
-    if (page.pages && page.pages.find(p => p.slug == "welcome")) {
-        // this section uses tunnelling; set tunnelling pathway and redirect to welcome page:
-        let profile = SWEET.store.get("currentUser");
-        if (!profile.tunnelsVisited.includes(SWEET.path)) {
-            SWEET.path = SWEET.path + "/welcome";
+    if (page.slug == "welcome") {
+        SWEET.store.set("tunnelling", true);
+        SWEET.store.set("tunnel", SWEET.path);
+    } else if (page.pages
+            && page.pages.find(p => p.slug == "welcome") 
+            && SWEET.store.get("tunnel")
+            && SWEET.store.get("tunnel").startsWith(SWEET.path)) {
+        SWEET.store.set("tunnelling", false);
+        SWEET.store.set("tunnel", "");
+    }
+    
+    // 2021-08-18: moved to prerender handler.
+    // handle sequential navigation if set up
+    // i.e. template has buttons with data-rel attribute:
+    const relbuttons = Array.from(document.querySelectorAll("[data-rel]"))
+    let prevlink = document.head.querySelector("link[rel='prev']");
+    let nextlink = document.head.querySelector("link[rel='next']");
+
+    if (relbuttons.length) { 
+        if (page.prev) {
+            // we are using sequence navigation & have a 'prev' link in the page info:
+            if (!prevlink) {
+                prevlink = document.head.appendChild(document.createElement("link"));
+                prevlink.setAttribute("rel", "prev");
+            }
+            
+
+            relbuttons.filter(b => b.dataset.rel == "prev").forEach(prev => {
+                prev.setAttribute("href", page.prev);
+                prev.classList.remove("hidden");
+            })
+            prevlink.setAttribute("href", page.prev);
+        } else {
+            relbuttons.filter(b => b.dataset.rel == "prev").forEach(prev => {
+                prev.classList.add("hidden");
+                prev.removeAttribute("href");
+            })
+            
+            if (prevlink) prevlink.remove();
         }
+
+        console.log(page.next, SWEET.store.get("tunnelling"))
+        if (page.next && SWEET.store.get("tunnelling")) {
+            // we are using sequence navigation & have a 'next' link in the page info:
+            if (!nextlink) {
+                nextlink = document.head.appendChild(document.createElement("link"));
+                nextlink.setAttribute("rel", "next");
+            }
+            relbuttons.filter(b => b.dataset.rel == "next").forEach(nextButton => {
+                nextButton.setAttribute("href", page.next);
+                nextButton.classList.remove("hidden");
+            })
+
+            nextlink.setAttribute("href", page.next);
+        } else {
+            relbuttons.filter(b => b.dataset.rel == "next").forEach(nextButton => {
+                nextButton.classList.add("hidden");
+                nextButton.removeAttribute("href");
+            })
+            if (nextlink) nextlink.remove();
+        }
+        
+        relbuttons.forEach(b => b.blur());
     }
 });
 
