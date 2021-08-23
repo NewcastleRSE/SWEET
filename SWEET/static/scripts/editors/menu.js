@@ -153,7 +153,7 @@ export function menuItemRenderer(section) {
     holder.setAttribute("class", "d-block col");
 
     const card = document.createElement("a");
-    card.setAttribute("class", "d-block card");
+    card.setAttribute("class", "d-block card h-100");
     card.setAttribute("href", section.link);
 
     const cardBody = document.createElement("div");

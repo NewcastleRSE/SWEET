@@ -6,6 +6,7 @@ import { sideEffectModalRenderer, sideEffectFormRenderer } from './renderers/sid
 import { diaryCalendarRenderer } from "./renderers/diary-page.js";
 import { createModal } from './extensions/modal.js'
 import { createCalendar } from './extensions/calendar.js'
+import { plansAndGoalsRenderer } from './renderers/planandgoal.js'
 
 let SWEET = createApp({
     extensions: {
@@ -37,7 +38,8 @@ let SWEET = createApp({
         sideeffectform: sideEffectFormRenderer,
         profiler: profilerModalRenderer,
         "diary-calendar": diaryCalendarRenderer,
-        fillin: r.fillInBoxRenderer
+        fillin: r.fillInBoxRenderer,
+        plansandgoals: plansAndGoalsRenderer
     },
     load: function(path) {
         let url = `/app/content?path=${encodeURIComponent(path)}`;

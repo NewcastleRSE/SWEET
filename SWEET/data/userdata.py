@@ -188,3 +188,16 @@ def getFillin(user, path, name):
         return ""
 
     return __diary[id]['fillins'][path][name]
+
+def getPlans(user):
+    id = user['userID']
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+        return ""
+
+    if 'fillins' not in __diary[id]:
+        __diary[id]['fillins'] = {}
+        return ""
+
+    return __diary[id]['fillins']

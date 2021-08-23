@@ -24,3 +24,20 @@
     max-width: 4em;
     margin-left: 0.25em;
 }
+
+a.goallink {
+    margin-right: 1em;
+    color: var(--SWEET-grey);
+}
+
+a.goallink::after {
+    content: "\27A0";
+}
+
+a.planlink {
+    color: var(--SWEET-grey);
+}
+
+a.planlink::after {
+    content: "\27A0";
+}

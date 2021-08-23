@@ -266,3 +266,5 @@ button.accordion-button:not(.collapsed)::after {
 section.markdown > p:last-child {
     margin-bottom: 0.5em;
 }
+
+section { clear: both; }
