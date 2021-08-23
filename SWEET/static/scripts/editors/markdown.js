@@ -82,6 +82,8 @@ export function markdownRenderer(section) {
         holder.innerHTML = `<p class="error">Unknown markdown section encoding: ${section.encoding}</p>`;
     }
     
+    holder.querySelectorAll("a[href^='http']").forEach(a => a.setAttribute("target", "_blank"));
+
     holder.querySelectorAll("img").forEach(img => {
         if (img.getAttribute("src").startsWith("http")) return; //ignore absolute image paths
 
@@ -89,9 +91,16 @@ export function markdownRenderer(section) {
 
         fetch(`/app/resources/${name}`).then(response => response.json())
         .then(resource => {
-            img.setAttribute("src", resource.source);
-            img.setAttribute("alt", resource.description);
-            if (position) img.classList.add(position);
+            if (resource['content-type'] === undefined || resource['content-type'].startsWith("image")) {
+                img.setAttribute("src", resource.source);
+                img.setAttribute("alt", resource.description);
+                if (position) img.classList.add(position);
+            } else if (resource['content-type'].startsWith("video")) {
+                img.insertAdjacentHTML("beforebegin", `<video controls src="${resource.source}"><p>${resource.description}</p></video>`);
+                img.remove();
+                // maybe do some work with position.
+                // maybe do some work with popups.
+            }
         })
     })
 

@@ -7,14 +7,30 @@ from .auth import login_required
 bp = Blueprint('schemas', __name__, url_prefix='/app/schemas')
 
 ## SCHEMAS:
-@bp.route("/goals/activity")
+@bp.route("/goals/<name>")
 @login_required
-def getActivityGoalSchema():
+def getGoalSchema(name):
     return {
-        "activity": ["walking", "housework", "gardening", "strength exercises", "balance exercises", "swimming", "cycling", "pilates", "yoga", "thai chi", "dancing", "bowling", "running"],
-        "frequency": [1,2,3,4,5,6,7],
-        "duration": [10, 20, 30, 40, 50, 60]
-    }
+        'activity': {
+            "activity": ["walking", "housework", "gardening", "strength exercises", "balance exercises", "swimming", "cycling", "pilates", "yoga", "thai chi", "dancing", "bowling", "running"],
+            "frequency": [1,2,3,4,5,6,7],
+            "duration": [10, 20, 30, 40, 50, 60]
+        },
+        'eating': {
+            "activity": [
+                "Make a meal plan",
+                "Use a meal plan to write a weekly shopping list",
+                "Bulk-cook some healthy meals",
+                "Choose a low-calorie alcoholic drink",
+                "Have 5 portions of fruit and vegetables in a day",
+                "Add an extra portion of vegetables with dinner",
+                "Swap sugary cereal for breakfast for a fruit smoothie with oats",
+                "Swap a snack of crisps for carrot sticks with hummus",
+                "Make a fake-away at home instead of ordering a take-away"
+            ],
+            "frequency": [1,2,3,4,5,6,7]
+        }
+    }[name]
 
 @bp.route("/sideeffects")
 @login_required

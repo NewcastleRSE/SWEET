@@ -382,7 +382,7 @@
                     case ".svg":
                         type.value = "image/svg+xml";
                         f.text().then(t => {
-                            preview.setAttribute("src", `data:image/svg+xml;base64,${btoa(t)}`)
+                            preview.setAttribute("data", `data:image/svg+xml;base64,${btoa(t)}`)
                         })
                         break;
                     case ".jpg":
@@ -392,8 +392,25 @@
                         type.value=`image/${ext.substr(1)}`;
                         f.arrayBuffer().then(b => {
                             let bs = Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte))
-                            preview.setAttribute("src", `data:${type.value};base64,${btoa(bs.join(""))}`)
+                            preview.setAttribute("data", `data:${type.value};base64,${btoa(bs.join(""))}`)
                         })
+                        break;
+                    case ".mp4":
+                    case ".ogg":
+                        type.value=`video/${ext.substr(1)}`;
+                        f.arrayBuffer().then(b => {
+                            let bs = Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte))
+                            preview.setAttribute("data", `data:${type.value};base64,${btoa(bs.join(""))}`)
+                        })
+                        break;
+                    case ".mov":
+                    case ".qt":
+                        type.value="video/quicktime";
+                        f.arrayBuffer().then(b => {
+                            let bs = Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte))
+                            preview.setAttribute("data", `data:${type.value};base64,${btoa(bs.join(""))}`)
+                        })
+                        break;
                 }
 
                 preview.classList.add("show");
@@ -405,6 +422,7 @@
                 let resource = {
                     name: this.elements['name'].value,
                     description: this.elements['description'].value,
+                    'content-type': this.elements['media-type'].value,
                     source: this.querySelector("#add-resource-preview").src
                 }
 
@@ -454,7 +472,7 @@
                             <label>Description:</label><input type="text" name="description" length="80"><br />
                             <input type="submit" value="Add">
                         </fieldset>
-                        <img id="add-resource-preview" />
+                        <object id="add-resource-preview"></object>
                     </form>
                 </details>
             </div>
