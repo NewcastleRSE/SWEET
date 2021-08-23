@@ -4,7 +4,7 @@ export function plansAndGoalsRenderer(section) {
     let goalholder = holder.appendChild(document.createElement("section"));
     let planholder = holder.appendChild(document.createElement("section"));
 
-    fetch("/myyapp/mygoals").then(response => response.json())
+    fetch("/myapp/mygoals").then(response => response.json())
     .then(goals => {
         goalholder.appendChild(document.createElement("h4")).textContent = "My Current Goals";
         let actgoals = goalholder.appendChild(document.createElement("section"));
@@ -20,14 +20,14 @@ export function plansAndGoalsRenderer(section) {
                         <div class="card-body d-flex justify-content-center">
                             <div class="align-self-center">
                                 <h5 class="goal-summary">${g.goaltype == "activity"? "Do some ": ""}<strong>${g.detail}</strong> on <strong>${g.days} days</strong> this week${g.minutes? `, for <strong>${g.minutes} minutes</strong> per day`:""}.</h5>
-                                <h6>Review on: ${new Date(Date.parse(goal.reviewDate)).toLocaleDateString()}</h6>
+                                <h6>Review on: ${new Date(Date.parse(g.reviewDate)).toLocaleDateString()}</h6>
                             </div>
                         </div>
                     </div>
                 </div>`)
         })
 
-        goalholder.appendChild(document.createElement("div")).innerHTML = `<a class="goal-link" href="#home/healthy-living/being-active/goals/set-goal">Review and create your Being Active goals here</a><a class="goal-link" href="#home/healthy-living/healthy-eating">Review and create your Healthy Eating goals here</a>`
+        goalholder.appendChild(document.createElement("div")).innerHTML = `<a class="goallink" href="#home/healthy-living/being-active/goals/set-goal">Review and create your Being Active goals here</a><a class="goallink" href="#home/healthy-living/healthy-eating">Review and create your Healthy Eating goals here</a>`
 
         goalholder.appendChild(document.createElement("h4")).textContent = "My Historic Goals";
         let gtable = goalholder.appendChild(document.createElement("table"));
@@ -50,7 +50,7 @@ export function plansAndGoalsRenderer(section) {
             takinght.innerHTML = `<h5>My plan for taking my hormone therapy</h5>
             <p>If it is <strong>${plans["#home/taking-ht/my-plan"]['time']}</strong> and I am <strong>${plans["#home/taking-ht/my-plan"]['place']}</strong>
             and I have <strong>${plans["#home/taking-ht/my-plan"]['activity']}</strong> THEN <strong><em>${plans["#home/taking-ht/my-plan"]['plan']}</em></strong></p>
-            <p><a class="plan-link" href="#home/taking-ht/my-plan">Change this plan in the <strong>Taking Hormone Therapy</strong> section</a></p>`;
+            <p><a class="planlink" href="#home/taking-ht/my-plan">Change this plan in the <strong>Taking Hormone Therapy</strong> section</a></p>`;
         }
     });
 

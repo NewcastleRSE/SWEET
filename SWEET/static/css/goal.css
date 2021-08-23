@@ -26,8 +26,10 @@
 }
 
 a.goallink {
-    margin-right: 1em;
+    margin-right: 2em;
+    display: inline-block;
     color: var(--SWEET-grey);
+    text-decoration: none;
 }
 
 a.goallink::after {
