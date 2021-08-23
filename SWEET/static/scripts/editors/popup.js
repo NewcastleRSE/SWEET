@@ -80,7 +80,7 @@ export class PopupEditor extends HTMLElement {
         this.$.content.load(content.content);
     }
 
-    get isContainer() { return false; }
+    get isContainer() { return true; }
 
 }
 

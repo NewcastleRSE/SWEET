@@ -1,7 +1,7 @@
 .fill-in {
     display: block;
-    margin: auto;
     width: 80%;
+    margin: 0.5em 0;
 }
 
 .fill-in form {
