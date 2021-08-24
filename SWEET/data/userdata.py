@@ -6,7 +6,7 @@ __diary = AzurePersitentDict(az_connection, "users", "diary.json")
 __goals = AzurePersitentDict(az_connection, "users", "goals.json")
 
 def newdiary():
-    return {"sideeffects": [], "reminders": [], "adherence": [], "notes": [], "profilers": [], "fillins": {}}
+    return {"sideeffects": [], "reminders": { 'daily': {'reminder': False}, 'monthly': {'reminder': False}}, "adherence": [], "notes": [], "profilers": [], "fillins": {}}
 
 def getGoals(user=None):
     if user is None:
@@ -201,3 +201,22 @@ def getPlans(user):
         return ""
 
     return __diary[id]['fillins']
+
+def getReminders(user):
+    id = user['userID']
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+
+    if "reminders" not in __diary[id] or not isinstance(__diary[id]['reminders'], dict):
+        __diary[id]['reminders'] = { 'daily': { 'reminder': False }, 'monthly': { 'reminder': False }}
+
+    return __diary[id]['reminders']
+
+def setReminders(user, reminders):
+    id = user['userID']
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+
+    __diary[id]['reminders'] = reminders
