@@ -175,6 +175,7 @@ def getFillin(user, path, name):
 
     if id not in __diary:
         __diary[id] = newdiary()
+        __diary.commit()
         return ""
 
     if 'fillins' not in __diary[id]:
@@ -194,10 +195,12 @@ def getPlans(user):
 
     if id not in __diary:
         __diary[id] = newdiary()
+        __diary.commit()
         return ""
 
     if 'fillins' not in __diary[id]:
         __diary[id]['fillins'] = {}
+        __diary.commit()
         return ""
 
     return __diary[id]['fillins']
@@ -207,9 +210,11 @@ def getReminders(user):
 
     if id not in __diary:
         __diary[id] = newdiary()
+        __diary.commit()
 
     if "reminders" not in __diary[id] or not isinstance(__diary[id]['reminders'], dict):
         __diary[id]['reminders'] = { 'daily': { 'reminder': False }, 'monthly': { 'reminder': False }}
+        __diary.commit()
 
     return __diary[id]['reminders']
 
@@ -220,3 +225,4 @@ def setReminders(user, reminders):
         __diary[id] = newdiary()
 
     __diary[id]['reminders'] = reminders
+    __diary.commit()
