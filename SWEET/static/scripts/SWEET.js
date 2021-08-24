@@ -7,6 +7,7 @@ import { diaryCalendarRenderer } from "./renderers/diary-page.js";
 import { createModal } from './extensions/modal.js'
 import { createCalendar } from './extensions/calendar.js'
 import { plansAndGoalsRenderer } from './renderers/planandgoal.js'
+import { reminderRenderer } from './renderers/remindersetter.js'
 
 let SWEET = createApp({
     extensions: {
@@ -39,7 +40,8 @@ let SWEET = createApp({
         profiler: profilerModalRenderer,
         "diary-calendar": diaryCalendarRenderer,
         fillin: r.fillInBoxRenderer,
-        plansandgoals: plansAndGoalsRenderer
+        plansandgoals: plansAndGoalsRenderer,
+        reminders: reminderRenderer
     },
     load: function(path) {
         let url = `/app/content?path=${encodeURIComponent(path)}`;
