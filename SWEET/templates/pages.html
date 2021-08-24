@@ -423,7 +423,7 @@
                     name: this.elements['name'].value,
                     description: this.elements['description'].value,
                     'content-type': this.elements['media-type'].value,
-                    source: this.querySelector("#add-resource-preview").src
+                    source: this.querySelector("#add-resource-preview").data
                 }
 
                 fetch("/admin/resources/", {
