@@ -97,7 +97,6 @@ SWEET.addEventListener("prerender", function(page) {
             if (prevlink) prevlink.remove();
         }
 
-        console.log(page.next, SWEET.store.get("tunnelling"))
         if (page.next && SWEET.store.get("tunnelling")) {
             // we are using sequence navigation & have a 'next' link in the page info:
             if (!nextlink) {

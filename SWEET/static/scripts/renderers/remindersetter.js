@@ -5,13 +5,15 @@ export function reminderRenderer(section) {
     .then(reminders => {
 
         holder.innerHTML = `
-            <form>
-            <p><input type="checkbox" name="daily" id="daily" ${reminders.daily.reminder? "checked": ""}><label class="h4" for="daily">I would like a daily reminder to take my hormone therapy</label><br>
-            Send my reminder by <select name="daily-method" ${reminders.daily.reminder? `value="${reminders.daily.method}"`: "disabled"}><option value="email">Email</option><option value="sms">Text Message</option></select> to <input name="daily-to" type="text" ${reminders.daily.reminder? `value="${reminders.daily.to}"`: "disabled"} />.</p>
-            <p><input type="checkbox" name="monthly" id="monthly" ${ reminders.monthly.reminder? "checked": ""}><label class="h4" for="monthly">I would like a regular reminder to collect my prescription</label><br>
-            Remind me every <select name="monthly-freq" ${reminders.monthly.reminder? `value="${reminders.monthly.frequency}"`: "disabled"}><option value="one">Month</option><option value="three">Three Months</option></select> starting on <input name="monthly-start" type="date" ${reminders.monthly.reminder? `value="${reminders.monthly.start}"`: "disabled"} />.<br>
+            <form id="diary-reminders">
+            <fieldset><p><input type="checkbox" name="daily" id="daily" ${reminders.daily.reminder? "checked": ""}><label class="h5" for="daily">I would like a daily reminder to take my hormone therapy</label></p>
+            <p>Send my reminder by <select name="daily-method" ${reminders.daily.reminder? `value="${reminders.daily.method}"`: "disabled"}><option value="email">Email</option><option value="sms">Text Message</option></select> to <input name="daily-to" type="text" ${reminders.daily.reminder? `value="${reminders.daily.to}"`: "disabled"} />.</p>
+            </fieldset>
+            <fieldset><p><input type="checkbox" name="monthly" id="monthly" ${ reminders.monthly.reminder? "checked": ""}><label class="h5" for="monthly">I would like a regular reminder to collect my prescription</label></p>
+            <p>Remind me every <select name="monthly-freq" ${reminders.monthly.reminder? `value="${reminders.monthly.frequency}"`: "disabled"}><option value="one">Month</option><option value="three">Three Months</option></select> starting on <input name="monthly-start" type="date" ${reminders.monthly.reminder? `value="${reminders.monthly.start}"`: "disabled"} />.<br>
             Send my reminder by <select name="monthly-method" ${reminders.monthly.reminder? `value="${reminders.monthly.method}"`: "disabled"}><option value="email">Email</option><option value="sms">Text Message</option></select> to <input name="monthly-to" type="text" ${reminders.monthly.reminder? `value="${reminders.monthly.to}"`: "disabled"} /></p>
-            <input type="submit" value="Update Reminders" disabled>
+            </fieldset>
+            <input type="submit" value="Update Reminders" class="btn btn-primary" disabled>
             </form>
         `
 
@@ -34,8 +36,7 @@ export function reminderRenderer(section) {
                 }
             }
 
-            console.log(reminders);
-            //this.post("/myapp/myreminders/", reminders);
+            this.post("/myapp/myreminders/", reminders);
         })
 
         holder.querySelector("input[name='daily']").addEventListener("change", e => {

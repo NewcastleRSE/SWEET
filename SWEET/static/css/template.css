@@ -106,6 +106,12 @@ span a {
     border-color: var(--SWEET-lilac);
 }
 
+
+.btn-primary:disabled {
+    background-color: var(--SWEET-grey);
+    border-color: var(--SWEET-grey);
+    color: var(--SWEET-off-white);
+}
 .btn:focus,.btn:active {
     outline: none !important;
     box-shadow: none;

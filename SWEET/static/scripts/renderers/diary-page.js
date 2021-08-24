@@ -10,7 +10,7 @@ export function diaryCalendarRenderer(section) {
                 td.classList.add("disabled");
             }
 
-            if (td.dataset.thisdate.substr(0,7) != c.querySelector("#cal-caption").dataset.basedate.substr(0,7)) {
+            if (td.dataset.thisdate.substr(0,7) != c.querySelector("#cal-caption").dataset.basemonth) {
                 td.classList.add("faded");
             }
 
@@ -24,13 +24,16 @@ export function diaryCalendarRenderer(section) {
 
             let holder = td.appendChild(document.createElement("div"));
             holder.classList.add("events");
+            holder.innerHTML = "<div class='sef'></div><div class='adhnot'></div>";
         })
 
         c.dispatchEvent(new CustomEvent("update"))
     })
 
     c.addEventListener("update", () => {
-        fetch("/myapp/mydiary")
+        let basemonth = c.querySelector("#cal-caption").dataset.basemonth;
+
+        fetch(`/myapp/mydiary?period=${basemonth}`)
         .then(response => response.json())
         .then(diary => {
 
@@ -49,7 +52,7 @@ export function diaryCalendarRenderer(section) {
                 // side effect structure:
                 // -- coloured dot to the left of the box
                 // -- section contains information about the side effect
-                let seday = c.querySelector(`td[data-thisdate='${se.date}'] div.events`);
+                let seday = c.querySelector(`td[data-thisdate='${se.date}'] div.events div.sef`);
 
                 if (seday && !seday.querySelector(`.side-effect-${se.type}`)) {
                     // we have found the appropriate day, and it doesn't have this type of side effect already:
@@ -71,7 +74,7 @@ export function diaryCalendarRenderer(section) {
                 // adherence structure:
                 // -- a green tick in the top-right of the box
                 // -- section contains details of prescription
-                let adhday = c.querySelector(`td[data-thisdate='${adh.date}'] div.events`);
+                let adhday = c.querySelector(`td[data-thisdate='${adh.date}'] div.events div.adhnot`);
                 
                 if (adhday && !adhday.querySelector(".adherence")) {
                     let i = diaryitem();
