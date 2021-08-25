@@ -13,7 +13,7 @@ export function sideEffectFormRenderer(section) {
             <span id="form-se-severity" hidden><label for="severity">How bad <span data-switch="embedplural" data-true="were" data-false="was"></span> your <span data-replace="embedtext"></span>?</label>
             <span id="severityinput"><label>Better</label> <input type="range" min="1" max="5" step="1" class="form-range" name="severity"> <label>Worse</label></span><br></span>
             <span id="form-se-impact" hidden><label for="impact">How badly did your <span data-replace="embedtext"></span> impact your daily life?</label>
-            <span id="impactinput"><label>Better</label> <input type="range" min="1" max="5" step="1" class="form-range" name="impact"> <label>Worse</label></span><br></span>
+            <span id="impactinput"><label>A little</label> <input type="range" min="1" max="5" step="1" class="form-range" name="impact"> <label>A lot</label></span><br></span>
             <span id="form-se-notes" hidden><label for="notes">Notes: <span class="sidenote">You can use this box to record further details, e.g. the times of day, triggers, things you tried to help</span></label><br>
             <span id="notesinput"><textarea name="notes" id="notes" cols="50" rows="5"></textarea></span></span>
             </section>

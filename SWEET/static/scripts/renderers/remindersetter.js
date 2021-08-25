@@ -44,7 +44,7 @@ export function reminderRenderer(section) {
                 if (e.target.checked) {
                     f.removeAttribute("disabled");
                 } else {
-                    f.setAttribute("disabled");
+                    f.setAttribute("disabled", "");
                     f.value = "";
                 }
             })
@@ -57,7 +57,7 @@ export function reminderRenderer(section) {
                 if (e.target.checked) {
                     f.removeAttribute("disabled");
                 } else {
-                    f.setAttribute("disabled");
+                    f.setAttribute("disabled", "");
                     f.value = "";
                 }
             })

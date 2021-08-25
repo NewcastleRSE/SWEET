@@ -126,6 +126,27 @@ table.calendar div.events div.diary-item:hover section {
     display: inline-block;
 }
 
+table.calendar div.events div.diary-item :is(.severity, .impact) > label {
+    min-width: 4.5em;
+}
+table.calendar div.events div.diary-item :is(.severity, .impact) span.bar {
+    display: inline-block;
+    height: 1em;
+    width: 5em;
+    outline: 1px solid var(--SWEET-grey);
+    vertical-align: middle;
+}
+
+table.calendar div.events div.diary-item .severity .bar label {
+    height: 100%;
+    background-color: red;
+    vertical-align: top;
+}
+table.calendar div.events div.diary-item .impact .bar label {
+    height: 100%;
+    background-color: var(--SWEET-gold);
+    vertical-align: top;
+}
 #day-modal-adherence {
     height: 1.25em;
     width: 1.25em;
@@ -169,4 +190,8 @@ fieldset {
 
 #diary-reminders input[type='submit'] {
     position: relative; right: 0;
+}
+
+#diary-page-graphs {
+    margin-top: 2em;
 }

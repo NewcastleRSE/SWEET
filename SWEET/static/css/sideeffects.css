@@ -100,8 +100,14 @@ label:hover span.sidenote {
 }
 
 :is(#severityinput, #impactinput, #notesinput) {
-    display: block;
+    display: flex;
     text-align: center;
+}
+
+:is(#severityinput, #impactinput) label {
+    font-weight: bold;
+    padding: 0.1em 1em;
+    white-space: nowrap;
 }
 
 :is(#severityinput, #impactinput) input[type="radio"]:checked + label {

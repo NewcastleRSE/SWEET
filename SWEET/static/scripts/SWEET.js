@@ -3,7 +3,7 @@ import * as r from './editors/renderers.js';
 import { homepageMenuRenderer } from './renderers/home_page.js'
 import { profilerModalRenderer } from './renderers/profiler.js'
 import { sideEffectModalRenderer, sideEffectFormRenderer } from './renderers/side_effects.js'
-import { diaryCalendarRenderer } from "./renderers/diary-page.js";
+import { diaryCalendarRenderer, diaryGraphRenderer } from "./renderers/diary-page.js";
 import { createModal } from './extensions/modal.js'
 import { createCalendar } from './extensions/calendar.js'
 import { plansAndGoalsRenderer } from './renderers/planandgoal.js'
@@ -41,7 +41,8 @@ let SWEET = createApp({
         "diary-calendar": diaryCalendarRenderer,
         fillin: r.fillInBoxRenderer,
         plansandgoals: plansAndGoalsRenderer,
-        reminders: reminderRenderer
+        reminders: reminderRenderer,
+        diarygraph: diaryGraphRenderer
     },
     load: function(path) {
         let url = `/app/content?path=${encodeURIComponent(path)}`;

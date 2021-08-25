@@ -162,7 +162,7 @@ export function goalRenderer(section) {
                 e.preventDefault(); e.stopImmediatePropagation();
 
                 goal = {
-                    goaltype: schema.goaltype,
+                    goaltype: section.goaltype,
                     status: 'active',
                     reviewDate: isodate(((d) => { d.setDate(d.getDate()+7); return d;})(new Date())),
                     detail: form.elements['activity'].value,
@@ -177,10 +177,10 @@ export function goalRenderer(section) {
                 modal.body.innerHTML = `
                 <h3 class='mb-5'>You're ready to set a new goal for the next week!</h3>
                 <section>
-                <p>You can always see your goals by clicking <strong>My Goals</strong> on the Being Active homepage.</p>
+                <p>You can always see your goals by clicking <strong>My Goals</strong> on the ${section.goaltype == "activity"? "Being Active": "Healthy Eating"} homepage.</p>
                 <p>In one week, you can come back to review your goal and to get a feedback message.</p>
                 <p>You may want to stick a reminder somewhere in your house.</p>
-                <p>Your goal is: to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.</p>
+                <p>Your goal is: to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week${goal.minutes?`, for <strong>${goal.minutes} minutes</strong> per day`:""}.</p>
                 </section>`;
 
                 let submitButton = modal.footer.querySelector("button[type='submit']");

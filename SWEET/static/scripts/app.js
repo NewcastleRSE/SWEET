@@ -86,6 +86,10 @@ export function createApp(options={}) {
     }
 
     function addEvent(name, fn) {
+        if (!(name in settings.listeners)) {
+            settings.listeners[name] = [];
+        }
+        
         settings.listeners[name].push(fn);
         
         return this;
@@ -184,7 +188,8 @@ export function createApp(options={}) {
         },
 
         addEventListener: function(name, fn) { return addEvent.call(this, name, fn); },
-        removeEventListener: function(name, fn) { return delEvent.call(this, name, fn); }
+        removeEventListener: function(name, fn) { return delEvent.call(this, name, fn); },
+        dispatchEvent: function(name, ...args) { return dispatchEvent.call(this, name, ...args); }
     }
 
     function init() {
