@@ -31,7 +31,7 @@ export function plansAndGoalsRenderer(section) {
 
         goalholder.appendChild(document.createElement("h4")).textContent = "My Historic Goals";
         let gtable = goalholder.appendChild(document.createElement("table"));
-        table.classList.add("mt-4")
+        gtable.classList.add("mt-4")
         gtable.insertAdjacentHTML("beforeend", '<tr><th>Goal details</th><th>Your Outcome</th></tr>')
         goals.complete.sort((a,b) => {
             if (b.reviewDate < a.reviewDate) return 1;
