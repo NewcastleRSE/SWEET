@@ -81,7 +81,7 @@ export function diaryCalendarRenderer(section) {
             diary.adherence.forEach(adh => {
                 // adherence structure:
                 // -- a green tick in the top-right of the box
-                // -- section contains details of prescription
+                // -- no additional details
                 let adhday = c.querySelector(`td[data-thisdate='${adh.date}'] div.events div.adhnot`);
                 
                 if (adhday && !adhday.querySelector(".adherence")) {
@@ -89,12 +89,8 @@ export function diaryCalendarRenderer(section) {
                     i.classList.add(`adherence`)
                     i.querySelector("i").classList.add("bi-check-lg")
 
-                    let section = i.querySelector("section")
-                    section.innerHTML = `
-                    <h4>Took medication</h4>
-                    <p>Type: ${adh.prescription}<br />
-                    Time: ${adh.time}</p>
-                    `
+                    // no additional details: remove section
+                    i.querySelector("section").remove();
 
                     adhday.appendChild(i);
                 }
