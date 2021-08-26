@@ -68,7 +68,7 @@ export function profilerModalRenderer(section) {
         () => { 
             /* page 1 renderer */
             
-                section.modal.title.textContent = `Profiler`;
+                //section.modal.title.textContent = `Profiler`;
                 section.modal.body.innerHTML = `<form id="prof-p1">
                     <p>Please indicate whether you agree or disagree with the following statements:</p>
                     <table class="table table-borderless">

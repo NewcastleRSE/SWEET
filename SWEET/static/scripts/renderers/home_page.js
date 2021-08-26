@@ -81,7 +81,7 @@ export function homepageMenuRenderer(section) {
         e.preventDefault(); e.stopPropagation();
 
         // fix this up ASAP!
-        this.render({ type: "profiler", dueDate: this.calendarDate(new Date()), reminderDate: ((d) => { d.setDate(d.getDate() + 3); return d; })(new Date()) })
+        this.render({ type: "profiler", dueDate: this.calendarDate(new Date())})
     })
 
     if (section.profiler.icon && section.profiler.icon != "none") {

@@ -374,45 +374,53 @@
                 let preview = document.querySelector("#add-resource-preview");
                 let type = document.querySelector("#add-resource input[name='media-type']")
                 let name = document.querySelector("#add-resource input[name='name']")
+                let blob = document.querySelector("#add-resource input[name='blob']")
+                let useblob = document.querySelector("#add-resource input[name='useblob']")
+                useblob.value = "false";
+
                 let f = this.files[0]
                 name.value = f.name.substr(0, f.name.lastIndexOf("."))
                 let ext = f.name.substr(f.name.lastIndexOf("."))
+                type.value = f.type;
 
                 switch (ext) {
                     case ".svg":
-                        type.value = "image/svg+xml";
+                        if (!type.value) type.value = "image/svg+xml";
                         f.text().then(t => {
-                            preview.setAttribute("data", `data:image/svg+xml;base64,${btoa(t)}`)
+                            blob.value = btoa(t);
                         })
                         break;
                     case ".jpg":
                     case ".jpeg":
                     case ".png":
                     case ".gif":
-                        type.value=`image/${ext.substr(1)}`;
+                        if (!type.value) type.value=`image/${ext.substr(1)}`;
                         f.arrayBuffer().then(b => {
-                            let bs = Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte))
-                            preview.setAttribute("data", `data:${type.value};base64,${btoa(bs.join(""))}`)
+                            blob.value = btoa(Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte)).join(""))
                         })
                         break;
                     case ".mp4":
                     case ".ogg":
                         type.value=`video/${ext.substr(1)}`;
                         f.arrayBuffer().then(b => {
-                            let bs = Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte))
-                            preview.setAttribute("data", `data:${type.value};base64,${btoa(bs.join(""))}`)
+                            blob.value = btoa(Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte)).join(""))
                         })
                         break;
                     case ".mov":
                     case ".qt":
                         type.value="video/quicktime";
                         f.arrayBuffer().then(b => {
-                            let bs = Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte))
-                            preview.setAttribute("data", `data:${type.value};base64,${btoa(bs.join(""))}`)
+                            let bs = btoa(Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte)).join(""))
                         })
                         break;
                 }
 
+                if (f.size > (1024*512)) {
+                    useblob.value = "true";
+                    preview.setAttribute("data", "data:text/html;base64,PGgxPlByZXZpZXcgTm90IEF2YWlsYWJsZTwvaDE+PGgzPkZpbGUgdG9vIGxhcmdlPC9oMz4=")
+                } else {
+                    preview.setAttribute("data", `data:${type.value};base64,${blob.value}`)
+                }
                 preview.classList.add("show");
             })
 
@@ -423,7 +431,13 @@
                     name: this.elements['name'].value,
                     description: this.elements['description'].value,
                     'content-type': this.elements['media-type'].value,
-                    source: this.querySelector("#add-resource-preview").data
+                    filename: this.elements['file'].files[0].name
+                }
+
+                if (this.elements['useblob'].value == "true") {
+                    resource.blob = this.elements['blob'].value;
+                } else {
+                    resource.source = this.elements['preview'].data;
                 }
 
                 fetch("/admin/resources/", {
@@ -466,6 +480,7 @@
                     <summary>Add a new resource</summary>
                     <form id="add-resource">
                         <fieldset>
+                            <input type="hidden" name="blob" /><input type="hidden" name="useblob" value="false" />
                             <input type="file" name="file"><br />
                             <label>Name:</label><input type="text" name="name"><br />
                             <label>File type:</label><input type="text" name="media-type"><br />

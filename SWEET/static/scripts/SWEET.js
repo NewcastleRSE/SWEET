@@ -57,6 +57,16 @@ let SWEET = createApp({
 SWEET.store.set("tunnelsComplete", []);
 
 SWEET.addEventListener("prerender", function(page) { 
+    if (SWEET.path == "#home") {
+        document.querySelectorAll("[data-rel='prev']").forEach(b => {
+            b.setAttribute("hidden", "");
+        })
+    } else {
+        document.querySelectorAll("[data-rel='prev']").forEach(b => {
+            b.removeAttribute("hidden", "");
+        })
+    }
+    
     if (page.slug == "welcome") {
         SWEET.store.set("tunnelling", true);
         SWEET.store.set("tunnel", SWEET.path);
@@ -76,23 +86,22 @@ SWEET.addEventListener("prerender", function(page) {
     let nextlink = document.head.querySelector("link[rel='next']");
 
     if (relbuttons.length) { 
-        if (page.prev) {
+
+        if (page.prev && SWEET.store.get("tunnelling")) {
             // we are using sequence navigation & have a 'prev' link in the page info:
             if (!prevlink) {
                 prevlink = document.head.appendChild(document.createElement("link"));
                 prevlink.setAttribute("rel", "prev");
             }
-            
 
             relbuttons.filter(b => b.dataset.rel == "prev").forEach(prev => {
                 prev.setAttribute("href", page.prev);
-                prev.classList.remove("hidden");
             })
+
             prevlink.setAttribute("href", page.prev);
         } else {
             relbuttons.filter(b => b.dataset.rel == "prev").forEach(prev => {
-                prev.classList.add("hidden");
-                prev.removeAttribute("href");
+                prev.setAttribute("href", "javascript: history.go(-1)");
             })
             
             if (prevlink) prevlink.remove();

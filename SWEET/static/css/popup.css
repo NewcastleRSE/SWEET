@@ -15,14 +15,10 @@ a.popup-trigger::before {
 }
 
 
-section.markdown + a.popup-trigger {
-    margin-top: -0.5em;
-}
-
 a.popup-trigger + a.popup-trigger {
     margin-top: 0.2em;
 }
 
-a.popup-trigger + section.markdown {
-    margin-top: 1em;
+a.popup-trigger + section {
+    margin-top: 1.5em;
 }

@@ -92,11 +92,16 @@ export function markdownRenderer(section) {
         fetch(`/app/resources/${name}`).then(response => response.json())
         .then(resource => {
             if (resource['content-type'] === undefined || resource['content-type'].startsWith("image")) {
-                img.setAttribute("src", resource.source);
+                if (resource.source == "useblob") {
+                    img.setAttribute("src", `/app/resources/files/${name}`);
+                } else {
+                    img.setAttribute("src", resource.source);
+                }
                 img.setAttribute("alt", resource.description);
-                if (position) img.classList.add(position);
+                if (position) img.classList.add(...position.split(";"));
             } else if (resource['content-type'].startsWith("video")) {
-                img.insertAdjacentHTML("beforebegin", `<video controls src="${resource.source}"><p>${resource.description}</p></video>`);
+                let src = resource.source == "useblob"? `/app/resources/files/${name}`: resource.source;
+                img.insertAdjacentHTML("beforebegin", `<video controls src="${src}"${position? ` class="${position.replace(';',' ')}"`:""}><p>${resource.description}</p></video>`);
                 img.remove();
                 // maybe do some work with position.
                 // maybe do some work with popups.
