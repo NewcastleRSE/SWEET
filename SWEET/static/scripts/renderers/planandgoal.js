@@ -8,7 +8,7 @@ export function plansAndGoalsRenderer(section) {
     .then(goals => {
         goalholder.appendChild(document.createElement("h4")).textContent = "My Current Goals";
         let actgoals = goalholder.appendChild(document.createElement("section"));
-        actgoals.classList.add("row", "row-cols-1", "row-cols-md-3", "g-3", "mt-3");
+        actgoals.classList.add("row", "row-cols-1", "row-cols-md-3", "g-3", "mt-3", "mb-4");
 
         goals.current.sort((a,b) => {
             if (b.reviewDate < a.reviewDate) return 1;
@@ -31,6 +31,7 @@ export function plansAndGoalsRenderer(section) {
 
         goalholder.appendChild(document.createElement("h4")).textContent = "My Historic Goals";
         let gtable = goalholder.appendChild(document.createElement("table"));
+        table.classList.add("mt-4")
         gtable.insertAdjacentHTML("beforeend", '<tr><th>Goal details</th><th>Your Outcome</th></tr>')
         goals.complete.sort((a,b) => {
             if (b.reviewDate < a.reviewDate) return 1;
