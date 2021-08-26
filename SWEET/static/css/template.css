@@ -310,7 +310,7 @@ ul {
 }
 
 p + ul {
-    margin-top: -0.5em;
+    margin-top: -1.25em;
 }
 
 div + h4 { margin-top: 1.5em;}

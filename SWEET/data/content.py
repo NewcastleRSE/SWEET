@@ -67,7 +67,10 @@ def updatePageContent(details):
         __structure.commit()
 
 def getResources():
-    return __resources
+    return { 
+        k: { 'name': k, 'description': v['description'], 'source': v['source'] if 'source' in v else 'none' }
+        for k,v in __resources.items()
+    }
         
 def getResource(name):
     if name in __resources:

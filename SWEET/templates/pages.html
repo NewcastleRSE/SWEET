@@ -388,6 +388,7 @@
                         if (!type.value) type.value = "image/svg+xml";
                         f.text().then(t => {
                             blob.value = btoa(t);
+                            if (f.size < 1024 * 512) preview.setAttribute("data", `data:${type.value};base64,${blob.value}`)
                         })
                         break;
                     case ".jpg":
@@ -397,6 +398,7 @@
                         if (!type.value) type.value=`image/${ext.substr(1)}`;
                         f.arrayBuffer().then(b => {
                             blob.value = btoa(Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte)).join(""))
+                            if (f.size < 1024 * 512) preview.setAttribute("data", `data:${type.value};base64,${blob.value}`)
                         })
                         break;
                     case ".mp4":
@@ -404,23 +406,24 @@
                         type.value=`video/${ext.substr(1)}`;
                         f.arrayBuffer().then(b => {
                             blob.value = btoa(Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte)).join(""))
+                            if (f.size < 1024 * 512) preview.setAttribute("data", `data:${type.value};base64,${blob.value}`)
                         })
                         break;
                     case ".mov":
                     case ".qt":
                         type.value="video/quicktime";
                         f.arrayBuffer().then(b => {
-                            let bs = btoa(Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte)).join(""))
+                            blob.value = btoa(Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte)).join(""))
+                            if (f.size < 1024 * 512) preview.setAttribute("data", `data:${type.value};base64,${blob.value}`)
                         })
                         break;
                 }
 
-                if (f.size > (1024*512)) {
+                if (f.size >= (1024*512)) {
                     useblob.value = "true";
                     preview.setAttribute("data", "data:text/html;base64,PGgxPlByZXZpZXcgTm90IEF2YWlsYWJsZTwvaDE+PGgzPkZpbGUgdG9vIGxhcmdlPC9oMz4=")
-                } else {
-                    preview.setAttribute("data", `data:${type.value};base64,${blob.value}`)
                 }
+                
                 preview.classList.add("show");
             })
 
@@ -437,7 +440,7 @@
                 if (this.elements['useblob'].value == "true") {
                     resource.blob = this.elements['blob'].value;
                 } else {
-                    resource.source = this.elements['preview'].data;
+                    resource.source = this.querySelector("#add-resource-preview").data;
                 }
 
                 fetch("/admin/resources/", {
@@ -641,10 +644,12 @@
                     while(holder.firstElementChild.nextSibling) {
                         holder.removeChild(holder.firstElementChild.nextSibling);
                     }
+                    let blob = `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxIDEiPjxyZWN0IGZpbGw9ImJsYWNrIiB4PSIwIiB5PSIwIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIj48L3JlY3Q+PHRleHQgeD0iMCIgeT0iMC4zNSIgZmlsbD0id2hpdGUiIGZvbnQtc2l6ZT0iMC4yIj5ObyBQcmV2aWV3PC90ZXh0Pjx0ZXh0IHg9IjAiIHk9IjAuNiIgZmlsbD0id2hpdGUiIGZvbnQtc2l6ZT0iMC4yIj5BdmFpbGFibGU8L3RleHQ+PC9zdmc+`;
+
                     Object.keys(data).forEach(k => {
                         // create a resource listing for each key
                         holder.insertAdjacentHTML("beforeend", 
-                            `<div class="resource"><span>${k}</span><img src="${data[k].source}" class="thumbnail" alt="${data[k].description}" title="${data[k].description}" /></div>`)
+                            `<div class="resource"><span>${k}</span><img src="${data[k].source == "none"? blob: data[k].source}" class="thumbnail" alt="${data[k].description}" title="${data[k].description}" /></div>`)
                     })
                 })
             }
