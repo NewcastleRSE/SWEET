@@ -20,6 +20,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/fillin.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/modal.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/embed.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/popup.css') }}">
   </head>
   <body class="d-flex flex-column h-100 bg-light">
     
@@ -37,13 +38,13 @@
             <a class="nav-link active" aria-current="page" href="#home">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="">My Account</a>
+            <a class="nav-link" href="#my-account">My Account</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="">My Contacts</a>
+            <a class="nav-link" href="#my-contacts">My Contacts</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="">About the Team</a>
+            <a class="nav-link" href="#about">About the Team</a>
           </li>
           {% if g.user['role'] in ['sysadmin', 'editor'] %}
           <li class="nav-item">
@@ -61,14 +62,14 @@
 <!-- Begin page content -->
 <main class="flex-shrink-0">
   <div class="container">
-    <header><a data-rel="prev" class="btn btn-primary hidden">Back</a><h1 id="page-title"></h1><a data-rel="next" class="btn btn-primary hidden">Next</a></header>
+    <header><a data-rel="prev" class="btn btn-primary">Back</a><h1 id="page-title"></h1><a data-rel="next" class="btn btn-primary hidden">Next</a></header>
     <div id="main-container"></div>
-    <footer><a data-rel="prev" class="btn btn-primary hidden">Back</a><a data-rel="next" class="btn btn-primary hidden">Next</a></footer>
+    <footer><a data-rel="prev" class="btn btn-primary">Back</a><a data-rel="next" class="btn btn-primary hidden">Next</a></footer>
   </div>
 </main>
 
 <footer class="footer mt-auto py-3 footer-dark">
-  <div class="container">
+  <div class="container" hidden>
     <span><a href="#">USER GUIDE</a></span><span><a href="#">Privacy Notice</a></span><span>... logos ...</span>
   </div>
   <!-- Toast -->

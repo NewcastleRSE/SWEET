@@ -77,6 +77,36 @@ export function createApp(options={}) {
     // merge defaults and incoming options into single settings object
     let settings = Object.assign({}, defaults, options);
 
+    if (!settings.store) settings.store = {};
+
+    settings.listeners = {
+        "preload": [],
+        "prerender": [],
+        "postrender": []
+    }
+
+    function addEvent(name, fn) {
+        if (!(name in settings.listeners)) {
+            settings.listeners[name] = [];
+        }
+        
+        settings.listeners[name].push(fn);
+        
+        return this;
+    }
+
+    function delEvent(name, fn) {
+        if (settings.listeners[name].includes(fn)) {
+            let list = settings.listeners[name];
+            let loc = list.indexOf(fn);
+            list = list.slice(0,loc).concat(list.slice(loc+1))
+        }
+    }
+
+    function dispatchEvent(name, ...args) {
+        settings.listeners[name].forEach(l => l.call(this, ...args))
+    }
+
     if (!(settings.contentHolder instanceof HTMLElement)) settings.contentHolder = document.querySelector(settings.contentHolder);
     if (!(settings.titleHolder instanceof HTMLElement)) settings.titleHolder = document.querySelector(settings.titleHolder);
     
@@ -91,7 +121,7 @@ export function createApp(options={}) {
         else if (content instanceof Object) { console.error("Attempt to render unrecognised content section:", content); }
         else { rendered = document.createTextNode(` ${content} `); }
 
-        if (renderer instanceof Promise) return rendered
+        if (rendered instanceof Promise) return rendered
         else return Promise.resolve(rendered);
     }
 
@@ -113,65 +143,23 @@ export function createApp(options={}) {
             settings.path = location.hash && location.hash.length > 1? location.hash: settings.defaultPath;
         }
 
+        dispatchEvent.call(this, "preload");
+
         settings.load(settings.path).then(page => {
             settings.titleHolder.textContent = page.title;
             document.querySelector("title").textContent = page.title? page.title: settings.name;
 
-            // handle sequential navigation if set up
-            // i.e. template has buttons with data-rel attribute:
-            const relbuttons = Array.from(document.querySelectorAll("[data-rel]"))
-            let prevlink = document.head.querySelector("link[rel='prev']");
-            let nextlink = document.head.querySelector("link[rel='next']");
-
-            if (relbuttons.length) { 
-                if (page.prev) {
-                    // we are using sequence navigation & have a 'prev' link in the page info:
-                    if (!prevlink) {
-                        prevlink = document.head.appendChild(document.createElement("link"));
-                        prevlink.setAttribute("rel", "prev");
-                    }
-                    
-
-                    relbuttons.filter(b => b.dataset.rel == "prev").forEach(prev => {
-                        prev.setAttribute("href", page.prev);
-                        prev.classList.remove("hidden");
-                    })
-                    prevlink.setAttribute("href", page.prev);
-                } else {
-                    relbuttons.filter(b => b.dataset.rel == "prev").forEach(prev => {
-                        prev.classList.add("hidden");
-                        prev.removeAttribute("href");
-                    })
-                    
-                    if (prevlink) prevlink.remove();
-                }
-
-                if (page.next) {
-                    // we are using sequence navigation & have a 'next' link in the page info:
-                    if (!nextlink) {
-                        nextlink = document.head.appendChild(document.createElement("link"));
-                        nextlink.setAttribute("rel", "next");
-                    }
-                    relbuttons.filter(b => b.dataset.rel == "next").forEach(nextButton => {
-                        nextButton.setAttribute("href", page.next);
-                        nextButton.classList.remove("hidden");
-                    })
-
-                    nextlink.setAttribute("href", page.next);
-                } else {
-                    relbuttons.filter(b => b.dataset.rel == "next").forEach(nextButton => {
-                        nextButton.classList.add("hidden");
-                        nextButton.removeAttribute("href");
-                    })
-                    if (nextlink) nextlink.remove();
-                }
-                
-                relbuttons.forEach(b => b.blur());
-            }
-
+            dispatchEvent.call(this, "prerender", page);
+            
             while (settings.contentHolder.firstChild) settings.contentHolder.removeChild(settings.contentHolder.lastChild);
-            page.content.forEach(c => this.render(c).then(node => settings.contentHolder.appendChild(node)));
+            Promise.allSettled(page.content.map(c => this.render(c).then(node => settings.contentHolder.appendChild(node))))
+            .then(() => dispatchEvent.call(this, "postrender"));
         })
+    }
+
+    function store(key, value=null) {
+        if (value == null) return settings.store[key];
+        else settings.store[key] = value;
     }
 
     const app = {
@@ -192,7 +180,16 @@ export function createApp(options={}) {
 
         get defaultPath() { return settings.defaultPath; }, set defaultPath(v) { settings.defaultPath = v; },
 
-        load: function() { refresh.call(this)}
+        load: function() { refresh.call(this)},
+
+        store: {
+            set: function(k,v) { store.call(this, k, v) },
+            get: function(k) { return store.call(this, k) }
+        },
+
+        addEventListener: function(name, fn) { return addEvent.call(this, name, fn); },
+        removeEventListener: function(name, fn) { return delEvent.call(this, name, fn); },
+        dispatchEvent: function(name, ...args) { return dispatchEvent.call(this, name, ...args); }
     }
 
     function init() {
@@ -243,7 +240,7 @@ export function createApp(options={}) {
             app.load();
         }
     } else {
-        Object.defineProperty(app, "start", app.load);
+        Object.defineProperty(app, "start", { value: app.load });
     }
 
     return app;

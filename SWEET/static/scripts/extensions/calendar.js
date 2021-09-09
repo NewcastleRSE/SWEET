@@ -51,7 +51,7 @@ export function createCalendar(selectedDate=new Date()) {
     cal.classList.add("calendar");
 
     let caption = cal.appendChild(document.createElement("caption"));
-    caption.innerHTML = `<section><span class="prev">&lt;</span> <span id="cal-caption" data-basedate="${calendarutils.attributise(selectedDate)}">${calendarutils.monthnames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}</span><span class="next">&gt;</span></section>`;
+    caption.innerHTML = `<section><span class="prev">&lt;</span> <span id="cal-caption" data-basemonth="${calendarutils.attributise(selectedDate).substr(0,7)}">${calendarutils.monthnames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}</span><span class="next">&gt;</span></section>`;
     let tbody = cal.appendChild(document.createElement("tbody"));
     tbody.dataset.mode = "select";
     populateDays(tbody, selectedDate);
@@ -83,12 +83,13 @@ export function createCalendar(selectedDate=new Date()) {
                 // no id, no prev/next class, someone's been messing with the code!
                 if (dir == 0) throw `Unknown span in calendar caption: ${src}`;
 
-                let basedate = new Date(cal.querySelector("#cal-caption").dataset.basedate + "T12:00:00Z");
+                // base calendar date off 14th (mid-month) so we don't get unexpected behaviour at end of month/with Feb
+                let basedate = new Date(cal.querySelector("#cal-caption").dataset.basemonth + "-14T12:00:00Z");
                 basedate.setMonth(basedate.getMonth() + dir);
                 populateDays(cal.querySelector("tbody"), basedate);
 
                 cal.querySelector("#cal-caption").textContent = `${calendarutils.monthnames[basedate.getMonth()]} ${basedate.getFullYear()}`;
-                cal.querySelector("#cal-caption").dataset.basedate = calendarutils.attributise(basedate);
+                cal.querySelector("#cal-caption").dataset.basemonth = calendarutils.attributise(basedate).substr(0,7);
 
                 cal.dispatchEvent(new CustomEvent("redraw"));
             }

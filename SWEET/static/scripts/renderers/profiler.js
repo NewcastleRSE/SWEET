@@ -14,8 +14,8 @@ export function profilerModalRenderer(section) {
     const renderers = [
         () => { /* page 0 renderer */ 
             
-            section.modal.title.textContent = "Profiler";
-            section.modal.body.innerHTML = `<p>Hi there, we'd like to ask you some questions to see how you are getting on with your hormone therapy. Answering these questions will allow us to guide you to relevant sections of the web-app that you may find helpful.</p>
+            //section.modal.title.textContent = "Profiler";
+            section.modal.body.innerHTML = `<p>Hi there, we'd like to ask you some questions to see how you are getting on with your hormone therapy. Answering these questions will allow us to guide you to relevant sections of the SWEET website that you may find helpful.</p>
             <p>Are you happy to answer these questions?</p>`;
             section.modal.footer.innerHTML = `<button type="button" id="prof-yes" class="btn btn-primary">Yes</button>
             <button type="button" id="prof-later" class="btn btn-secondary">Complete Later</button>
@@ -68,7 +68,7 @@ export function profilerModalRenderer(section) {
         () => { 
             /* page 1 renderer */
             
-                section.modal.title.textContent = `Profiler`;
+                //section.modal.title.textContent = `Profiler`;
                 section.modal.body.innerHTML = `<form id="prof-p1">
                     <p>Please indicate whether you agree or disagree with the following statements:</p>
                     <table class="table table-borderless">
@@ -152,7 +152,7 @@ export function profilerModalRenderer(section) {
                             </tr>
                             <tr>
                                 <td class="pe-3">I’m not convinced that hormone therapy is worth it for me</td>
-                                <td class="text-center align-middle"><input type="checkbox" name="agreee" value="N4" class="form-check-input"></td>
+                                <td class="text-center align-middle"><input type="checkbox" name="agree" value="N4" class="form-check-input"></td>
                             </tr>
                         </tbody>
                         <tbody id="C-concerns">

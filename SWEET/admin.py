@@ -43,5 +43,3 @@ def addResource():
         return { "status": "OK"}
     else:
         return { "status": "error", "message": "Update request sent without json data"}, 400
-
-

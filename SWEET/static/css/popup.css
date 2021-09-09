@@ -1,0 +1,24 @@
+a.popup-trigger {
+    display: inline-block;
+    line-height: 1em;
+    color: var(--SWEET-grey);
+    text-decoration: none;
+    margin: 0.5em;
+    margin-left: 0em;
+    cursor: pointer;
+}
+
+a.popup-trigger::before {
+    content: "\25BA";
+    margin-right: 0.5em;
+    text-decoration: none;
+}
+
+
+a.popup-trigger + a.popup-trigger {
+    margin-top: 0.2em;
+}
+
+a.popup-trigger + section {
+    margin-top: 1.5em;
+}

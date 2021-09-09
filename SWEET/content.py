@@ -1,9 +1,9 @@
 from flask import (
-    Blueprint, request, abort
+    Blueprint, request, abort, send_file
 )
 
 from .data.content import (
-    getStructure, getPageContents, getPageDetails, getResource as getNamedResource, getResources, getPages
+    getResourceBlob, getStructure, getPageContents, getPageDetails, getResource as getNamedResource, getResources, getPages
 )
 
 from .auth import login_required
@@ -45,3 +45,12 @@ def getResource(name):
         abort(404)
 
     return res
+
+@bp.route("/resources/files/<name>")
+@login_required
+def getResourceFile(name):
+    res = getResourceBlob(name)
+    if res is None:
+        abort(404)
+    
+    return send_file(res['file'], mimetype=res['content-type'], download_name=res['downloadName'])

@@ -3,11 +3,13 @@ import * as r from './editors/renderers.js';
 import { homepageMenuRenderer } from './renderers/home_page.js'
 import { profilerModalRenderer } from './renderers/profiler.js'
 import { sideEffectModalRenderer, sideEffectFormRenderer } from './renderers/side_effects.js'
-import { diaryCalendarRenderer } from "./renderers/diary-page.js";
+import { diaryCalendarRenderer, diaryGraphRenderer } from "./renderers/diary-page.js";
 import { createModal } from './extensions/modal.js'
 import { createCalendar } from './extensions/calendar.js'
+import { plansAndGoalsRenderer } from './renderers/planandgoal.js'
+import { reminderRenderer } from './renderers/remindersetter.js'
 
-createApp({
+let SWEET = createApp({
     extensions: {
         createModal: createModal,
         post: function(url, data) {
@@ -37,7 +39,10 @@ createApp({
         sideeffectform: sideEffectFormRenderer,
         profiler: profilerModalRenderer,
         "diary-calendar": diaryCalendarRenderer,
-        fillin: r.fillInBoxRenderer
+        fillin: r.fillInBoxRenderer,
+        plansandgoals: plansAndGoalsRenderer,
+        reminders: reminderRenderer,
+        diarygraph: diaryGraphRenderer
     },
     load: function(path) {
         let url = `/app/content?path=${encodeURIComponent(path)}`;
@@ -45,6 +50,85 @@ createApp({
     },
     titleHolder: "#page-title",
     contentHolder: "#main-container",
-    name: "SWEET",
-    autostart: true
+    name: "SWEET"
 });
+
+//fetch("/myapp/mydetails").then(response => response.json()).then(profile => SWEET.store.set("currentUser", profile));
+SWEET.store.set("tunnelsComplete", []);
+
+SWEET.addEventListener("prerender", function(page) { 
+    if (SWEET.path == "#home") {
+        document.querySelectorAll("[data-rel='prev']").forEach(b => {
+            b.setAttribute("hidden", "");
+        })
+    } else {
+        document.querySelectorAll("[data-rel='prev']").forEach(b => {
+            b.removeAttribute("hidden", "");
+        })
+    }
+    
+    if (page.slug == "welcome") {
+        SWEET.store.set("tunnelling", true);
+        SWEET.store.set("tunnel", SWEET.path);
+    } else if (page.pages
+            && page.pages.find(p => p.slug == "welcome") 
+            && SWEET.store.get("tunnel")
+            && SWEET.store.get("tunnel").startsWith(SWEET.path)) {
+        SWEET.store.set("tunnelling", false);
+        SWEET.store.set("tunnel", "");
+    }
+    
+    // 2021-08-18: moved to prerender handler.
+    // handle sequential navigation if set up
+    // i.e. template has buttons with data-rel attribute:
+    const relbuttons = Array.from(document.querySelectorAll("[data-rel]"))
+    let prevlink = document.head.querySelector("link[rel='prev']");
+    let nextlink = document.head.querySelector("link[rel='next']");
+
+    if (relbuttons.length) { 
+
+        if (page.prev && SWEET.store.get("tunnelling")) {
+            // we are using sequence navigation & have a 'prev' link in the page info:
+            if (!prevlink) {
+                prevlink = document.head.appendChild(document.createElement("link"));
+                prevlink.setAttribute("rel", "prev");
+            }
+
+            relbuttons.filter(b => b.dataset.rel == "prev").forEach(prev => {
+                prev.setAttribute("href", page.prev);
+            })
+
+            prevlink.setAttribute("href", page.prev);
+        } else {
+            relbuttons.filter(b => b.dataset.rel == "prev").forEach(prev => {
+                prev.setAttribute("href", "javascript: history.go(-1)");
+            })
+            
+            if (prevlink) prevlink.remove();
+        }
+
+        if (page.next && SWEET.store.get("tunnelling")) {
+            // we are using sequence navigation & have a 'next' link in the page info:
+            if (!nextlink) {
+                nextlink = document.head.appendChild(document.createElement("link"));
+                nextlink.setAttribute("rel", "next");
+            }
+            relbuttons.filter(b => b.dataset.rel == "next").forEach(nextButton => {
+                nextButton.setAttribute("href", page.next);
+                nextButton.classList.remove("hidden");
+            })
+
+            nextlink.setAttribute("href", page.next);
+        } else {
+            relbuttons.filter(b => b.dataset.rel == "next").forEach(nextButton => {
+                nextButton.classList.add("hidden");
+                nextButton.removeAttribute("href");
+            })
+            if (nextlink) nextlink.remove();
+        }
+        
+        relbuttons.forEach(b => b.blur());
+    }
+});
+
+SWEET.start();

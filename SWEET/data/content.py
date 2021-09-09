@@ -67,16 +67,58 @@ def updatePageContent(details):
         __structure.commit()
 
 def getResources():
-    return __resources
+    return { 
+        k: { 'name': k, 'description': v['description'], 'source': v['source'] if 'source' in v else 'none' }
+        for k,v in __resources.items()
+    }
         
 def getResource(name):
     if name in __resources:
-        return { "name": name, "source": __resources[name]['source'], "description": __resources[name]['description']}
+        r = __resources[name]
+        output = { "name": name, "description": r['description']}
+
+        if 'content-type' in r:
+            output['content-type'] = r['content-type']
+        else:
+            if 'source' in r and r['source'].startswith("data:"):
+                output['content-type'] = r['source'][5:r['source'].find(';')]
+            else:
+                return None
+
+        if 'source' in r:
+            output['source'] = r['source']
+        else:
+            output['source'] = "useblob"
+
+        return output
     
     return None
 
+def getResourceBlob(name):
+    if name not in __resources:
+        return None
+
+    r = __resources[name]
+
+    if 'blob' not in r:
+        return None
+
+    from io import BytesIO
+    from base64 import b64decode
+
+    f = BytesIO(b64decode(r['blob'].encode('utf8')))
+    t = r['content-type']
+    n = r['filename']
+
+    return {'name': name, 'file': f, 'content-type': t, 'downloadName': n }
+
 def saveResource(newres):
-    __resources[newres['name']] = { 'source': newres['source'], 'description': newres['description']}
+    input = { 'description': newres['description'], 'content-type': newres['content-type'], 'filename': newres['filename'] }
+    if 'source' in newres:
+        input['source'] = newres['source']
+
+    if 'blob' in newres:
+        input['blob'] = newres['blob']
+
+    __resources[newres['name']] = input
     __resources.commit()
-
-

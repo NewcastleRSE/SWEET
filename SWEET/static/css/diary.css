@@ -42,6 +42,23 @@ table.calendar td div.events {
     height: 5em;
     overflow-y: scroll;
     padding: 0.2em;
+    display: flex;
+}
+
+table.calendar td div.events > div {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.sef {
+    flex-basis: 65%;
+    justify-content: flex-start;
+}
+
+.adhnot {
+    flex-basis: 35%;
+    justify-content: flex-end;
 }
 
 table.calendar td.disabled div.events {
@@ -56,16 +73,8 @@ table.calendar td.disabled div.events * {
 
 table.calendar div.events div.diary-item {
     width: fit-content;
-}
-
-table.calendar div.events div.diary-item.side-effect {
-    float: left;
-    clear: left;
-}
-
-table.calendar div.events div.diary-item:is(.adherence, .notes) {
-    float: right;
-    clear: right;
+    height: fit-content;
+    margin: 0.25em;
 }
 
 table.calendar div.events div.diary-item i {
@@ -81,16 +90,16 @@ table.calendar div.events div.diary-item i.side-effect-hf {
     background-color: #633188;
 }
 table.calendar div.events div.diary-item i.side-effect-arth {
-    background-color: #313188;
+    background-color: #3535ee;
 }
 table.calendar div.events div.diary-item i.side-effect-ftg {
-    background-color: #313188;
+    background-color: #196b1d;
 }
 table.calendar div.events div.diary-item i.side-effect-mood {
-    background-color: #313188;
+    background-color: var(--SWEET-grey);
 }
 table.calendar div.events div.diary-item i.side-effect-sleep {
-    background-color: #313188;
+    background-color: var(--SWEET-lilac);
 }
 
 table.calendar div.events div.diary-item.adherence i {
@@ -117,6 +126,27 @@ table.calendar div.events div.diary-item:hover section {
     display: inline-block;
 }
 
+table.calendar div.events div.diary-item :is(.severity, .impact) > label {
+    min-width: 4.5em;
+}
+table.calendar div.events div.diary-item :is(.severity, .impact) span.bar {
+    display: inline-block;
+    height: 1em;
+    width: 5em;
+    outline: 1px solid var(--SWEET-grey);
+    vertical-align: middle;
+}
+
+table.calendar div.events div.diary-item .severity .bar label {
+    height: 100%;
+    background-color: red;
+    vertical-align: top;
+}
+table.calendar div.events div.diary-item .impact .bar label {
+    height: 100%;
+    background-color: var(--SWEET-gold);
+    vertical-align: top;
+}
 #day-modal-adherence {
     height: 1.25em;
     width: 1.25em;
@@ -130,4 +160,38 @@ table.calendar div.events div.diary-item:hover section {
 
 fieldset {
     text-align: center;
+}
+
+#diary-reminders fieldset {
+    text-align: left;
+    margin-bottom: 1em;
+}
+
+#diary-reminders fieldset p {
+    margin-bottom: 0.5em;
+}
+
+#diary-reminders fieldset p:last-child {
+    margin-left: 2em;
+}
+
+#diary-reminders input[type='checkbox'] {
+    width: 1em;
+    height: 1em;
+    margin-right: 1em;
+}
+
+#diary-reminders input[type='text'], #diary-reminders input[type='date'], #diary-reminders select {
+    background-color: var(--SWEET-pale-grey);
+    color: var(--SWEET-purple);
+    padding: 0.1em;
+    margin: 0.1em 0em;
+}
+
+#diary-reminders input[type='submit'] {
+    position: relative; right: 0;
+}
+
+#diary-page-graphs {
+    margin-top: 2em;
 }

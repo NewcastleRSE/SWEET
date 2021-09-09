@@ -43,9 +43,9 @@ export function fillInBoxRenderer(section) {
     holder.classList.add("fill-in", section.boxsize);
     let form = holder.appendChild(document.createElement("form"));
     form.innerHTML = section.boxsize == "small"? 
-            `<input type="text" name="response" class="form-control shadow-hover"><input type="submit" value="Save" class="btn btn-primary">`:
+            `<input type="text" name="response" data-fillin-name="${section.name}" class="form-control shadow-hover"><input type="submit" value="Save" class="btn btn-primary">`:
             section.boxsize == "large"?
-                `<textarea name="response" rows="5" cols="40" class="form-control shadow-hover"></textarea><input type="submit" value="Save" class="btn btn-primary">`:
+                `<textarea name="response" data-fillin-name="${section.name}" rows="5" cols="40" class="form-control shadow-hover"></textarea><input type="submit" value="Save" class="btn btn-primary">`:
                 console.log("Unknown boxsize:", section.boxsize);
 
     form.addEventListener("submit", e => {

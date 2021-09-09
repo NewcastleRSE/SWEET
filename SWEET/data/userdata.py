@@ -6,7 +6,7 @@ __diary = AzurePersitentDict(az_connection, "users", "diary.json")
 __goals = AzurePersitentDict(az_connection, "users", "goals.json")
 
 def newdiary():
-    return {"sideeffects": [], "reminders": [], "adherence": [], "notes": [], "profilers": [], "fillins": {}}
+    return {"sideeffects": [], "reminders": { 'daily': {'reminder': False}, 'monthly': {'reminder': False}}, "adherence": [], "notes": [], "profilers": [], "fillins": {}}
 
 def getGoals(user=None):
     if user is None:
@@ -117,7 +117,7 @@ def recordProfiler(user, profiler):
         profRes = getProfilerResponses()
         # filter appropriate response content
         output = { "content": [
-            { "type": "markdown", "encoding": "raw", "text": "Based on your responses, we’ve selected a series of topics which are tailored to your concerns / questions.\n\nYou can read these now or save them and come back to them later. We hope these will be helpful for you.\n\nWe’ll check in again in a few months. In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within Managing HT. Alternatively you can speak to your breast cancer team or your GP.\n\nClick on any of the below links to find out more." },
+            { "type": "markdown", "encoding": "raw", "text": "Based on your responses, we’ve selected a series of topics which are tailored to your concerns.\n\nYou can read these now or save them and come back to them later. We hope these will be helpful for you.\n\nWe’ll check in again in a few months. In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within the SWEET website. Alternatively you can speak to your breast cancer team or your GP.\n\nClick on any of the below links to find out more." },
             { "type": "accordion", "content": []}
         ]}
 
@@ -175,6 +175,7 @@ def getFillin(user, path, name):
 
     if id not in __diary:
         __diary[id] = newdiary()
+        __diary.commit()
         return ""
 
     if 'fillins' not in __diary[id]:
@@ -188,3 +189,40 @@ def getFillin(user, path, name):
         return ""
 
     return __diary[id]['fillins'][path][name]
+
+def getPlans(user):
+    id = user['userID']
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+        __diary.commit()
+        return ""
+
+    if 'fillins' not in __diary[id]:
+        __diary[id]['fillins'] = {}
+        __diary.commit()
+        return ""
+
+    return __diary[id]['fillins']
+
+def getReminders(user):
+    id = user['userID']
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+        __diary.commit()
+
+    if "reminders" not in __diary[id] or not isinstance(__diary[id]['reminders'], dict):
+        __diary[id]['reminders'] = { 'daily': { 'reminder': False }, 'monthly': { 'reminder': False }}
+        __diary.commit()
+
+    return __diary[id]['reminders']
+
+def setReminders(user, reminders):
+    id = user['userID']
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+
+    __diary[id]['reminders'] = reminders
+    __diary.commit()
