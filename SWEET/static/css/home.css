@@ -1,5 +1,6 @@
 .row.homemenu {
     justify-content: space-around;
+    margin-top: -2em;
 }
 
 .hmpg-acts {
@@ -23,10 +24,14 @@ img.card-icon {
     object-fit: contain;
     bottom: -0.5em;
     right: 0.25em;
-    opacity: 0.1;
+    opacity: 0.15;
 }
 
 .hmpg-acts img.card-icon {
     width: 5em;
     bottom: 0;
+}
+
+main.home header, main.home footer{
+    display: none;
 }
