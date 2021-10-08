@@ -119,7 +119,7 @@ export function sideEffectModalRenderer() {
     this.render({type: "sideeffectform"}).then(form => {
         form.setAttribute("id", "modal-se-form")
         holder.body.appendChild(form)
-        holder.footer.innerHTML = `<input type="submit" form="${form.getAttribute("id")}" value="Save details"><button type="button" id="se-form-cancel">Cancel</button>`
+        holder.footer.innerHTML = `<button type="button" id="se-form-cancel">Cancel</button><input type="submit" form="${form.getAttribute("id")}" value="Save details">`
         holder.footer.querySelector("#se-close").addEventListener("click", e => {
             holder.hide(true);
         })

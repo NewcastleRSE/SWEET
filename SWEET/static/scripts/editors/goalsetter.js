@@ -145,10 +145,10 @@ export function goalRenderer(section) {
 
             let daysInput = schema.frequency.map(f => `<input class="form-check-input" type="radio" name="frequency" id="frequency-${f}" value="${f}"><label class="form-check-label" for="frequency-${f}">${f}</label>`).join("");
    
-            form.appendChild(document.createElement("p")).innerHTML = "<label>Activity: </label><input class='form-control w-50 d-inline-block' type='text' name='activity' list='activity' placeholder='choose an activity'><br><em>You can choose from the list or type your own</em>";
+            form.appendChild(document.createElement("p")).innerHTML = "<label>Activity: </label><input class='form-control w-50 d-inline-block' type='text' name='activity' list='activity' placeholder='choose an activity' autocomplete='off'><br><em>You can choose from the list or type your own</em>";
             form.appendChild(document.createElement("p")).innerHTML = `<label>How many days?</label>${daysInput}`;
             if (schema.duration) {
-                form.appendChild(document.createElement("p")).innerHTML = `<label>How many minutes per day? </label><input class='form-control d-inline-block' type='number' name='duration' list='duration'>`;
+                form.appendChild(document.createElement("p")).innerHTML = `<label>How many minutes per day? </label><input class='form-control d-inline-block' type='number' name='duration' min='0'>`;
             }
 
             modal.body.appendChild(form);
@@ -175,12 +175,18 @@ export function goalRenderer(section) {
 
 
                 modal.body.innerHTML = `
-                <h3 class='mb-5'>You're ready to set a new goal for the next week!</h3>
+                <h3 class='mb-5'>NEW ${schema.displayName.toUpperCase()} GOAL</h3>
                 <section>
+                <p>Well done!</p>
+                <p>You've set a new goal for the next week.</p>
                 <p>You can always see your goals by clicking <strong>My Goals</strong> on the ${section.goaltype == "activity"? "Being Active": "Healthy Eating"} homepage.</p>
-                <p>In one week, you can come back to review your goal and to get a feedback message.</p>
-                <p>You may want to stick a reminder somewhere in your house.</p>
-                <p>Your goal is: to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week${goal.minutes?`, for <strong>${goal.minutes} minutes</strong> per day`:""}.</p>
+                <p>In one week, you can come back to get personal feedback on your goal.</p>
+                <p>It's a good idea to stick up a reminder somewhere in your house.</p>
+                <p>Your goal is: <strong>${goal.detail}</strong><br>
+                How often? <strong>${goal.days} days</strong>${
+                    goal.minutes?`<br>
+                For: <strong>${goal.minutes} minutes</strong>`:""
+                }.</p>
                 </section>`;
 
                 let submitButton = modal.footer.querySelector("button[type='submit']");

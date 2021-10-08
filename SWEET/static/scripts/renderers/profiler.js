@@ -129,7 +129,8 @@ export function profilerModalRenderer(section) {
             if (concerns) {
                 // render further questions:
                 section.modal.body.innerHTML = `<form id="prof-p2">
-                    <p>We'd like to ask you for a bit more detail: please let us know which of the following statements you agree with.</p>
+                    <p>We'd like to ask you for a bit more detail.<br>
+                    <strong>Please tick all that apply to you.</strong></p>
                     <table class="table table-borderless">
                         <thead>
                             <tr>
