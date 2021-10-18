@@ -49,7 +49,7 @@
           </li>
           {% if g.user['role'] in ['sysadmin', 'editor'] %}
           <li class="nav-item">
-            <a class="nav-link" href="{{url_for('admin.edit')}}">Editor</a>
+            <a class="nav-link" href="{{url_for('admin.home')}}">ADMIN</a>
           </li>
           {% endif %}
           <li class="nav-item">
