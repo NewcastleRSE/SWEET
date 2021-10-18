@@ -13,12 +13,12 @@ def home():
 
 @bp.route("/users")
 @admin_required
-def home():
+def users():
     return render_template('admin.html')
 
 @bp.route("/resources")
 @admin_required
-def home():
+def resources():
     return render_template('admin.html')
 
 
