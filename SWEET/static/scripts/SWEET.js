@@ -79,10 +79,30 @@ SWEET.addEventListener("prerender", function(page) {
         <section id="tunnel-container" class="container">
             <header><h3 id="tunnel-title"></h3></header>
             <section id="tunnel-main"></section>
-            <footer><button id="tunnel-prev" disabled>Previous</button><button id="tunnel-next">Next</button></footer>
+            <footer><button class="btn-secondary" id="tunnel-prev" disabled>Previous</button><button class="btn-primary" id="tunnel-next">Next</button></footer>
         </section>
         `;
 
+        tunnel.addEventListener("click", e => {
+            let src = e.target;
+                
+            while (src.tagName != "A" && src.parentNode) src = src.parentNode;
+            if (src.tagName != "A") return true;
+            let path = src.getAttribute("href");
+            if (path.charAt(0) != '#') return true;
+
+            e.preventDefault(); e.stopPropagation();
+
+            let modal = SWEET.createModal(true);
+            modal.size = "xl";
+            fetch(`/app/content?path=${encodeURIComponent(path)}`).then(response => response.json())
+            .then(page => {
+                modal.title.textContent = page.title;
+                page.content.forEach(c => SWEET.render(c).then(node => modal.body.appendChild(node)));
+                modal.footer.innerHTML = `<button type="button" class="btn-primary" data-bs-dismiss="modal" aria-label="Close">Close</button>`;
+                modal.show();
+            })
+        })
         let base = SWEET.path;
         let route = SWEET.store.get("tunnels")[base];
         let currentStop = 0;
@@ -103,6 +123,7 @@ SWEET.addEventListener("prerender", function(page) {
         nextbutton.addEventListener("click", e => {
             currentStop++;
             if (currentStop == route.length) {
+                // mark tunnel as completed for current user
                 tunnel.remove();
             } else {
                 renderInTunnel();
