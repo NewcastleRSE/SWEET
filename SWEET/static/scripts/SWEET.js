@@ -127,7 +127,7 @@ SWEET.addEventListener("prerender", function(page) {
                 tunnel.remove();
             } else {
                 renderInTunnel();
-                if (currentStop+1 == route.length) e.target.textContent = "Finish";
+                e.target.textContent = currentStop+1 == route.length? "Finish": "Next";
                 prevbutton.removeAttribute("disabled");
             }
         })
