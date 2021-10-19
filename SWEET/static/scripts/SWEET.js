@@ -54,6 +54,7 @@ let SWEET = createApp({
 });
 
 //fetch("/myapp/mydetails").then(response => response.json()).then(profile => SWEET.store.set("currentUser", profile));
+fetch("/app/schemas/tunnels").then(response => response.json()).then(tunnels => SWEET.store.set("tunnels", tunnels))
 SWEET.store.set("tunnelsComplete", []);
 
 SWEET.addEventListener("prerender", function(page) {
@@ -70,17 +71,63 @@ SWEET.addEventListener("prerender", function(page) {
         })
     }
     
-    if (page.slug == "welcome") {
-        SWEET.store.set("tunnelling", true);
-        SWEET.store.set("tunnel", SWEET.path);
-    } else if (page.pages
-            && page.pages.find(p => p.slug == "welcome") 
-            && SWEET.store.get("tunnel")
-            && SWEET.store.get("tunnel").startsWith(SWEET.path)) {
-        SWEET.store.set("tunnelling", false);
-        SWEET.store.set("tunnel", "");
+    if (SWEET.path in SWEET.store.get("tunnels") /* and user hasn't seen this tunnel already */) {
+
+        let tunnel = document.createElement("div");
+        tunnel.classList.add("tunnel");
+        tunnel.innerHTML = `
+        <section id="tunnel-container" class="container">
+            <header><h3 id="tunnel-title"></h3></header>
+            <section id="tunnel-main"></section>
+            <footer><button id="tunnel-prev" disabled>Previous</button><button id="tunnel-next">Next</button></footer>
+        </section>
+        `;
+
+        let base = SWEET.path;
+        let route = SWEET.store.get("tunnels")[base];
+        let currentStop = 0;
+        let prevbutton = tunnel.querySelector("#tunnel-prev");
+        let nextbutton = tunnel.querySelector("#tunnel-next");
+
+        function renderInTunnel() {
+            let url = `/app/content?path=${encodeURIComponent(`${base}/${route[currentStop]}`)}`;
+            fetch(url).then(response => response.json())
+            .then(page => {
+                tunnel.querySelector("#tunnel-title").textContent = page.title;
+                while (tunnel.querySelector("#tunnel-main").firstChild) tunnel.querySelector("#tunnel-main").removeChild(tunnel.querySelector("#tunnel-main").lastChild);
+                tunnel.scrollTo(0,0)
+                page.content.forEach(c => SWEET.render(c).then(node => tunnel.querySelector("#tunnel-main").appendChild(node)));
+            })
+        }
+
+        nextbutton.addEventListener("click", e => {
+            currentStop++;
+            if (currentStop == route.length) {
+                tunnel.remove();
+            } else {
+                renderInTunnel();
+                if (currentStop+1 == route.length) e.target.textContent = "Finish";
+                prevbutton.removeAttribute("disabled");
+            }
+        })
+
+        prevbutton.addEventListener("click", e => {
+            if (currentStop == 0) {
+                prevbutton.setAttribute("disabled", "")
+                return;
+            }
+
+            currentStop--;
+            renderInTunnel();
+            if (currentStop == 0) prevbutton.setAttribute("disabled", "");
+        })
+
+        document.body.appendChild(tunnel);
+        renderInTunnel();
     }
     
+/*
+
     // 2021-08-18: moved to prerender handler.
     // handle sequential navigation if set up
     // i.e. template has buttons with data-rel attribute:
@@ -132,6 +179,7 @@ SWEET.addEventListener("prerender", function(page) {
         
         relbuttons.forEach(b => b.blur());
     }
+*/
 });
 
 SWEET.start();
