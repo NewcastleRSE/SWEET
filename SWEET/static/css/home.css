@@ -35,3 +35,27 @@ img.card-icon {
 main.home header, main.home footer{
     display: none;
 }
+
+ul.quick-links {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+ul.quick-links li {
+    float: left;
+}
+
+ul.quick-links li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 0 16px;
+    text-decoration: none;
+    opacity: 0.6;
+}
+
+ul.quick-links li a:hover {
+    opacity: 0.8;
+}
