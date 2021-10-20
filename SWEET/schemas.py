@@ -64,3 +64,11 @@ def getSideEffectDetails(name):
         }
     }[name]
 
+@bp.route("/tunnels")
+@login_required
+def getTunnels():
+    return {
+        '#home/taking-ht': ['welcome', 'animation', 'can-help', 'important', 'build', 'my-plan', 'tips', 'questions', 'more-questions', 'more'],
+        '#home/healthy-living/being-active': ['welcome', 'health-benefits', 'quest', 'safe', 'activities', 'goals', 'setgoals', 'find-out-more'],
+        '#home/healthy-living/healthy-eating': ['welcome', 'importance', 'healthy-diet', 'faq', 'change', 'goal-setting', 'goals', 'find-out-more']
+    }

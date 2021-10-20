@@ -1,0 +1,20 @@
+div.tunnel {
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background-color: #633188cc;
+    overflow: auto scroll;
+    z-index: 800;
+}
+
+#tunnel-container {
+    width: 90%;
+    margin: 5em auto 0;
+    background-color: var(--SWEET-off-white);
+    padding: 1em;
+    border-radius: 0.5em;
+    outline: 0.25em solid var(--SWEET-dark-grey);
+}
+
+#tunnel-container > footer {
+    text-align: right;
+}

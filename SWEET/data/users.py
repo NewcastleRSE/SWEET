@@ -1,8 +1,8 @@
 from .az_persitent import AzurePersitentDict
 from . import encryptUser, decryptUser
-from ..secrets import connstr as az_connection
+from ..secrets import connstr as az_connection, usersource, usertable
 
-__userstore = AzurePersitentDict(az_connection, "users", "users.json")
+__userstore = AzurePersitentDict(az_connection, usersource, usertable)
 
 def getUser(userID):
     

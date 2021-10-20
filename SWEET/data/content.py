@@ -1,11 +1,11 @@
 from .az_persitent import AzurePersitentDict
-from ..secrets import connstr as az_connection
+from ..secrets import connstr as az_connection, datasource as az_content_cntr, structure, content, resources
 
 from . import recursiveUpdate
 
-__structure = AzurePersitentDict(az_connection, "$web", "structure.json")
-__content = AzurePersitentDict(az_connection, "$web", "content.json")
-__resources = AzurePersitentDict(az_connection, "$web", "resources.json")
+__structure = AzurePersitentDict(az_connection, az_content_cntr, structure)
+__content = AzurePersitentDict(az_connection, az_content_cntr, content)
+__resources = AzurePersitentDict(az_connection, az_content_cntr, resources)
 
 # content and structure
 def getStructure():

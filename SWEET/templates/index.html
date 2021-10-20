@@ -21,6 +21,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/modal.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/embed.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/popup.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/tunnel.css') }}">
   </head>
   <body class="d-flex flex-column h-100 bg-light">
     
@@ -34,6 +35,7 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+          {% block navitems %}
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#home">Home</a>
           </li>
@@ -48,12 +50,13 @@
           </li>
           {% if g.user['role'] in ['sysadmin', 'editor'] %}
           <li class="nav-item">
-            <a class="nav-link" href="{{url_for('admin.edit')}}">Editor</a>
+            <a class="nav-link" href="{{url_for('admin.home')}}">ADMIN</a>
           </li>
-          {% endif%}
+          {% endif %}
           <li class="nav-item">
             <a class="nav-link" href="{{url_for('auth.logout')}}">Log Out</a>
           </li>
+          {% endblock %}
         </ul>
     </div>
   </nav>
@@ -62,9 +65,11 @@
 <!-- Begin page content -->
 <main class="flex-shrink-0">
   <div class="container">
+    {% block maincontent %}
     <header><a data-rel="prev" class="btn btn-primary">Back</a><h1 id="page-title"></h1><a data-rel="next" class="btn btn-primary hidden">Next</a></header>
     <div id="main-container"></div>
     <footer><a data-rel="prev" class="btn btn-primary">Back</a><a data-rel="next" class="btn btn-primary hidden">Next</a></footer>
+    {% endblock %}
   </div>
 </main>
 

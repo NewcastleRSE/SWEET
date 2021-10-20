@@ -1,9 +1,9 @@
 from .az_persitent import AzurePersitentDict
-from ..secrets import connstr as az_connection
+from ..secrets import connstr as az_connection, usersource, usergoals, userdiary
 from . import getProfilerResponses
 
-__diary = AzurePersitentDict(az_connection, "users", "diary.json")
-__goals = AzurePersitentDict(az_connection, "users", "goals.json")
+__diary = AzurePersitentDict(az_connection, usersource, userdiary)
+__goals = AzurePersitentDict(az_connection, usersource, usergoals)
 
 def newdiary():
     return {"sideeffects": [], "reminders": { 'daily': {'reminder': False}, 'monthly': {'reminder': False}}, "adherence": [], "notes": [], "profilers": [], "fillins": {}}
