@@ -43,7 +43,7 @@ def register():
     if request.method == "POST":
         uid = request.form['userID']
         fname = request.form['fullName']
-        role = 'editor'
+        role = 'user'
         pwd = request.form['password']
 
         if not (uid.strip() or pwd.strip()):

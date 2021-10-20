@@ -27,7 +27,7 @@ export function plansAndGoalsRenderer(section) {
                 </div>`)
         })
 
-        goalholder.appendChild(document.createElement("div")).innerHTML = `<a class="goallink" href="#home/healthy-living/being-active/goals/set-goal">Review and create your Being Active goals here</a><a class="goallink" href="#home/healthy-living/healthy-eating">Review and create your Healthy Eating goals here</a>`
+        goalholder.appendChild(document.createElement("div")).innerHTML = `<a class="goallink" href="#home/healthy-living/being-active/setgoals">Review and create your Being Active goals here</a><a class="goallink" href="#home/healthy-living/healthy-eating">Review and create your Healthy Eating goals here</a>`
 
         goalholder.appendChild(document.createElement("h4")).textContent = "My Historic Goals";
         let gtable = goalholder.appendChild(document.createElement("table"));

@@ -1,9 +1,15 @@
-[class^='so-'] {
-    padding-left: 0.2em;
-    margin-left: 0.5em;
+[class*='so-'] {
     border-radius: 0.5em;
     padding: 0.5em;
     margin: 1em auto;
+}
+
+[class*='so-'] section.markdown {
+    margin-bottom: 2em;
+}
+
+[class*='so-'] p:last-child {
+    margin-bottom: 0;
 }
 
 .so-important {

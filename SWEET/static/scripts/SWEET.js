@@ -56,7 +56,10 @@ let SWEET = createApp({
 //fetch("/myapp/mydetails").then(response => response.json()).then(profile => SWEET.store.set("currentUser", profile));
 SWEET.store.set("tunnelsComplete", []);
 
-SWEET.addEventListener("prerender", function(page) { 
+SWEET.addEventListener("prerender", function(page) {
+    document.querySelector("main").classList.remove(...document.querySelector("main").classList.values())
+    document.querySelector("main").classList.add("flex-shrink-0", this.path.replace("#", "").replaceAll("/", "_"));
+    
     if (SWEET.path == "#home") {
         document.querySelectorAll("[data-rel='prev']").forEach(b => {
             b.setAttribute("hidden", "");

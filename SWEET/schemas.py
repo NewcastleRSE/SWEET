@@ -14,7 +14,8 @@ def getGoalSchema(name):
         'activity': {
             "activity": ["walking", "housework", "gardening", "strength exercises", "balance exercises", "swimming", "cycling", "pilates", "yoga", "thai chi", "dancing", "bowling", "running"],
             "frequency": [1,2,3,4,5,6,7],
-            "duration": [10, 20, 30, 40, 50, 60]
+            "duration": [10, 20, 30, 40, 50, 60],
+            "displayName": "Activity"
         },
         'eating': {
             "activity": [
@@ -28,7 +29,8 @@ def getGoalSchema(name):
                 "Swap a snack of crisps for carrot sticks with hummus",
                 "Make a fake-away at home instead of ordering a take-away"
             ],
-            "frequency": [1,2,3,4,5,6,7]
+            "frequency": [1,2,3,4,5,6,7],
+            "displayName": "Healthy Eating"
         }
     }[name]
 
@@ -41,7 +43,8 @@ def getSideEffectTypes():
             { "name": "arth", "description": "Joint Pain", "embedtext": "joint pain", "questions": ["severity", "impact", "notes"]},
             { "name": "ftg", "description": "Fatigue", "embedtext": "fatigue", "questions": ["severity", "impact", "notes"]},
             { "name": "mood", "description": "Mood Changes", "embedtext": "mood", "questions": ["severity", "impact", "notes"]},
-            { "name": "sleep", "description": "Sleep Disruption", "embedtext": "sleep disruption", "questions": ["severity", "impact", "notes"]}
+            { "name": "sleep", "description": "Sleep Disruption", "embedtext": "sleep disruption", "questions": ["severity", "impact", "notes"]},
+            { "name": "other", "description": "Other Side-effects", "embedtext": "other side-effect", "questions": ["severity", "impact", "notes"]}
         ]
     }
 
