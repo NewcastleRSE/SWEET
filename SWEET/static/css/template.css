@@ -342,13 +342,25 @@ div + h4 { margin-top: 1.5em;}
         font-size: 1.2em;
     }
 
-    body {
+    body, .form-control, label {
         font-size: 0.9em;
 
     }
 
-    .form-control, label {
-        font-size: 0.9em;
+    #diary-page-graphs {
+        margin-top: 4em;
+    }
+    
+    #diary-page-graphs h4 {
+        font-size: 1.2em;
+    }
+    
+    #diary-page-graphs h5 {
+        font-size: 1em;
+    }
+
+    #diary-page-graphs select{
+        font-size: 0.7em;
     }
 
 }
