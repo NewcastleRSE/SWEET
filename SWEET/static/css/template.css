@@ -325,3 +325,30 @@ p + ul {
 }
 
 div + h4 { margin-top: 1.5em;}
+
+
+
+@media screen and (min-width: 500px) and (max-width: 768px) {
+
+    ul.navbar-nav li.nav-item a.nav-link, ul.quick-links li a  {
+       font-size: 0.8em;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    h5 {
+        font-size: 1.2em;
+    }
+
+    body {
+        font-size: 0.9em;
+
+    }
+
+    .form-control, label {
+        font-size: 0.9em;
+    }
+
+}
