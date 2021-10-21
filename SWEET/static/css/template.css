@@ -79,6 +79,10 @@ a:visited.card {
     background-color: #e4dbeb;
 }
 
+.form-check .no-box-shadow:focus {
+    box-shadow:none !important;
+}
+
 /*
 a.card h5 {
     margin-right: 130px;
