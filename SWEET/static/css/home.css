@@ -59,3 +59,24 @@ ul.quick-links li a {
 ul.quick-links li a:hover {
     opacity: 0.8;
 }
+
+.custom-font-buttons {
+    display:none;
+}
+
+@media screen and (min-width: 200px) and (max-width: 500px) {
+  
+    .custom-font-buttons {
+        display: block; 
+        float: right;
+    }
+
+    .custom-font-buttons span {
+        float: left;
+        color: rgb(105, 102, 102);
+        padding-left: 5px;
+        cursor: pointer;
+        height: 30px;
+    }
+
+}
