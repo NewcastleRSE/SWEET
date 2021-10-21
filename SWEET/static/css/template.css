@@ -74,6 +74,11 @@ a.card {
     background-position: bottom -20px right 10px;
     background-size: 120px;
 }
+
+a:visited.card {
+    background-color: #e4dbeb;
+}
+
 /*
 a.card h5 {
     margin-right: 130px;
