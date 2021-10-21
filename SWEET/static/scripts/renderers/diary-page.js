@@ -329,7 +329,7 @@ export function diaryGraphRenderer(section) {
             t.textContent = i.description;
             key.appendChild(t);
             let l = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            l.setAttribute("x1", "6");
+            l.setAttribute("x1", "8");
             l.setAttribute("x2", "7");
             l.setAttribute("y1", `${x}.75`);
             l.setAttribute("y2", `${x}.75`);
