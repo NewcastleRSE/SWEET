@@ -72,7 +72,6 @@
             let passcnf = document.querySelector("[name='password_conf']").value;
             let message = document.getElementById("error-message");
             if (pass != passcnf) {
-                alert("Password and confirmation do not match");
                 message.innerHTML="Password and confirmation do not match, please try again.";
                 e.preventDefault();
             }

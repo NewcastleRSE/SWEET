@@ -118,3 +118,28 @@ label:hover span.sidenote {
 input[type='number'] {
     max-width: 3em;
 }
+
+
+#form-se-type-input {
+    padding-left: 5px;
+    margin-left: 10px;
+}
+
+#form-se-type label, #form-se-severity label, #form-se-frequency label, #form-se-impact label {
+    padding: 5px 0;
+}
+
+#form-se-type .scale, #form-se-severity .scale, #form-se-frequency .scale, #form-se-impact .scale {
+    padding: 5px 10px;
+}
+
+#frequency {
+    max-height: 30px;
+    margin-left: 10px;
+}
+
+.modal-footer input[type="submit"] + #se-close {
+
+    position: absolute;
+    left: 15px;    
+}
