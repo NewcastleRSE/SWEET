@@ -485,9 +485,9 @@
                         <fieldset>
                             <input type="hidden" name="blob" /><input type="hidden" name="useblob" value="false" />
                             <input type="file" name="file"><br />
-                            <label>Name:</label><input type="text" name="name"><br />
-                            <label>File type:</label><input type="text" name="media-type"><br />
-                            <label>Description:</label><input type="text" name="description" length="80"><br />
+                            <label>Name:</label><input type="text" name="name" minlength="3" maxlength="50" required><br />
+                            <label>File type:</label><input type="text" name="media-type" minlength="3" maxlength="50" required><br />
+                            <label>Description:</label><input type="text" name="description" length="80" minlength="3" maxlength="150" required><br />
                             <input type="submit" value="Add">
                         </fieldset>
                         <object id="add-resource-preview"></object>
@@ -504,15 +504,15 @@
                 <p><label title="A short string (containing only letters and '-') that is used to build the link to the page.">Slug:</label><input type="text" name="page-slug" disabled></p>
                 </fieldset>
                 <fieldset id="fs-seq-details"><legend>Page Sequencing:</legend>
-                    <p><label title="The path the the previous page">Previous:</label><input type="text" name="page-prev"></p>
-                    <p><label title="The path to the next page in sequence">Next:</label><input type="text" name="page-next"></p>
+                    <p><label title="The path to the previous page">Previous:</label><input type="text" name="page-prev" minlength="3" maxlength="50" required></p>
+                    <p><label title="The path to the next page in sequence">Next:</label><input type="text" name="page-next" minlength="3" maxlength="50" required></p>
                 </fieldset>
             </div>
             <details id="page-content-details"><summary>Content</summary><content-editor id="page-content"></content-editor></details>
             <details><summary>Sub-pages</summary>
                 <p id="add-details">
-                    <label>Page title:</label><input type="text" name="add-title"><br />
-                    <label id="add-slug-label">Slug: <span class="path"></span></label><input type="text" name="add-slug"><br />
+                    <label>Page title:</label><input type="text" name="add-title" minlength="3" maxlength="50" required><br />
+                    <label id="add-slug-label">Slug: <span class="path"></span></label><input type="text" name="add-slug" minlength="3" maxlength="50" required><br />
                     <button id="add-page">Add page</button></p><p id="page-subpages"></p></details>
         </div>
         <div id="page-preview">
