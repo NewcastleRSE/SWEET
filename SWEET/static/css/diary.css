@@ -106,6 +106,9 @@ table.calendar div.events div.diary-item i.side-effect-mood {
 table.calendar div.events div.diary-item i.side-effect-sleep {
     background-color: var(--SWEET-lilac);
 }
+table.calendar div.events div.diary-item i.side-effect-ns {
+    background-color: #f1dc1f;
+}
 
 table.calendar div.events div.diary-item.adherence i {
     color: green;
