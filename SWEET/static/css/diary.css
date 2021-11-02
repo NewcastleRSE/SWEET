@@ -27,17 +27,16 @@ table.calendar td.faded {
 }
 
 table.calendar div.date > span {
-    font-size: 143%;
     font-weight: bold;
+    padding-left: 5px;
 }
 
 table.calendar td div.date button {
-    font-size: 200%;
-    font-weight: bold;
+    border: 1px solid #616161;
     line-height: 0em;
     height: 1.5rem; width: 1.5rem;
     padding: 0;
-    margin: 0.25rem 1rem 0 0;
+    margin: 0.25rem;
     float: right;
 }
 
