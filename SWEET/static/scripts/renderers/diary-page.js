@@ -170,6 +170,7 @@ export function diaryCalendarRenderer(section) {
                     let taken = new Date();
                     modal.body.innerHTML = `
                         <h5>Make a note</h5>
+                        <p>(e.g., time of day, triggers) </p> 
                         <form id="${d.dataset.thisdate}-note-form">
                         <input type="hidden" name="date" value="${notedate}"><input type="hidden" name="takendate" value="${this.calendarDate(taken)}"><input type="hidden" name="takentime" value="${taken.getHours()}:${taken.getMinutes()}:${taken.getSeconds()}">
                         <textarea name="note" cols="50" rows="5"></textarea>
