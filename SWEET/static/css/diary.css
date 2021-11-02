@@ -45,7 +45,7 @@ table.calendar td div.events {
     background-color: #e6e6e3;
     width: 100%;
     height: 5em;
-    overflow-y: scroll;
+    overflow-y: auto;
     padding: 0.2em;
     display: flex;
 }
