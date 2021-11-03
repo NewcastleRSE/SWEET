@@ -6,7 +6,7 @@ from .data import users
 from .data.userdata import (
     getGoals, updateGoals, getSideEffects as getUserSideEffects, recordSideEffect, recordProfiler, 
     getDiary as getUserDiary, addNote, getNotes, recordAdherence, saveFillin as saveUserFillin, getFillin as getUserFillin,
-    getPlans, getReminders, setReminders
+    getPlans, getReminders, setReminders, getProfile, updateProfile
 )
 
 from .auth import login_required
@@ -145,5 +145,22 @@ def setMyReminders():
         setReminders(g.user, reminders)
 
         return {"status": "OK", "message": "Reminders saved"}
+
+    return {"status": "error", "message": "Update request sent without json"}, 400
+
+@bp.route("/mydetails")
+@login_required
+def getMyDetails():
+    return getProfile(g.user)
+
+@bp.route("/mydetails/", methods=["POST"])
+@login_required
+def updateMyProfile():
+    if request.is_json:
+        profile = request.json
+        
+        updateProfile(g.user, profile)
+
+        return {"status": "OK", "message": "Profile updated"}
 
     return {"status": "error", "message": "Update request sent without json"}, 400

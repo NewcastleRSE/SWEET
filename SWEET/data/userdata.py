@@ -226,3 +226,9 @@ def setReminders(user, reminders):
 
     __diary[id]['reminders'] = reminders
     __diary.commit()
+
+def getProfile(user):
+    pass
+
+def updateProfile(user, profile):
+    pass

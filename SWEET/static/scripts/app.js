@@ -157,9 +157,13 @@ export function createApp(options={}) {
         })
     }
 
-    function store(key, value=null) {
-        if (value == null) return settings.store[key];
-        else settings.store[key] = value;
+    function store(key, value=undefined) {
+        if (value === undefined) return settings.store[key];
+
+        if (value === null && key in settings.store) { delete settings.store[key]; }
+        else { settings.store[key] = value; }
+         
+        return;
     }
 
     const app = {

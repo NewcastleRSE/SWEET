@@ -15,6 +15,11 @@ div.tunnel {
     outline: 0.25em solid var(--SWEET-dark-grey);
 }
 
+#tunnel-container > header > .btn-close {
+    padding: 0.5em;
+    margin: -0.5em -0.5em -0.5em auto;
+}
+
 #tunnel-container > footer {
     text-align: right;
 }
