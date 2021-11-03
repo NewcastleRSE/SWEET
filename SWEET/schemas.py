@@ -44,7 +44,7 @@ def getSideEffectTypes():
             { "name": "ftg", "description": "Fatigue", "embedtext": "fatigue", "questions": ["severity", "impact", "notes"]},
             { "name": "mood", "description": "Mood Changes", "embedtext": "mood", "questions": ["severity", "impact", "notes"]},
             { "name": "ns", "description": "Night Sweats", "embedtext": "night sweats", "embedplural": True, "questions": ["severity", "impact", "notes"]},
-            { "name": "sleep", "description": "Sleep Disruption", "embedtext": "sleep disruption", "questions": ["severity", "impact", "notes"]},
+            { "name": "sleep", "description": "Sleep Problems", "embedtext": "sleep problems", "embedplural": True, "questions": ["severity", "impact", "notes"]},
             { "name": "other", "description": "Other Side-effect", "embedtext": "other side-effect", "questions": ["severity", "impact", "notes"]}
         ]
     }
