@@ -27,17 +27,16 @@ table.calendar td.faded {
 }
 
 table.calendar div.date > span {
-    font-size: 143%;
     font-weight: bold;
+    padding-left: 5px;
 }
 
 table.calendar td div.date button {
-    font-size: 200%;
-    font-weight: bold;
+    border: 1px solid #616161;
     line-height: 0em;
     height: 1.5rem; width: 1.5rem;
     padding: 0;
-    margin: 0.25rem 1rem 0 0;
+    margin: 0.25rem;
     float: right;
 }
 
@@ -45,7 +44,7 @@ table.calendar td div.events {
     background-color: #e6e6e3;
     width: 100%;
     height: 5em;
-    overflow-y: scroll;
+    overflow-y: auto;
     padding: 0.2em;
     display: flex;
 }
@@ -105,6 +104,9 @@ table.calendar div.events div.diary-item i.side-effect-mood {
 }
 table.calendar div.events div.diary-item i.side-effect-sleep {
     background-color: var(--SWEET-lilac);
+}
+table.calendar div.events div.diary-item i.side-effect-ns {
+    background-color: #f1dc1f;
 }
 
 table.calendar div.events div.diary-item.adherence i {

@@ -22,8 +22,8 @@ export class BlockquoteEditor extends HTMLElement {
             textarea { height: 5em; }
         </style>
         <fieldset>
-            <label>Quote:</label><textarea name="text"></textarea><br />
-            <label>Citation:</label><input type="text" name="citation"><br />
+            <label>Quote:</label><textarea name="text" required></textarea><br />
+            <label>Citation:</label><input type="text" name="citation" minlength="2" maxlength="150" required><br />
         </fieldset>
         `;
 

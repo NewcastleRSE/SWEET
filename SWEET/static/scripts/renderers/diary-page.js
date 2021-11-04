@@ -71,8 +71,8 @@ export function diaryCalendarRenderer(section) {
                     let section = i.querySelector("section")
                     section.innerHTML = `
                     <h4>${se.description? se.description:se.type}</h4>
-                    <p><span class="severity"><label>Severity: </label><span class="bar"><label style="width: ${se.severity}em"></label></span></span><br />
-                    <span class="impact"><label>Impact: </label><span class="bar"><label style="width: ${se.impact}em"></label></span></p>
+                    <p><span class="severity"><label>Severity: </label><span class="bar"><label style="width: ${se.severity}px"></label></span></span><br />
+                    <span class="impact"><label>Impact: </label><span class="bar"><label style="width: ${se.impact}px"></label></span></p>
                     `
                     seday.appendChild(i);
                 }
@@ -170,6 +170,7 @@ export function diaryCalendarRenderer(section) {
                     let taken = new Date();
                     modal.body.innerHTML = `
                         <h5>Make a note</h5>
+                        <p>(e.g., time of day, triggers) </p> 
                         <form id="${d.dataset.thisdate}-note-form">
                         <input type="hidden" name="date" value="${notedate}"><input type="hidden" name="takendate" value="${this.calendarDate(taken)}"><input type="hidden" name="takentime" value="${taken.getHours()}:${taken.getMinutes()}:${taken.getSeconds()}">
                         <textarea name="note" cols="50" rows="5"></textarea>
@@ -329,7 +330,7 @@ export function diaryGraphRenderer(section) {
             t.textContent = i.description;
             key.appendChild(t);
             let l = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            l.setAttribute("x1", "6");
+            l.setAttribute("x1", "8");
             l.setAttribute("x2", "7");
             l.setAttribute("y1", `${x}.75`);
             l.setAttribute("y2", `${x}.75`);

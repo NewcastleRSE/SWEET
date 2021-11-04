@@ -74,6 +74,15 @@ a.card {
     background-position: bottom -20px right 10px;
     background-size: 120px;
 }
+
+a:visited.card {
+    background-color: #e4dbeb;
+}
+
+.form-check .no-box-shadow:focus {
+    box-shadow:none !important;
+}
+
 /*
 a.card h5 {
     margin-right: 130px;
@@ -316,3 +325,48 @@ p + ul {
 }
 
 div + h4 { margin-top: 1.5em;}
+
+#error-message {
+    font-size: 0.8em;
+    padding-top: 20px;
+    color: red;
+}
+
+
+
+@media screen and (min-width: 500px) and (max-width: 768px) {
+
+    ul.navbar-nav li.nav-item a.nav-link, ul.quick-links li a  {
+       font-size: 0.8em;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    h5 {
+        font-size: 1.2em;
+    }
+
+    body, .form-control, label {
+        font-size: 0.9em;
+
+    }
+
+    #diary-page-graphs {
+        margin-top: 4em;
+    }
+    
+    #diary-page-graphs h4 {
+        font-size: 1.2em;
+    }
+    
+    #diary-page-graphs h5 {
+        font-size: 1em;
+    }
+
+    #diary-page-graphs select{
+        font-size: 0.7em;
+    }
+
+}
