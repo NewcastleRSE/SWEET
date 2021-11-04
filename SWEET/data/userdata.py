@@ -6,7 +6,7 @@ __diary = AzurePersitentDict(az_connection, usersource, userdiary)
 __goals = AzurePersitentDict(az_connection, usersource, usergoals)
 
 def newdiary():
-    return {"sideeffects": [], "reminders": { 'daily': {'reminder': False}, 'monthly': {'reminder': False}}, "adherence": [], "notes": [], "profilers": [], "fillins": {}}
+    return {"sideeffects": [], "reminders": { 'daily': {'reminder': False}, 'monthly': {'reminder': False}}, "adherence": [], "notes": [], "profilers": [], "fillins": {}, "profile": {}}
 
 def getGoals(user=None):
     if user is None:
@@ -228,7 +228,30 @@ def setReminders(user, reminders):
     __diary.commit()
 
 def getProfile(user):
-    pass
+    if user is None:
+        return None
+    
+    id = user["userID"]
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+        __diary.commit()
+
+    if "profile" not in __diary[id]:
+        __diary[id]["profile"] = {}
+        __diary.commit()
+
+    return __diary[id]["profile"]
 
 def updateProfile(user, profile):
-    pass
+    if user is None:
+        return None
+    
+    id = user["userID"]
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+
+    __diary[id]["profile"] = profile
+    __diary.commit()
+    
