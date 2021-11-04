@@ -44,6 +44,7 @@ main footer {
 
 #page-title {
     margin-left: 1em; margin-right: 1em;
+    width: 100%;
     text-align: center;
 }
 
@@ -75,9 +76,11 @@ a.card {
     background-size: 120px;
 }
 
+/* --- temporarily disabled for deployment during sub-study 1 interviews
 a:visited.card {
     background-color: #e4dbeb;
 }
+*/
 
 .form-check .no-box-shadow:focus {
     box-shadow:none !important;

@@ -53,28 +53,25 @@ let SWEET = createApp({
     name: "SWEET"
 });
 
-fetch("/myapp/mydetails").then(response => response.json()).then(profile => SWEET.store.set("currentUser", profile));
+// user profile retrieval, validation, update and storage:
+fetch("/myapp/mydetails").then(response => response.json()).then(profile => {
+
+    if (!("tunnelsComplete" in profile)) profile["tunnelsComplete"] = [];
+
+    SWEET.store.set("currentUser", profile);
+    SWEET.post("/myapp/mydetails/", profile);
+
+});
 
 fetch("/app/schemas/tunnels").then(response => response.json()).then(tunnels => SWEET.store.set("tunnels", tunnels));
 
 SWEET.addEventListener("prerender", function(page) {
     document.querySelector("main").classList.remove(...document.querySelector("main").classList.values())
-    document.querySelector("main").classList.add("flex-shrink-0", this.path.replace("#", "").replaceAll("/", "_"));
-    
-    if (SWEET.path == "#home") {
-        document.querySelectorAll("[data-rel='prev']").forEach(b => {
-            b.setAttribute("hidden", "");
-        })
-    } else {
-        document.querySelectorAll("[data-rel='prev']").forEach(b => {
-            b.removeAttribute("hidden");
-        })
-    }
-    
+    document.querySelector("main").classList.add("flex-shrink-0", this.path.replace("#", "").replaceAll("/", "_"));   
 });
 
 // link intercept for tunnelled pages (prevent section home showing until tunnel is complete);
-document.addEventListener("click", e => {
+document.querySelector("#main-container").addEventListener("click", e => {
     let src = e.target;
                 
     while (src.tagName != "A" && src.parentNode) src = src.parentNode;
@@ -91,7 +88,7 @@ document.addEventListener("click", e => {
     tunnel.classList.add("tunnel");
     tunnel.innerHTML = `
     <section id="tunnel-container" class="container">
-        <header><h3 id="tunnel-title"></h3> <button type="button" class="btn-close" id="tunnel-close" aria-label="Close"></button></header>
+        <header><h3 id="tunnel-title" class="mb-3"></h3> <button type="button" class="btn-close" id="tunnel-close" aria-label="Close"></button></header>
         <section id="tunnel-main"></section>
         <footer><button class="btn-secondary" id="tunnel-prev" disabled>Previous</button> <span id="tunnel-pagecount"></span> <button class="btn-primary" id="tunnel-next">Next</button></footer>
     </section>
