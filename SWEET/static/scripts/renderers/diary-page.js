@@ -71,7 +71,7 @@ export function diaryCalendarRenderer(section) {
                     let section = i.querySelector("section")
                     section.innerHTML = `
                     <h4>${se.description? se.description:se.type}</h4>
-                    <p><span class="severity"><label>Severity: </label><span class="bar"><label style="width: ${se.severity}px"></label></span></span><br />
+                    <p><span class="severity"><label>Severity: </label><span class="bar"><label style="width: ${se.severity}em"></label></span></span><br />
                     <span class="impact"><label>Impact: </label><span class="bar"><label style="width: ${se.impact}em"></label></span></p>
                     `
                     seday.appendChild(i);
@@ -278,7 +278,7 @@ export function diaryGraphRenderer(section) {
 
     holder.innerHTML = `
     <h4>My Side Effects</h4>
-    <h5>General Trends - Side Effect Severity</h5>
+    <h5>Here you can see an overview of the side-effects you recorded this month.</h5>
     <svg id="all-se-trends" viewbox="0 0 40 20">
         <style>
             text { font-size: 0.75px; }
@@ -290,26 +290,28 @@ export function diaryGraphRenderer(section) {
             .sleep { color: var(--SWEET-lilac); }
         </style>
         <g id="axis-y-gen">
-            <text x="0" y="1">Worse</text>
-            <text x="0" y="15">Better</text>
+            <text x="0" y="1">Not at All</text>
+            <text x="0" y="15">Extremely</text>
             <line x1="2.5" y1="0" x2="2.5" y2="16" stroke-width="0.1" stroke="black" />
         </g>
         <g id="axis-x-gen" transform="translate(2.5,16)">
             <line x1="0" y1="0" x2="31" y2="0" stroke-width="0.1" stroke="black" />
+            <text x="10" y="2.5">Days of the Month</text>
         </g>
         <g id="key-gen" transform="translate(32,0)">
         </g>
         <g id="plot-gen" transform="translate(2.5,0)"></g>
     </svg>
-    <h5>Individual Side Effects: <select></select></h5>
+    <h5>Here you can select a side effect to see more details: <select></select></h5>
     <svg id="one-se-trend" viewbox="0 0 40 20">
         <g id="axis-y-ind">
-            <text x="0" y="1" font-size="0.75">Worse</text>
-            <text x="0" y="15"  font-size="0.75">Better</text>
+            <text x="0" y="1" font-size="0.75">Not at All</text>
+            <text x="0" y="15"  font-size="0.75">Extremely</text>
             <line x1="3" y1="0" x2="3" y2="16" stroke-width="0.1" stroke="black" />
         </g>
         <g id="axis-x-ind" transform="translate(3,16)">
             <line x1="0" y1="0" x2="31" y2="0" stroke-width="0.1" stroke="black" />
+            <text x="10" y="2.5">Days of the Month</text>
         </g>
         <g id="key-ind" transform="translate(34,0)">
             <text x="0" y="1">Severity</text><line x1="4.5" x2="5.5" y1="0.75" y2="0.75" stroke-width="0.1" stroke="red" />
@@ -373,7 +375,7 @@ export function diaryGraphRenderer(section) {
                     c.setAttribute("class", name);
                     c.setAttribute("cx", parseInt(e.date.substr(8,2)));
                     c.setAttribute("cy", 17-(parseInt(e.severity) * 3));
-                    c.setAttribute("r", "0.1");
+                    c.setAttribute("r", "0.2");
                     c.setAttribute("fill", "currentColor");
 
                     plot.appendChild(c);
@@ -428,7 +430,7 @@ export function diaryGraphRenderer(section) {
                 let c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                 c.setAttribute("cx", parseInt(e.date.substr(8,2)));
                 c.setAttribute("cy", 17-(parseInt(e.severity) * 3));
-                c.setAttribute("r", "0.1");
+                c.setAttribute("r", "0.2");
                 c.setAttribute("fill", "red");
 
                 plot.appendChild(c);
@@ -436,7 +438,7 @@ export function diaryGraphRenderer(section) {
                 let ic = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                 ic.setAttribute("cx", parseInt(e.date.substr(8,2)));
                 ic.setAttribute("cy", 17-(parseInt(e.impact) * 3));
-                ic.setAttribute("r", "0.1");
+                ic.setAttribute("r", "0.2");
                 ic.setAttribute("style", "fill: var(--SWEET-gold)");
 
                 plot.appendChild(ic);
@@ -470,12 +472,13 @@ export function diaryGraphRenderer(section) {
         let daysinmonth = new Date(year, month, 0).getDate();
 
         let xaxes = holder.querySelectorAll("g[id^='axis-x']");
-        xaxes.forEach(a => a.querySelectorAll("text").forEach(t => t.remove()))
+        xaxes.forEach(a => a.querySelectorAll("text.daynum").forEach(t => t.remove()))
         for (let i=0;i<daysinmonth;i++) {
             xaxes.forEach(g => {
                 let t = document.createElementNS("http://www.w3.org/2000/svg","text");
                 t.setAttribute("x", i);
                 t.setAttribute("y", "1")
+                t.setAttribute("class", "daynum")
                 t.textContent = i+1;
                 g.appendChild(t);
             })
