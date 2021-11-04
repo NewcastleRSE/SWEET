@@ -35,3 +35,48 @@ img.card-icon {
 main.home header, main.home footer{
     display: none;
 }
+
+ul.quick-links {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+ul.quick-links li {
+    float: left;
+}
+
+ul.quick-links li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 0 16px;
+    text-decoration: none;
+    opacity: 0.6;
+}
+
+ul.quick-links li a:hover {
+    opacity: 0.8;
+}
+
+.custom-font-buttons {
+    display:none;
+}
+
+@media screen and (min-width: 200px) and (max-width: 500px) {
+  
+    .custom-font-buttons {
+        display: block; 
+        float: right;
+    }
+
+    .custom-font-buttons span {
+        float: left;
+        color: rgb(105, 102, 102);
+        padding-left: 5px;
+        cursor: pointer;
+        height: 30px;
+    }
+
+}

@@ -75,19 +75,19 @@ export function profilerModalRenderer(section) {
                         <tr><td>&nbsp;</td><th>Disagree</th><th>Uncertain</th><th>Agree</th></tr>
                         <tr>
                             <td class="pe-3">Taking my hormone therapy is very important to me.</td>
-                            <td class="text-center align-middle"><input class="form-check-input" type="radio" name="imp" id="imp-dis" value="disagree" /></td>
+                            <td class="text-center align-middle"><input class="form-check-input" type="radio" name="imp" id="imp-dis" value="disagree" required/></td>
                             <td class="text-center align-middle"><input class="form-check-input" type="radio" name="imp" id="imp-con" value="uncertain" /></td>
                             <td class="text-center align-middle"><input class="form-check-input" type="radio" name="imp" id="imp-agr" value="agree" /></td>
                         </tr>
                         <tr>
                             <td class="pe-3">I have concerns about my hormone therapy.</td>
-                            <td class="text-center align-middle"><input class="form-check-input" type="radio" name="con" id="con-dis" value="disagree" /></td>
+                            <td class="text-center align-middle"><input class="form-check-input" type="radio" name="con" id="con-dis" value="disagree" required /></td>
                             <td class="text-center align-middle"><input class="form-check-input" type="radio" name="con" id="con-unc" value="uncertain" /></td>
                             <td class="text-center align-middle"><input class="form-check-input" type="radio" name="con" id="con-agr" value="agree" /></td>
                         </tr>
                         <tr>
                             <td class="pe-3">Taking my hormone therapy is difficult for me.</td>
-                            <td class="text-center align-middle"><input class="form-check-input" type="radio" name="diff" id="diff-dis" value="disagree" /></td>
+                            <td class="text-center align-middle"><input class="form-check-input" type="radio" name="diff" id="diff-dis" value="disagree" required/></td>
                             <td class="text-center align-middle"><input class="form-check-input" type="radio" name="diff" id="diff-unc" value="uncertain" /></td>
                             <td class="text-center align-middle"><input class="form-check-input" type="radio" name="diff" id="diff-agr" value="agree" /></td>
                         </tr>

@@ -27,24 +27,25 @@
               <form action="{{url_for('auth.register')}}" method="POST">
                  <div class="mb-3">
                     <label>Email Address</label>
-                    <input type="text" class="form-control" placeholder="Email" name="userID">
+                    <input type="email" class="form-control" placeholder="Email" name="userID" required>
                  </div>
                  <div class="mb-3">
                     <label>Full Name</label>
-                    <input type="text" class="form-control" placeholder="Full Name" name="fullName">
+                    <input type="text" class="form-control" placeholder="Full Name" name="fullName" minlength="2" maxlength="50" required>
                  </div>
                  <div class="mb-3">
                     <label>Password</label>
-                    <input type="password" class="form-control" placeholder="Password" name="password">
+                    <input type="password" class="form-control" placeholder="Password" name="password" minlength="5" maxlength="15" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,15}" title="Password must contain at least one number and one uppercase and lowercase letter, and between 5 and 15 characters" required>
                  </div>
                  <div class="mb-3">
                     <label>Confirm Password</label>
-                    <input type="password" class="form-control" placeholder="Password" name="password_conf">
+                    <input type="password" class="form-control" placeholder="Password" name="password_conf" >
                  </div>
                  {% if save_fragment %}<input type="hidden" name="fragment" /><script>document.querySelector("input[name='fragment']").value = location.hash.substr(1)</script>{% endif %}
                  <div class="d-grid gap-2 mt-4">
                   <button class="btn btn-primary" type="submit">Register</button>
                 </div>
+                 <div id="error-message"></div>
               </form>
               {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -69,8 +70,9 @@
         document.querySelector("form").addEventListener("submit", e => {
             let pass = document.querySelector("[name='password']").value;
             let passcnf = document.querySelector("[name='password_conf']").value;
+            let message = document.getElementById("error-message");
             if (pass != passcnf) {
-                alert("Password and confirmation do not match");
+                message.innerHTML="Password and confirmation do not match, please try again.";
                 e.preventDefault();
             }
         })

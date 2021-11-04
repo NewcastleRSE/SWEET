@@ -39,12 +39,13 @@ def getGoalSchema(name):
 def getSideEffectTypes():
     return {
         "types": [
-            { "name": "hf", "description": "Hot Flush", "embedtext": "hot flushes", "embedplural": True, "questions": ["frequency", "severity", "impact", "notes"]},
+            { "name": "hf", "description": "Hot Flushes", "embedtext": "hot flushes", "embedplural": True, "questions": ["frequency", "severity", "impact", "notes"]},
             { "name": "arth", "description": "Joint Pain", "embedtext": "joint pain", "questions": ["severity", "impact", "notes"]},
             { "name": "ftg", "description": "Fatigue", "embedtext": "fatigue", "questions": ["severity", "impact", "notes"]},
             { "name": "mood", "description": "Mood Changes", "embedtext": "mood", "questions": ["severity", "impact", "notes"]},
-            { "name": "sleep", "description": "Sleep Disruption", "embedtext": "sleep disruption", "questions": ["severity", "impact", "notes"]},
-            { "name": "other", "description": "Other Side-effects", "embedtext": "other side-effect", "questions": ["severity", "impact", "notes"]}
+            { "name": "ns", "description": "Night Sweats", "embedtext": "night sweats", "embedplural": True, "questions": ["severity", "impact", "notes"]},
+            { "name": "sleep", "description": "Sleep Problems", "embedtext": "sleep problems", "embedplural": True, "questions": ["severity", "impact", "notes"]},
+            { "name": "other", "description": "Other Side-effect", "embedtext": "other side-effect", "questions": ["severity", "impact", "notes"]}
         ]
     }
 
