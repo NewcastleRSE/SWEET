@@ -137,9 +137,3 @@ input[type='number'] {
     max-height: 30px;
     margin-left: 10px;
 }
-
-.modal-footer input[type="submit"] + #se-close {
-
-    position: absolute;
-    left: 15px;    
-}

@@ -216,7 +216,7 @@ export function diaryCalendarRenderer(section) {
                         while (modal.body.firstChild) modal.body.removeChild(modal.body.lastChild);
                         modal.body.appendChild(form);
 
-                        modal.footer.insertAdjacentHTML('afterbegin',`<input type="submit" form="${form.getAttribute("id")}" value="Save details">`)
+                        modal.footer.insertAdjacentHTML('beforeend',` <input type="submit" form="${form.getAttribute("id")}" value="Save details">`)
                         modal.footer.querySelector("#se-close").textContent = "Cancel";
 
                         form.addEventListener("submit", e => {
