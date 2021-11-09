@@ -173,7 +173,7 @@ export function diaryCalendarRenderer(section) {
                         <p>(e.g., time of day, triggers) </p> 
                         <form id="${d.dataset.thisdate}-note-form">
                         <input type="hidden" name="date" value="${notedate}"><input type="hidden" name="takendate" value="${this.calendarDate(taken)}"><input type="hidden" name="takentime" value="${taken.getHours()}:${taken.getMinutes()}:${taken.getSeconds()}">
-                        <textarea name="note" cols="50" rows="5"></textarea>
+                        <textarea name="note" cols="50" rows="5" maxlength="500" minlength="5"></textarea>
                         </form>
                     `
                     modal.footer.insertAdjacentHTML('afterbegin',`<input type="submit" form="${d.dataset.thisdate}-note-form" value="Save Note">`)
