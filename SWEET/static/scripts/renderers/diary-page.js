@@ -375,7 +375,7 @@ export function diaryGraphRenderer(section) {
                     c.setAttribute("class", name);
                     c.setAttribute("cx", parseInt(e.date.substr(8,2)));
                     c.setAttribute("cy", 17-(parseInt(e.severity) * 3));
-                    c.setAttribute("r", "0.1");
+                    c.setAttribute("r", "0.2");
                     c.setAttribute("fill", "currentColor");
 
                     plot.appendChild(c);
@@ -430,7 +430,7 @@ export function diaryGraphRenderer(section) {
                 let c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                 c.setAttribute("cx", parseInt(e.date.substr(8,2)));
                 c.setAttribute("cy", 17-(parseInt(e.severity) * 3));
-                c.setAttribute("r", "0.1");
+                c.setAttribute("r", "0.2");
                 c.setAttribute("fill", "red");
 
                 plot.appendChild(c);
@@ -438,7 +438,7 @@ export function diaryGraphRenderer(section) {
                 let ic = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                 ic.setAttribute("cx", parseInt(e.date.substr(8,2)));
                 ic.setAttribute("cy", 17-(parseInt(e.impact) * 3));
-                ic.setAttribute("r", "0.1");
+                ic.setAttribute("r", "0.2");
                 ic.setAttribute("style", "fill: var(--SWEET-gold)");
 
                 plot.appendChild(ic);
