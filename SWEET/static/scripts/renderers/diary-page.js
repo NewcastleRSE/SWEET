@@ -279,7 +279,7 @@ export function diaryGraphRenderer(section) {
     holder.innerHTML = `
     <h4>My Side Effects</h4>
     <div id="se-graph-title">Here you can see an overview of the side-effects you recorded this month - Side Effect Severity</div>
-    <svg id="all-se-trends" viewbox="-1 0 45 20">
+    <svg id="all-se-trends" viewbox="-1 0 45 18">
         <style>
             text { font-size: 0.75px; }
             line, polyline, path { stroke-width: 0.1px;}
@@ -301,8 +301,9 @@ export function diaryGraphRenderer(section) {
         </g>
         <g id="plot-gen" transform="translate(2.5,0)"></g>
     </svg>
+    <div class="text-center graph-dom-label">Days of the month</div>
     <h5>Individual Side Effects: <select></select></h5>
-    <svg id="one-se-trend" viewbox="-1 0 45 20">
+    <svg id="one-se-trend" viewbox="-1 0 45 18">
         <g id="axis-y-ind">
             <text x="-1" y="1" font-size="0.75">Extremely</text>
             <text x="-1" y="16"  font-size="0.75">Not at all</text>
@@ -317,6 +318,7 @@ export function diaryGraphRenderer(section) {
         </g>
         <g id="plot-ind" transform="translate(3,0)"></g>
     </svg>
+    <div class="text-center graph-dom-label">Days of the month</div>
     `
 
     function updateGeneral(entries, schema) {
