@@ -278,7 +278,7 @@ export function diaryGraphRenderer(section) {
 
     holder.innerHTML = `
     <h4>My Side Effects</h4>
-    <h5>General Trends - Side Effect Severity</h5>
+    <div id="se-graph-title">Here you can see an overview of the side-effects you recorded this month - Side Effect Severity</div>
     <svg id="all-se-trends" viewbox="0 0 40 20">
         <style>
             text { font-size: 0.75px; }

@@ -143,3 +143,8 @@ input[type='number'] {
     position: absolute;
     left: 15px;    
 }
+
+#se-graph-title {
+    font-size: 1.2em;
+    padding: 10px 0 40px 0;
+}
