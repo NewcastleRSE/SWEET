@@ -157,7 +157,7 @@ export function diaryCalendarRenderer(section) {
                 </div>
             </a>
             `;
-            let dayfooter = "<button id='se-close'>Close</button>"
+            let dayfooter = "<button id='se-close' class='btn btn-primary'>Close</button>"
 
 
             modal.title.textContent = new Date(d.dataset.thisdate).toDateString();
@@ -176,8 +176,10 @@ export function diaryCalendarRenderer(section) {
                         <textarea name="note" cols="50" rows="5" maxlength="500" minlength="5"></textarea>
                         </form>
                     `
-                    modal.footer.insertAdjacentHTML('afterbegin',`<input type="submit" form="${d.dataset.thisdate}-note-form" value="Save Note">`)
+                    modal.footer.insertAdjacentHTML('afterbegin',`<input type="submit" form="${d.dataset.thisdate}-note-form" value="Save Note" class-"btn btn-primary">`)
                     modal.footer.querySelector("#se-close").textContent = "Cancel";
+                    modal.footer.querySelector("#se-close").classList.remove("btn-primary");
+                    modal.footer.querySelector("#se-close").classList.add("btn-secondary");
 
                     modal.body.querySelector("form").addEventListener("submit", e => {
                         e.preventDefault();
@@ -216,8 +218,10 @@ export function diaryCalendarRenderer(section) {
                         while (modal.body.firstChild) modal.body.removeChild(modal.body.lastChild);
                         modal.body.appendChild(form);
 
-                        modal.footer.insertAdjacentHTML('beforeend',` <input type="submit" form="${form.getAttribute("id")}" value="Save details">`)
+                        modal.footer.insertAdjacentHTML('beforeend',` <input type="submit" form="${form.getAttribute("id")}" value="Save details" class="btn btn-primary">`)
                         modal.footer.querySelector("#se-close").textContent = "Cancel";
+                        modal.footer.querySelector("#se-close").classList.remove("btn-primary");
+                        modal.footer.querySelector("#se-close").classList.add("btn-secondary");
 
                         form.addEventListener("submit", e => {
                             modal.body.innerHTML = daytemplate;
