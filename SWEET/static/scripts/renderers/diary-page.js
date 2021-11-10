@@ -173,7 +173,7 @@ export function diaryCalendarRenderer(section) {
                         <p>(e.g., time of day, triggers) </p> 
                         <form id="${d.dataset.thisdate}-note-form">
                         <input type="hidden" name="date" value="${notedate}"><input type="hidden" name="takendate" value="${this.calendarDate(taken)}"><input type="hidden" name="takentime" value="${taken.getHours()}:${taken.getMinutes()}:${taken.getSeconds()}">
-                        <textarea name="note" cols="50" rows="5"></textarea>
+                        <textarea name="note" cols="50" rows="5" maxlength="500" minlength="5"></textarea>
                         </form>
                     `
                     modal.footer.insertAdjacentHTML('afterbegin',`<input type="submit" form="${d.dataset.thisdate}-note-form" value="Save Note">`)
@@ -278,7 +278,7 @@ export function diaryGraphRenderer(section) {
 
     holder.innerHTML = `
     <h4>My Side Effects</h4>
-    <h5>Here you can see an overview of the side-effects you recorded this month.</h5>
+    <h5>Here you can see an overview of the severity of side-effects you recorded this month.</h5>
     <svg id="all-se-trends" viewbox="0 0 40 20">
         <style>
             text { font-size: 0.75px; }
@@ -290,7 +290,7 @@ export function diaryGraphRenderer(section) {
             .sleep { color: var(--SWEET-lilac); }
         </style>
         <g id="axis-y-gen">
-            <text x="0" y="0.5">Extremely</text>
+            <text x="0" y="0.75">Extremely</text>
             <text x="0" y="15.5">Not at all</text>
             <line x1="3.5" y1="0" x2="3.5" y2="16" stroke-width="0.1" stroke="black" />
         </g>
@@ -298,14 +298,14 @@ export function diaryGraphRenderer(section) {
             <line x1="0" y1="0" x2="31" y2="0" stroke-width="0.1" stroke="black" />
             <text x="10" y="2.5">Days of the Month</text>
         </g>
-        <g id="key-gen" transform="translate(32,0)">
+        <g id="key-gen" transform="translate(34,0)">
         </g>
         <g id="plot-gen" transform="translate(3.5,0)"></g>
     </svg>
     <h5>Here you can select a side effect to see more details: <select></select></h5>
     <svg id="one-se-trend" viewbox="0 0 40 20">
         <g id="axis-y-ind">
-            <text x="0" y="0.5" font-size="0.75">Extremely</text>
+            <text x="0" y="0.75" font-size="0.75">Extremely</text>
             <text x="0" y="15.5"  font-size="0.75">Not at all</text>
             <line x1="3.5" y1="0" x2="3.5" y2="16" stroke-width="0.1" stroke="black" />
         </g>

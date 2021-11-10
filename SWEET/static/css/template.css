@@ -77,7 +77,7 @@ a.card {
 }
 
 /* --- temporarily disabled for deployment during sub-study 1 interviews
-a:visited.card {
+a:visited.card.submenu {
     background-color: #e4dbeb;
 }
 */
@@ -334,7 +334,6 @@ div + h4 { margin-top: 1.5em;}
     padding-top: 20px;
     color: red;
 }
-
 
 
 @media screen and (min-width: 500px) and (max-width: 768px) {
