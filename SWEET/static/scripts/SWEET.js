@@ -53,154 +53,131 @@ let SWEET = createApp({
     name: "SWEET"
 });
 
-//fetch("/myapp/mydetails").then(response => response.json()).then(profile => SWEET.store.set("currentUser", profile));
-fetch("/app/schemas/tunnels").then(response => response.json()).then(tunnels => SWEET.store.set("tunnels", tunnels))
-SWEET.store.set("tunnelsComplete", []);
+// user profile retrieval, validation, update and storage:
+fetch("/myapp/mydetails").then(response => response.json()).then(profile => {
+
+    if (!("tunnelsComplete" in profile)) profile["tunnelsComplete"] = [];
+
+    SWEET.store.set("currentUser", profile);
+    SWEET.post("/myapp/mydetails/", profile);
+
+});
+
+fetch("/app/schemas/tunnels").then(response => response.json()).then(tunnels => SWEET.store.set("tunnels", tunnels));
 
 SWEET.addEventListener("prerender", function(page) {
     document.querySelector("main").classList.remove(...document.querySelector("main").classList.values())
-    document.querySelector("main").classList.add("flex-shrink-0", this.path.replace("#", "").replaceAll("/", "_"));
-    
-    if (SWEET.path == "#home") {
-        document.querySelectorAll("[data-rel='prev']").forEach(b => {
-            b.setAttribute("hidden", "");
-        })
-    } else {
-        document.querySelectorAll("[data-rel='prev']").forEach(b => {
-            b.removeAttribute("hidden", "");
-        })
-    }
-    
-    if (SWEET.path in SWEET.store.get("tunnels") /* and user hasn't seen this tunnel already */) {
+    document.querySelector("main").classList.add("flex-shrink-0", this.path.replace("#", "").replaceAll("/", "_"));   
+});
 
-        let tunnel = document.createElement("div");
-        tunnel.classList.add("tunnel");
-        tunnel.innerHTML = `
-        <section id="tunnel-container" class="container">
-            <header><h3 id="tunnel-title"></h3></header>
-            <section id="tunnel-main"></section>
-            <footer><button class="btn-secondary" id="tunnel-prev" disabled>Previous</button><button class="btn-primary" id="tunnel-next">Next</button></footer>
-        </section>
-        `;
-
-        tunnel.addEventListener("click", e => {
-            let src = e.target;
+// link intercept for tunnelled pages (prevent section home showing until tunnel is complete);
+document.querySelector("#main-container").addEventListener("click", e => {
+    let src = e.target;
                 
-            while (src.tagName != "A" && src.parentNode) src = src.parentNode;
-            if (src.tagName != "A") return true;
-            let path = src.getAttribute("href");
-            if (path.charAt(0) != '#') return true;
+    while (src.tagName != "A" && src.parentNode) src = src.parentNode;
+    if (src.tagName != "A") return true;
+    let path = src.getAttribute("href");
+    if (!(path in SWEET.store.get("tunnels"))) return true; // ignore non-tunnelled links (including external links)
+    if (SWEET.store.get("currentUser")['tunnelsComplete'].includes(path)) return true; // ignore tunnels the user has been through
 
-            e.preventDefault(); e.stopPropagation();
+    // the user has clicked a link for a tunnel they haven't completed yet!
 
-            let modal = SWEET.createModal(true);
-            modal.size = "xl";
-            fetch(`/app/content?path=${encodeURIComponent(path)}`).then(response => response.json())
-            .then(page => {
-                modal.title.textContent = page.title;
-                page.content.forEach(c => SWEET.render(c).then(node => modal.body.appendChild(node)));
-                modal.footer.innerHTML = `<button type="button" class="btn-primary" data-bs-dismiss="modal" aria-label="Close">Close</button>`;
-                modal.show();
-            })
-        })
-        let base = SWEET.path;
-        let route = SWEET.store.get("tunnels")[base];
-        let currentStop = 0;
-        let prevbutton = tunnel.querySelector("#tunnel-prev");
-        let nextbutton = tunnel.querySelector("#tunnel-next");
+    e.preventDefault(); e.stopPropagation();
 
-        function renderInTunnel() {
-            let url = `/app/content?path=${encodeURIComponent(`${base}/${route[currentStop]}`)}`;
-            fetch(url).then(response => response.json())
-            .then(page => {
-                tunnel.querySelector("#tunnel-title").textContent = page.title;
-                while (tunnel.querySelector("#tunnel-main").firstChild) tunnel.querySelector("#tunnel-main").removeChild(tunnel.querySelector("#tunnel-main").lastChild);
-                tunnel.scrollTo(0,0)
-                page.content.forEach(c => SWEET.render(c).then(node => tunnel.querySelector("#tunnel-main").appendChild(node)));
-            })
-        }
+    let tunnel = document.createElement("div");
+    tunnel.classList.add("tunnel");
+    tunnel.innerHTML = `
+    <section id="tunnel-container" class="container">
+        <header><h3 id="tunnel-title" class="mb-3"></h3> <button type="button" class="btn-close" id="tunnel-close" aria-label="Close"></button></header>
+        <section id="tunnel-main"></section>
+        <footer><button class="btn-secondary" id="tunnel-prev" disabled>Previous</button> <span id="tunnel-pagecount"></span> <button class="btn-primary" id="tunnel-next">Next</button></footer>
+    </section>
+    `;
 
-        nextbutton.addEventListener("click", e => {
-            currentStop++;
-            if (currentStop == route.length) {
-                // mark tunnel as completed for current user
-                tunnel.remove();
-            } else {
-                renderInTunnel();
-                e.target.textContent = currentStop+1 == route.length? "Finish": "Next";
-                prevbutton.removeAttribute("disabled");
-            }
-        })
-
-        prevbutton.addEventListener("click", e => {
-            if (currentStop == 0) {
-                prevbutton.setAttribute("disabled", "")
-                return;
-            }
-
-            currentStop--;
-            renderInTunnel();
-            if (currentStop == 0) prevbutton.setAttribute("disabled", "");
-        })
-
-        document.body.appendChild(tunnel);
-        renderInTunnel();
-    }
-    
-/*
-
-    // 2021-08-18: moved to prerender handler.
-    // handle sequential navigation if set up
-    // i.e. template has buttons with data-rel attribute:
-    const relbuttons = Array.from(document.querySelectorAll("[data-rel]"))
-    let prevlink = document.head.querySelector("link[rel='prev']");
-    let nextlink = document.head.querySelector("link[rel='next']");
-
-    if (relbuttons.length) { 
-
-        if (page.prev && SWEET.store.get("tunnelling")) {
-            // we are using sequence navigation & have a 'prev' link in the page info:
-            if (!prevlink) {
-                prevlink = document.head.appendChild(document.createElement("link"));
-                prevlink.setAttribute("rel", "prev");
-            }
-
-            relbuttons.filter(b => b.dataset.rel == "prev").forEach(prev => {
-                prev.setAttribute("href", page.prev);
-            })
-
-            prevlink.setAttribute("href", page.prev);
-        } else {
-            relbuttons.filter(b => b.dataset.rel == "prev").forEach(prev => {
-                prev.setAttribute("href", "javascript: history.go(-1)");
-            })
+    // intercept internal links in tunnel and display in modal:
+    tunnel.addEventListener("click", e => {
+        let src = e.target;
             
-            if (prevlink) prevlink.remove();
-        }
+        while (src.tagName != "A" && src.parentNode) src = src.parentNode;
+        if (src.tagName != "A") return true;
+        let path = src.getAttribute("href");
+        if (path.charAt(0) != '#') return true;
 
-        if (page.next && SWEET.store.get("tunnelling")) {
-            // we are using sequence navigation & have a 'next' link in the page info:
-            if (!nextlink) {
-                nextlink = document.head.appendChild(document.createElement("link"));
-                nextlink.setAttribute("rel", "next");
-            }
-            relbuttons.filter(b => b.dataset.rel == "next").forEach(nextButton => {
-                nextButton.setAttribute("href", page.next);
-                nextButton.classList.remove("hidden");
-            })
+        e.preventDefault(); e.stopPropagation();
 
-            nextlink.setAttribute("href", page.next);
-        } else {
-            relbuttons.filter(b => b.dataset.rel == "next").forEach(nextButton => {
-                nextButton.classList.add("hidden");
-                nextButton.removeAttribute("href");
-            })
-            if (nextlink) nextlink.remove();
-        }
-        
-        relbuttons.forEach(b => b.blur());
+        let modal = SWEET.createModal(true);
+        modal.size = "xl";
+        fetch(`/app/content?path=${encodeURIComponent(path)}`).then(response => response.json())
+        .then(page => {
+            modal.title.textContent = page.title;
+            page.content.forEach(c => SWEET.render(c).then(node => modal.body.appendChild(node)));
+            modal.footer.innerHTML = `<button type="button" class="btn-primary" data-bs-dismiss="modal" aria-label="Close">Close</button>`;
+            modal.show();
+        })
+    })
+
+
+    let base = path;
+    let route = SWEET.store.get("tunnels")[base];
+    let currentStop = SWEET.store.get(`tunnel:${base}:stop`) === undefined? 0: SWEET.store.get(`tunnel:${base}:stop`);
+    let prevbutton = tunnel.querySelector("#tunnel-prev");
+    let nextbutton = tunnel.querySelector("#tunnel-next");
+    let pagecount = tunnel.querySelector("#tunnel-pagecount");
+    let closebutton = tunnel.querySelector("#tunnel-close");
+
+    function renderInTunnel() {
+        let url = `/app/content?path=${encodeURIComponent(`${base}/${route[currentStop]['path']}`)}`;
+        fetch(url).then(response => response.json())
+        .then(page => {
+            tunnel.querySelector("#tunnel-title").textContent = page.title;
+            while (tunnel.querySelector("#tunnel-main").firstChild) tunnel.querySelector("#tunnel-main").removeChild(tunnel.querySelector("#tunnel-main").lastChild);
+            tunnel.scrollTo(0,0)
+            page.content.forEach(c => SWEET.render(c).then(node => tunnel.querySelector("#tunnel-main").appendChild(node)));
+
+            // append any additional content from the tunnel schema:
+            route[currentStop]['content'].forEach(c => SWEET.render(c).then(node => tunnel.querySelector("#tunnel-main").appendChild(node)));
+
+            // set page count text.
+            pagecount.textContent = `page ${currentStop+1} of ${route.length}`;
+
+            SWEET.store.set(`tunnel:${base}:stop`, currentStop);
+        })
     }
-*/
+
+    nextbutton.addEventListener("click", e => {
+        currentStop++;
+        if (currentStop == route.length) {
+            tunnel.remove();
+            SWEET.path = base; // as we're using link intercept we need to send the user to the relevant homepage
+        } else {
+            renderInTunnel();
+            e.target.textContent = currentStop+1 == route.length? "Finish": "Next";
+            if (currentStop+1 == route.length && !(base in SWEET.store.get("currentUser")["tunnelsComplete"])) {
+                SWEET.store.get("currentUser")["tunnelsComplete"].push(base);
+                SWEET.post("/myapp/mydetails/", SWEET.store.get("currentUser"));
+            }
+            prevbutton.removeAttribute("disabled");
+        }
+    })
+
+    prevbutton.addEventListener("click", e => {
+        if (currentStop == 0) {
+            prevbutton.setAttribute("disabled", "")
+            return;
+        }
+
+        currentStop--;
+        renderInTunnel();
+        if (currentStop == 0) prevbutton.setAttribute("disabled", "");
+    })
+
+    closebutton.addEventListener("click", e => {
+        tunnel.remove();
+    })
+
+    document.body.appendChild(tunnel);
+    renderInTunnel();
+
 });
 
 SWEET.start();

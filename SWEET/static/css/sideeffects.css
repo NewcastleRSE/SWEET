@@ -73,12 +73,10 @@ select[name='setype'] + form > section > label {
 }
 
 span.sidenote {
-    display: none;
-    position: absolute;
     font-size: 75%;
-    background-color: silver;
-    max-width: 25em;
+    font-weight: bold;
 }
+
 #dateinput label {
     vertical-align: top;
 }
@@ -138,8 +136,7 @@ input[type='number'] {
     margin-left: 10px;
 }
 
-.modal-footer input[type="submit"] + #se-close {
-
-    position: absolute;
-    left: 15px;    
+#se-graph-title {
+    font-size: 1.2em;
+    padding: 10px 0 40px 0;
 }

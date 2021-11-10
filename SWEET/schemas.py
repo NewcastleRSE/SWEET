@@ -45,7 +45,7 @@ def getSideEffectTypes():
             { "name": "mood", "description": "Mood Changes", "embedtext": "mood", "questions": ["severity", "impact", "notes"]},
             { "name": "ns", "description": "Night Sweats", "embedtext": "night sweats", "embedplural": True, "questions": ["severity", "impact", "notes"]},
             { "name": "sleep", "description": "Sleep Problems", "embedtext": "sleep problems", "embedplural": True, "questions": ["severity", "impact", "notes"]},
-            { "name": "other", "description": "Other Side-effect", "embedtext": "other side-effect", "questions": ["severity", "impact", "notes"]}
+            { "name": "other", "description": "Other Side effects", "embedtext": "other side effect", "questions": ["severity", "impact", "notes"]}
         ]
     }
 
@@ -69,7 +69,36 @@ def getSideEffectDetails(name):
 @login_required
 def getTunnels():
     return {
-        '#home/taking-ht': ['welcome', 'animation', 'can-help', 'important', 'build', 'my-plan', 'tips', 'questions', 'more-questions', 'more'],
-        '#home/healthy-living/being-active': ['welcome', 'health-benefits', 'quest', 'safe', 'activities', 'goals', 'setgoals', 'find-out-more'],
-        '#home/healthy-living/healthy-eating': ['welcome', 'importance', 'healthy-diet', 'faq', 'change', 'goal-setting', 'goals', 'find-out-more']
+        '#home/taking-ht': [
+            {'path': 'welcome', 'content': []}, 
+            {'path': 'animation', 'content': []}, 
+            {'path': 'can-help', 'content': []},
+            {'path': 'important', 'content': []},
+            {'path': 'build', 'content': []},
+            {'path': 'my-plan', 'content': []},
+            {'path': 'tips', 'content': []},
+            {'path': 'questions', 'content': []},
+            {'path': 'more-questions', 'content': []},
+            {'path': 'more', 'content': []}
+        ],
+        '#home/healthy-living/being-active': [
+            {'path': 'welcome', 'content': []}, 
+            {'path': 'health-benefits', 'content': []}, 
+            {'path': 'quest', 'content': []}, 
+            {'path': 'safe', 'content': []}, 
+            {'path': 'activities', 'content': []}, 
+            {'path': 'goals', 'content': []}, 
+            {'path': 'setgoals', 'content': []}, 
+            {'path': 'find-out-more', 'content': []}
+        ],
+        '#home/healthy-living/healthy-eating': [
+            {'path': 'welcome', 'content': []}, 
+            {'path': 'importance', 'content': []}, 
+            {'path': 'healthy-diet', 'content': []}, 
+            {'path': 'faq', 'content': []}, 
+            {'path': 'change', 'content': []}, 
+            {'path': 'goal-setting', 'content': []}, 
+            {'path': 'goals', 'content': []}, 
+            {'path': 'find-out-more', 'content': []}
+        ]
     }

@@ -96,7 +96,7 @@ export function homepageMenuRenderer(section) {
         })
     }
 
-    menu.$actions.appendChild(profiler);
+    menu.$actions.insertBefore(profiler, menu.$actions.firstChild);
 
     return menu;
 }

@@ -44,6 +44,7 @@ main footer {
 
 #page-title {
     margin-left: 1em; margin-right: 1em;
+    width: 100%;
     text-align: center;
 }
 
@@ -75,9 +76,11 @@ a.card {
     background-size: 120px;
 }
 
-a:visited.card {
+/* --- temporarily disabled for deployment during sub-study 1 interviews
+a:visited.card.submenu {
     background-color: #e4dbeb;
 }
+*/
 
 .form-check .no-box-shadow:focus {
     box-shadow:none !important;
@@ -331,7 +334,6 @@ div + h4 { margin-top: 1.5em;}
     padding-top: 20px;
     color: red;
 }
-
 
 
 @media screen and (min-width: 500px) and (max-width: 768px) {
