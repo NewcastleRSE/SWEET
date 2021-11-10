@@ -73,10 +73,8 @@ select[name='setype'] + form > section > label {
 }
 
 span.sidenote {
-    position: absolute;
     font-size: 75%;
     font-weight: bold;
-    max-width: 25em;
 }
 
 #dateinput label {
