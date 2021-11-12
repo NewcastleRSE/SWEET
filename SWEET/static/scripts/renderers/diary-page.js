@@ -281,8 +281,8 @@ export function diaryGraphRenderer(section) {
 
     holder.innerHTML = `
     <h4>My Side Effects</h4>
-    <h5>Here you can see an overview of the severity of side-effects you recorded this month.</h5>
-    <svg id="all-se-trends" viewbox="0 0 40 20">
+    <div id="se-graph-title">Here you can see an overview of the side-effects you recorded this month - Side Effect Severity</div>
+    <svg id="all-se-trends" viewbox="-1 0 45 20">
         <style>
             text { font-size: 0.75px; }
             line, polyline, path { stroke-width: 0.1px;}
@@ -293,34 +293,34 @@ export function diaryGraphRenderer(section) {
             .sleep { color: var(--SWEET-lilac); }
         </style>
         <g id="axis-y-gen">
-            <text x="0" y="0.75">Extremely</text>
-            <text x="0" y="15.5">Not at all</text>
-            <line x1="3.5" y1="0" x2="3.5" y2="16" stroke-width="0.1" stroke="black" />
+            <text x="-1" y="1">Extremely</text>
+            <text x="-1" y="16">Not at all</text>
+            <line x1="3" y1="0" x2="3" y2="16" stroke-width="0.1" stroke="black" />
         </g>
-        <g id="axis-x-gen" transform="translate(3.5,16)">
+        <g id="axis-x-gen" transform="translate(3,16)">
             <line x1="0" y1="0" x2="31" y2="0" stroke-width="0.1" stroke="black" />
             <text x="10" y="2.5">Days of the Month</text>
         </g>
-        <g id="key-gen" transform="translate(34,0)">
+        <g id="key-gen" transform="translate(35,0)">
         </g>
-        <g id="plot-gen" transform="translate(3.5,0)"></g>
+        <g id="plot-gen" transform="translate(3,0)"></g>
     </svg>
-    <h5>Here you can select a side effect to see more details: <select></select></h5>
-    <svg id="one-se-trend" viewbox="0 0 40 20">
+    <div id="se-graph-title">Here you can select a side effect to see more details: <select></select></div>
+    <svg id="one-se-trend" viewbox="-1 0 45 20">
         <g id="axis-y-ind">
-            <text x="0" y="0.75" font-size="0.75">Extremely</text>
-            <text x="0" y="15.5"  font-size="0.75">Not at all</text>
-            <line x1="3.5" y1="0" x2="3.5" y2="16" stroke-width="0.1" stroke="black" />
+            <text x="-1" y="1" font-size="0.75">Extremely</text>
+            <text x="-1" y="16"  font-size="0.75">Not at all</text>
+            <line x1="3" y1="0" x2="3" y2="16" stroke-width="0.1" stroke="black" />
         </g>
-        <g id="axis-x-ind" transform="translate(3.5,16)">
+        <g id="axis-x-ind" transform="translate(3,16)">
             <line x1="0" y1="0" x2="31" y2="0" stroke-width="0.1" stroke="black" />
             <text x="10" y="2.5">Days of the Month</text>
         </g>
-        <g id="key-ind" transform="translate(34,0)">
+        <g id="key-ind" transform="translate(35,0)">
             <text x="0" y="1">Severity</text><line x1="4.5" x2="5.5" y1="0.75" y2="0.75" stroke-width="0.1" stroke="red" />
             <text x="0" y="2">Impact</text><line x1="4.5" x2="5.5" y1="1.75" y2="1.75" stroke-width="0.1" style="stroke: var(--SWEET-gold);" />
         </g>
-        <g id="plot-ind" transform="translate(3.5,0)"></g>
+        <g id="plot-ind" transform="translate(3,0)"></g>
     </svg>
     `
 
