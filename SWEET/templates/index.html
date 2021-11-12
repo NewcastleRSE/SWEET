@@ -73,7 +73,15 @@
     </div>
 
     {% block maincontent %}
-    <header><a href="javascript:history.go(-1)" class="btn btn-primary">Back</a><h1 id="page-title"></h1></header>
+    <header>
+      <div class="container">
+        <div class="col-12 col-xl-8 g-3 mt-3">
+        <a href="javascript:history.go(-1)" class="btn btn-primary">Back</a> <a href="#home" class="btn btn-primary">Home</a>
+        </div>
+        <div class="col"><h1 id="page-title"></h1>  </div>
+      </div>
+ 
+    </header>
 
    
     <div id="main-container"></div>
