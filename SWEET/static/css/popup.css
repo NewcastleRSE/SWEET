@@ -1,11 +1,15 @@
 a.popup-trigger {
     display: inline-block;
     line-height: 1em;
-    color: var(--SWEET-dark-grey);
+    color: #5c5c59;
     text-decoration: none;
     margin: 0.5em;
     margin-left: 0em;
     cursor: pointer;
+}
+
+a.popup-trigger:hover {
+    color: rgb(33, 33, 126);
 }
 
 a.popup-trigger::before {
