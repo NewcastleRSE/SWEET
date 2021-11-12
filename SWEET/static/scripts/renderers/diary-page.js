@@ -73,6 +73,7 @@ export function diaryCalendarRenderer(section) {
                     <h4>${se.description? se.description:se.type}</h4>
                     <p><span class="severity"><label>Severity: </label><span class="bar"><label style="width: ${se.severity}em"></label></span></span><br />
                     <span class="impact"><label>Impact: </label><span class="bar"><label style="width: ${se.impact}em"></label></span></p>
+                    <div class="se-notes"><label>Notes:</label><div>${se.notes}</div></div>
                     `
                     seday.appendChild(i);
                 }
@@ -169,7 +170,7 @@ export function diaryCalendarRenderer(section) {
                     let notedate = d.dataset.thisdate;
                     let taken = new Date();
                     modal.body.innerHTML = `
-                        <h5>Make a note< <span class="sidenote">[use this to record anything else]</span>/h5>
+                        <h5>Make a note <span class="sidenote">[use this to record anything else]</span></h5>
                         <form id="${d.dataset.thisdate}-note-form">
                         <input type="hidden" name="date" value="${notedate}"><input type="hidden" name="takendate" value="${this.calendarDate(taken)}"><input type="hidden" name="takentime" value="${taken.getHours()}:${taken.getMinutes()}:${taken.getSeconds()}">
                         <textarea name="note" cols="50" rows="5" maxlength="500" minlength="5"></textarea>
