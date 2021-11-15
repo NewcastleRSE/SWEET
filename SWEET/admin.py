@@ -1,6 +1,7 @@
 from flask import Blueprint, request, render_template
 from .auth import role_required
 from .data.content import updateStructure as updateAppStructure, updatePageContent, saveResource
+from .data.users import getAllUsers
 
 bp = Blueprint("admin", __name__, url_prefix="/admin")
 admin_required = role_required(roles=["editor", "sysadmin"])
@@ -62,3 +63,8 @@ def addResource():
         return { "status": "OK"}
     else:
         return { "status": "error", "message": "Update request sent without json data"}, 400
+
+@bp.route("/data/allusers")
+@admin_required
+def getAllUserDetails():
+    return { "users": getAllUsers() }

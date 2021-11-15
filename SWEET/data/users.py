@@ -37,3 +37,5 @@ def registerUser(userID, password, fullName, role):
 
     return True, user
 
+def getAllUsers():
+    return [getUser(user) for user in __userstore.keys()]
