@@ -6,7 +6,7 @@ __diary = AzurePersitentDict(az_connection, usersource, userdiary)
 __goals = AzurePersitentDict(az_connection, usersource, usergoals)
 
 def newdiary():
-    return {"sideeffects": [], "reminders": { 'daily': {'reminder': False}, 'monthly': {'reminder': False}}, "adherence": [], "notes": [], "profilers": [], "fillins": {}, "profile": {}}
+    return {"sideeffects": [], "reminders": { 'daily': {'reminder': False}, 'monthly': {'reminder': False}}, "adherence": [], "notes": [], "profilers": [], "fillins": {}, "profile": {}, "contacts": []}
 
 def getGoals(user=None):
     if user is None:
@@ -255,3 +255,68 @@ def updateProfile(user, profile):
     __diary[id]["profile"] = profile
     __diary.commit()
     
+def getContacts(user):
+    if user is None:
+        return None
+    
+    id = user["userID"]
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+        __diary.commit()
+
+    if "contacts" not in __diary[id]:
+        __diary[id]["profile"] = []
+        __diary.commit()
+
+    return __diary[id]["contacts"]
+
+def addContact(user, contact):
+    if user is None:
+        return None
+    
+    id = user["userID"]
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+
+    if "contacts" not in __diary[id]:
+        __diary[id]["contacts"] = []
+
+    __diary[id]["contacts"].append(contact)
+    __diary.commit()
+
+def deleteContact(user, contact):
+
+    if user is None:
+        return None
+    
+    id = user["userID"]
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+
+    if "contacts" not in __diary[id]:
+        __diary[id]["contacts"] = []
+
+    if contact in __diary[id]["contacts"]:
+        __diary[id]["contacts"].remove(contact)
+
+    __diary.commit()
+
+def  updateContact(user, old, new):
+    if user is None:
+        return None
+    
+    id = user["userID"]
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+
+    if "contacts" not in __diary[id]:
+        __diary[id]["contacts"] = []
+
+    if  old in __diary[id]["contacts"]:
+        __diary[id]["contacts"][__diary[id]["contacts"].index(old)] = new
+
+    __diary.commit()

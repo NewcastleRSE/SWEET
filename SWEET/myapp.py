@@ -6,7 +6,8 @@ from .data import users
 from .data.userdata import (
     getGoals, updateGoals, getSideEffects as getUserSideEffects, recordSideEffect, recordProfiler, 
     getDiary as getUserDiary, addNote, getNotes, recordAdherence, saveFillin as saveUserFillin, getFillin as getUserFillin,
-    getPlans, getReminders, setReminders, getProfile, updateProfile
+    getPlans, getReminders, setReminders, getProfile, updateProfile,
+    getContacts, addContact, deleteContact, updateContact
 )
 
 from .auth import login_required
@@ -164,3 +165,38 @@ def updateMyProfile():
         return {"status": "OK", "message": "Profile updated"}
 
     return {"status": "error", "message": "Update request sent without json"}, 400
+
+@bp.route("/mycontacts")
+@login_required
+def getMyContacts():
+    return { "contacts": getContacts(g.user)}
+
+@bp.route("/mycontacts/add/", methods=["POST"])
+@login_required
+def addMyContact():
+    if request.is_json:
+        contact = request.json
+        addContact(g.user, contact)
+        return { "status": "OK", "message": "Contact Added"}
+    
+    return {"status": "error", "message": "Add contact request sent without json"}, 400
+
+@bp.route("/mycontacts/delete/", methods=["POST"])
+@login_required
+def deleteMyContact():
+    if request.is_json:
+        contact = request.json
+        deleteContact(g.user, contact)
+        return {"status": "OK", "message": "Contact Deleted"}
+
+    return {"status": "error", "message": "Delete request sent witout json"}, 400
+
+@bp.route("/mycontacts/update/", methods=["POST"])
+@login_required
+def updateMyContact():
+    if request.is_json:
+        detail = request.json
+        updateContact(g.user, detail['oldcontact'], detail['newcontact'])
+        return {"status": "OK", "message": "Contact Updated"}
+
+    return {"status": "error", "message": "Delete request sent witout json"}, 400
