@@ -244,7 +244,7 @@ export function profilerModalRenderer(section) {
                 // post a 'no concerns' response to the server
                 const profilerResponse = {
                     dueDate: section.dueDate,
-                    dateCompleted: this.calendarDate(new Date()),
+                    dateComplete: this.calendarDate(new Date()),
                     result: "complete",
                     concernAreas: "none"
                 }
@@ -261,4 +261,50 @@ export function profilerModalRenderer(section) {
 
     // call the appropriate renderer:
     renderers[page].call(this, section);
+}
+
+export function profilerResultRenderer(section) {
+    if (section.type != "profiler-result") return null;
+
+    let holder = document.createElement("section");
+    holder.classList.add("profiler-result");
+
+    if (!section.date) section.date = section.dateComplete || section.reminderDate || section.dueDate;
+
+    holder.insertAdjacentHTML("beforeend", `<h4>Your personal support concerns on ${new Date(section.date).toDateString()}</h4>`);
+    if (section.result == "postponed") {
+        // handle how to show a postponed profiler during general rendering
+        holder.insertAdjacentHTML("beforeend", `
+        <div>
+            <label for="take-profiler">You didn't have time to complete the questions last time we asked; if you want to do it now please click this button:</label>
+            <button type="button" id="take-profiler" class="btn btn-primary">Answer Questions</button>
+        </div>`);
+        holder.querySelector("#take-profiler").addEventListener("click", e => {
+            section.type="profiler";
+            this.render(section);
+        })
+    } else if (section.result == "refused") {
+        // handle refusal to complete the profiler
+        holder.insertAdjacentHTML("beforeend", `
+        <div>
+            <p>You did not answer the questions on this occasion because ${{"no-concern": "you did not have any concerns", "no-time": "you did not have time", "no-already": "your questions had already been answered"}[section.refuseReason]}.</p>
+        </div>`)
+    } else if (section.result == "complete") {
+        if (section.concernAreas == "none") {
+            // no concern result
+            holder.insertAdjacentHTML("beforeend", `<div><p>You were getting on fine with your hormone therapy when you answered the questions.</p></div>`)
+        } else {
+            // render concern responses (section.concernDetails : this is an accordion content section)
+            holder.insertAdjacentHTML("beforeend", `
+            <div>
+                <p>Based on your responses, we selected a series of topics which were tailored to your concerns. You can read these below. We hope these will be helpful for you.</p>
+            </div>`)
+
+            this.render(section.concernDetails).then(node => holder.appendChild(node));
+        }
+    } else {
+        return null;
+    }
+
+    return holder;
 }

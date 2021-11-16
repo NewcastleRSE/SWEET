@@ -1,6 +1,7 @@
 from .az_persitent import AzurePersitentDict
 from ..secrets import connstr as az_connection, usersource, usergoals, userdiary
 from . import getProfilerResponses
+from datetime import date
 
 __diary = AzurePersitentDict(az_connection, usersource, userdiary)
 __goals = AzurePersitentDict(az_connection, usersource, usergoals)
@@ -95,7 +96,7 @@ def recordProfiler(user, profiler):
     id = user['userID']
 
     if id not in __diary:
-        __diary[id] = {"sideeffects": [], "reminders": [], "adherence": [], "notes": [], "profilers": []}
+        __diary[id] = newdiary()
 
     userdiary = __diary[id]
     if "profilers" not in userdiary:
@@ -127,11 +128,58 @@ def recordProfiler(user, profiler):
         # create page dictionary and return with result
         return True, output
 
+def getAllProfilerResults(user):
+    id = user["userID"]
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+        __diary.commit()
+    
+    if "profilers" not in __diary[id]:
+        __diary[id]["profilers"] = []
+        __diary.commit()
+
+    responses = getProfilerResponses()
+    return [{
+        "dueDate": profiler["dueDate"],
+        "result": profiler["result"],
+        "reminderDate": profiler.get("reminderDate"),
+        "dateComplete": profiler.get("dateComplete"),
+        "refuseReason": profiler.get("reason"),
+        "concernAreas": profiler.get("concernAreas"),
+        "concernDetails": { "type": "accordion", "content": [responses[c] for c in profiler.get(["concernSpecifics"], [])]}
+    } for profiler in sorted(__diary[id]["profilers"], key=lambda p: p['dueDate']) if profiler['dueDate'] < date.today().isoformat()]
+
+def getLatestProfiler(user):
+    id = user["userID"]
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+
+    if "profilers" not in __diary[id]:
+        __diary[id]["profilers"] = []
+
+    if len(__diary[id]["profilers"]) == 0:
+        __diary[id]["profilers"].append({ "dueDate": date.today().isoformat })
+        __diary.commit()
+
+    latest = sorted(__diary[id]["profilers"], key=lambda p: p['dueDate'], reverse=True)[0]
+    responses = getProfilerResponses()
+
+    if "concernSpecifics" in latest:
+        latest["concernDetails"] = { 
+            "type": "accordion",
+            "content": [responses[c] for c in latest["concernSpecifics"]]
+
+        }
+    
+    return latest
+
 def addNote(user, note):
     id = user["userID"]
 
     if id not in __diary:
-       __diary[id] = newdiary
+       __diary[id] = newdiary()
 
     usernotes = __diary[id]['notes']
     usernotes.append(note)
@@ -148,7 +196,7 @@ def recordAdherence(user, adh):
     id = user["userID"]
 
     if id not in __diary:
-       __diary[id] = newdiary
+       __diary[id] = newdiary()
 
     __diary[id]['adherence'].append(adh)
     __diary.commit()
