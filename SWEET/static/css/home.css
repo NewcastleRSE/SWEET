@@ -64,13 +64,19 @@ ul.quick-links li a:hover {
     display:none;
 }
 
+
+@media screen and (min-width: 200px) and (max-width: 967px) {
+    .btn {
+        font-size: 0.8rem;
+        margin-bottom: 30px;
+    }
+}
+
 @media screen and (min-width: 200px) and (max-width: 500px) {
-  
     .custom-font-buttons {
         display: block; 
         float: right;
     }
-
     .custom-font-buttons span {
         float: left;
         color: rgb(105, 102, 102);
@@ -79,4 +85,7 @@ ul.quick-links li a:hover {
         height: 30px;
     }
 
+    #btn-print {
+        float: none;
+    }
 }

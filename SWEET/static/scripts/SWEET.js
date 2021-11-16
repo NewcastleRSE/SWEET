@@ -67,7 +67,11 @@ fetch("/app/schemas/tunnels").then(response => response.json()).then(tunnels => 
 
 SWEET.addEventListener("prerender", function(page) {
     document.querySelector("main").classList.remove(...document.querySelector("main").classList.values())
-    document.querySelector("main").classList.add("flex-shrink-0", this.path.replace("#", "").replaceAll("/", "_"));   
+    document.querySelector("main").classList.add("flex-shrink-0", this.path.replace("#", "").replaceAll("/", "_"));
+    
+    document.querySelector("#btn-print > a").addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); window.alert("Here you will be able to download .pdf versions of some pages."); })
+    
+    document.querySelector(".btn-up").forEach(b => { b.setAttribute("href", this.path.substr(0, this.path.lastIndexOf("/")); b.textContent = "Up";});
 });
 
 // link intercept for tunnelled pages (prevent section home showing until tunnel is complete);
