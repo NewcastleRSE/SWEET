@@ -7,10 +7,11 @@ from .data.userdata import (
     getGoals, updateGoals, getSideEffects as getUserSideEffects, recordSideEffect, recordProfiler, 
     getDiary as getUserDiary, addNote, getNotes, recordAdherence, saveFillin as saveUserFillin, getFillin as getUserFillin,
     getPlans, getReminders, setReminders, getProfile, updateProfile,
-    getContacts, addContact, deleteContact, updateContact
+    getContacts, addContact, deleteContact, updateContact,
+    getAllProfilerResults, getLatestProfiler
 )
 
-from .auth import login_required
+from .auth import login, login_required
 
 from urllib.parse import unquote
 
@@ -77,6 +78,16 @@ def profiler():
             return { "status": "OK", "details": output }
 
     return {"status": "error", "message": "Update request sent without json"}, 400
+
+@bp.route("/myapp/profiler/responses")
+@login_required
+def profilerResponses():
+    return getAllProfilerResults(g.user)
+
+@bp.route("myapp/profiler/latest")
+@login_required
+def latestProfilerResult():
+    return getLatestProfiler(g.user)
 
 @bp.route("/notes")
 @login_required
