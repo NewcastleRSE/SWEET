@@ -8,7 +8,8 @@ from .data.userdata import (
     getDiary as getUserDiary, addNote, getNotes, recordAdherence, saveFillin as saveUserFillin, getFillin as getUserFillin,
     getPlans, getReminders, setReminders, getProfile, updateProfile,
     getContacts, addContact, deleteContact, updateContact,
-    getAllProfilerResults, getLatestProfiler
+    getAllProfilerResults, getLatestProfiler,
+    getPlan, savePlan
 )
 
 from .auth import login, login_required
@@ -79,12 +80,12 @@ def profiler():
 
     return {"status": "error", "message": "Update request sent without json"}, 400
 
-@bp.route("/myapp/profiler/responses")
+@bp.route("/profiler/responses")
 @login_required
 def profilerResponses():
     return getAllProfilerResults(g.user)
 
-@bp.route("myapp/profiler/latest")
+@bp.route("/profiler/latest")
 @login_required
 def latestProfilerResult():
     return getLatestProfiler(g.user)
@@ -211,3 +212,22 @@ def updateMyContact():
         return {"status": "OK", "message": "Contact Updated"}
 
     return {"status": "error", "message": "Delete request sent witout json"}, 400
+
+@bp.route("/myplans/<plan>")
+@login_required
+def fetchPlan(plan):
+    myplan = getPlan(g.user, plan)
+    if myplan is None:
+        return { "result": "not made" }
+    else:
+        return myplan
+
+@bp.route("/myplans/", methods = ["POST"])
+@login_required
+def setPlan():
+    if request.is_json:
+        plan = request.json
+        savePlan(g.user, plan)
+        return {"status": "OK", "message": "Plan Updated"}
+
+    return {"status": "error", "message": "Update request sent witout json"}, 400

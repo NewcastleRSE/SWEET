@@ -7,7 +7,7 @@ __diary = AzurePersitentDict(az_connection, usersource, userdiary)
 __goals = AzurePersitentDict(az_connection, usersource, usergoals)
 
 def newdiary():
-    return {"sideeffects": [], "reminders": { 'daily': {'reminder': False}, 'monthly': {'reminder': False}}, "adherence": [], "notes": [], "profilers": [], "fillins": {}, "profile": {}, "contacts": []}
+    return {"sideeffects": [], "reminders": { 'daily': {'reminder': False}, 'monthly': {'reminder': False}}, "adherence": [], "notes": [], "profilers": [], "fillins": {}, "profile": {}, "contacts": [], "plans": {}}
 
 def getGoals(user=None):
     if user is None:
@@ -368,3 +368,38 @@ def  updateContact(user, old, new):
         __diary[id]["contacts"][__diary[id]["contacts"].index(old)] = new
 
     __diary.commit()
+
+def getPlan(user, plan):
+    if user is None:
+        return None
+    
+    id = user["userID"]
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+        __diary.commit()
+
+    if "plans" not in __diary[id]:
+        __diary[id]["plans"] = {}
+        __diary.commit()
+
+    if plan not in __diary[id]["plans"]:
+        return None
+
+    return __diary[id]["plans"][plan]
+
+def savePlan(user, plan):
+    if user is None:
+        return None
+    
+    id = user["userID"]
+
+    if id not in __diary:
+        __diary[id] = newdiary()
+        __diary.commit()
+
+    if "plans" not in __diary[id]:
+        __diary[id]["plans"] = {}
+        __diary.commit()
+
+    __diary[id]["plans"][plan["type"]] = plan
