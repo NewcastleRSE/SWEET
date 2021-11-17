@@ -231,3 +231,4 @@ def setPlan():
         return {"status": "OK", "message": "Plan Updated"}
 
     return {"status": "error", "message": "Update request sent witout json"}, 400
+

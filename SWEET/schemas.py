@@ -1,5 +1,6 @@
+from urllib.parse import unquote
 from flask import (
-    Blueprint
+    Blueprint, request
 )
 
 from .auth import login_required
@@ -102,3 +103,36 @@ def getTunnels():
             {'path': 'find-out-more', 'content': []}
         ]
     }
+
+@bp.route("/thoughts")
+@login_required
+def getThoughtSchemas():
+    path = request.args.get("path", "")
+
+    schema = {
+        "#home/dealing-se/hot-flushes/cbt/change-think-hf": {
+            "title": "Changing the way you think about hot flushes",
+            "negfillin": "hotflushestochange",
+            "neglabel": "These are the thoughts I want to change about Hot Flushes:",
+            "posfillin": "hotflusheschanged",
+            "poslabel": "Alternative self-supportive response:"
+        },
+        "#home/dealing-se/hot-flushes/cbt/change-think-ns": {
+            "title": "Changing the way you think about night sweats",
+            "negfillin": "nightsweatstochange",
+            "neglabel": "These are the thoughts I want to change about night sweats:",
+            "posfillin": "nightsweatschanged",
+            "poslabel": "Alternative self-supportive response:"
+        },
+        "#home/dealing-se/sleep/cbt": {
+            "title": "Changing the way you think about sleep problems",
+            "negfillin": "sleeptochange",
+            "neglabel": "There are the thoughts I want to change about sleep problems:",
+            "posfillin": "sleepchanged",
+            "poslabel": "Alternative self-supportive response:"
+        }
+    }
+    if path:
+        return schema[unquote(path)]
+    else:
+        return { "thoughts": [ { "path": p, "title": schema[p]["title"] } for p in schema.keys() ]}

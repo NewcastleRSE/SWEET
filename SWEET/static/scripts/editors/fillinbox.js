@@ -39,6 +39,10 @@ export class FillInBoxEditor extends HTMLElement {
 
 
 export function fillInBoxRenderer(section) {
+    if (section.type != "fillin") return null;
+
+    section.path == section.path || this.path;
+
     let holder = document.createElement("section");
     holder.classList.add("fill-in", section.boxsize);
     let form = holder.appendChild(document.createElement("form"));
@@ -51,11 +55,11 @@ export function fillInBoxRenderer(section) {
     form.addEventListener("submit", e => {
         e.preventDefault();
 
-        let fillin = { path: this.path, name: section.name, response: form.elements['response'].value }
+        let fillin = { path: section.path, name: section.name, response: form.elements['response'].value }
         this.post("/myapp/fillins/", fillin)
     })
 
-    fetch(`/myapp/fillins?path=${encodeURIComponent(this.path)}&name=${section.name}`)
+    fetch(`/myapp/fillins?path=${encodeURIComponent(section.path)}&name=${section.name}`)
     .then(response => response.json())
     .then(details => {
         form.querySelector("[name='response']").value = details.response;
