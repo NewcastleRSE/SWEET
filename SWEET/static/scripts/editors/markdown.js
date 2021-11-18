@@ -83,6 +83,14 @@ export function markdownRenderer(section) {
     }
     
     holder.querySelectorAll("a[href^='http']").forEach(a => a.setAttribute("target", "_blank"));
+    
+    holder.querySelectorAll("a[href^='%']").forEach(a => {
+        a.addEventListener("click", e => {
+            e.preventDefault();
+            let popup = a.getAttribute("href").substr(1);
+            bootstrap.Modal.getInstance(document.querySelector(`#popup-${popup}`)).show();
+        })
+    });
 
     holder.querySelectorAll("img").forEach(img => {
         if (img.getAttribute("src").startsWith("http")) return; //ignore absolute image paths
