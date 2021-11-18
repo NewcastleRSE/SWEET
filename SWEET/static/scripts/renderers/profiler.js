@@ -216,6 +216,12 @@ export function profilerModalRenderer(section) {
                 section.modal.body.querySelector("form").addEventListener("submit", e => {
                     e.preventDefault(); e.stopPropagation();
 
+                    // validate that some concerns have been ticked:
+                    if (Array.from(e.target.elements['agree']).filter(c => c.checked).length == 0) {
+                        aler("You have not ticked any specific concern items: if you have changed your mind please use the cross to close the popup");
+                        return;
+                    }
+                    
                     // post completed profiler;
                     const profilerResponse = {
                         dueDate: section.dueDate,
