@@ -6,6 +6,8 @@ from datetime import date
 __diary = AzurePersitentDict(az_connection, usersource, userdiary)
 __goals = AzurePersitentDict(az_connection, usersource, usergoals)
 
+diaryexport = __diary
+
 def newdiary():
     return {"sideeffects": [], "reminders": { 'daily': {'reminder': False}, 'monthly': {'reminder': False}}, "adherence": [], "notes": [], "profilers": [], "fillins": {}, "contacts": [], "plans": {}}
 

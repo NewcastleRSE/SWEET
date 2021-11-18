@@ -70,35 +70,23 @@ def getSideEffectDetails(name):
 @login_required
 def getTunnels():
     return {
-        '#home/taking-ht': [
-            {'path': 'welcome', 'content': []}, 
-            {'path': 'animation', 'content': []}, 
-            {'path': 'can-help', 'content': []},
-            {'path': 'important', 'content': []},
-            {'path': 'build', 'content': []},
-            {'path': 'my-plan', 'content': []},
-            {'path': 'tips', 'content': []},
-            {'path': 'questions', 'content': []},
-            {'path': 'more-questions', 'content': []},
-            {'path': 'more', 'content': []}
-        ],
         '#home/healthy-living/being-active': [
-            {'path': 'welcome', 'content': []}, 
-            {'path': 'health-benefits', 'content': []}, 
-            {'path': 'quest', 'content': []}, 
-            {'path': 'safe', 'content': []}, 
-            {'path': 'activities', 'content': []}, 
-            {'path': 'goals', 'content': []}, 
+            {'path': 'welcome', 'content': [{'type': 'paragraph', 'text': 'Click Next to read about the health benefits of being active.'}]}, 
+            {'path': 'health-benefits', 'content': [{'type': 'paragraph', 'text': 'Click Next to find answers to questions about being active after having breast cancer.'}]}, 
+            {'path': 'quest', 'content': [{'type': 'paragraph', 'text': 'Click Next to find out how you can stay safe while being active.'}]}, 
+            {'path': 'safe', 'content': [{'type': 'paragraph', 'text': 'Click Next to see exmples of activities you may want to try.'}]}, 
+            {'path': 'activities', 'content': [{'type': 'paragraph', 'text': 'Once you have looked at the activities you could try, click Next to see how goal setting can help you get more active.'}]}, 
+            {'path': 'goals', 'content': [{'type': 'paragraph', 'text': 'Click Next to set your activity goals.'}]}, 
             {'path': 'setgoals', 'content': []}, 
             {'path': 'find-out-more', 'content': []}
         ],
         '#home/healthy-living/healthy-eating': [
-            {'path': 'welcome', 'content': []}, 
-            {'path': 'importance', 'content': []}, 
-            {'path': 'healthy-diet', 'content': []}, 
-            {'path': 'faq', 'content': []}, 
-            {'path': 'change', 'content': []}, 
-            {'path': 'goal-setting', 'content': []}, 
+            {'path': 'welcome', 'content': [{'type': 'paragraph', 'text': 'Click Next to find out why eating a healthy diet is important.'}]}, 
+            {'path': 'importance', 'content': [{'type': 'paragraph', 'text': 'Click Next to read move about what a healthy diet includes.'}]}, 
+            {'path': 'healthy-diet', 'content': [{'type': 'paragraph', 'text': 'Click Next to see more specialist information regarding diet following a diagnosis of breast cancer and answers to some questions that women with breast cancer sometimes have about their diet.'}]}, 
+            {'path': 'faq', 'content': [{'type': 'paragraph', 'text': 'Click Next to see hints and tips for how you eat and plan meals.'}]}, 
+            {'path': 'change', 'content': [{'type': 'paragraph', 'text': 'Click Next to find out how setting goals can help you eat more healthily.'}]}, 
+            {'path': 'goal-setting', 'content': [{'type': 'paragraph', 'text': 'Click Next to set your healthy eating goals.'}]}, 
             {'path': 'goals', 'content': []}, 
             {'path': 'find-out-more', 'content': []}
         ]
