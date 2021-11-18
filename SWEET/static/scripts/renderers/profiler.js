@@ -130,7 +130,8 @@ export function profilerModalRenderer(section) {
                 // render further questions:
                 section.modal.body.innerHTML = `<form id="prof-p2">
                     <p>We'd like to ask you for a bit more detail.<br>
-                    <strong>Please tick all that apply to you.</strong></p>
+                    <strong>Please tick all that apply to you.</strong><br>
+                    Please note that you may need to scroll to see all the text.</p>
                     <table class="table table-borderless">
                         <thead>
                             <tr>
@@ -211,7 +212,7 @@ export function profilerModalRenderer(section) {
                     section.modal.body.querySelector("#C-concerns").remove();
                 }
                 
-                section.modal.footer.innerHTML = `<button type="submit" id="prof-p2-submit" class="btn btn-primary" form="prof-p2">Submit reponses</button>`
+                section.modal.body.insertAdjacentHTML("beforeend", `<button type="submit" id="prof-p2-submit" class="btn btn-primary" form="prof-p2">Submit reponses</button>`)
 
                 section.modal.body.querySelector("form").addEventListener("submit", e => {
                     e.preventDefault(); e.stopPropagation();
