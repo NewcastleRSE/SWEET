@@ -57,6 +57,8 @@ def ensureDataSources():
     usercnt = getContainer(secrets.usersource)
     if secrets.usertable not in [blob.name for blob in usercnt.list_blobs()]:
         usercnt.upload_blob(secrets.usertable, json.dumps({}))
+    if secrets.userlist not in [blob.name for blob in usercnt.list_blobs()]:
+        usercnt.upload_blob(secrets.userlist, json.dumps({}))
     if secrets.usergoals not in [blob.name for blob in usercnt.list_blobs()]:
         usercnt.upload_blob(secrets.usergoals, json.dumps({}))
     if secrets.userdiary not in [blob.name for blob in usercnt.list_blobs()]:

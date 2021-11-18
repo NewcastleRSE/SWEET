@@ -11,7 +11,7 @@ export function userDetailsPageRenderer(section) {
                 <div class="col"><label for="firstName">First Name</label><br><span id="firstName">${this.store.get("currentUser").firstName}</span><button type="button" class="edit" data-for="firstName"></button></div>
                 <div class="col"><label for="lastName">Last Name</label><br><span id="lastName">${this.store.get("currentUser").lastName}</span><button type="button" class="edit" data-for="lastName"></button></div>
                 <div class="col"><label for="email">Email Address</label><br><span id="email">${this.store.get("currentUser").email}</span><button type="button" class="edit" data-for="email"></button></div>
-                <div class="col"><button type="button" class="btn btn-primary">Change Password</button></div>
+                <div class="col"><button type="button" class="btn btn-primary">Change Password</button> <span class="sidenote">[n.b. you will be required to log in again after you change your password]</span></div>
             </div>
         </section>
     `
@@ -41,7 +41,7 @@ export function userDetailsPageRenderer(section) {
                     target.setAttribute("id", which);
                     target.textContent = input.value;
                     input.remove();
-                    src.insertAdjacentElement("beforebegind", target);
+                    src.insertAdjacentElement("beforebegin", target);
                     src.classList.remove("save");
                     src.classList.add("edit");
                 })
@@ -49,5 +49,47 @@ export function userDetailsPageRenderer(section) {
                 console.error("Personal detail edit buttons missing both 'save' and 'edit' classes.");
             }
         })
+    })
+
+    holder.querySelector("button:not([data-for])").addEventListener("click", () => {
+        let modal = this.createModal(true);
+
+        modal.title.textContent = "Change Password";
+        modal.body.innerHTML = `
+        <form id="change-pass-form">
+            <label for="oldpass">Current Password:</label> <input type="password" name="oldpass" id="oldpass"><br>
+            <label for="password">New Password:</label> <input type="password" name="password" id="password"><br>
+            <label for="confpass">Confirm New Password:</label> <input type="password" name="confpass" id="confpass">
+            <div id="errors"></div>
+        </form>
+        `
+        modal.footer.innerHTML = `<button type="button" id="form-cancel">Cancel</button><input type="submit" form="change-pass-form" value="Save details">`
+
+        modal.footer.querySelector("#form-cancel").addEventListener("click", () => modal.hide());
+
+        modal.body.querySelector("form").addEventListener("submit", e => {
+            e.preventDefault(); e.stopPropagation();
+
+            let form = e.target;
+            if (form.elements["password"].value != form.elements["confpass"].value) {
+                form.querySelector("#errors").innerHTML = `<p>The new password and password confirmation do not match. Please retype them and try again.</p>`;
+                return false;
+            } else {
+                let user = Object.assign({}, this.store.get("currentUser"));
+                user.oldpass = form.elements["oldpass"].value;
+                user.password = form.elements["password"].value;
+
+                this.post("/myapp/mydetails/", user).then(response => response.json())
+                .then(output => {
+                    if (output.result == "OK") {
+                        location.pathname = "/auth/logout";
+                    } else {
+                        form.querySelector("#errors").innerHTML = `<p>${output.message}.</p>`;
+                        return false;
+                    }
+                })
+            }
+        })
+
     })
 }

@@ -2,7 +2,8 @@ from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
 
-from .data import users
+from .data.users import updateUser, validateUser
+
 from .data.userdata import (
     getGoals, updateGoals, getSideEffects as getUserSideEffects, recordSideEffect, recordProfiler, 
     getDiary as getUserDiary, addNote, getNotes, recordAdherence, saveFillin as saveUserFillin, getFillin as getUserFillin,
@@ -139,11 +140,6 @@ def getFillin():
 
     return {"status": "error", "message": "Missing url parameters; 'path' and 'name' expected." }, 400
 
-@bp.route("/myplans")
-@login_required
-def getMyPlans():
-    return getPlans(g.user)
-
 @bp.route("/myreminders")
 @login_required
 def getMyReminders():
@@ -164,15 +160,28 @@ def setMyReminders():
 @bp.route("/mydetails")
 @login_required
 def getMyDetails():
-    return getProfile(g.user)
+    return g.user
 
 @bp.route("/mydetails/", methods=["POST"])
 @login_required
 def updateMyProfile():
     if request.is_json:
         profile = request.json
-        
-        updateProfile(g.user, profile)
+        if "userID" in profile:
+            del profile["userID"]
+
+        if "password" in profile:
+            # if password is in the profile this is a password change request
+            # we need to validate the user's old password before updating,
+            # and send ONLY the password to update as all other values should be unchanged.
+            success = validateUser(g.user['userID'], profile["oldpass"])[0]
+
+            if not success:
+                return {"result": "error", "message": "Old password was provided incorrectly; please retype then try again."}, 409
+
+            profile = {"password": profile["password"]}
+            
+        updateUser(g.user['userID'], **profile)
 
         return {"status": "OK", "message": "Profile updated"}
 

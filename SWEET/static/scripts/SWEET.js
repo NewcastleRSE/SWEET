@@ -42,8 +42,10 @@ let SWEET = createApp({
         fillin: r.fillInBoxRenderer,
         plansandgoals: plansAndGoalsRenderer,
         reminders: reminderRenderer,
-        diarygraph: diaryGraphRenderer
-    },
+        diarygraph: diaryGraphRenderer,
+        "described-menu": r.describedMenuRenderer,
+        "described-menu-item": r.describedMenuItemRenderer
+    },    
     load: function(path) {
         let url = `/app/content?path=${encodeURIComponent(path)}`;
         return fetch(url).then(response => response.json());
