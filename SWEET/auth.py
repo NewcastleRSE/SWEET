@@ -30,8 +30,7 @@ def login():
             session['user'] = token
             __logged_in_users[token] = user
 
-            hash = request.form.get('fragment', None)
-            return redirect(url_for("index", _anchor=hash))
+            return redirect(url_for("index", _anchor="welcome"))
 
         flash('Incorrect username/password combination')
         flash('Your username is usually your email address')
