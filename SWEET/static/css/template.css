@@ -145,6 +145,10 @@ nav.navbar-dark, footer.footer-dark {
     background-color: var(--SWEET-purple) !important;
 }
 
+a.navbar-brand {
+    font-size: 36px;
+}
+
 nav #app-buttons {
     position:relative;
 }
