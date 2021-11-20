@@ -1,0 +1,20 @@
+<html>
+    <body>
+        <h1>My Hormone Therapy Diary</h1>
+        {% for date, details in diary.items() %}
+            <section>
+                <header><label>Date:</label><span>{{ date }}</span></header>
+                <section>
+                    <h3>Side Effects</h3>
+                    {% for sideeffect in details.sideeffects %}
+
+                    {% endfor %}
+                    <h3>Notes</h3>
+                    {% for note in details.notes %}
+
+                    {% endfor %}
+                </section>
+            </section>
+        {% endfor %}
+    </body>
+</html>

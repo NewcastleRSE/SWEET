@@ -20,7 +20,7 @@ export function sideEffectFormRenderer(section) {
             `
 
         form.querySelector("#form-se-type-input").insertAdjacentHTML('beforeend', schema.types.map(t => `<option value="${t.name}">${t.description}</option>`).join(""));
-        form.querySelector("#form-se-type-input").addEventListener("change", e => {
+        form.querySelector("#form-se-type-input").addEventListener("change", async e => {
             let type = e.target.value;
             let scheme = schema.types.filter(t => t.name == type)[0];
             
@@ -39,7 +39,13 @@ export function sideEffectFormRenderer(section) {
                     q.setAttribute("hidden", "")
                 }
             })
-            scheme.questions.forEach(q => form.querySelector(`#form-se-${q}`).removeAttribute("hidden"));
+
+            if (section.date) {
+                let existing = await fetch(`/myapp/mydiary/sideeffects?date=${section.date}&type=${type}`).then(response => response.status == 204? null: response.json())
+                if (existing) {
+                    scheme.questions.forEach(q => form.elements[q].value = existing[q]);
+                }
+            }
         })
 
         if (section.date) {
@@ -104,6 +110,21 @@ export function sideEffectFormRenderer(section) {
         }
 
         this.post("/myapp/mydiary/sideeffects/",sideeffect)
+    })
+
+    form.addEventListener("reset", e => {
+        let sideeffect = {
+            type: form.elements['type'].value,
+            date: form.elements['date'].value
+        }
+
+        this.post("/myapp/mydiary/sideeffects/delete/",sideeffect)
+
+        ["date", "frequency", "severity", "impact", "notes"].forEach(s => {
+            form.querySelector(`#form-se-${s}`).setAttribute("hidden", "");
+        })
+
+        form.querySelector("select").value = "";
     })
 
     return form;

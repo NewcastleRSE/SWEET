@@ -1,13 +1,21 @@
 from re import L
-from .az_persitent import AzurePersitentDict
+from .az_persitent import AzurePersistentList, AzurePersitentDict
 from . import encryptUser, decryptUser
-from ..secrets import connstr as az_connection, usersource, usertable, userlist
-from .userdata import diaryexport
+from ..secrets import connstr as az_connection, usersource, usertable, userlist, userlog
+from datetime import datetime
 
 
 __userstore = AzurePersitentDict(az_connection, usersource, usertable)
 # usermap maps participant emails to user ids for 
 __usermap = AzurePersitentDict(az_connection, usersource, userlist)
+__userlog = AzurePersistentList(az_connection, usersource, userlog)
+
+def logvisit(user, path):
+    __userlog.append({
+        "user": user["userID"],
+        "path": path,
+        "datetime": datetime.today().isoformat()
+    })
 
 def confirmUserID(id):
     if id not in __userstore:
@@ -34,10 +42,11 @@ def getUser(userID):
         dirty = True
         user["lastName"] = user["fullName"][user["fullName"].rfind(" ") + 1:]
 
-    if userID in diaryexport:
-        if "profile" in diaryexport[userID]:
+    from .userdata import __diary
+    if userID in __diary:
+        if "profile" in __diary[userID]:
             dirty = True
-            user.update(**diaryexport[userID]["profile"])
+            user.update(**__diary[userID]["profile"])
 
     if dirty:
         __userstore[userID] = encryptUser(user)

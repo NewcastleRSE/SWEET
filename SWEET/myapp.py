@@ -10,7 +10,7 @@ from .data.userdata import (
     getPlans, getReminders, setReminders, getProfile, updateProfile,
     getContacts, addContact, deleteContact, updateContact,
     getAllProfilerResults, getLatestProfiler,
-    getPlan, savePlan
+    getPlan, savePlan, deleteNote, deleteSideEffect
 )
 
 from .auth import login, login_required
@@ -50,13 +50,26 @@ def addOrUpdateGoal():
 @bp.route("/mydiary")
 @login_required
 def getDiary():
-    return getUserDiary(g.user)
+    period = request.args.get("period")
+    return getUserDiary(g.user, period=period)
 
-@bp.route("/mydiary/sideeffects/<setype>")
+@bp.route("/mydiary/print")
 @login_required
-def getSideEffects(setype):
-    return getUserSideEffects(g.user, setype)
+def renderPrintDiary():
+    period = request.args.get("period")
+    return render_template("printdiary.html", diary=getUserDiary(g.user, period=period))
 
+@bp.route("/mydiary/sideeffects")
+@login_required
+def getSideEffects():
+    setype = request.args.get("type")
+    sedate = request.args.get("date")
+
+    output = getUserSideEffects(g.user, sedate=sedate, type=setype)
+    if output is None:
+        return "", 204
+
+    return output
 
 @bp.route("/mydiary/sideeffects/", methods=["POST"])
 @login_required
@@ -64,6 +77,17 @@ def addOrUpdateSideEffect():
     if request.is_json:
         se = request.json
         recordSideEffect(g.user, se)
+
+        return {"status": "OK", "message": "Update complete"}
+
+    return {"status": "error", "message": "Update request sent without json"}, 400
+
+@bp.route("/mydiary/sideeffects/delete/", methods=["POST"])
+@login_required
+def deleteASideEffect():
+    if request.is_json:
+        se = request.json
+        deleteSideEffect(g.user, se)
 
         return {"status": "OK", "message": "Update complete"}
 
@@ -91,10 +115,11 @@ def profilerResponses():
 def latestProfilerResult():
     return getLatestProfiler(g.user)
 
-@bp.route("/notes")
+@bp.route("/mydiary/notes")
 @login_required
 def get_notes():
-    return {"notes": getNotes(g.user) }
+    notedate = request.args.get("date")
+    return {"notes": getNotes(g.user, notedate=notedate) }
 
 @bp.route("/notes/", methods=["POST"])
 @login_required
@@ -105,6 +130,15 @@ def add_notes():
         return {"status": "OK", "message": "Note added"}
 
     return {"status": "error", "message": "Update request sent without json"}, 400
+
+@bp.route("/notes/delete/", methods=["POST"])
+@login_required
+def delete_note():
+    if request.is_json:
+        note = request.json
+        deleteNote(g.user, note)
+
+        return { "status": "OK", "message": "Note deleted" }
 
 @bp.route("/adherence/", methods=["POST"])
 @login_required
@@ -241,3 +275,7 @@ def setPlan():
 
     return {"status": "error", "message": "Update request sent witout json"}, 400
 
+@bp.route("mynotes/<notedate>")
+@login_required
+def getDateNotes(notedate):
+    return getNotes(g.user, notedate)

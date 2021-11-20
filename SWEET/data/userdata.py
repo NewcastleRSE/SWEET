@@ -1,24 +1,114 @@
-from .az_persitent import AzurePersitentDict
+from SWEET.data.users import confirmUserID
+from .az_persitent import AzurePersitentDict, AzurePersistentList
 from ..secrets import connstr as az_connection, usersource, usergoals, userdiary
-from . import getProfilerResponses
+from . import getContainer, getProfilerResponses
 from datetime import date
+import json
 
 __diary = AzurePersitentDict(az_connection, usersource, userdiary)
 __goals = AzurePersitentDict(az_connection, usersource, usergoals)
 
-diaryexport = __diary
+class UserData():
+    
+    def __init__(self, userID):
+        udstore = getContainer(usersource)
+        self.pathbase = f"/userdata/{userID}/"
 
-def newdiary():
-    return {"sideeffects": [], "reminders": { 'daily': {'reminder': False}, 'monthly': {'reminder': False}}, "adherence": [], "notes": [], "profilers": [], "fillins": {}, "contacts": [], "plans": {}}
+
+        if not udstore.get_blob_client(f"{self.pathbase}__init__").exists():
+            # create user data files:
+            udstore.upload_blob(f"{self.pathbase}__init__", date.today().isoformat())
+
+            for fname in ["diary", "plans", "fillins"]:
+                udstore.upload_blob(f"{self.pathbase}{fname}", json.dumps({}))
+
+            for fname in ["goals", "contacts", "profilers"]:
+                udstore.upload_blob(f"{self.pathbase}{fname}", json.dumps([]))
+
+            udstore.upload_blob(f"{self.pathbase}reminders", json.dumps({ 'daily': {'reminder': False}, 'monthly': {'reminder': False}}))
+            
+            if userID in __diary or userID in __goals:
+                self.__importLegacy(userID)
+    
+    def diary(self):
+        return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}diary")
+    def reminders(self):
+        return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}reminders")
+    def goals(self):
+        return AzurePersistentList(az_connection, usersource, f"{self.pathbase}goals")
+    def contacts(self):
+        return AzurePersistentList(az_connection, usersource, f"{self.pathbase}contacts")
+    def plans(self):
+        return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}plans")
+    def fillins(self):
+        return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}fillins")
+    def profilers(self):
+        return AzurePersistentList(az_connection, usersource, f"{self.pathbase}profilers")
+
+    def __importLegacy(self, userID):
+        legacyd = __diary.get(userID)
+        if legacyd is not None:
+            #import diary data
+            diary = self.diary()
+
+            for se in legacyd["sideeffects"]:
+                if se["date"] not in diary:
+                    diary[se["date"]] = {}
+
+                if "sideeffects" not in diary[se["date"]]:
+                    diary[se["date"]]["sideeffects"] = []
+                diary[se["date"]]["sideeffects"].append(se)
+
+            for adh in legacyd["adherence"]:
+                if adh["date"] not in diary:
+                    diary[adh["date"]] = {}
+                
+                diary[adh["date"]]["adherence"] = True
+
+            for note in legacyd["notes"]:
+                if note["date"] not in diary:
+                    diary[note["date"]] = {}
+                
+                if "notes" not in diary[note["date"]]:
+                    diary[note["date"]]["notes"] = []
+
+                diary[note["date"]]["notes"].append[note]
+
+            diary.commit()
+
+            reminders = self.reminders()
+            reminders.update(legacyd["reminders"])
+            reminders.commit()
+
+            profilers = self.profilers()
+            profilers.extend(legacyd["profilers"])
+            profilers.commit()
+
+            contacts = self.contacts()
+            contacts.extend(legacyd["contacts"])
+            contacts.commit()
+
+            fillins = self.fillins()
+            fillins.update(legacyd["fillins"])
+            fillins.commit()
+
+            plans = self.plans()
+            plans.update(legacyd["plans"])
+            plans.commit()
+
+        legacyg = __goals.get(userID)
+        if legacyg is not None:
+            #import goal data
+            goals = self.goals()
+            goals.extend(legacyg)
+            goals.commit()
+
 
 def getGoals(user=None):
     if user is None:
-        return __goals
+        return None
 
-    if user['userID'] not in __goals:
-        return { "current": [], "complete": []}
-
-    goals = __goals[user['userID']]
+    goals = UserData(user["userID"]).goals()
 
     return {
         "current": [g for g in goals if g['status'] == "active"],
@@ -28,27 +118,26 @@ def getGoals(user=None):
 def updateGoals(user, goal):
     id = user['userID']
 
-    if id not in __goals:
-        __goals[id] = []
+    goals = UserData(id).goals()
 
     if goal['status'] == "complete":
-        oldgoal = next(g for g in __goals[id] if g['goaltype'] == goal['goaltype'] and g['reviewDate'] == goal['reviewDate'] and g['detail'] == goal['detail'])
+        oldgoal = next(g for g in goals if g['goaltype'] == goal['goaltype'] and g['reviewDate'] == goal['reviewDate'] and g['detail'] == goal['detail'])
         if oldgoal is not None:
-            __goals[id].remove(oldgoal)
+            goals.remove(oldgoal)
             
-        __goals[id].append(goal)
-        __goals.commit()
+        goals.append(goal)
+        goals.commit()
         
         return True, "Update"
 
     if goal['status'] == "active":
-        activegoals = [g for g in __goals[id] if g['status'] == "active" and g['goaltype'] == goal['goaltype']]
+        activegoals = [g for g in goals if g['status'] == "active" and g['goaltype'] == goal['goaltype']]
         if len([g for g in activegoals if g['detail'] == goal['detail']]) != 0:
             return False, "Existing active goal of this type"
         
         if len(activegoals) < 3:
-            __goals[id].append(goal)
-            __goals.commit()
+            goals.append(goal)
+            goals.commit()
 
             return True, "New"
         
@@ -56,62 +145,87 @@ def updateGoals(user, goal):
 
     return False, f"Unrecognised new goal status {goal['status']}"
 
-def getDiary(user=None):
+def getDiary(user=None, period=None):
     if user is None:
-        return __diary
+        return None
 
-    if user['userID'] not in __diary:
-        __diary[user["userID"]] = newdiary()
-        __diary.commit()
+    diary = UserData(user["userID"]).diary()
 
-    return __diary[user['userID']]
-
-
-def getSideEffects(user=None, type=None):
-    diary = getDiary(user)
-    if user is None:
-        return { "sideeffects": [ s for u in diary.values() for s in u["sideeffects"] ]}
-
-    if type is None:
-        return { "sideeffects": diary["sideeffects"] }
+    if period is None:
+        return diary
     else:
-        return { "sideeffects": [s for s in diary['sideeffects'] if s['type'] == type]}
+        return { d: diary[d] for d in diary.keys() if d.startswith(period) }
+
+
+
+def getSideEffects(user=None, sedate=None, type=None):
+    if user is None:
+        return None
+
+    diary = getDiary(user)
+    if sedate is None:
+        if type is None:
+            return { "sideeffects": [se for d in diary.keys() for se in diary[d]["sideeffects"]] }
+        else:
+            return { "sideeffects": [se for d in diary.keys() for se in diary[d]["sideeffects"] if se['type'] == type]}
+    else:
+        if type is None:
+            return { "sideeffects": [se for se in diary[sedate]["sideeffects"]] }
+        else:
+            return next((se for se in diary[sedate]["sideeffects"] if se['type'] == type), None)
 
 def recordSideEffect(user, sideeffect):
     id = user['userID']
 
-    if id not in __diary:
-       __diary[id] = newdiary()
+    diary = UserData(id).diary()
 
-    userse = __diary[id]['sideeffects']
+    if sideeffect["date"] not in diary:
+        diary[sideeffect["date"]] = {}
 
-    existing = next((s for s in userse if s['type'] == sideeffect['type'] and s['date'] == sideeffect['date']), False)
+    if "sideeffects" not in diary[sideeffect["date"]]:
+        diary[sideeffect["date"]]["sideeffects"] = []
+
+    existing = next((s for s in diary[sideeffect["date"]]["sideeffects"] if s["type"] == sideeffect["type"]), None)
 
     if existing:
         existing.update(sideeffect)
     else:
-        userse.append(sideeffect)
+        diary[sideeffect["date"]]["sideeffects"].append(sideeffect)
 
-    __diary.commit()
+    diary.commit()
+
+def deleteSideEffect(user, sideeffect):
+    id = user['userID']
+
+    diary = UserData(id).diary()
+
+    if sideeffect["date"] not in diary:
+        diary[sideeffect["date"]] = {}
+
+    if "sideeffects" not in diary[sideeffect["date"]]:
+        diary[sideeffect["date"]]["sideeffects"] = []
+
+    existing = next((s for s in diary[sideeffect["date"]]["sideeffects"] if s["type"] == sideeffect["type"]), None)
+
+    if existing:
+        diary[sideeffect["date"]]["sideeffects"].remove(existing)
+
+    diary.commit()
+
 
 def recordProfiler(user, profiler):
     id = user['userID']
 
-    if id not in __diary:
-        __diary[id] = newdiary()
+    profilers = UserData(id).profilers()
 
-    userdiary = __diary[id]
-    if "profilers" not in userdiary:
-        userdiary["profilers"] = []
-
-    existing = next((p for p in userdiary["profilers"] if p["dueDate"] == profiler["dueDate"]), None)
+    existing = next((p for p in profilers if p["dueDate"] == profiler["dueDate"]), None)
 
     if existing:
         existing.update(profiler)
     else:
-        userdiary["profilers"].append(profiler)
+        profilers.append(profiler)
 
-    __diary.commit()
+    profilers.commit()
 
     if profiler["result"] in ["postponed", "refused", "no-concerns"]:
         return True, { "result": profiler["result"] }
@@ -120,7 +234,7 @@ def recordProfiler(user, profiler):
         profRes = getProfilerResponses()
         # filter appropriate response content
         output = { "content": [
-            { "type": "markdown", "encoding": "raw", "text": "Based on your responses, we’ve selected a series of topics which are tailored to your concerns.\n\nYou can read these now or save them and come back to them later. We hope these will be helpful for you.\n\nWe’ll check in again in a few months. In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within the SWEET website. Alternatively you can speak to your breast cancer team or your GP.\n\nClick on any of the below links to find out more." },
+            { "type": "markdown", "encoding": "raw", "text": "Based on your responses, we’ve selected a series of topics which are tailored to your concerns.\n\nYou can read these now or save them and come back to them later. We hope these will be helpful for you.\n\nWe’ll check in again in a few months. In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within the HT&amp;Me website. Alternatively you can speak to your breast cancer team or your GP.\n\nClick on any of the below links to find out more." },
             { "type": "accordion", "content": []}
         ]}
 
@@ -133,13 +247,7 @@ def recordProfiler(user, profiler):
 def getAllProfilerResults(user):
     id = user["userID"]
 
-    if id not in __diary:
-        __diary[id] = newdiary()
-        __diary.commit()
-    
-    if "profilers" not in __diary[id]:
-        __diary[id]["profilers"] = []
-        __diary.commit()
+    profilers = UserData(id).profilers()
 
     responses = getProfilerResponses()
     return [{
@@ -150,132 +258,126 @@ def getAllProfilerResults(user):
         "refuseReason": profiler.get("reason"),
         "concernAreas": profiler.get("concernAreas"),
         "concernDetails": { "type": "accordion", "content": [responses[c] for c in profiler.get(["concernSpecifics"], [])]}
-    } for profiler in sorted(__diary[id]["profilers"], key=lambda p: p['dueDate']) if profiler['dueDate'] < date.today().isoformat()]
+    } for profiler in sorted(profilers, key=lambda p: p['dueDate']) if profiler['dueDate'] < date.today().isoformat()]
 
 def getLatestProfiler(user):
     id = user["userID"]
 
-    if id not in __diary:
-        __diary[id] = newdiary()
+    profilers = UserData(id).profilers()
 
-    if "profilers" not in __diary[id]:
-        __diary[id]["profilers"] = []
+    if len(profilers) == 0:
+        profilers.append({ "dueDate": date.today().isoformat })
+        profilers.commit()
 
-    if len(__diary[id]["profilers"]) == 0:
-        __diary[id]["profilers"].append({ "dueDate": date.today().isoformat })
-        __diary.commit()
-
-    latest = sorted(__diary[id]["profilers"], key=lambda p: p['dueDate'], reverse=True)[0]
+    latest = sorted(profilers, key=lambda p: p['dueDate'], reverse=True)[0]
     responses = getProfilerResponses()
 
     if "concernSpecifics" in latest:
         latest["concernDetails"] = { 
             "type": "accordion",
             "content": [responses[c] for c in latest["concernSpecifics"]]
-
         }
     
     return latest
 
 def addNote(user, note):
+    ### also updates notes!!
     id = user["userID"]
 
-    if id not in __diary:
-       __diary[id] = newdiary()
+    diary = UserData(id).diary()
 
-    usernotes = __diary[id]['notes']
-    usernotes.append(note)
-    __diary.commit()
+    if note["date"] not in diary:
+        diary[note["date"]] = {}
 
-def getNotes(user):
+    if "notes" not in diary[note["date"]]:
+        diary[note["date"]]["notes"] = []
+    
+    existing = next((n for n in diary[note["date"]]["notes"] if n["taken"]["date"] == note["taken"]["date"] and n["taken"]["time"] == note["taken"]["time"]), None)
+    if existing:
+        existing.update(note)
+    else:
+        diary[note["date"]]["notes"].append(note)
+    
+    diary.commit()
+
+def getNotes(user, notedate=None):
     id = user["userID"]
-    if id not in __diary:
-        __diary[id] = newdiary()
+    diary = UserData(id).diary()
 
-    return __diary[id]['notes']
+    if notedate is None:
+        return [note for d in diary.keys() for note in diary[d]["notes"]]
+    else:
+        return [note for note in diary[notedate]["notes"]]
+
+def deleteNote(user, note):
+    id = user["userID"]
+
+    diary = UserData(id).diary()
+    notedate = note["date"]
+    if notedate not in diary:
+        diary[notedate] = {}
+
+    if "notes" not in diary[notedate]:
+        diary[notedate]["notes"] = []
+    
+    existing = next((n for n in diary[notedate]["notes"] if n["taken"]["date"] == note["taken"]["date"] and n["taken"]["time"] == note["taken"]["time"]), None)
+
+    if existing:
+        diary[notedate]["notes"].remove(existing)
 
 def recordAdherence(user, adh):
     id = user["userID"]
 
-    if id not in __diary:
-       __diary[id] = newdiary()
+    diary = UserData(id).diary()
 
-    __diary[id]['adherence'].append(adh)
-    __diary.commit()
+    if adh["date"] not in diary:
+        diary[adh["date"]] = {}
+
+    diary[adh["date"]]['adherence'] = True
+    diary.commit()
 
 def saveFillin(user, fillin):
     id = user['userID']
 
-    if id not in __diary:
-        __diary[id] = newdiary()
+    fillins = UserData(id).fillins()
 
-    if "fillins" not in __diary[id]:
-        __diary[id]['fillins'] = {}
+    path = fillin['path']
+    name = fillin['name']
 
-    if fillin['path'] not in __diary[id]['fillins']:
-        __diary[id]['fillins'][fillin['path']] = {}
+    if path not in fillins:
+        fillins[path] = {}
 
-    __diary[id]['fillins'][fillin['path']][fillin['name']] = fillin['response']
-    __diary.commit()
+    fillins[path][name] = fillin['response']
+    fillins.commit()
 
     return True, "Update complete"
 
 def getFillin(user, path, name):
     id = user['userID']
 
-    if id not in __diary:
-        __diary[id] = newdiary()
-        __diary.commit()
+    fillins = UserData(id).fillins()
+
+    if path not in fillins:
         return ""
 
-    if 'fillins' not in __diary[id]:
-        __diary[id]['fillins'] = {}
+    if name not in fillins[path]:
         return ""
 
-    if path not in __diary[id]['fillins']:
-        return ""
-
-    if name not in __diary[id]['fillins'][path]:
-        return ""
-
-    return __diary[id]['fillins'][path][name]
-
-def getPlans(user):
-    id = user['userID']
-
-    if id not in __diary:
-        __diary[id] = newdiary()
-        __diary.commit()
-        return ""
-
-    if 'fillins' not in __diary[id]:
-        __diary[id]['fillins'] = {}
-        __diary.commit()
-        return ""
-
-    return __diary[id]['fillins']
+    return fillins[path][name]
 
 def getReminders(user):
     id = user['userID']
 
-    if id not in __diary:
-        __diary[id] = newdiary()
-        __diary.commit()
+    reminders = UserData(id).reminders()
 
-    if "reminders" not in __diary[id] or not isinstance(__diary[id]['reminders'], dict):
-        __diary[id]['reminders'] = { 'daily': { 'reminder': False }, 'monthly': { 'reminder': False }}
-        __diary.commit()
-
-    return __diary[id]['reminders']
+    return reminders
 
 def setReminders(user, reminders):
     id = user['userID']
 
-    if id not in __diary:
-        __diary[id] = newdiary()
-
-    __diary[id]['reminders'] = reminders
-    __diary.commit()
+    savedreminders = UserData(id).reminders()
+    savedreminders.update(reminders)
+    reminders.commit()
 
 def getContacts(user):
     if user is None:
@@ -283,30 +385,16 @@ def getContacts(user):
     
     id = user["userID"]
 
-    if id not in __diary:
-        __diary[id] = newdiary()
-        __diary.commit()
-
-    if "contacts" not in __diary[id]:
-        __diary[id]["contacts"] = []
-        __diary.commit()
-
-    return __diary[id]["contacts"]
+    return UserData(id).contacts()
 
 def addContact(user, contact):
     if user is None:
         return None
     
-    id = user["userID"]
+    contacts = UserData(id).contacts()
 
-    if id not in __diary:
-        __diary[id] = newdiary()
-
-    if "contacts" not in __diary[id]:
-        __diary[id]["contacts"] = []
-
-    __diary[id]["contacts"].append(contact)
-    __diary.commit()
+    contacts.append(contact)
+    contacts.commit()
 
 def deleteContact(user, contact):
 
@@ -315,16 +403,12 @@ def deleteContact(user, contact):
     
     id = user["userID"]
 
-    if id not in __diary:
-        __diary[id] = newdiary()
+    contacts = UserData(id).contacts()    
+    
+    if contact in contacts:
+        contacts.remove(contact)
+        contacts.commit()
 
-    if "contacts" not in __diary[id]:
-        __diary[id]["contacts"] = []
-
-    if contact in __diary[id]["contacts"]:
-        __diary[id]["contacts"].remove(contact)
-
-    __diary.commit()
 
 def  updateContact(user, old, new):
     if user is None:
@@ -332,16 +416,11 @@ def  updateContact(user, old, new):
     
     id = user["userID"]
 
-    if id not in __diary:
-        __diary[id] = newdiary()
+    contacts = UserData(id).contacts()
 
-    if "contacts" not in __diary[id]:
-        __diary[id]["contacts"] = []
-
-    if  old in __diary[id]["contacts"]:
-        __diary[id]["contacts"][__diary[id]["contacts"].index(old)] = new
-
-    __diary.commit()
+    if old in contacts:
+        contacts[contacts.index(old)] = new
+        contacts.commit()
 
 def getPlan(user, plan):
     if user is None:
@@ -349,18 +428,12 @@ def getPlan(user, plan):
     
     id = user["userID"]
 
-    if id not in __diary:
-        __diary[id] = newdiary()
-        __diary.commit()
+    plans = UserData(id).plans()
 
-    if "plans" not in __diary[id]:
-        __diary[id]["plans"] = {}
-        __diary.commit()
-
-    if plan not in __diary[id]["plans"]:
+    if plan not in plans:
         return None
 
-    return __diary[id]["plans"][plan]
+    return plans[plan]
 
 def savePlan(user, plan):
     if user is None:
@@ -368,12 +441,7 @@ def savePlan(user, plan):
     
     id = user["userID"]
 
-    if id not in __diary:
-        __diary[id] = newdiary()
-        __diary.commit()
+    plans = UserData(id).plans()
 
-    if "plans" not in __diary[id]:
-        __diary[id]["plans"] = {}
-        __diary.commit()
-
-    __diary[id]["plans"][plan["type"]] = plan
+    plans[plan["type"]] = plan
+    plans.commit()

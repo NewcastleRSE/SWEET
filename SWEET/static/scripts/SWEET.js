@@ -52,7 +52,7 @@ let SWEET = createApp({
     },
     titleHolder: "#page-title",
     contentHolder: "#main-container",
-    name: "SWEET"
+    name: "HT&Me"
 });
 
 // user profile retrieval, validation, update and storage:
