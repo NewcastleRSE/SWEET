@@ -57,7 +57,12 @@ def getUser(userID):
         __usermap[user['email']] = userID
         __usermap.commit()
     
-    return { 'userID': userID, 'email': user['email'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'role': user['role']}
+    userout = {}
+    userout.update(user)
+    userout["userID"] = userID
+    del userout["password"]
+
+    return userout
 
 def validateUser(userID, password):
     
@@ -68,7 +73,7 @@ def validateUser(userID, password):
 
     user = decryptUser(__userstore[userID])
 
-    if password not in user:
+    if "password" not in user:
         return False, None
 
     if password != user['password']:
@@ -118,7 +123,7 @@ def updateUser(userID, **kwargs):
     if "email" in kwargs:
         email = kwargs["email"]
 
-        if email in __userstore:
+        if email != userID and email in __userstore:
             return False, "Email in use as userID"
         
         if email in __usermap and __usermap[email] != userID:

@@ -7,7 +7,7 @@ from .data.users import updateUser, validateUser
 from .data.userdata import (
     getGoals, updateGoals, getSideEffects as getUserSideEffects, recordSideEffect, recordProfiler, 
     getDiary as getUserDiary, addNote, getNotes, recordAdherence, saveFillin as saveUserFillin, getFillin as getUserFillin,
-    getPlans, getReminders, setReminders, getProfile, updateProfile,
+    getReminders, setReminders, 
     getContacts, addContact, deleteContact, updateContact,
     getAllProfilerResults, getLatestProfiler,
     getPlan, savePlan, deleteNote, deleteSideEffect

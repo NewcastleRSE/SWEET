@@ -43,6 +43,13 @@ export function sideEffectFormRenderer(section) {
             if (section.date) {
                 let existing = await fetch(`/myapp/mydiary/sideeffects?date=${section.date}&type=${type}`).then(response => response.status == 204? null: response.json())
                 if (existing) {
+                    if (existing.severity == "mild") existing.severity = 1;
+                    if (existing.severity == "moderate") existing.severity = 3;
+                    if (existing.severity == "severe") existing.severity = 5;
+                    if (existing.impact == "a little") existing.impact = 1;
+                    if (existing.impact == "moderately") existing.impact = 3;
+                    if (existing.impact == "a lot") existing.impact = 5;
+
                     scheme.questions.forEach(q => form.elements[q].value = existing[q]);
                 }
             }
@@ -118,7 +125,7 @@ export function sideEffectFormRenderer(section) {
             date: form.elements['date'].value
         }
 
-        this.post("/myapp/mydiary/sideeffects/delete/",sideeffect)
+        this.post("/myapp/mydiary/sideeffects/delete/", sideeffect);
 
         ["date", "frequency", "severity", "impact", "notes"].forEach(s => {
             form.querySelector(`#form-se-${s}`).setAttribute("hidden", "");

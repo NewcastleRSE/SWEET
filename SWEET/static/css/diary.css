@@ -84,7 +84,6 @@ table.calendar div.events div.diary-item {
     width: fit-content;
     height: fit-content;
     margin: 0.25em;
-    line-height: 0;
 }
 
 table.calendar div.events div.diary-item i {
@@ -225,7 +224,11 @@ fieldset {
         position: relative;
     }
 
-    table.calendar div.events {
+    table.calendar td.faded {
+        display: none;
+    }
+
+    table.calendar td > div.events {
         height: 2em;
     }
 

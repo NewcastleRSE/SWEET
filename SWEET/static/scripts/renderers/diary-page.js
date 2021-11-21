@@ -47,35 +47,37 @@ export function diaryCalendarRenderer(section) {
                 let seday = c.querySelector(`td[data-thisdate='${d}'] div.events div.sef`);
                 let adhday = c.querySelector(`td[data-thisdate='${d}'] div.events div.adhnot`);
 
-                diary[d].sideeffects.forEach(se => {
-                    // convert old text items into 5 point scale:
-                    if (se.severity == "mild") se.severity = 1;
-                    if (se.severity == "moderate") se.severity = 3;
-                    if (se.severity == "severe") se.severity = 5;
-                    if (se.impact == "a little") se.impact = 1;
-                    if (se.impact == "moderately") se.impact = 3;
-                    if (se.impact == "a lot") se.impact = 5;
-        
-                    // side effect structure:
-                    // -- coloured dot to the left of the box
-                    // -- section contains information about the side effect
-                    
-
-                    if (seday && !seday.querySelector(`.side-effect-${se.type}`)) {
-                        // we have found the appropriate day, and it doesn't have this type of side effect already:
-                        let i = diaryitem();
-                        i.classList.add("side-effect");
-                        i.querySelector("i").classList.add(`side-effect-${se.type}`)
+                if (diary[d].sideeffects) {
+                    diary[d].sideeffects.forEach(se => {
+                        // convert old text items into 5 point scale:
+                        if (se.severity == "mild") se.severity = 1;
+                        if (se.severity == "moderate") se.severity = 3;
+                        if (se.severity == "severe") se.severity = 5;
+                        if (se.impact == "a little") se.impact = 1;
+                        if (se.impact == "moderately") se.impact = 3;
+                        if (se.impact == "a lot") se.impact = 5;
+            
+                        // side effect structure:
+                        // -- coloured dot to the left of the box
+                        // -- section contains information about the side effect
                         
-                        let section = i.querySelector("section")
-                        section.innerHTML = `
-                        <h4>${se.description? se.description:se.type}</h4>
-                        <p><span class="severity"><label>Severity: </label><span class="bar"><label style="width: ${se.severity}em"></label></span></span><br />
-                        <span class="impact"><label>Impact: </label><span class="bar"><label style="width: ${se.impact}em"></label></span></p>
-                        `
-                        seday.appendChild(i);
-                    }
-                })
+
+                        if (seday && !seday.querySelector(`.side-effect-${se.type}`)) {
+                            // we have found the appropriate day, and it doesn't have this type of side effect already:
+                            let i = diaryitem();
+                            i.classList.add("side-effect");
+                            i.querySelector("i").classList.add(`side-effect-${se.type}`)
+                            
+                            let section = i.querySelector("section")
+                            section.innerHTML = `
+                            <h4>${se.description? se.description:se.type}</h4>
+                            <p><span class="severity"><label>Severity: </label><span class="bar"><label style="width: ${se.severity}em"></label></span></span><br />
+                            <span class="impact"><label>Impact: </label><span class="bar"><label style="width: ${se.impact}em"></label></span></p>
+                            `
+                            seday.appendChild(i);
+                        }
+                    })
+                }
 
                 if (diary[d].adherence) {
                     // adherence structure:
@@ -95,8 +97,7 @@ export function diaryCalendarRenderer(section) {
 
                 }
 
-                // as we can record multiple notes for the same day
-                diary[d].notes.forEach(note => {
+                if (diary[d].notes  && diary[d].notes.taken) {
                     // note structure:
                     // -- yellow notes icon in the bottom-right of box
                     // -- section contains every note for the current day.
@@ -104,6 +105,8 @@ export function diaryCalendarRenderer(section) {
                     if (adhday) {
                         let existing = adhday.querySelector(".notes");
                         if (!existing) {
+                            let note = diary[d].notes
+
                             existing = diaryitem();
                             existing.classList.add(`notes`)
                             existing.querySelector("i").classList.add("bi-file-text")
@@ -112,13 +115,11 @@ export function diaryCalendarRenderer(section) {
                             section.innerHTML = `<h4>Notes</h4>`
                             
                             adhday.appendChild(existing);
-                        }
-                    
-                        if (!existing.querySelector(`section p[data-taken='${note.taken.date}T${note.taken.time}']`)) {
                             existing.querySelector("section").insertAdjacentHTML('beforeend', `<p data-taken="${note.taken.date}T${note.taken.time}">${note.note}</p>`)
+                    
                         }
                     }
-                })
+                }
             })
         })
     })
@@ -167,33 +168,42 @@ export function diaryCalendarRenderer(section) {
                     // first, capture the current state of the day modal (this ensures we don't revert an adherence click since the modal was last opened)
                     daytemplate = modal.body.innerHTML;
 
-                    modal.body.innerHTML = `
-                        <h5>Make a new note< <span class="sidenote">[use this to record anything else]</span></h5>
-                        <form>
-                        <input type="hidden" name="date" value="${d.dataset.thisdate}">
-                        <textarea name="note" cols="50" rows="5" maxlength="500" minlength="5"></textarea>
-                        <div class="form-buttons"><button type="submit">Save</button></div>
-                        </form>
-                        <h5>Amend your old notes</h5>
-                    `
+                    function reset() {
+                        modal.body.innerHTML = `
+                            <h5>General notes about the day <span class="sidenote">[use this to record anything else]</span></h5>
+                            <form id="modal-update-note-form">
+                            <input type="hidden" name="takendate"><input type="hidden" name="takentime">
+                            <input type="hidden" name="date" value="${d.dataset.thisdate}">
+                            <textarea name="note" cols="50" rows="5"></textarea>
+                            </form>
+                        `
 
-                    let oldnotes = await fetch(`/myapp/mydiary/notes?date=${d.dataset.thisdate}`).then(response => response.json())
+                        let btnreset = modal.footer.querySelector("input[type='reset']")
+                        if (btnreset) btnreset.remove();
+                    }
 
-                    oldnotes.notes.forEach(n => {
-                        modal.body.insertAdjacentHTML("beforeend", `
-                        <form>
-                        <input type="hidden" name="date" value="${n.date}"><input type="hidden" name="takendate" value="${n.taken.date}"><input type="hidden" name="takentime" value="${n.taken.time}">
-                        <textarea name="note" cols="50" rows="5" maxlength="500" minlength="5">${n.note}</textarea>
-                        <div class="form-buttons"><button type="button">Delete</button><button type="submit">Update</button></div>
-                        </form>
-                        `)
-                    })
+                    reset()
 
-                    modal.footer.querySelector("#se-close").textContent = "Cancel";
+                    let form = modal.body.querySelector("form");
+                    let oldnotes = await fetch(`/myapp/mydiary/notes?date=${d.dataset.thisdate}`).then(response => response.json()).then(notes => notes.notes)
+
+                    if ("taken" in oldnotes) {
+                        form.elements["takendate"].value = oldnotes.taken.date;
+                        form.elements["takentime"].value = oldnotes.taken.time;
+                        form.elements["note"].value = oldnotes.note;
+                        modal.footer.insertAdjacentHTML("beforeend", ` <input type="reset" form="${form.getAttribute("id")}" value="Delete Notes" class="btn btn-secondary">`)
+                    }
+
+                    modal.footer.querySelector("#se-close").textContent = "Back";
                     modal.footer.querySelector("#se-close").classList.remove("btn-primary");
                     modal.footer.querySelector("#se-close").classList.add("btn-secondary");
 
-                    modal.body.querySelectorAll("form").forEach(f => f.addEventListener("submit", e => {
+                    modal.footer.insertAdjacentHTML("beforeend", ` 
+                        <input type="submit" form="${form.getAttribute("id")}" value="Save Changes" class="btn btn-primary">
+                    `)
+
+
+                    form.addEventListener("submit", e => {
                         e.preventDefault();
                         let form = e.target
                         let now = new Date()
@@ -203,42 +213,30 @@ export function diaryCalendarRenderer(section) {
                             note: form.elements['note'].value
                         }
 
-                        if (form.elements['takendate']) {
+                        if (form.elements['takendate'].value) {
                             note.taken = { date: form.elements["takendate"].value, time: form.elements["takentime"].value }
                             note.updated = { date: this.calendarDate(now), time: `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`}
                         } else {
                             note.taken = { date: this.calendarDate(now), time: `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`}
                         }
                         
-                        this.post("/myapp/notes/", note)
-                        .then(() => {
-                            modal.body.innerHTML = daytemplate;
-                            modal.footer.innerHTML = dayfooter;
-                            modal.footer.querySelector("#se-close").addEventListener("click", e => {
-                                modal.hide(true);
-                            })
-                            this.dispatchEvent("calendar:update", c);
-                        })
-                    }))
+                        this.post("/myapp/notes/", note);
+                        if (!(modal.footer.querySelector("input[type='reset']"))) {
+                            modal.footer.querySelector("#se-close").insertAdjacentHTML("afterend", ` <input type="reset" form="${form.getAttribute("id")}" value="Delete Notes" class="btn btn-secondary">`)
+                        }
+                    })
 
-                    modal.body.querySelectorAll("button[type='button']").forEach(b => {
-                        b.addEventListener("click", be => {
-                            if (b.textContent != "Delete") return;
-
-                            let form = b.parentElement.parentElement; // <form><div><button>
-
-                            let note = {
-                                date: form.elements['date'].value,
-                                taken: {
-                                    date: form.elements['takendate'],
-                                    time: form.elements['takentime']
-                                }
+                    form.addEventListener("reset", () => {
+                        let note = {
+                            date: form.elements['date'].value,
+                            taken: {
+                                date: form.elements['takendate'].value,
+                                time: form.elements['takentime'].value
                             }
-    
-                            this.post("/myapp/notes/delete/", note).then(() => {
-                                form.remove();
-                            })
-                        })
+                        }
+
+                        this.post("/myapp/notes/delete/", note);
+                        reset()
                     })
                 }
 
@@ -255,32 +253,19 @@ export function diaryCalendarRenderer(section) {
                         modal.body.appendChild(form);
 
                         modal.footer.insertAdjacentHTML('beforeend',` <input type="submit" form="${form.getAttribute("id")}" value="Save details" class="btn btn-primary">`)
-                        modal.footer.querySelector("#se-close").textContent = "Cancel";
+                        modal.footer.querySelector("#se-close").textContent = "Back";
                         modal.footer.querySelector("#se-close").classList.remove("btn-primary");
                         modal.footer.querySelector("#se-close").classList.add("btn-secondary");
 
                         form.addEventListener("change", changeEvent => {
-                            if (changeEvent.target.tagName == "SELECT") {
+                            if (changeEvent.target.tagName == "SELECT" && !(modal.footer.querySelector("input[type='reset']"))) {
                                 modal.footer.querySelector("#se-close").insertAdjacentHTML("afterend", ` <input type="reset" form="${form.getAttribute("id")}" value="Clear details" class="btn btn-secondary">`)
                             }
                         })
 
-                        form.addEventListener("submit", e => {
-                            modal.body.innerHTML = daytemplate;
-                            if (d.querySelector(".events .adherence")) {
-                                modal.body.querySelector("#day-modal-adherence").innerHTML = "&check;";
-                            }
-
-                            modal.footer.innerHTML = dayfooter;
-                            modal.footer.querySelector("#se-close").addEventListener("click", e => {
-                                modal.hide(true);
-                            })
-                            this.dispatchEvent("calendar:update", c);
-                        })
 
                         form.addEventListener("reset", re => {
                             modal.footer.querySelector("input[type='reset']").remove();
-                            this.dispatchEvent("calendar:update", c);
                         })
                 
                     })
@@ -296,7 +281,6 @@ export function diaryCalendarRenderer(section) {
                     this.post("/myapp/adherence/", { date: d.dataset.thisdate })
                     src.innerHTML = "&check;"
 
-                    this.dispatchEvent("calendar:update", c);
                 }
             })
             modal.footer.innerHTML = dayfooter;
@@ -304,12 +288,16 @@ export function diaryCalendarRenderer(section) {
             modal.footer.querySelector("#se-close").addEventListener("click", e => {
                 if (e.target.textContent == "Close") {
                     modal.hide();
+                    this.dispatchEvent("calendar:update");
                     return;
                 }
 
-                if (e.target.textContent == "Cancel") {
+                if (e.target.textContent == "Back") {
                     modal.body.innerHTML = daytemplate;
                     e.target.textContent = "Close";
+                    e.target.classList.remove("btn-secondary");
+                    e.target.classList.add("btn-primary");
+                    modal.footer.querySelectorAll("input").forEach(i => i.remove())
                     return;
                 }
             })

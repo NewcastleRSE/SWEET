@@ -4,52 +4,16 @@ from ..secrets import connstr as az_connection, usersource, usergoals, userdiary
 from . import getContainer, getProfilerResponses
 from datetime import date
 import json
+from azure.core.exceptions import ResourceExistsError
 
 __diary = AzurePersitentDict(az_connection, usersource, userdiary)
 __goals = AzurePersitentDict(az_connection, usersource, usergoals)
 
-class UserData():
-    
-    def __init__(self, userID):
-        udstore = getContainer(usersource)
-        self.pathbase = f"/userdata/{userID}/"
-
-
-        if not udstore.get_blob_client(f"{self.pathbase}__init__").exists():
-            # create user data files:
-            udstore.upload_blob(f"{self.pathbase}__init__", date.today().isoformat())
-
-            for fname in ["diary", "plans", "fillins"]:
-                udstore.upload_blob(f"{self.pathbase}{fname}", json.dumps({}))
-
-            for fname in ["goals", "contacts", "profilers"]:
-                udstore.upload_blob(f"{self.pathbase}{fname}", json.dumps([]))
-
-            udstore.upload_blob(f"{self.pathbase}reminders", json.dumps({ 'daily': {'reminder': False}, 'monthly': {'reminder': False}}))
-            
-            if userID in __diary or userID in __goals:
-                self.__importLegacy(userID)
-    
-    def diary(self):
-        return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}diary")
-    def reminders(self):
-        return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}reminders")
-    def goals(self):
-        return AzurePersistentList(az_connection, usersource, f"{self.pathbase}goals")
-    def contacts(self):
-        return AzurePersistentList(az_connection, usersource, f"{self.pathbase}contacts")
-    def plans(self):
-        return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}plans")
-    def fillins(self):
-        return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}fillins")
-    def profilers(self):
-        return AzurePersistentList(az_connection, usersource, f"{self.pathbase}profilers")
-
-    def __importLegacy(self, userID):
+def transferLegacy(ud, userID):
         legacyd = __diary.get(userID)
         if legacyd is not None:
             #import diary data
-            diary = self.diary()
+            diary = ud.diary()
 
             for se in legacyd["sideeffects"]:
                 if se["date"] not in diary:
@@ -69,39 +33,75 @@ class UserData():
                 if note["date"] not in diary:
                     diary[note["date"]] = {}
                 
-                if "notes" not in diary[note["date"]]:
-                    diary[note["date"]]["notes"] = []
-
-                diary[note["date"]]["notes"].append[note]
+                diary[note["date"]]["notes"] = note
 
             diary.commit()
 
-            reminders = self.reminders()
+            reminders = ud.reminders()
             reminders.update(legacyd["reminders"])
             reminders.commit()
 
-            profilers = self.profilers()
+            profilers = ud.profilers()
             profilers.extend(legacyd["profilers"])
             profilers.commit()
 
-            contacts = self.contacts()
+            contacts = ud.contacts()
             contacts.extend(legacyd["contacts"])
             contacts.commit()
 
-            fillins = self.fillins()
+            fillins = ud.fillins()
             fillins.update(legacyd["fillins"])
             fillins.commit()
 
-            plans = self.plans()
+            plans = ud.plans()
             plans.update(legacyd["plans"])
             plans.commit()
 
         legacyg = __goals.get(userID)
         if legacyg is not None:
             #import goal data
-            goals = self.goals()
+            goals = ud.goals()
             goals.extend(legacyg)
             goals.commit()
+
+class UserData():
+    
+    def __init__(self, userID):
+        udstore = getContainer(usersource)
+        self.pathbase = f"userdata/{userID}/"
+
+        try:
+            # create user data files:
+            udstore.upload_blob(f"{self.pathbase}_init", date.today().isoformat())
+
+            for fname in ["diary", "plans", "fillins"]:
+                udstore.upload_blob(f"{self.pathbase}{fname}", json.dumps({}))
+
+            for fname in ["goals", "contacts", "profilers"]:
+                udstore.upload_blob(f"{self.pathbase}{fname}", json.dumps([]))
+
+            udstore.upload_blob(f"{self.pathbase}reminders", json.dumps({ 'daily': {'reminder': False}, 'monthly': {'reminder': False}}))
+
+            transferLegacy(self, userID)
+        except ResourceExistsError:
+            # user data has previously been created
+            pass
+    
+    def diary(self):
+        return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}diary")
+    def reminders(self):
+        return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}reminders")
+    def goals(self):
+        return AzurePersistentList(az_connection, usersource, f"{self.pathbase}goals")
+    def contacts(self):
+        return AzurePersistentList(az_connection, usersource, f"{self.pathbase}contacts")
+    def plans(self):
+        return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}plans")
+    def fillins(self):
+        return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}fillins")
+    def profilers(self):
+        return AzurePersistentList(az_connection, usersource, f"{self.pathbase}profilers")
+
 
 
 def getGoals(user=None):
@@ -180,7 +180,7 @@ def recordSideEffect(user, sideeffect):
     diary = UserData(id).diary()
 
     if sideeffect["date"] not in diary:
-        diary[sideeffect["date"]] = {}
+        diary[sideeffect["date"]] = { "sideeffects": [], "notes": {}}
 
     if "sideeffects" not in diary[sideeffect["date"]]:
         diary[sideeffect["date"]]["sideeffects"] = []
@@ -200,7 +200,7 @@ def deleteSideEffect(user, sideeffect):
     diary = UserData(id).diary()
 
     if sideeffect["date"] not in diary:
-        diary[sideeffect["date"]] = {}
+        return
 
     if "sideeffects" not in diary[sideeffect["date"]]:
         diary[sideeffect["date"]]["sideeffects"] = []
@@ -287,16 +287,16 @@ def addNote(user, note):
     diary = UserData(id).diary()
 
     if note["date"] not in diary:
-        diary[note["date"]] = {}
+        diary[note["date"]] = { "sideeffects": [], "notes": {}}
 
     if "notes" not in diary[note["date"]]:
-        diary[note["date"]]["notes"] = []
-    
-    existing = next((n for n in diary[note["date"]]["notes"] if n["taken"]["date"] == note["taken"]["date"] and n["taken"]["time"] == note["taken"]["time"]), None)
-    if existing:
-        existing.update(note)
+        diary[note["date"]]["notes"] = note
     else:
-        diary[note["date"]]["notes"].append(note)
+        notes = diary[note["date"]]["notes"]
+        if isinstance(notes, list):
+            diary[note["date"]]["notes"] = note
+        else:
+            diary[note["date"]]["notes"].update(note)
     
     diary.commit()
 
@@ -305,25 +305,29 @@ def getNotes(user, notedate=None):
     diary = UserData(id).diary()
 
     if notedate is None:
-        return [note for d in diary.keys() for note in diary[d]["notes"]]
+        return [diary[d]["notes"] for d in diary.keys()]
     else:
-        return [note for note in diary[notedate]["notes"]]
+        if notedate not in diary or "notes" not in diary[notedate]:
+            return {}
+        
+        notes = diary[notedate]["notes"]
+        if isinstance(notes, list):
+            notes = notes[0]
+
+        return notes
 
 def deleteNote(user, note):
     id = user["userID"]
 
     diary = UserData(id).diary()
     notedate = note["date"]
+
     if notedate not in diary:
-        diary[notedate] = {}
-
-    if "notes" not in diary[notedate]:
-        diary[notedate]["notes"] = []
-    
-    existing = next((n for n in diary[notedate]["notes"] if n["taken"]["date"] == note["taken"]["date"] and n["taken"]["time"] == note["taken"]["time"]), None)
-
-    if existing:
-        diary[notedate]["notes"].remove(existing)
+        return False
+    else:
+        diary[notedate]["notes"] = {}
+        diary.commit()
+        return True
 
 def recordAdherence(user, adh):
     id = user["userID"]
@@ -331,7 +335,7 @@ def recordAdherence(user, adh):
     diary = UserData(id).diary()
 
     if adh["date"] not in diary:
-        diary[adh["date"]] = {}
+        diary[adh["date"]] = { "sideeffects": [], "notes": {}}
 
     diary[adh["date"]]['adherence'] = True
     diary.commit()

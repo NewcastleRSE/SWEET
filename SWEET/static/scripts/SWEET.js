@@ -8,6 +8,12 @@ import { createModal } from './extensions/modal.js'
 import { createCalendar } from './extensions/calendar.js'
 import { plansAndGoalsRenderer } from './renderers/planandgoal.js'
 import { reminderRenderer } from './renderers/remindersetter.js'
+import { contactFormRenderer, contactListRenderer, contactPageRenderer, contactRenderer } from './renderers/contacts.js'
+import { planRenderer, myPlansRenderer } from './renderers/plan.js'
+import { thoughtsRenderer, thoughtsPageRenderer } from './renderers/thoughts.js'
+import { userDetailsPageRenderer } from './renderers/user_details.js'
+import { welcomeFooterRenderer } from './renderers/welcome.js'
+
 
 let SWEET = createApp({
     extensions: {
@@ -44,7 +50,17 @@ let SWEET = createApp({
         reminders: reminderRenderer,
         diarygraph: diaryGraphRenderer,
         "described-menu": r.describedMenuRenderer,
-        "described-menu-item": r.describedMenuItemRenderer
+        "described-menu-item": r.describedMenuItemRenderer,
+        "user-details-page": userDetailsPageRenderer,
+        "contact": contactRenderer,
+        "contact-form": contactFormRenderer,
+        "contact-list": contactListRenderer,
+        "contact-page": contactPageRenderer,
+        "plan": planRenderer,
+        "my-plans": myPlansRenderer,
+        "thoughts": thoughtsRenderer,
+        "thoughts-page": thoughtsPageRenderer,
+        "welcome-footer": welcomeFooterRenderer
     },    
     load: function(path) {
         let url = `/app/content?path=${encodeURIComponent(path)}`;
@@ -58,10 +74,12 @@ let SWEET = createApp({
 // user profile retrieval, validation, update and storage:
 fetch("/myapp/mydetails").then(response => response.json()).then(profile => {
 
-    if (!("tunnelsComplete" in profile)) profile["tunnelsComplete"] = [];
-
+    if (!("tunnelsComplete" in profile)) {
+        profile["tunnelsComplete"] = [];
+        SWEET.post("/myapp/mydetails/", profile);
+    }
+    
     SWEET.store.set("currentUser", profile);
-    SWEET.post("/myapp/mydetails/", profile);
 
 });
 
