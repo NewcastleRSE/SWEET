@@ -105,7 +105,7 @@ export function popupRenderer(section) {
     modal.size = section.size;
     modal.id = `popup-${section.name}`
 
-    modal.title.textContent = section.title;
+    modal.title.textContent = section.title? section.title: "";
     section.content.forEach(s => this.render(s).then(node => modal.body.appendChild(node)));
     modal.footer.innerHTML = "<button type='button' class='btn btn-primary'>Close</button>";
     modal.footer.querySelector("button").addEventListener("click", () => modal.hide());
