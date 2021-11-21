@@ -296,6 +296,7 @@ export function diaryCalendarRenderer(section) {
 
                 if (e.target.textContent == "Back") {
                     modal.body.innerHTML = daytemplate;
+                    modal.size = "";
                     e.target.textContent = "Close";
                     e.target.classList.remove("btn-secondary");
                     e.target.classList.add("btn-primary");
