@@ -335,9 +335,9 @@ export async function profilerLauncherRenderer(section) {
                 }
             }
         ]
-    })
+    });
 
-    node.querySelector("a").addEventListener("click", e => {
+    node.addEventListener("click", e => {
         e.preventDefault(); e.stopPropagation();
 
         this.render(section.profiler);
@@ -349,15 +349,17 @@ export async function profilerLauncherRenderer(section) {
 export async function myPersonalSupportRenderer(section) {
     if (section.type != "my-personal-support") return null;
 
-    profilers = await fetch("/myapp/profiler/responses").then(response => response.json())
+    let profilers = await fetch("/myapp/profiler/responses").then(response => response.json()).then(p => p.profilers);
+
+    console.log(profilers)
     
     if (profilers.length == 0) return null;
 
     let latest = profilers.shift();
 
     let holder = document.createElement("section");
-    holder.classList.add("prf-latest")
-    holder.insertAdjacentHTML("beforeend", "<h3>Your Current Suggestions</h3>")
+    holder.classList.add("prf-latest");
+    holder.insertAdjacentHTML("beforeend", "<h3>Your Current Suggestions</h3>");
 
     let message, renderDetails = false;
     if (latest.result == "postponed") {
@@ -383,16 +385,16 @@ export async function myPersonalSupportRenderer(section) {
         }
     }
 
-    await this.render({ type: "markdown", encoding: "raw", text: message}).then(node => holder.appendChild(node))
+    await this.render({ type: "markdown", encoding: "raw", text: message}).then(node => holder.appendChild(node));
     
-    if (renderDetails) await this.render(latest.concernDetails).then(node => holder.appendChild(node))
+    if (renderDetails) await this.render(latest.concernDetails).then(node => holder.appendChild(node));
 
-    let newdets = { type: "profiler-launcher" }
+    let newdets = { type: "profiler-launcher" };
     if (latest.result == "postponed") newdets.profiler = latest;
 
-    await this.render(newdets).then(node => holder.appendChild(node))
+    await this.render(newdets).then(node => holder.appendChild(node));
 
-    await this.render({ type: "markdown", encoding: "raw", text: "### Your Previous Responses and Suggestions\n\nBelow you will find a list of the results when you have answered these questions before, arranged by date with the most recent first."})
+    await this.render({ type: "markdown", encoding: "raw", text: "### Your Previous Responses and Suggestions\n\nBelow you will find a list of the results when you have answered these questions before, arranged by date with the most recent first."}).then(node => holder.appendChild(node));
     await this.render({
         type: "accordion",
         content: profilers.map(async (p) => {
@@ -403,11 +405,12 @@ export async function myPersonalSupportRenderer(section) {
                 type: "accordion-item",
                 header: new Date(p.date).toDateString(),
                 content: [
-                    await this.render(p)
+                    p
                 ]
             }
         })
-    }).then(node => holder.appendChild(node))
+    }).then(node => holder.appendChild(node));
 
+    console.log(holder);
     return holder;
 }

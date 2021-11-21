@@ -250,15 +250,15 @@ def getAllProfilerResults(user):
     profilers = UserData(id).profilers()
 
     responses = getProfilerResponses()
-    return [{
+    return {"profilers": [{
         "dueDate": profiler["dueDate"],
         "result": profiler["result"],
         "reminderDate": profiler.get("reminderDate"),
         "dateComplete": profiler.get("dateComplete"),
         "refuseReason": profiler.get("reason"),
         "concernAreas": profiler.get("concernAreas"),
-        "concernDetails": { "type": "accordion", "content": [responses[c] for c in profiler.get(["concernSpecifics"], [])]}
-    } for profiler in sorted(profilers, key=lambda p: p['dueDate']) if profiler['dueDate'] < date.today().isoformat()]
+        "concernDetails": { "type": "accordion", "content": [responses[c] for c in profiler.get("concernSpecifics", [])]}
+    } for profiler in sorted(profilers, key=lambda p: p['dueDate']) if profiler['dueDate'] < date.today().isoformat()]}
 
 def getLatestProfiler(user):
     id = user["userID"]

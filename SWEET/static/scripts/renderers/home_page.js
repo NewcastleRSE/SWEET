@@ -75,13 +75,23 @@ export function homepageMenuRenderer(section) {
     let profiler = createItem();
     profiler.$title.textContent = section.profiler.title;
     profiler.$subtitle.textContent = section.profiler.description;
-    profiler.$link.setAttribute("href", "#");
+    profiler.$link.setAttribute("href", "#home/my-support");
 
-    profiler.addEventListener("click", e => {
-        e.preventDefault(); e.stopPropagation();
+    profiler.addEventListener("click", async e => {
+        let latestp = await fetch("/myapp/profiler/latest").then(response => response.json());
+        let today = this.calendarDate(new Date());
 
+        if (
+            (latestp.dueDate > today) ||
+            (latestp.result == "complete" || latestp.result == "refused") ||
+            (latestp.result == "postponed" && latestp.reminderDate > today)
+        ) {
+            return true;
+        }
         // fix this up ASAP!
-        this.render({ type: "profiler", dueDate: this.calendarDate(new Date())})
+        e.preventDefault(); e.stopPropagation();
+        latestp.type = "profiler";
+        this.render(latestp);
     })
 
     if (section.profiler.icon && section.profiler.icon != "none") {

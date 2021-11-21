@@ -1,7 +1,7 @@
 import { createApp } from "./app.js";
 import * as r from './editors/renderers.js';
 import { homepageMenuRenderer } from './renderers/home_page.js'
-import { profilerModalRenderer } from './renderers/profiler.js'
+import { profilerModalRenderer, profilerResultRenderer, profilerLauncherRenderer, myPersonalSupportRenderer } from './renderers/profiler.js'
 import { sideEffectModalRenderer, sideEffectFormRenderer } from './renderers/side_effects.js'
 import { diaryCalendarRenderer, diaryGraphRenderer } from "./renderers/diary-page.js";
 import { createModal } from './extensions/modal.js'
@@ -60,7 +60,10 @@ let SWEET = createApp({
         "my-plans": myPlansRenderer,
         "thoughts": thoughtsRenderer,
         "thoughts-page": thoughtsPageRenderer,
-        "welcome-footer": welcomeFooterRenderer
+        "welcome-footer": welcomeFooterRenderer,
+        "profiler-result": profilerResultRenderer, 
+        "profiler-launcher": profilerLauncherRenderer, 
+        "my-personal-support": myPersonalSupportRenderer
     },    
     load: function(path) {
         let url = `/app/content?path=${encodeURIComponent(path)}`;

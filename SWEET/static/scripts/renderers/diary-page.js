@@ -104,8 +104,9 @@ export function diaryCalendarRenderer(section) {
                     
                     if (adhday) {
                         let existing = adhday.querySelector(".notes");
+                        let note = diary[d].notes
+
                         if (!existing) {
-                            let note = diary[d].notes
 
                             existing = diaryitem();
                             existing.classList.add(`notes`)
@@ -115,10 +116,10 @@ export function diaryCalendarRenderer(section) {
                             section.innerHTML = `<h4>Notes</h4>`
                             
                             adhday.appendChild(existing);
-                            existing.querySelector("section").insertAdjacentHTML('beforeend', `<p data-taken="${note.taken.date}T${note.taken.time}">${note.note}</p>`)
-                    
                         }
-                    }
+
+                        this.render({type: "markdown", encoding: "raw", text: note.note }).then(node => existing.querySelector("section").insertAdjacentHTML('beforeend', `<p data-taken="${note.taken.date}T${note.taken.time}">${node.innerHTML}</p>`))
+                    }                    
                 }
             })
         })
@@ -163,6 +164,7 @@ export function diaryCalendarRenderer(section) {
             modal.body.innerHTML = daytemplate;
             modal.body.addEventListener("click", async e => {
                 if (e.target.matches("#day-modal-add-note, #day-modal-add-note *")) {
+                    modal.size = "lg";
                     // set up adding note functionality
 
                     // first, capture the current state of the day modal (this ensures we don't revert an adherence click since the modal was last opened)
@@ -505,7 +507,7 @@ export function diaryGraphRenderer(section) {
         })
 
     })
-
+/*
     this.addEventListener("calendar:update", c => {
         let basedate = c.querySelector("#cal-caption").dataset.basemonth;
 
@@ -538,6 +540,6 @@ export function diaryGraphRenderer(section) {
         })
 
     })
-
+*/
     return holder;
 }

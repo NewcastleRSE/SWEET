@@ -40,7 +40,7 @@ export function thoughtsPageRenderer(section) {
                     "It looks like you haven't entered any thoughts you would like to change in the Side-Effects section – Hot flushes, Fatigue, or Sleep problems. To the pages where you can do that use the buttons below",
                     {
                         type: "menu",
-                        content: schema.map(s => { return { type: "menu-item", title: s.title, link: s.path } })
+                        content: schema.thoughts.map(s => { return { type: "menu-item", title: s.title, link: s.path } })
                     }
                 ]
             }).then(node => holder.appendChild(node))
