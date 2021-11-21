@@ -135,7 +135,13 @@ table.calendar div.events div.diary-item section {
 
 table.calendar div.events div.diary-item:hover section {
     position: absolute;
-    display: inline-block;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-left: -80px;
+    width: 320px;
+    max-height: 700px;
+    overflow: auto;
 }
 
 table.calendar div.events div.diary-item :is(.severity, .impact) > label {
@@ -159,6 +165,11 @@ table.calendar div.events div.diary-item .impact .bar label {
     background-color: var(--SWEET-gold);
     vertical-align: top;
 }
+
+table.calendar div.events div.diary-item .se-notes {
+    flex-basis: 100%;
+}
+
 #day-modal-adherence {
     height: 1.25em;
     width: 1.25em;

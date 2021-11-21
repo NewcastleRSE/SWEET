@@ -43,7 +43,7 @@ main footer {
 }
 
 #page-title {
-    margin-left: 1em; margin-right: 1em;
+    margin-right: 1em;
     width: 100%;
     text-align: center;
 }
@@ -105,6 +105,14 @@ span a {
     text-decoration: none;
 }
 
+#btn-print {
+    float: right;
+}
+
+.btn-responsive {
+    font-size: 0.8vw;
+}
+
 .btn-primary, .btn-primary:focus {
     color: #fff;
     background-color: var(--SWEET-purple);
@@ -127,6 +135,7 @@ span a {
     outline: none !important;
     box-shadow: none;
 }
+
 
 .form-check-input:checked {
     background-color: var(--SWEET-purple);

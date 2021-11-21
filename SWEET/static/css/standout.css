@@ -4,11 +4,15 @@
     margin: 1em auto;
 }
 
-[class*='so-'] section.markdown {
+[class*='so-'] > section.markdown {
     margin-bottom: 2em;
 }
 
-[class*='so-'] p:last-child {
+[class*='so-'] > section.markdown:last-child {
+    margin-bottom: 0em;
+}
+
+[class*='so-'] section.markdown > p:last-child {
     margin-bottom: 0;
 }
 
