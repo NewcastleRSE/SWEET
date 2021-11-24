@@ -3,7 +3,7 @@ export function contactListRenderer(section) {
 
     let holder = document.createElement("section");
     holder.classList.add("contact-list");
-    section.contacts.forEach(contact => this.render({ type: "contact", "contact": contact}).then(node => holder.appendChild(node)));
+    section.contacts.forEach(contact => this.render(contact.type == "contact"? contact: { type: "contact", "contact": contact}).then(node => holder.appendChild(node)));
 
     return holder;
 }
@@ -12,21 +12,22 @@ export function contactRenderer(section) {
     if (section.type != "contact" || !("contact" in section)) return null;
 
     let contact = section.contact;
+
     let holder = document.createElement("section");
     holder.classList.add("contact");
 
     holder.innerHTML = `
-        <header>
-            <button class="edit"></button>
-            <button class="delete"></button>
-            <h4>Key Contact</h4>
-            <h5>${contact.type}</h5>
-        </header>
-        <div class="contact-body">
-            <strong>Name</strong>: <span class="contact-name">${contact.name}</span><br>
-            <strong>Phone</strong>: <span class="contact-phone">${contact.phone}</span><br>
-            <strong>Email</strong>: <span class="contact-email">${contact.email}</span>
+        <div>
+            <button class="edit" style="float: left;"></button>
+            <button class="delete" style="float: left; clear: left;"></button>
+            <h5>Key Contact: ${contact.type}</h5>
+            <div class="contact-body">
+                <strong>Name</strong>: <span class="contact-name">${contact.name}</span><br>
+                <strong>Phone</strong>: <span class="contact-phone">${contact.phone}</span><br>
+                <strong>Email</strong>: <span class="contact-email">${contact.email}</span>
+            </div>
         </div>
+        
     `
     holder.querySelector("button.edit").addEventListener("click", e => {
         let modal = this.createModal(true);
@@ -62,7 +63,7 @@ export function contactFormRenderer(section) {
     let edit = ("contact" in section);
 
     let form = document.createElement("form");
-    if (edit) form.setAttribute("id", contact.name.toLower().replaceAll(" ", "_"))
+    form.setAttribute("id", edit? section.contact.name.toLowerCase().replaceAll(" ", "_"): "new-contact")
 
     form.innerHTML = `
         <label for="contact-type">Who is this person?</label><select id="contact-person-type" name="type"><option>Breast Cancer Nurse</option><option>GP Practice</option><option>Pharmacist</option><option>Other</option></select><br>
@@ -77,11 +78,13 @@ export function contactFormRenderer(section) {
     }
 
     form.addEventListener("submit", e => {
+        e.preventDefault();
+
         let contact =  {
-            type: form.elements["type"],
-            name: form.elements["name"],
-            phone: form.elements["phone"],
-            email: form.elements["email"]
+            type: form.elements["type"].value,
+            name: form.elements["name"].value,
+            phone: form.elements["phone"].value,
+            email: form.elements["email"].value
         }
 
         let poster = edit ?
@@ -99,11 +102,11 @@ export function contactFormRenderer(section) {
         })
     })
 
-    return holder;
+    return form;
 }
 
 export function contactPageRenderer(section) {
-    if (section.type != "contact-page") return null;
+    if (section.type != "contacts-page") return null;
 
     let holder = document.createElement("section");
     holder.classList.add("all-contacts")
@@ -128,6 +131,7 @@ export function contactPageRenderer(section) {
                     modal.body.appendChild(form);
                     
                     modal.footer.querySelector("button.close").addEventListener("click", e => modal.hide());
+                    modal.footer.querySelector("[type='submit']").setAttribute("form", form.getAttribute("id"))
         
                     modal.show();
                 })

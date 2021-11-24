@@ -40,8 +40,8 @@ export class FillInBoxEditor extends HTMLElement {
 
 export function fillInBoxRenderer(section) {
     if (section.type != "fillin") return null;
-
-    section.path == section.path || this.path;
+    
+    section.path = section.path || this.path;
 
     let holder = document.createElement("section");
     holder.classList.add("fill-in", section.boxsize);

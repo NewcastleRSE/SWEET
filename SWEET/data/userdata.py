@@ -448,7 +448,7 @@ def addContact(user, contact):
     if user is None:
         return None
     
-    contacts = UserData(id).contacts()
+    contacts = UserData(user["userID"]).contacts()
 
     contacts.append(contact)
     contacts.commit()

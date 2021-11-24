@@ -152,7 +152,7 @@ export function createApp(options={}) {
             dispatchEvent.call(this, "prerender", page);
             
             while (settings.contentHolder.firstChild) settings.contentHolder.removeChild(settings.contentHolder.lastChild);
-            Promise.allSettled(page.content.map(c => this.render(c).then(node => settings.contentHolder.appendChild(node))))
+            Promise.allSettled(page.content.map(c => this.render(c))).then(promises => promises.map(p => p.value)).then(nodes => settings.contentHolder.append(...nodes))
             .then(() => dispatchEvent.call(this, "postrender"));
         })
     }

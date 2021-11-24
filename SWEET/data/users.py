@@ -137,6 +137,7 @@ def updateUser(userID, **kwargs):
     user.update(**kwargs)
     __userstore[userID] = encryptUser(user)
 
+    __userstore.commit()
         
     return True
     

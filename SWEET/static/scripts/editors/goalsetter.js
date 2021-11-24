@@ -145,7 +145,7 @@ export function goalRenderer(section) {
 
             let daysInput = schema.frequency.map(f => `<input class="form-check-input" type="radio" name="frequency" id="frequency-${f}" value="${f}"><label class="form-check-label" for="frequency-${f}">${f}</label>`).join("");
    
-            form.appendChild(document.createElement("p")).innerHTML = `<label>Activity: </label> <select class='form-control w-50 d-inline-block' name='activity' placeholder='choose an activity' autocomplete='off'><br>
+            form.appendChild(document.createElement("p")).innerHTML = `<label>Activity: </label> <select class='form-control w-50 d-inline-block' name='activity' placeholder='choose an activity' autocomplete='off'></select><br>
             <span id="activity-other-wrapper" hidden><label>Write your own here:</label><input type="text" name="activity-other" class='form-control w-50 d-inline-block' ></span><br>`;
 
             form.appendChild(document.createElement("p")).innerHTML = `<label>How many days?</label> ${daysInput}`;

@@ -1,0 +1,24 @@
+#my-personal-details :is(label, span, input) {
+    margin-right: 2em;
+}
+
+:is(#my-personal-details, .contact) button.edit::before {
+    content: "\270D"
+}
+
+:is(#my-personal-details, .contact) button.save::before {
+    content: "\1f4be"
+}
+
+:is(#my-personal-details, .contact) button.delete::before {
+    content: "\1f5d1";
+    font-size: 166%;
+}
+
+.contact  h5, .contact .contact-body {
+    margin-left: 3rem;
+}
+
+.contact-list {
+    margin-bottom: 2em;
+}

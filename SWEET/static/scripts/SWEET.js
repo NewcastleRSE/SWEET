@@ -55,7 +55,7 @@ let SWEET = createApp({
         "contact": contactRenderer,
         "contact-form": contactFormRenderer,
         "contact-list": contactListRenderer,
-        "contact-page": contactPageRenderer,
+        "contacts-page": contactPageRenderer,
         "plan": planRenderer,
         "my-plans": myPlansRenderer,
         "thoughts": thoughtsRenderer,

@@ -8,10 +8,10 @@ export function userDetailsPageRenderer(section) {
         <section id="my-personal-details">
             <h4>Personal Details</h4>
             <div  class="row row-cols-2">
-                <div class="col"><label for="firstName">First Name</label><br><span id="firstName">${this.store.get("currentUser").firstName}</span><button type="button" class="edit" data-for="firstName"></button></div>
-                <div class="col"><label for="lastName">Last Name</label><br><span id="lastName">${this.store.get("currentUser").lastName}</span><button type="button" class="edit" data-for="lastName"></button></div>
-                <div class="col"><label for="email">Email Address</label><br><span id="email">${this.store.get("currentUser").email}</span><button type="button" class="edit" data-for="email"></button></div>
-                <div class="col"><button type="button" class="btn btn-primary">Change Password</button> <span class="sidenote">[n.b. you will be required to log in again after you change your password]</span></div>
+                <div class="col"><label for="firstName">First Name</label> <span id="firstName">${this.store.get("currentUser").firstName}</span><button type="button" class="edit" data-for="firstName"></button></div>
+                <div class="col"><label for="lastName">Last Name</label> <span id="lastName">${this.store.get("currentUser").lastName}</span><button type="button" class="edit" data-for="lastName"></button></div>
+                <div class="col"><label for="email">Email Address</label> <span id="email">${this.store.get("currentUser").email}</span><button type="button" class="edit" data-for="email"></button></div>
+                <div class="col"><button type="button" class="btn btn-primary">Change Password</button><br><span class="sidenote">[n.b. you will be required to log in again after you change your password]</span></div>
             </div>
         </section>
     `
@@ -92,4 +92,6 @@ export function userDetailsPageRenderer(section) {
         })
 
     })
+
+    return holder;
 }
