@@ -1,10 +1,24 @@
 <html>
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/template.css') }}">
+        <style>
+            #details {
+                page-break-before: always;
+            }
+
+            .diary-date-details {
+                page-break-inside: avoid;
+            }
+        </style>
+    </head>
     <body>
         <h1>My Hormone Therapy Diary</h1>
         <h2>{{ diary.prettyperiod }}</h2>
         <section id="summary-graphs">
             <h3>My Side Effects Summary</h4>
-            <div id="se-graph-title">This page provides a graphical overview of the severity and impact of your side effects this month.</div>
+            <div id="se-graph-title">This section provides a graphical overview of the severity and impact of your side effects this month.</div>
 
             {% for prp in ["severity", "impact"] %}
             <h4>The {{prp}} of your side effects this month</h4>
@@ -55,16 +69,16 @@
         </section>
         <section id="details">
             <h3>My Side Effects Details</h3>
-            <div><p>This page lists all of the side effect details and notes that you have recorded this month.</p></div>
+            <div><p>This section lists all of the side effect details and notes that you have recorded this month.</p></div>
             {% for date, details in diary.fulldiary.items() %}
             {% if (details.notes and details.notes.note != "") or (details.sideeffects and details.sideeffects | length > 0) %}
-            <header><h3>Date: {{ details.prettydate }}</h3></header>
-            <section>
+            <section class="diary-date-details">
+                <header><h3>Date: {{ details.prettydate }}</h3></header>
                 {% if "sideeffects" in details and details.sideeffects | length > 0 %}
                 <h4>Side Effects</h4>
                 {% for sideeffect in details.sideeffects %}
-                    <h5>Side effect: {{sideeffect.description}}</h5>
                     <section>
+                        <h5>Side effect: {{sideeffect.description}}</h5>
                         <p>How bad {% if sideeffect.type == "hf" %}was{% else %}were{% endif %} your {{sideeffect.description | lower}}: {{sideeffect.sevdesc}} <em>({{sideeffect.severity | int}})</em><br>
                         <p>How much did your {{sideeffect.description | lower}} impact your life: {{sideeffect.impdesc}} <em>({{sideeffect.impact | int}})</em>{% 
                         if notes in sideeffect and sideeffect.notes != "" %} <br><p>Notes: {{sideeffect.notes}}{% endif %}</p>
