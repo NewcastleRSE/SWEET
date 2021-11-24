@@ -78,6 +78,9 @@ export function homepageMenuRenderer(section) {
     profiler.$link.setAttribute("href", "#home/my-support");
 
     profiler.addEventListener("click", async e => {
+        // fix this up ASAP!
+        e.preventDefault(); e.stopPropagation();
+
         let latestp = await fetch("/myapp/profiler/latest").then(response => response.json());
         let today = this.calendarDate(new Date());
 
@@ -86,10 +89,10 @@ export function homepageMenuRenderer(section) {
             (latestp.result == "complete" || latestp.result == "refused") ||
             (latestp.result == "postponed" && latestp.reminderDate > today)
         ) {
-            return true;
+            this.path = "#home/my-support";
+            return;
         }
-        // fix this up ASAP!
-        e.preventDefault(); e.stopPropagation();
+
         latestp.type = "profiler";
         this.render(latestp);
     })
