@@ -78,7 +78,6 @@ export function homepageMenuRenderer(section) {
     profiler.$link.setAttribute("href", "#home/my-support");
 
     profiler.addEventListener("click", async e => {
-        // fix this up ASAP!
         e.preventDefault(); e.stopPropagation();
 
         let latestp = await fetch("/myapp/profiler/latest").then(response => response.json());
