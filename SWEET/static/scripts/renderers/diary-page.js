@@ -508,7 +508,7 @@ export function diaryGraphRenderer(section) {
         })
 
     })
-/*
+
     this.addEventListener("calendar:update", c => {
         let basedate = c.querySelector("#cal-caption").dataset.basemonth;
 
@@ -534,13 +534,16 @@ export function diaryGraphRenderer(section) {
             fetch("/app/schemas/sideeffects").then(response => response.json())
         ]).then(([diary,schema]) => {
 
-            let se = diary.value.sideeffects.filter(se => se.date.startsWith(basedate));
+            console.log(diary.value)
+            diary = diary.value;
+            let se = [].concat(...Object.keys(diary).map(d => "sideeffects" in diary[d]? diary[d].sideeffects.map(se => Object.assign(se, { date: d}) ): []) );
+            console.log(se)
             updateGeneral(se, schema.value);
             let spec = holder.querySelector("select").value;
             updateSpecific(se.filter(i => i.type == spec));
         })
 
     })
-*/
+
     return holder;
 }

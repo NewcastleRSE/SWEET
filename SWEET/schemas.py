@@ -50,21 +50,27 @@ def getSideEffectTypes():
         ]
     }
 
+def getSideEffectValueMappings():
+    return {
+        0: "Not at all",
+        1: "Hardly",
+        2: "A little",
+        3: "Moderately",
+        4: "Very",
+        5: "Extremely",
+        "mild": 1,
+        "moderate": 3,
+        "severe": 5,
+        "a little": 1,
+        "moderately": 3,
+        "a lot": 5
+    }
+
 @bp.route("/sideeffects/<name>")
 @login_required
 def getSideEffectDetails(name):
-    return {
-        "hf": {
-            "title": "Hot Flushes",
-            "embedtext": "hot flushes",
-            "frequency": "day"
-        },
-        "arth": {
-            "title": "Arthralgia (Joint Pain)",
-            "embedtext": "joint pains",
-            "frequency": "week"
-        }
-    }[name]
+    all = getSideEffectTypes()
+    return next((t for t in all.items() if  t["name"] == name), {"status": "error", "message": f"Side effect schema not found for '{name}'"})
 
 @bp.route("/tunnels")
 @login_required

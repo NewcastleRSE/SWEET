@@ -6,7 +6,8 @@ from .data.users import updateUser, validateUser
 
 from .data.userdata import (
     getGoals, updateGoals, getSideEffects as getUserSideEffects, recordSideEffect, recordProfiler, 
-    getDiary as getUserDiary, addNote, getNotes, recordAdherence, saveFillin as saveUserFillin, getFillin as getUserFillin,
+    getDiary as getUserDiary, getPrintDiary,
+    addNote, getNotes, recordAdherence, saveFillin as saveUserFillin, getFillin as getUserFillin,
     getReminders, setReminders, 
     getContacts, addContact, deleteContact, updateContact,
     getAllProfilerResults, getLatestProfiler,
@@ -57,7 +58,7 @@ def getDiary():
 @login_required
 def renderPrintDiary():
     period = request.args.get("period")
-    return render_template("printdiary.html", diary=getUserDiary(g.user, period=period))
+    return render_template("printdiary.html", diary=getPrintDiary(g.user, period=period))
 
 @bp.route("/mydiary/sideeffects")
 @login_required

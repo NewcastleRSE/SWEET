@@ -5,6 +5,7 @@ from . import getContainer, getProfilerResponses
 from datetime import date
 import json
 from azure.core.exceptions import ResourceExistsError
+from ..schemas import getSideEffectValueMappings
 
 __diary = AzurePersitentDict(az_connection, usersource, userdiary)
 __goals = AzurePersitentDict(az_connection, usersource, usergoals)
@@ -156,6 +157,58 @@ def getDiary(user=None, period=None):
     else:
         return { d: diary[d] for d in diary.keys() if d.startswith(period) }
 
+
+def getPrintDiary(user, period):
+    if user is None or period is None:
+        return None
+
+    pd = {}
+    pd["period"] = period
+
+    if period[6:] in ["09", "04", "06", "11"]:
+        pd["days"] = 30
+    elif period[6:] == "02":
+        pd["days"] = 28
+    else:
+        pd["days"] = 31
+
+    pd["prettyperiod"] = date.fromisoformat(f"{period}-14").strftime("%B %Y") # use a mid-month date to avoid time zone & dst issues with 0 time
+
+    pd["fulldiary"] = { d: i for d, i in dict(sorted(UserData(user["userID"]).diary().items())).items() if d.startswith(period) }
+    
+    for d, i in pd["fulldiary"].items():
+        i.update(prettydate=date.fromisoformat(d).strftime("%d %B %Y"))
+
+    if len(pd["fulldiary"]) == 0:
+        return pd
+
+    seschema = getSideEffectValueMappings()
+
+    for d, i in pd["fulldiary"].items():
+        if "sideeffects" in i:
+            if "sideeffects" not in pd:
+                pd["sideeffects"] = {}
+
+            for se in i["sideeffects"]:
+                if se["type"] not in pd["sideeffects"]:
+                    pd["sideeffects"][se["type"]] = []
+                
+                if "date" not in se:
+                    se["date"] = d
+
+                if isinstance(se["severity"], str) and se["severity"] in seschema:
+                    se["severity"] = seschema[se["severity"]]
+
+                if isinstance(se["impact"], str) and se["impact"] in seschema:
+                    se["impact"] = seschema[se["impact"]]
+
+                se["sevdesc"] = seschema[round(float(se["severity"]))]
+                se["impdesc"] = seschema[round(float(se["impact"]))]
+
+                pd["sideeffects"][se["type"]].append(se)
+
+    return pd
+            
 
 
 def getSideEffects(user=None, sedate=None, type=None):
