@@ -234,7 +234,6 @@ export function profilerModalRenderer(section) {
 
                     this.post(url, profilerResponse).then(response => response.json())
                     .then(result => {
-                        console.log(result);
                         if (result.status == "OK") {
                             section.modal.body.innerHTML = "";
                             result.details.content.forEach(c => this.render(c).then(node => section.modal.body.appendChild(node)))
@@ -351,9 +350,9 @@ export async function myPersonalSupportRenderer(section) {
 
     let profilers = await fetch("/myapp/profiler/responses").then(response => response.json()).then(p => p.profilers);
 
-    console.log(profilers)
-    
     if (profilers.length == 0) return null;
+
+    profilers.sort((a, b) => a.dueDate == b.dueDate? 0: a.dueDate > b.dueDate? -1: 1);
 
     let latest = profilers.shift();
 
@@ -364,8 +363,8 @@ export async function myPersonalSupportRenderer(section) {
     let message, renderDetails = false;
     if (latest.result == "postponed") {
         message = "You didn't have time to complete the questions last time we asked; if you want to do it now you can click the button below."
-    } else if (section.result == "refused") {
-        message = `You did not answer the questions last time we asked, because ${{"no-concern": "you did not have any concerns", "no-time": "you did not have time", "no-already": "your questions had already been answered"}[section.refuseReason]}. If you would like to answer them now please click the button below.`;
+    } else if (latest.result == "refused") {
+        message = `You did not answer the questions last time we asked, because ${{"no-concerns": "you did not have any concerns", "no-time": "you did not have time", "no-already": "your questions had already been answered"}[latest.refuseReason]}. If you would like to answer them now please click the button below.`;
     } else if (latest.result == "complete") {
         if (latest.concernAreas == "none") {
             message = `Great to hear that you are getting on with your hormone therapy. We will check in with you again in the next few months.
@@ -385,6 +384,7 @@ export async function myPersonalSupportRenderer(section) {
         }
     }
 
+
     await this.render({ type: "markdown", encoding: "raw", text: message}).then(node => holder.appendChild(node));
     
     if (renderDetails) await this.render(latest.concernDetails).then(node => holder.appendChild(node));
@@ -392,12 +392,13 @@ export async function myPersonalSupportRenderer(section) {
     let newdets = { type: "profiler-launcher" };
     if (latest.result == "postponed") newdets.profiler = latest;
 
-    await this.render(newdets).then(node => holder.appendChild(node));
+    await this.render(newdets).then(node => { holder.appendChild(node); });
 
     await this.render({ type: "markdown", encoding: "raw", text: "### Your Previous Responses and Suggestions\n\nBelow you will find a list of the results when you have answered these questions before, arranged by date with the most recent first."}).then(node => holder.appendChild(node));
+
     await this.render({
         type: "accordion",
-        content: profilers.map(async (p) => {
+        content: profilers.map(p => {
             p.type = "profiler-result";
             if (!p.date) p.date = p.dateComplete || p.reminderDate || p.dueDate;
             
@@ -411,6 +412,6 @@ export async function myPersonalSupportRenderer(section) {
         })
     }).then(node => holder.appendChild(node));
 
-    console.log(holder);
+
     return holder;
 }
