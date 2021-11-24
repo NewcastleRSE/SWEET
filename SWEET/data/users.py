@@ -16,6 +16,7 @@ def logvisit(user, path):
         "path": path,
         "datetime": datetime.today().isoformat()
     })
+    __userlog.commit()
 
 def confirmUserID(id):
     if id not in __userstore:
