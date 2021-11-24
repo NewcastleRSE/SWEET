@@ -398,7 +398,7 @@ export async function myPersonalSupportRenderer(section) {
 
     await this.render({
         type: "accordion",
-        content: profilers.map(p => {
+        content: profilers.map(p => { // fix-up 24/11/2021: async callback for .map was creating array of promises, *NOT* content objects. Logic here does not require async execution anyway!
             p.type = "profiler-result";
             if (!p.date) p.date = p.dateComplete || p.reminderDate || p.dueDate;
             
