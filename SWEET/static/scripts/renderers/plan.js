@@ -12,7 +12,7 @@ export function planRenderer(section) {
         <label><strong>And I have</strong> [write activity]</label>
         <input type="text" name="activity" class="form-control shadow-hover">
         <label><strong>Then</strong> [I will take]</label>
-        <input type="text" name="response" data-fillin-name="plan" class="form-control shadow-hover">
+        <input type="text" name="response" class="form-control shadow-hover">
         <input type="submit" value="Save" class="btn btn-primary">
     </form>`
 
