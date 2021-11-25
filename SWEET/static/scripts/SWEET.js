@@ -205,6 +205,15 @@ document.querySelector("#main-container").addEventListener("click", e => {
 
 });
 
-document.querySelector("#btn-print > a").addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); window.alert("Here you will be able to download .pdf versions of some pages."); })
+document.querySelector("#btn-print > a").addEventListener("click", e => { 
+
+    e.preventDefault(); e.stopPropagation(); 
+    
+    if (SWEET.path == "#home/diary") {
+        open(`/myapp/mydiary/print?period=${e.currentTarget.dataset.period}`);
+    } else {
+        window.alert("Here you will be able to download .pdf versions of some pages."); 
+    }
+})
 
 SWEET.start();

@@ -123,6 +123,10 @@ export function diaryCalendarRenderer(section) {
                 }
             })
         })
+
+        if (document.querySelector("#btn-print > a")) {
+            document.querySelector("#btn-print > a").dataset.period = basemonth;
+        }
     })
 
     c.addEventListener("click", e => {
@@ -534,10 +538,8 @@ export function diaryGraphRenderer(section) {
             fetch("/app/schemas/sideeffects").then(response => response.json())
         ]).then(([diary,schema]) => {
 
-            console.log(diary.value)
             diary = diary.value;
             let se = [].concat(...Object.keys(diary).map(d => "sideeffects" in diary[d]? diary[d].sideeffects.map(se => Object.assign(se, { date: d}) ): []) );
-            console.log(se)
             updateGeneral(se, schema.value);
             let spec = holder.querySelector("select").value;
             updateSpecific(se.filter(i => i.type == spec));
