@@ -38,7 +38,7 @@ export class FillInBoxEditor extends HTMLElement {
 }
 
 
-export function fillInBoxRenderer(section) {
+export async function fillInBoxRenderer(section) {
     if (section.type != "fillin") return null;
     
     section.path = section.path || this.path;
@@ -59,7 +59,7 @@ export function fillInBoxRenderer(section) {
         this.post("/myapp/fillins/", fillin)
     })
 
-    fetch(`/myapp/fillins?path=${encodeURIComponent(section.path)}&name=${section.name}`)
+    await fetch(`/myapp/fillins?path=${encodeURIComponent(section.path)}&name=${section.name}`)
     .then(response => response.json())
     .then(details => {
         form.querySelector("[name='response']").value = details.response;

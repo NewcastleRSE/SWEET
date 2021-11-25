@@ -12,7 +12,7 @@ export function planRenderer(section) {
         <label><strong>And I have</strong> [write activity]</label>
         <input type="text" name="activity" class="form-control shadow-hover">
         <label><strong>Then</strong> [I will take]</label>
-        <input type="text" name="response" class="form-control shadow-hover">
+        <input type="text" name="plan" class="form-control shadow-hover">
         <input type="submit" value="Save" class="btn btn-primary">
     </form>`
 
@@ -23,10 +23,10 @@ export function planRenderer(section) {
 
         let plan = {
             type: section.plan,
-            time: form.elements["time"],
-            place: form.elements["place"],
-            activity: form.elements["activity"],
-            plan: form.elements["plan"],
+            time: form.elements["time"].value,
+            place: form.elements["place"].value,
+            activity: form.elements["activity"].value,
+            plan: form.elements["plan"].value,
         }
 
         this.post("/myapp/myplans/", plan)
@@ -34,8 +34,8 @@ export function planRenderer(section) {
 
     fetch(`/myapp/myplans/${section.plan}`).then(response => response.json())
     .then(plan => {
-        for (field in ["time", "place", "activity", "plan"]) {
-            if (field in plan) form.elements[field] = plan[field];
+        for (const field of ["time", "place", "activity", "plan"]) {
+            if (field in plan) form.elements[field].value = plan[field];
         }
     })
 

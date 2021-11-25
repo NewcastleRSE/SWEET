@@ -7,8 +7,9 @@ export async function thoughtsRenderer(section) {
 
     let schema = await fetch(`/app/schemas/thoughts?path=${encodeURIComponent(section.path)}`).then(response => response.json());
 
-    let negfillin = await this.render({ type: "fillin", boxsize: "large", path: section.path, name: schema.negfillin});
-    let posfillin = await this.render({ type: "fillin", boxsize: "large", path: section.path, name: schema.posfillin});
+
+    
+    let [negfillin, posfillin] = await Promise.allSettled([this.render({ type: "fillin", boxsize: "large", path: section.path, name: schema.negfillin}), this.render({ type: "fillin", boxsize: "large", path: section.path, name: schema.posfillin})]).then(ps => ps.map(p => p.value))
     
     if (negfillin.querySelector("textarea").value || posfillin.querySelector("textarea").value) {
         // at least one part of thoughts is filled in so we'll render it:
@@ -17,9 +18,14 @@ export async function thoughtsRenderer(section) {
         holder.appendChild(negfillin);
         holder.insertAdjacentHTML("beforeend", `<label>${schema.poslabel}</label>`)
         holder.appendChild(posfillin);
+    } else {
+        // if there's nothing in either box we'll return a 1-button menu to link to this thoughts page:
+        await this.render({
+            type: "menu",
+            content: [{ type: "menu-item", title: schema.title, link: schema.path } ]
+        }).then(node => holder.appendChild(node));
     }
 
-    // if there's nothing in either box we'll return an empty holder and the calling code can decide what to do about it.
     return holder;
 }
 
@@ -35,7 +41,7 @@ export function thoughtsPageRenderer(section) {
         .then(holderPromises => holderPromises.map(p => p.value))
         .then(holders => {
             if (holders.filter(h => h.childElementCount > 0).length == 0) {
-                // we have no thoughts in the app; create a menu to link to thought pages:
+                // we have no thoughts in the app; create a single menu to link to thought pages:
                 this.render({
                     type: "container",
                     content: [
@@ -47,7 +53,8 @@ export function thoughtsPageRenderer(section) {
                     ]
                 }).then(node => holder.appendChild(node))
             } else {
-                holder.append(...holders.filter(h => h.childElementCount > 0));
+                // we have at least one thought, so we'll render each individually (this will render links for thoughts that have not been completed.)
+                holder.append(...holders);
             }
         })
     })

@@ -13,6 +13,7 @@ import { planRenderer, myPlansRenderer } from './renderers/plan.js'
 import { thoughtsRenderer, thoughtsPageRenderer } from './renderers/thoughts.js'
 import { userDetailsPageRenderer } from './renderers/user_details.js'
 import { welcomeFooterRenderer } from './renderers/welcome.js'
+import { goalCheckerRenderer} from './renderers/goalchecker.js'
 
 
 let SWEET = createApp({
@@ -63,7 +64,8 @@ let SWEET = createApp({
         "welcome-footer": welcomeFooterRenderer,
         "profiler-result": profilerResultRenderer, 
         "profiler-launcher": profilerLauncherRenderer, 
-        "my-personal-support": myPersonalSupportRenderer
+        "my-personal-support": myPersonalSupportRenderer,
+        goalchecker: goalCheckerRenderer
     },    
     load: function(path) {
         let url = `/app/content?path=${encodeURIComponent(path)}`;
