@@ -73,7 +73,7 @@ export function diaryCalendarRenderer(section) {
                             <h4>${se.description? se.description:se.type}</h4>
                             <p><span class="severity"><label>Severity: </label><span class="bar"><label style="width: ${se.severity}em"></label></span></span><br />
                             <span class="impact"><label>Impact: </label><span class="bar"><label style="width: ${se.impact}em"></label></span></p>
-                            `
+                            ${ se.notes? `<p class="se-notes"><label>Notes:</label><div>${se.notes}</p>`: ""}`
                             seday.appendChild(i);
                         }
                     })
