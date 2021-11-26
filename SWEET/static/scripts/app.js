@@ -116,7 +116,15 @@ export function createApp(options={}) {
         let renderer = settings.renderers[content.type];
         let rendered = null;
 
-        if (renderer) { rendered = renderer.call(this, content); } 
+        if (renderer) { 
+            try {
+                rendered = renderer.call(this, content); 
+            } catch (e) {
+                console.error(e);
+                renderer = document.createElement("p");
+                p.innerHTML = `It was not possible to render this <code>${content.type}</code> block.`;
+            }
+        } 
         else if (content instanceof String) { rendered = document.createTextNode(` ${content} `); } 
         else if (content instanceof Object) { console.error("Attempt to render unrecognised content section:", content); }
         else { rendered = document.createTextNode(` ${content} `); }
