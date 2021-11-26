@@ -80,7 +80,7 @@ def getTunnels():
             {'path': 'welcome', 'content': [{'type': 'paragraph', 'text': 'Click Next to read about the health benefits of being active.'}]}, 
             {'path': 'health-benefits', 'content': [{'type': 'paragraph', 'text': 'Click Next to find answers to questions about being active after having breast cancer.'}]}, 
             {'path': 'quest', 'content': [{'type': 'paragraph', 'text': 'Click Next to find out how you can stay safe while being active.'}]}, 
-            {'path': 'safe', 'content': [{'type': 'paragraph', 'text': 'Click Next to see exmples of activities you may want to try.'}]}, 
+            {'path': 'safe', 'content': [{'type': 'paragraph', 'text': 'Click Next to see examples of activities you may want to try.'}]}, 
             {'path': 'activities', 'content': [{'type': 'paragraph', 'text': 'Once you have looked at the activities you could try, click Next to see how goal setting can help you get more active.'}]}, 
             {'path': 'goals', 'content': [{'type': 'paragraph', 'text': 'Click Next to set your activity goals.'}]}, 
             {'path': 'setgoals', 'content': []}, 
@@ -88,7 +88,7 @@ def getTunnels():
         ],
         '#home/healthy-living/healthy-eating': [
             {'path': 'welcome', 'content': [{'type': 'paragraph', 'text': 'Click Next to find out why eating a healthy diet is important.'}]}, 
-            {'path': 'importance', 'content': [{'type': 'paragraph', 'text': 'Click Next to read move about what a healthy diet includes.'}]}, 
+            {'path': 'importance', 'content': [{'type': 'paragraph', 'text': 'Click Next to read more about what a healthy diet includes.'}]}, 
             {'path': 'healthy-diet', 'content': [{'type': 'paragraph', 'text': 'Click Next to see more specialist information regarding diet following a diagnosis of breast cancer and get answers to some questions that women with breast cancer sometimes have about their diet.'}]}, 
             {'path': 'faq', 'content': [{'type': 'paragraph', 'text': 'Click Next to see hints and tips for how you eat and plan meals.'}]}, 
             {'path': 'change', 'content': [{'type': 'paragraph', 'text': 'Click Next to find out how setting goals can help you eat more healthily.'}]}, 
@@ -121,7 +121,7 @@ def getThoughtSchemas():
         "#home/dealing-se/sleep/cbt": {
             "title": "Changing the way you think about sleep problems",
             "negfillin": "sleeptochange",
-            "neglabel": "There are the thoughts I want to change about sleep problems:",
+            "neglabel": "These are the thoughts I want to change about sleep problems:",
             "posfillin": "sleepchanged",
             "poslabel": "Alternative self-supportive response:"
         }
