@@ -8,9 +8,9 @@ export function userDetailsPageRenderer(section) {
         <section id="my-personal-details">
             <h4>Personal Details</h4>
             <div  class="row row-cols-2">
-                <div class="col"><label for="firstName">First Name</label> <span id="firstName">${this.store.get("currentUser").firstName}</span><button type="button" class="edit" data-for="firstName"></button></div>
-                <div class="col"><label for="lastName">Last Name</label> <span id="lastName">${this.store.get("currentUser").lastName}</span><button type="button" class="edit" data-for="lastName"></button></div>
-                <div class="col"><label for="email">Email Address</label> <span id="email">${this.store.get("currentUser").email}</span><button type="button" class="edit" data-for="email"></button></div>
+                <div class="col"><label for="firstName">First Name</label> <span id="firstName">${this.store.get("currentUser").firstName}</span><button type="button" class="edit" data-for="firstName"><button type="button" class="cancel" data-for="firstName"></button></div>
+                <div class="col"><label for="lastName">Last Name</label> <span id="lastName">${this.store.get("currentUser").lastName}</span><button type="button" class="edit" data-for="lastName"></button><button type="button" class="cancel" data-for="lastName"></div>
+                <div class="col"><label for="email">Email Address</label> <span id="email">${this.store.get("currentUser").email}</span><button type="button" class="edit" data-for="email"></button><button type="button" class="cancel" data-for="email"></div>
                 <div class="col"><button type="button" class="btn btn-primary">Change Password</button><br><span class="sidenote">[n.b. you will be required to log in again after you change your password]</span></div>
             </div>
         </section>
@@ -18,7 +18,7 @@ export function userDetailsPageRenderer(section) {
 
     holder.querySelectorAll("button[data-for]").forEach(src => {
         src.addEventListener("click", e => {
-            let which = src.getAttribute("data-for");
+            let which = src.dataset.for;
 
             if (src.classList.contains("edit")) {
                 let target = holder.querySelector(`#${which}`);
@@ -45,6 +45,22 @@ export function userDetailsPageRenderer(section) {
                     src.classList.remove("save");
                     src.classList.add("edit");
                 })
+            } else if (src.classList.contains("cancel")) {
+                const oldval = src.dataset.revert
+                if (!oldval) return;
+
+                let input = holder.querySelector(`#${which}`);
+                let saver = holder.querySelector(`.save[data=for='${which}']`)
+                
+                let target = document.createElement("span");
+                target.setAttribute("id", which);
+                target.textContent = oldval;
+                
+                input.remove();
+                
+                saver.insertAdjacentElement("beforebegin", target);
+                saver.classList.remove("save");
+                saver.classList.add("edit");
             } else {
                 console.error("Personal detail edit buttons missing both 'save' and 'edit' classes.");
             }
@@ -90,7 +106,8 @@ export function userDetailsPageRenderer(section) {
                 })
             }
         })
-
+        
+        modal.show();
     })
 
     return holder;

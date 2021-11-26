@@ -15,6 +15,14 @@
     font-size: 166%;
 }
 
+:is(#my-personal-details, .contact) button.cancel::before {
+    content: "\1f5d9"
+}
+
+button.edit + button.cancel {
+    display: none;
+}
+
 .contact  h5, .contact .contact-body {
     margin-left: 3rem;
 }
