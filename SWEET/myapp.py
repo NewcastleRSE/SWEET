@@ -58,7 +58,11 @@ def getDiary():
 @login_required
 def renderPrintDiary():
     period = request.args.get("period")
-    return render_template("printdiary.html", diary=getPrintDiary(g.user, period=period))
+    diary=getPrintDiary(g.user, period=period)
+    rendergraph = "sideeffects" in diary
+    renderdetails = rendergraph or any([True if ("notes" in d and len(d["notes"]["note"]) > 0) else False for d in diary.values()])
+
+    return render_template("printdiary.html", diary=diary, graph=rendergraph, details=renderdetails)
 
 @bp.route("/mydiary/sideeffects")
 @login_required
