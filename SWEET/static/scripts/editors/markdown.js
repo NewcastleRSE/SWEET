@@ -51,16 +51,25 @@ export class MarkdownEditor extends HTMLElement {
     get jsonvalue() {
         return {
             type: "markdown",
-            encoding: "lz-string:UTF16",
-            text: LZString.compressToUTF16(this.markdown)
+            encoding: "lz-string:B64",
+            text: LZString.compressToBase64(this.markdown)
         }
     }
 
     load(content) {
         if (content.type != this.constructor.contentType) return;
-        if (content.encoding != "lz-string:UTF16") { console.log(content.encoding); return; }
 
-        this.markdown = LZString.decompressFromUTF16(content.text);
+        if (content.encoding == "lz-string:UTF16") { 
+            this.markdown = LZString.decompressFromUTF16(content.text);
+        } else if (content.encoding == "lz-string:B64") {
+            this.markdown = LZString.decompressFromBase64(content.text);
+        } else if (content.encoding == "raw") {
+            this.markdown = content.text;
+        } else {
+            this.markdown = `Load failed for unknown content encoding 'content.encoding'`;
+            console.log(content.encoding);
+        }
+
     }
 
     appendMarkdown(newMD, para=true) {
@@ -76,6 +85,8 @@ export function markdownRenderer(section) {
     holder.classList.add("markdown")
     if (section.encoding == "lz-string:UTF16") {
         holder.innerHTML = marked.parse(LZString.decompressFromUTF16(section.text));
+    } else if (content.encoding == "lz-string:B64") {
+        holder.innerHTML = marked.parse(LZString.decompressFromBase64(section.text));
     } else if (section.encoding == "raw") {
         holder.innerHTML = marked.parse(section.text);
     } else {
