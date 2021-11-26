@@ -40,7 +40,7 @@ export function contactRenderer(section) {
 
             modal.body.appendChild(form);
             
-            modal.footer.querySelector("button.submit").setAttribute("for", form.getAttribute("id"));
+            modal.footer.querySelector("button.submit").setAttribute("form", form.getAttribute("id"));
             modal.footer.querySelector("button.close").addEventListener("click", e => modal.hide());
 
             modal.show();
@@ -98,6 +98,10 @@ export function contactFormRenderer(section) {
                 form.$opener.querySelector(".contact-email").textContent = contact.email;
             }
 
+            if (form.$list) {
+                this.render({ type: "contact", contact: contact}).then(node => form.$list.appendChild(node))
+            }
+
             if (form.$modal) form.$modal.hide();
         })
     })
@@ -116,7 +120,7 @@ export function contactPageRenderer(section) {
         this.render({ type: "contact-list", contacts: output.contacts.map(c => { return { type: "contact", contact: c}; })})
         .then(list => {
             holder.appendChild(list);
-            holder.insertAdjacentHTML("beforeend", `
+            holder.insertAdjacentHTML("afterend", `
                 <div class="contact-page-new"><button type="button" class="btn btn-primary add">Add new contact</button></div>
             `)
 
@@ -127,6 +131,7 @@ export function contactPageRenderer(section) {
         
                 this.render({ type: "contact-form"}).then(form => {
                     form.$modal = modal;
+                    form.$list = list;
         
                     modal.body.appendChild(form);
                     
