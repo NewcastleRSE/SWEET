@@ -59,8 +59,8 @@ def getDiary():
 def renderPrintDiary():
     period = request.args.get("period")
     diary=getPrintDiary(g.user, period=period)
-    rendergraph = "sideeffects" in diary
-    renderdetails = rendergraph or any([True if ("notes" in d and len(d["notes"]["note"]) > 0) else False for d in diary.values()])
+    rendergraph = "sideeffects" in diary and len(diary["sideeffects"]) > 0
+    renderdetails = rendergraph or any([True if ("notes" in d and len(d["notes"]["note"]) > 0) else False for d in diary["fulldiary"].values()])
 
     return render_template("printdiary.html", diary=diary, graph=rendergraph, details=renderdetails)
 
@@ -216,7 +216,7 @@ def updateMyProfile():
             success = validateUser(g.user['userID'], profile["oldpass"])[0]
 
             if not success:
-                return {"result": "error", "message": "Old password was provided incorrectly; please retype then try again."}, 409
+                return {"status": "error", "message": "Old password was provided incorrectly; please retype then try again."}, 409
 
             profile = {"password": profile["password"]}
             

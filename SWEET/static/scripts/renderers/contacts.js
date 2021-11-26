@@ -120,7 +120,7 @@ export function contactPageRenderer(section) {
         this.render({ type: "contact-list", contacts: output.contacts.map(c => { return { type: "contact", contact: c}; })})
         .then(list => {
             holder.appendChild(list);
-            holder.insertAdjacentHTML("afterend", `
+            holder.insertAdjacentHTML("beforeend", `
                 <div class="contact-page-new"><button type="button" class="btn btn-primary add">Add new contact</button></div>
             `)
 

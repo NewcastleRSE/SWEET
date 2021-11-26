@@ -23,13 +23,20 @@ export function userDetailsPageRenderer(section) {
             if (src.classList.contains("edit")) {
                 let target = holder.querySelector(`#${which}`);
                 let input = document.createElement("input");
+
                 input.setAttribute("type", which=="email"?"email":"text");
                 input.setAttribute("id", which);
                 input.value = target.textContent;
+                
                 target.remove();
+                
                 src.insertAdjacentElement("beforebegin", input);
                 src.classList.remove("edit");
                 src.classList.add("save");
+
+                let canceller = holder.querySelector(`.cancel[data-for='${which}']`)
+                canceller.dataset.revert = input.value;
+
                 input.focus();
             } else if (src.classList.contains("save")) {
                 let input = holder.querySelector(`#${which}`);
@@ -46,11 +53,12 @@ export function userDetailsPageRenderer(section) {
                     src.classList.add("edit");
                 })
             } else if (src.classList.contains("cancel")) {
+
                 const oldval = src.dataset.revert
                 if (!oldval) return;
 
                 let input = holder.querySelector(`#${which}`);
-                let saver = holder.querySelector(`.save[data=for='${which}']`)
+                let saver = holder.querySelector(`.save[data-for='${which}']`)
                 
                 let target = document.createElement("span");
                 target.setAttribute("id", which);
@@ -97,7 +105,7 @@ export function userDetailsPageRenderer(section) {
 
                 this.post("/myapp/mydetails/", user).then(response => response.json())
                 .then(output => {
-                    if (output.result == "OK") {
+                    if (output.status == "OK") {
                         location.pathname = "/auth/logout";
                     } else {
                         form.querySelector("#errors").innerHTML = `<p>${output.message}.</p>`;

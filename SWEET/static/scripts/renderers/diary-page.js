@@ -47,6 +47,10 @@ export function diaryCalendarRenderer(section) {
                 let seday = c.querySelector(`td[data-thisdate='${d}'] div.events div.sef`);
                 let adhday = c.querySelector(`td[data-thisdate='${d}'] div.events div.adhnot`);
 
+                // clear any old data to account for deletion of items:
+                seday.innerHTML = ""; 
+                adhday.innerHTML = "";
+
                 if (diary[d].sideeffects) {
                     diary[d].sideeffects.forEach(se => {
                         // convert old text items into 5 point scale:
@@ -60,20 +64,21 @@ export function diaryCalendarRenderer(section) {
                         // side effect structure:
                         // -- coloured dot to the left of the box
                         // -- section contains information about the side effect
-                        
 
-                        if (seday && !seday.querySelector(`.side-effect-${se.type}`)) {
-                            // we have found the appropriate day, and it doesn't have this type of side effect already:
+                        if (seday){
+                            // we have found the appropriate day
+                            // we have cleared the contents earlier, so we can just add stuff with gay abandon.
+
                             let i = diaryitem();
                             i.classList.add("side-effect");
                             i.querySelector("i").classList.add(`side-effect-${se.type}`)
-                            
                             let section = i.querySelector("section")
                             section.innerHTML = `
                             <h4>${se.description? se.description:se.type}</h4>
                             <p><span class="severity"><label>Severity: </label><span class="bar"><label style="width: ${se.severity}em"></label></span></span><br />
                             <span class="impact"><label>Impact: </label><span class="bar"><label style="width: ${se.impact}em"></label></span></p>
                             ${ se.notes? `<p class="se-notes"><label>Notes:</label><div>${se.notes}</p>`: ""}`
+
                             seday.appendChild(i);
                         }
                     })
@@ -84,17 +89,14 @@ export function diaryCalendarRenderer(section) {
                     // -- a green tick in the top-right of the box
                     // -- no additional details
                     
-                    if (adhday && !adhday.querySelector(".adherence")) {
-                        let i = diaryitem();
-                        i.classList.add(`adherence`)
-                        i.querySelector("i").classList.add("bi-check-lg")
+                    let i = diaryitem();
+                    i.classList.add(`adherence`)
+                    i.querySelector("i").classList.add("bi-check-lg")
 
-                        // no additional details: remove section
-                        i.querySelector("section").remove();
+                    // no additional details: remove section
+                    i.querySelector("section").remove();
 
-                        adhday.appendChild(i);
-                    }
-
+                    adhday.appendChild(i);
                 }
 
                 if (diary[d].notes  && diary[d].notes.taken) {
@@ -103,22 +105,18 @@ export function diaryCalendarRenderer(section) {
                     // -- section contains every note for the current day.
                     
                     if (adhday) {
-                        let existing = adhday.querySelector(".notes");
                         let note = diary[d].notes
 
-                        if (!existing) {
-
-                            existing = diaryitem();
-                            existing.classList.add(`notes`)
-                            existing.querySelector("i").classList.add("bi-file-text")
-        
-                            let section = existing.querySelector("section")
-                            section.innerHTML = `<h4>Notes</h4>`
+                        let existing = diaryitem();
+                        existing.classList.add(`notes`)
+                        existing.querySelector("i").classList.add("bi-file-text")
                             
-                            adhday.appendChild(existing);
-                        }
+                        adhday.appendChild(existing);
 
-                        this.render({type: "markdown", encoding: "raw", text: note.note }).then(node => existing.querySelector("section").insertAdjacentHTML('beforeend', `<p data-taken="${note.taken.date}T${note.taken.time}">${node.innerHTML}</p>`))
+                        this.render({type: "markdown", encoding: "raw", text: note.note })
+                        .then(node => {
+                            existing.querySelector("section").innerHTML = `<h4>Notes</h4><p data-taken="${note.taken.date}T${note.taken.time}">${node.innerHTML}</p>`
+                        })
                     }                    
                 }
             })
@@ -140,7 +138,7 @@ export function diaryCalendarRenderer(section) {
         // respond to clicks on days, not just on the button.
         if (e.target.matches("td, td *")) {
             // create pop-up for adding something to a date:
-            let modal = this.createModal();
+            let modal = this.createModal(true);
             let d = e.target;
             while (d.tagName != "TD") d = d.parentElement;
             
@@ -294,7 +292,6 @@ export function diaryCalendarRenderer(section) {
             modal.footer.querySelector("#se-close").addEventListener("click", e => {
                 if (e.target.textContent == "Close") {
                     modal.hide();
-                    this.dispatchEvent("calendar:update");
                     return;
                 }
 
@@ -309,6 +306,10 @@ export function diaryCalendarRenderer(section) {
                 }
             })
 
+            modal.addEventListener("hidden.bs.modal", () => {
+                this.dispatchEvent("calendar:update", c);
+            })
+            
             modal.show()
             return false;
         }

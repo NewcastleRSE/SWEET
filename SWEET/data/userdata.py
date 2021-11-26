@@ -256,7 +256,7 @@ def deleteSideEffect(user, sideeffect):
         return
 
     if "sideeffects" not in diary[sideeffect["date"]]:
-        diary[sideeffect["date"]]["sideeffects"] = []
+        return
 
     existing = next((s for s in diary[sideeffect["date"]]["sideeffects"] if s["type"] == sideeffect["type"]), None)
 
