@@ -13,7 +13,7 @@ bp = Blueprint('schemas', __name__, url_prefix='/app/schemas')
 def getGoalSchema(name):
     return {
         'activity': {
-            "activity": ["walking", "housework", "gardening", "strength exercises", "balance exercises", "swimming", "cycling", "pilates", "yoga", "thai chi", "dancing", "bowling", "running"],
+            "activity": ["walking", "housework", "gardening", "strength exercises", "balance exercises", "swimming", "cycling", "pilates", "yoga", "tai chi", "dancing", "bowling", "running"],
             "frequency": [1,2,3,4,5,6,7],
             "duration": [10, 20, 30, 40, 50, 60],
             "displayName": "Activity"
@@ -89,7 +89,7 @@ def getTunnels():
         '#home/healthy-living/healthy-eating': [
             {'path': 'welcome', 'content': [{'type': 'paragraph', 'text': 'Click Next to find out why eating a healthy diet is important.'}]}, 
             {'path': 'importance', 'content': [{'type': 'paragraph', 'text': 'Click Next to read move about what a healthy diet includes.'}]}, 
-            {'path': 'healthy-diet', 'content': [{'type': 'paragraph', 'text': 'Click Next to see more specialist information regarding diet following a diagnosis of breast cancer and answers to some questions that women with breast cancer sometimes have about their diet.'}]}, 
+            {'path': 'healthy-diet', 'content': [{'type': 'paragraph', 'text': 'Click Next to see more specialist information regarding diet following a diagnosis of breast cancer and get answers to some questions that women with breast cancer sometimes have about their diet.'}]}, 
             {'path': 'faq', 'content': [{'type': 'paragraph', 'text': 'Click Next to see hints and tips for how you eat and plan meals.'}]}, 
             {'path': 'change', 'content': [{'type': 'paragraph', 'text': 'Click Next to find out how setting goals can help you eat more healthily.'}]}, 
             {'path': 'goal-setting', 'content': [{'type': 'paragraph', 'text': 'Click Next to set your healthy eating goals.'}]}, 
