@@ -117,5 +117,11 @@ export function markdownRenderer(section) {
         })
     })
 
+    holder.querySelectorAll("code").forEach(code => {
+        let [item, prop] = code.textContent.split(".");
+        code.insertAdjacentHTML("beforebegin", this.store.get(item)[prop]);
+        code.remove();
+    })
+
     return holder;
 }
