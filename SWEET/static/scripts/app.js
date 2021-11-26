@@ -120,8 +120,8 @@ export function createApp(options={}) {
             try {
                 rendered = renderer.call(this, content); 
             } catch (e) {
-                console.error(e);
-                renderer = document.createElement("p");
+                console.log(e);
+                rendered = document.createElement("p");
                 p.innerHTML = `It was not possible to render this <code>${content.type}</code> block.`;
             }
         } 

@@ -85,7 +85,7 @@ export function markdownRenderer(section) {
     holder.classList.add("markdown")
     if (section.encoding == "lz-string:UTF16") {
         holder.innerHTML = marked.parse(LZString.decompressFromUTF16(section.text));
-    } else if (content.encoding == "lz-string:B64") {
+    } else if (section.encoding == "lz-string:B64") {
         holder.innerHTML = marked.parse(LZString.decompressFromBase64(section.text));
     } else if (section.encoding == "raw") {
         holder.innerHTML = marked.parse(section.text);
