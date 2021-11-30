@@ -116,7 +116,15 @@ export function createApp(options={}) {
         let renderer = settings.renderers[content.type];
         let rendered = null;
 
-        if (renderer) { rendered = renderer.call(this, content); } 
+        if (renderer) { 
+            try {
+                rendered = renderer.call(this, content); 
+            } catch (e) {
+                console.log(e);
+                rendered = document.createElement("p");
+                p.innerHTML = `It was not possible to render this <code>${content.type}</code> block.`;
+            }
+        } 
         else if (content instanceof String) { rendered = document.createTextNode(` ${content} `); } 
         else if (content instanceof Object) { console.error("Attempt to render unrecognised content section:", content); }
         else { rendered = document.createTextNode(` ${content} `); }
@@ -152,7 +160,7 @@ export function createApp(options={}) {
             dispatchEvent.call(this, "prerender", page);
             
             while (settings.contentHolder.firstChild) settings.contentHolder.removeChild(settings.contentHolder.lastChild);
-            Promise.allSettled(page.content.map(c => this.render(c).then(node => settings.contentHolder.appendChild(node))))
+            Promise.allSettled(page.content.map(c => this.render(c))).then(promises => promises.map(p => p.value)).then(nodes => settings.contentHolder.append(...nodes))
             .then(() => dispatchEvent.call(this, "postrender"));
         })
     }

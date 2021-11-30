@@ -10,6 +10,7 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 __logged_in_users = {}
 
+
 def _logout(token):
     if token in __logged_in_users:
         del __logged_in_users[token]
@@ -29,8 +30,9 @@ def login():
             session['user'] = token
             __logged_in_users[token] = user
 
-            hash = request.form.get('fragment', None)
-            return redirect(url_for("index", _anchor=hash))
+            anchor = "home" if "skipWelcome" in user and user["skipWelcome"] else "welcome"
+
+            return redirect(url_for("index", _anchor=anchor))
 
         flash('Incorrect username/password combination')
         flash('Your username is usually your email address')
@@ -62,6 +64,31 @@ def logout():
         _logout(token)
     
     return redirect(url_for("auth.login"))
+
+@bp.route("/confirm")
+def confirmEmail():
+    email = request.args.get("email", None)
+    if email is None:
+        return { "message": "This route requires the 'email' parameter"}, 400
+
+    if users.confirmUserID(email) is None:
+        return { "result": "failed", "message": "Email address not associated with any account"}
+
+    if users.checkActiveUser(email):
+        return {"result": "failed", "message": "Account for this emal address has already been activated"}
+
+    return {"result": "OK", "user": users.getUser(email)}
+
+@bp.route("/activate/", methods=["POST"])
+def activateAccount():
+    if request.is_json:
+        details = request.json
+        users.updateUser(details['userID'], password=details["password"])
+
+        return {"status": "OK"}
+
+    return {"status": "error", "message": "Update request sent without json"}, 400
+
 
 @bp.before_app_request
 def load_logged_in_user():

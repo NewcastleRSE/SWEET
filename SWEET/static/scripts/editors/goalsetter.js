@@ -69,7 +69,7 @@ export function goalRenderer(section) {
                 const modal = this.createModal(true);
                 modal.size = "lg";
                 
-                modal.title.innerHTML = "Review Goal";
+                modal.title.innerHTML = "   ";
                 modal.body.innerHTML = `
                 <p><em>${goal.detail}; ${goal.days} days${goal.minutes? `; ${goal.minutes} minutes per day`: ""}</em></p>
                 <p>Have you been successful and completed your goal?</p>
@@ -135,21 +135,32 @@ export function goalRenderer(section) {
 
             let goal = {};
 
-            modal.title.innerHTML = "Set New Goal";
+            modal.title.textContent = "Set New Goal";
 
             let form = modal.body.appendChild(document.createElement("form"));
             form.setAttribute("id", "goal-setup-form");
             let list = form.appendChild(document.createElement("datalist"));
-            list.setAttribute("id", "activity");
             schema.activity.forEach(i => list.insertAdjacentHTML("beforeend", `<option>${i}</option>`))
+            list.insertAdjacentHTML("beforeend", `<option value="type-own">Something else...</option>`)
 
             let daysInput = schema.frequency.map(f => `<input class="form-check-input" type="radio" name="frequency" id="frequency-${f}" value="${f}"><label class="form-check-label" for="frequency-${f}">${f}</label>`).join("");
    
-            form.appendChild(document.createElement("p")).innerHTML = "<label>Activity: </label><input class='form-control w-50 d-inline-block' type='text' name='activity' list='activity' placeholder='choose an activity' autocomplete='off'><br><em>You can choose from the list or type your own</em>";
-            form.appendChild(document.createElement("p")).innerHTML = `<label>How many days?</label>${daysInput}`;
+            form.appendChild(document.createElement("p")).innerHTML = `<label>Activity: </label> <select class='form-control w-50 d-inline-block' name='activity' placeholder='choose an activity' autocomplete='off'></select><br>
+            <span id="activity-other-wrapper" hidden><label>Write your own here:</label><input type="text" name="activity-other" class='form-control w-50 d-inline-block' ></span><br>`;
+
+            form.appendChild(document.createElement("p")).innerHTML = `<label>How many days?</label> ${daysInput}`;
             if (schema.duration) {
                 form.appendChild(document.createElement("p")).innerHTML = `<label>How many minutes per day? </label><input class='form-control d-inline-block' type='number' name='duration' min='0'>`;
             }
+
+            form.querySelector("select").innerHTML = list.innerHTML;
+            form.querySelector("select").addEventListener("change", e => {
+                if (e.target.value == "type-own") {
+                    form.querySelector("#activity-other-wrapper").removeAttribute("hidden")
+                } else {
+                    form.querySelector("#activity-other-wrapper").setAttribute("hidden", "")
+                }
+            })
 
             modal.body.appendChild(form);
 
@@ -165,7 +176,7 @@ export function goalRenderer(section) {
                     goaltype: section.goaltype,
                     status: 'active',
                     reviewDate: isodate(((d) => { d.setDate(d.getDate()+7); return d;})(new Date())),
-                    detail: form.elements['activity'].value,
+                    detail: form.elements['activity'].value == "type-own"? form.elements['activity-other'].value: form.elements['activity'].value,
                     days: form.elements['frequency'].value
                 }
 
@@ -173,7 +184,8 @@ export function goalRenderer(section) {
                     goal.minutes = form.elements['duration'].value
                 }
 
-
+                modal.title.innerHTML = "";
+                
                 modal.body.innerHTML = `
                 <h3 class='mb-5'>NEW ${schema.displayName.toUpperCase()} GOAL</h3>
                 <section>
@@ -183,7 +195,7 @@ export function goalRenderer(section) {
                 <p>In one week, you can come back to get personal feedback on your goal.</p>
                 <p>It's a good idea to stick up a reminder somewhere in your house.</p>
                 <p>Your goal is: <strong>${goal.detail}</strong><br>
-                How often? <strong>${goal.days} days</strong>${
+                How often: <strong>${goal.days} days</strong>${
                     goal.minutes?`<br>
                 For: <strong>${goal.minutes} minutes</strong>`:""
                 }.</p>

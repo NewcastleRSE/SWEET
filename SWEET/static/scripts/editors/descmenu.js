@@ -149,11 +149,11 @@ export async function describedMenuItemRenderer(section) {
     holder.setAttribute("class", "col-12 row");
 
     const md = await this.render(section.description);
-    md.classList.add("col-9", "col-lg-10", "col-xl-11");
+    md.classList.add("col-8", "col-md-9", "col-xl-10");
     holder.appendChild(md);
 
     const card = document.createElement("a");
-    card.classList.add("d-block", "card", "col-3", "col-md-2", "col-lg-1");
+    card.classList.add("d-block", "card", "col-4", "col-md-3", "col-xl-2");
     card.setAttribute("href", section.link);
 
     const cardBody = document.createElement("div");

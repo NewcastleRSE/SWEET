@@ -10,7 +10,7 @@
 
     <!-- App CSS -->
     <link href="{{url_for('static', filename='css/template.css')}}" rel="stylesheet">
-    <title>SWEET</title>
+    <title>HT&amp;Me</title>
   </head>
   <body>
     <div class="row">
@@ -33,7 +33,6 @@
                     <label>Password</label>
                     <input type="password" class="form-control" placeholder="Password" name="password">
                  </div>
-                 {% if save_fragment %}<input type="hidden" name="fragment" /><script>document.querySelector("input[name='fragment']").value = location.hash.substr(1)</script>{% endif %}
                  <div class="d-grid gap-2 mt-4">
                   <button class="btn btn-primary" type="submit">Login</button>
                 </div>

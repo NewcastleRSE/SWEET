@@ -1,13 +1,20 @@
 import { createApp } from "./app.js";
 import * as r from './editors/renderers.js';
 import { homepageMenuRenderer } from './renderers/home_page.js'
-import { profilerModalRenderer } from './renderers/profiler.js'
+import { profilerModalRenderer, profilerResultRenderer, profilerLauncherRenderer, myPersonalSupportRenderer } from './renderers/profiler.js'
 import { sideEffectModalRenderer, sideEffectFormRenderer } from './renderers/side_effects.js'
 import { diaryCalendarRenderer, diaryGraphRenderer } from "./renderers/diary-page.js";
 import { createModal } from './extensions/modal.js'
 import { createCalendar } from './extensions/calendar.js'
 import { plansAndGoalsRenderer } from './renderers/planandgoal.js'
 import { reminderRenderer } from './renderers/remindersetter.js'
+import { contactFormRenderer, contactListRenderer, contactPageRenderer, contactRenderer } from './renderers/contacts.js'
+import { planRenderer, myPlansRenderer } from './renderers/plan.js'
+import { thoughtsRenderer, thoughtsPageRenderer } from './renderers/thoughts.js'
+import { userDetailsPageRenderer } from './renderers/user_details.js'
+import { welcomeFooterRenderer } from './renderers/welcome.js'
+import { goalCheckerRenderer} from './renderers/goalchecker.js'
+
 
 let SWEET = createApp({
     extensions: {
@@ -42,34 +49,55 @@ let SWEET = createApp({
         fillin: r.fillInBoxRenderer,
         plansandgoals: plansAndGoalsRenderer,
         reminders: reminderRenderer,
-        diarygraph: diaryGraphRenderer
-    },
+        diarygraph: diaryGraphRenderer,
+        "described-menu": r.describedMenuRenderer,
+        "described-menu-item": r.describedMenuItemRenderer,
+        "user-details-page": userDetailsPageRenderer,
+        "contact": contactRenderer,
+        "contact-form": contactFormRenderer,
+        "contact-list": contactListRenderer,
+        "contacts-page": contactPageRenderer,
+        "plan": planRenderer,
+        "my-plans": myPlansRenderer,
+        "thoughts": thoughtsRenderer,
+        "thoughts-page": thoughtsPageRenderer,
+        "welcome-footer": welcomeFooterRenderer,
+        "profiler-result": profilerResultRenderer, 
+        "profiler-launcher": profilerLauncherRenderer, 
+        "my-personal-support": myPersonalSupportRenderer,
+        goalchecker: goalCheckerRenderer
+    },    
     load: function(path) {
         let url = `/app/content?path=${encodeURIComponent(path)}`;
         return fetch(url).then(response => response.json());
     },
     titleHolder: "#page-title",
     contentHolder: "#main-container",
-    name: "SWEET"
+    name: "HT&Me"
 });
-
-// user profile retrieval, validation, update and storage:
-fetch("/myapp/mydetails").then(response => response.json()).then(profile => {
-
-    if (!("tunnelsComplete" in profile)) profile["tunnelsComplete"] = [];
-
-    SWEET.store.set("currentUser", profile);
-    SWEET.post("/myapp/mydetails/", profile);
-
-});
-
-fetch("/app/schemas/tunnels").then(response => response.json()).then(tunnels => SWEET.store.set("tunnels", tunnels));
 
 SWEET.addEventListener("prerender", function(page) {
     document.querySelector("main").classList.remove(...document.querySelector("main").classList.values())
     document.querySelector("main").classList.add("flex-shrink-0", this.path.replace("#", "").replaceAll("/", "_"));
     
-    document.querySelectorAll(".btn-up").forEach(b => { b.setAttribute("href", this.path.substr(0, this.path.lastIndexOf("/"))); b.textContent = "Up";});
+    document.querySelectorAll(".btn-up").forEach(b => { 
+        let parent = this.path.substring(1, this.path.lastIndexOf("/") == -1? this.path.length: this.path.lastIndexOf("/"))
+        console.log(parent);
+        b.setAttribute("href", `#${parent}`); 
+        let strct = this.store.get("appStructure");
+        let slugs = parent.split("/");
+        console.log(slugs);
+
+        while (slugs.length) {
+            let slug = slugs.shift();
+
+            if (slug in strct) strct = strct[slug]
+            else strct = strct.pages.filter(p => p.slug == slug)[0]
+            console.log(strct)
+        }
+
+        b.textContent = strct.title || "HT & Me";
+    });
 });
 
 // link intercept for tunnelled pages (prevent section home showing until tunnel is complete);
@@ -182,6 +210,34 @@ document.querySelector("#main-container").addEventListener("click", e => {
 
 });
 
-document.querySelector("#btn-print > a").addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); window.alert("Here you will be able to download .pdf versions of some pages."); })
+document.querySelector("#btn-print > a").addEventListener("click", e => { 
 
-SWEET.start();
+    e.preventDefault(); e.stopPropagation(); 
+    
+    if (SWEET.path == "#home/diary") {
+        open(`/myapp/mydiary/print?period=${e.currentTarget.dataset.period}`);
+    } else {
+        window.alert("Here you will be able to download .pdf versions of some pages."); 
+    }
+})
+
+// pre-load cached app data, then start app.
+Promise.allSettled([
+    // user profile retrieval, validation, update and storage:
+    fetch("/myapp/mydetails").then(response => response.json()).then(profile => {
+    
+        if (!("tunnelsComplete" in profile)) {
+            profile["tunnelsComplete"] = [];
+            SWEET.post("/myapp/mydetails/", profile);
+        }
+        
+        SWEET.store.set("currentUser", profile);
+    
+    }),
+    // tunnel schema fetch
+    fetch("/app/schemas/tunnels").then(response => response.json()).then(tunnels => SWEET.store.set("tunnels", tunnels)),
+    // app structure fetch
+    fetch("/app/structure").then(response => response.json()).then(structure => SWEET.store.set("appStructure", structure))
+]).then(() => SWEET.start());
+    
+    

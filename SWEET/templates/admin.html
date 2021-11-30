@@ -1,21 +1,135 @@
 {% extends 'index.html' %}
 {% block navitems %}
+{% if g.user['role'] in ['sysadmin', 'editor'] %}
           <li class="nav-item">
             <a class="nav-link" href="/admin/edit">Editor</a>
           </li>
+{% endif %}
           <li class="nav-item">
             <a class="nav-link" href="/admin/users">Users</a>
           </li>
+          {% if g.user['role'] in ['sysadmin', 'editor'] %}
           <li class="nav-item">
             <a class="nav-link" href="/admin/resources">Resources</a>
           </li>
+          {% endif %}
           <li class="nav-item">
             <a class="nav-link" href="/admin/home">Admin Home</a>
           </li>
 {% endblock %}
 
 {% block maincontent %}
+<div id="main_content"></div>
 {% endblock %}
 
 {% block bodyscript %}
+<script type="module">
+import { createModal } from "{{ url_for('static', filename='scripts/extensions/modal.js')}}"
+
+const post = function(url, data) {
+    return fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    })
+}
+
+let page = location.pathname.substr(location.pathname.lastIndexOf("/") + 1);
+switch (page) {
+  case "home":
+    break;
+  case "resources":
+    break;
+  case "users":
+    let holder = document.createElement("section");
+    holder.innerHTML = `
+    <div>
+      <label>Click this button to add a new participant to the study:</label><button type="button" id="add-participant" class="btn btn-primary">Add Participant</button><br>
+      <label>Click this button to add a new collaborator to the study:</label><button type="button" id="add-colab" class="btn btn-primary">Add Collaborator</button>
+    </div>
+    `
+
+    holder.querySelector("#add-participant").addEventListener("click", e => {
+      let modal = createModal(true);
+
+      modal.title.textContent = "Add a new participant to the study";
+      modal.body.innerHTML = `
+        <form id="modal-new-ppt-form">
+          <label for="studyid">Participant's Study ID:</label> <input type="text" name="studyid" id="studyid"> <br>
+          <label for="email">Participant's email address:</label> <input type="email" name="email" id="email"> <br>
+          <label for="firstName">Participant's First Name:</label> <input type="text" name="firstName" id="firstName"> <br>
+          <label for="lastName">Participant's Last Name:</label> <input type="text" name="lastName" id="lastName"> <br>
+        </form>
+      `
+      modal.footer.innerHTML = `<button type="button" name="close" class="btn btn-secondary">Cancel</button> <button type="submit" for="modal-new-ppt-form" class="btn btn-primary">Create Participant</button>`
+
+      modal.footer.querySelector("button[name='close']").addEventListener("click", () => {
+        modal.hide();
+      })
+
+      modal.body.querySelector("form").addEventListener("submit", se => {
+        se.preventDefault(); se.stopPropagation();
+        let form = se.target;
+
+        let user = {
+          userID: form.elements["studyid"],
+          email: form.elements["email"],
+          firstName: form.eleements["firstName"],
+          lastName: form.elements["lastName"],
+          role: "participant"
+        }
+
+        post("/admin/data/createuser/", user).then(
+          response => { alert("User created successfully"); modal.hide(); },
+          reject => { alert(reject); modal.hide(); }
+        )
+      })
+
+      modal.show();
+    })
+
+    holder.querySelector("#add-colab").addEventListener("click", e => {
+      let modal = createModal(true);
+
+      modal.title.textContent = "Add a new collaborator to the study";
+      modal.body.innerHTML = `
+        <form id="modal-new-colab-form">
+          <label for="email">Collaborator's email address:</label> <input type="email" name="email" id="email"> <br>
+          <label for="firstName">Collaborator's First Name:</label> <input type="text" name="firstName" id="firstName"> <br>
+          <label for="lastName">Collaborator's Last Name:</label> <input type="text" name="lastName" id="lastName"> <br>
+        </form>
+      `
+      modal.footer.innerHTML = `<button type="button" name="close" class="btn btn-secondary">Cancel</button> <button type="submit" for="modal-new-colab-form" class="btn btn-primary">Create Participant</button>`
+
+      modal.footer.querySelector("button[name='close']").addEventListener("click", () => {
+        modal.hide();
+      })
+
+      modal.body.querySelector("form").addEventListener("submit", se => {
+        se.preventDefault(); se.stopPropagation();
+        let form = se.target;
+
+        let user = {
+          userID: form.elements["email"],
+          email: form.elements["email"],
+          firstName: form.eleements["firstName"],
+          lastName: form.elements["lastName"],
+          role: "staff"
+        }
+
+        post("/admin/data/createuser/", user).then(
+          response => { alert("User created successfully"); modal.hide(); },
+          reject => { alert(reject); modal.hide(); }
+        )
+      })
+
+      modal.show()
+    })
+
+    document.querySelector("#main_content").appendChild(holder)
+    break;
+}
+</script>
 {% endblock %}

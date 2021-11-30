@@ -1,10 +1,12 @@
 from flask import (
-    Blueprint, request, abort, send_file
+    Blueprint, request, abort, send_file, g
 )
 
 from .data.content import (
     getResourceBlob, getStructure, getPageContents, getPageDetails, getResource as getNamedResource, getResources, getPages
 )
+
+from.data.users import logvisit
 
 from .auth import login_required
 
@@ -25,6 +27,8 @@ def getPageContent():
         path = unquote(path)
         if path == "#":
             path = "#home"
+        
+        logvisit(g.user, path)
         
         details = getPageDetails(path)
         details["content"] = getPageContents(path) 

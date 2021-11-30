@@ -27,6 +27,7 @@ export function SWEETPreviewer() {
                 markdown: r.markdownRenderer,
                 external: r.embedRenderer,
                 popup: r.popupRenderer,
+                "popup-trigger": r.popupTriggerRenderer,
                 "block-quote": r.blockquoteRenderer,
                 standout: r.alertRenderer,
                 goalsetter: r.goalRenderer,

@@ -76,11 +76,9 @@ a.card {
     background-size: 120px;
 }
 
-/* --- temporarily disabled for deployment during sub-study 1 interviews
 a:visited.card.submenu {
     background-color: #e4dbeb;
 }
-*/
 
 .form-check .no-box-shadow:focus {
     box-shadow:none !important;
@@ -115,14 +113,13 @@ span a {
     font-size: 0.8vw;
 }
 
-.btn-primary {
+.btn-primary, .btn-primary:focus {
     color: #fff;
     background-color: var(--SWEET-purple);
     border-color: var(--SWEET-purple);
 }
 
-.btn-primary:hover,
-.btn-primary:focus {
+.btn-primary:hover {
     color: #fff;
     background-color: var(--SWEET-lilac);
     border-color: var(--SWEET-lilac);
@@ -152,6 +149,15 @@ span a {
 
 nav.navbar-dark, footer.footer-dark {
     background-color: var(--SWEET-purple) !important;
+}
+
+a.navbar-brand {
+    font-size: 32px;
+    padding: 0;
+}
+
+a.navbar-brand > strong {
+    padding: 0 0.25em;
 }
 
 nav #app-buttons {
@@ -344,6 +350,10 @@ div + h4 { margin-top: 1.5em;}
     color: red;
 }
 
+.welcome-footer > div {
+    display: flex;
+    justify-content: space-around;
+}
 
 @media screen and (min-width: 500px) and (max-width: 768px) {
 
