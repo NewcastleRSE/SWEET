@@ -32,7 +32,11 @@ img.card-icon {
     bottom: 0;
 }
 
-main.home header, main.home footer{
+main.home :is(header, footer) {
+    display: none;
+}
+
+main.welcome :is(.header-buttons, .footer-buttons) {
     display: none;
 }
 
