@@ -81,18 +81,22 @@ SWEET.addEventListener("prerender", function(page) {
     document.querySelector("main").classList.add("flex-shrink-0", this.path.replace("#", "").replaceAll("/", "_"));
     
     document.querySelectorAll(".btn-up").forEach(b => { 
-        b.setAttribute("href", this.path.substr(0, this.path.lastIndexOf("/"))); 
+        let parent = this.path.substring(1, this.path.lastIndexOf("/") == -1? this.path.length: this.path.lastIndexOf("/"))
+        console.log(parent);
+        b.setAttribute("href", `#${parent}`); 
         let strct = this.store.get("appStructure");
-        let slugs = this.path.substr(1, this.path.lastIndexOf("/")).split("/");
+        let slugs = parent.split("/");
+        console.log(slugs);
 
         while (slugs.length) {
             let slug = slugs.shift();
 
             if (slug in strct) strct = strct[slug]
-            else strct = strct.pages[slug]
+            else strct = strct.pages.filter(p => p.slug == slug)[0]
+            console.log(strct)
         }
 
-        b.textContent = strct.title;
+        b.textContent = strct.title || "HT & Me";
     });
 });
 
