@@ -76,25 +76,24 @@ let SWEET = createApp({
     name: "HT&Me"
 });
 
-// user profile retrieval, validation, update and storage:
-fetch("/myapp/mydetails").then(response => response.json()).then(profile => {
-
-    if (!("tunnelsComplete" in profile)) {
-        profile["tunnelsComplete"] = [];
-        SWEET.post("/myapp/mydetails/", profile);
-    }
-    
-    SWEET.store.set("currentUser", profile);
-
-});
-
-fetch("/app/schemas/tunnels").then(response => response.json()).then(tunnels => SWEET.store.set("tunnels", tunnels));
-
 SWEET.addEventListener("prerender", function(page) {
     document.querySelector("main").classList.remove(...document.querySelector("main").classList.values())
     document.querySelector("main").classList.add("flex-shrink-0", this.path.replace("#", "").replaceAll("/", "_"));
     
-    document.querySelectorAll(".btn-up").forEach(b => { b.setAttribute("href", this.path.substr(0, this.path.lastIndexOf("/"))); b.textContent = "Up";});
+    document.querySelectorAll(".btn-up").forEach(b => { 
+        b.setAttribute("href", this.path.substr(0, this.path.lastIndexOf("/"))); 
+        let strct = this.store.get("appStructure");
+        let slugs = this.path.substr(1, this.path.lastIndexOf("/")).split("/");
+
+        while (slugs.length) {
+            let slug = slugs.shift();
+
+            if (slug in strct) strct = strct[slug]
+            else strct = strct.pages[slug]
+        }
+
+        b.textContent = strct.title;
+    });
 });
 
 // link intercept for tunnelled pages (prevent section home showing until tunnel is complete);
@@ -218,4 +217,23 @@ document.querySelector("#btn-print > a").addEventListener("click", e => {
     }
 })
 
-SWEET.start();
+// pre-load cached app data, then start app.
+Promise.allSettled([
+    // user profile retrieval, validation, update and storage:
+    fetch("/myapp/mydetails").then(response => response.json()).then(profile => {
+    
+        if (!("tunnelsComplete" in profile)) {
+            profile["tunnelsComplete"] = [];
+            SWEET.post("/myapp/mydetails/", profile);
+        }
+        
+        SWEET.store.set("currentUser", profile);
+    
+    }),
+    // tunnel schema fetch
+    fetch("/app/schemas/tunnels").then(response => response.json()).then(tunnels => SWEET.store.set("tunnels", tunnels)),
+    // app structure fetch
+    fetch("/app/structure").then(response => response.json()).then(structure => SWEET.store.set("appStructure", structure))
+]).then(() => SWEET.start());
+    
+    
