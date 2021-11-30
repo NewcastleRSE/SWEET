@@ -1,10 +1,6 @@
 export function welcomeFooterRenderer(section) {
     if (section.type != "welcome-footer") return null;
 
-    console.log(this.store.get("currentUser"));
-    if ("skipWelcome" in this.store.get("currentUser")) this.path = "#home";
-
-
     let holder = document.createElement("section");
     holder.classList.add("welcome-footer");
 
@@ -14,7 +10,6 @@ export function welcomeFooterRenderer(section) {
     </div>
     `
 
-    console.log(holder);
     holder.querySelector("button").addEventListener("click", e => {
         if (holder.querySelector("#no-show").checked) {
             this.store.get("currentUser")["skipWelcome"] = true;

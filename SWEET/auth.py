@@ -30,7 +30,9 @@ def login():
             session['user'] = token
             __logged_in_users[token] = user
 
-            return redirect(url_for("index", _anchor="welcome"))
+            anchor = "home" if "skipWelcome" in user and user["skipWelcome"] else "welcome"
+
+            return redirect(url_for("index", _anchor=anchor))
 
         flash('Incorrect username/password combination')
         flash('Your username is usually your email address')
