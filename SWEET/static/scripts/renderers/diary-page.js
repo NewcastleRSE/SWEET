@@ -280,10 +280,16 @@ export function diaryCalendarRenderer(section) {
                     let src = e.target;
                     while (src.tagName != "BUTTON" && src.parentElement) src = src.parentElement;
                     if (src.tagName != "BUTTON") return false;
-                    if (src.innerHTML != "") return false;
 
-                    this.post("/myapp/adherence/", { date: d.dataset.thisdate })
-                    src.innerHTML = "&check;"
+                    let adherence = { date: d.dataset.thisdate, action: "record" }
+                    if (src.innerHTML != "") {
+                        adherence.action = "remove";
+                        src.innerHTML = "";                        
+                    } else {
+                        src.innerHTML = "&check;"
+                    }
+
+                    this.post("/myapp/adherence/", adherence)
 
                 }
             })
