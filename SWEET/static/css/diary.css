@@ -114,6 +114,10 @@ table.calendar div.events div.diary-item i.side-effect-ns {
     background-color: #f1dc1f;
 }
 
+table.calendar div.events div.diary-item i.side-effect-ns {
+    background-color: black;
+}
+
 table.calendar div.events div.diary-item.adherence i {
     color: green;
 }
