@@ -122,7 +122,7 @@ export function createApp(options={}) {
             } catch (e) {
                 console.log(e);
                 rendered = document.createElement("p");
-                p.innerHTML = `It was not possible to render this <code>${content.type}</code> block.`;
+                rendered.innerHTML = `It was not possible to render this <code>${content.type}</code> block.`;
             }
         } 
         else if (content instanceof String) { rendered = document.createTextNode(` ${content} `); } 
