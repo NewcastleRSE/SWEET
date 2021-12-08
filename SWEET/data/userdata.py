@@ -383,6 +383,12 @@ def deleteNote(user, note):
         return True
 
 def recordAdherence(user, adh):
+    if "action" not in adh or "date" not in adh:
+        return
+
+    if adh["action"] not in ["record", "remove"]:
+        return
+
     id = user["userID"]
 
     diary = UserData(id).diary()
@@ -390,7 +396,8 @@ def recordAdherence(user, adh):
     if adh["date"] not in diary:
         diary[adh["date"]] = { "sideeffects": [], "notes": {}}
 
-    diary[adh["date"]]['adherence'] = True
+
+    diary[adh["date"]]['adherence'] = True if adh["action"] == "record" else False
     diary.commit()
 
 def saveFillin(user, fillin):

@@ -23,7 +23,7 @@ export class BlockquoteEditor extends HTMLElement {
         </style>
         <fieldset>
             <label>Quote:</label><textarea name="text" required></textarea><br />
-            <label>Citation:</label><input type="text" name="citation" minlength="2" maxlength="150" required><br />
+            <label>Citation:</label><input type="text" name="citation" required><br />
         </fieldset>
         `;
 

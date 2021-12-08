@@ -79,8 +79,8 @@ export class MenuEditor extends HTMLElement {
         i.classList.add("item");
         i.innerHTML = `
         <button class="move-up"></button><button class="move-down"></button><button class="delete"></button>
-        <label title="The text shown on the button">Display Text:</label><input name="title" type="text" minlength="3" maxlength="50" required></input><br />
-        <label>Link target:</label><input name="link" type="text" minlength="3" maxlength="150" required></input><br />
+        <label title="The text shown on the button">Display Text:</label><input name="title" type="text" required></input><br />
+        <label>Link target:</label><input name="link" type="text" required></input><br />
         <label>Icon:</label><input name="icon" type="text" value="none"></input>`
         i.addEventListener("click", e => { 
             e.preventDefault(); e.stopPropagation();
