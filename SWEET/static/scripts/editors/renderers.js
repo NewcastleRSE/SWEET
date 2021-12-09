@@ -552,3 +552,49 @@ export async function describedMenuItemRenderer(section) {
     
     return holder;
 }
+
+export async function thoughtsRenderer(section) {
+    if (section.type != "thoughts") return null;
+
+    if (!section.path) section.path = this.path;
+
+    let holder = document.createElement("section");
+    let thoughts = await fetch(`/myapp/mythoughts?path=${encodeURIComponent(section.path)}`).then(response => response.json());
+
+    if (thoughts.length) {
+
+    }
+    holder.insertAdjacentHTML("afterbegin", "<header><span>Critical, negative thoughts</span><span>Supportive, neutral thoughts</span></header>")
+
+    holder.insertAdjacentHTML("beforeend", "<footer><button type='button' id='add-thought' class='btn btn-primary'>Add more thoughts</button><button type='button' id='save-thoughts' class='btn btn-primary' disabled>Save</button></footer>")
+    
+    let rowtemplate = "<input type='text' name='negative'><span>&#10148</span><input type='text' name='positive'>"
+
+    const addrow = () => {
+        let form = document.createElement("form");
+        form.innerHTML = rowtemplate;
+        holder.querySelector("footer").insertAdjacentElement("beforebegin", form);
+    }
+    holder.addEventListener("change", () => holder.querySelector("#save-thoughts").removeAttribute("disabled"))
+
+    holder.querySelector("#add-thought").addEventListener("click", addrow);
+    holder.querySelector("save-thoughts").addEventListener("click", e => {
+        let allthoughts = Array.from(holder.querySelectorAll("form")).map(f => { return { negative: f.elements['negative'].value, positive: f.elements['positive'].value}; });
+        this.post("/myapp/mythoughts/", { path: section.path, details: allthoughts});
+        e.target.setAttribute("disabled", "");
+    })
+
+
+    thoughts.forEach(t => {
+        addrow();
+        let form = holder.querySelector("form:last-of-type");
+        form.elements['negative'].value = t.negative;
+        form.elements['positive'].value = t.positive;
+    })
+
+    while (holder.querySelectorAll("form").length < 3) {
+        addrow();
+    }
+
+
+}

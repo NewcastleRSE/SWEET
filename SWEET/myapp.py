@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, flash, g, redirect, render_template, request, session, url_for, jsonify
 )
 
 from .data.users import updateUser, validateUser
@@ -11,7 +11,7 @@ from .data.userdata import (
     getReminders, setReminders, 
     getContacts, addContact, deleteContact, updateContact,
     getAllProfilerResults, getLatestProfiler,
-    getPlan, savePlan, deleteNote, deleteSideEffect
+    getPlan, savePlan, deleteNote, deleteSideEffect, getThoughts, saveThoughts
 )
 
 from .auth import login, login_required
@@ -284,3 +284,21 @@ def setPlan():
 @login_required
 def getDateNotes(notedate):
     return getNotes(g.user, notedate)
+
+@bp.route("/mythoughts")
+@login_required
+def thoughts():
+    path = request.args.get("path", None)
+
+    return jsonify(getThoughts(g.user, path))
+
+@bp.route("/mythoughts/", methods=["POST"])
+@login_required
+def post_thoughts():
+    if request.is_json:
+        thought = request.json
+        saveThoughts(g.user, thought)
+        return {"status": "OK", "message": "Thoughts Updated"}
+
+    return {"status": "error", "message": "Update request sent witout json"}, 400
+

@@ -41,7 +41,8 @@ export function SWEETPreviewer() {
                 "diary-calendar": diaryCalendarRenderer,
                 fillin: r.fillInBoxRenderer,
                 "described-menu": r.describedMenuRenderer,
-                "described-menu-item": r.describedMenuItemRenderer
+                "described-menu-item": r.describedMenuItemRenderer,
+                thoughts: r.thoughtsRender
             },
             titleHolder: "#page-title",
             contentHolder: "#main-container",
