@@ -559,11 +559,8 @@ export async function thoughtsRenderer(section) {
     if (!section.path) section.path = this.path;
 
     let holder = document.createElement("section");
-    let thoughts = await fetch(`/myapp/mythoughts?path=${encodeURIComponent(section.path)}`).then(response => response.json());
+    let thoughts = section.thoughts || await fetch(`/myapp/mythoughts?path=${encodeURIComponent(section.path)}`).then(response => response.json());
 
-    if (thoughts.length) {
-
-    }
     holder.insertAdjacentHTML("afterbegin", "<header><span>Critical, negative thoughts</span><span>Supportive, neutral thoughts</span></header>")
 
     holder.insertAdjacentHTML("beforeend", "<footer><button type='button' id='add-thought' class='btn btn-primary'>Add more thoughts</button><button type='button' id='save-thoughts' class='btn btn-primary' disabled>Save</button></footer>")
@@ -578,23 +575,25 @@ export async function thoughtsRenderer(section) {
     holder.addEventListener("change", () => holder.querySelector("#save-thoughts").removeAttribute("disabled"))
 
     holder.querySelector("#add-thought").addEventListener("click", addrow);
-    holder.querySelector("save-thoughts").addEventListener("click", e => {
-        let allthoughts = Array.from(holder.querySelectorAll("form")).map(f => { return { negative: f.elements['negative'].value, positive: f.elements['positive'].value}; });
+    holder.querySelector("#save-thoughts").addEventListener("click", e => {
+        let allthoughts = Array.from(holder.querySelectorAll("form")).filter(f => f.elements['negative'].value && f.elements['positive'].value).map(f => { return { negative: f.elements['negative'].value, positive: f.elements['positive'].value}; });
         this.post("/myapp/mythoughts/", { path: section.path, details: allthoughts});
         e.target.setAttribute("disabled", "");
     })
 
-
-    thoughts.forEach(t => {
-        addrow();
-        let form = holder.querySelector("form:last-of-type");
-        form.elements['negative'].value = t.negative;
-        form.elements['positive'].value = t.positive;
-    })
+    if (thoughts) {
+        holder.hasThoughts = true;
+        thoughts.forEach(t => {
+            addrow();
+            let form = holder.querySelector("form:last-of-type");
+            form.elements['negative'].value = t.negative;
+            form.elements['positive'].value = t.positive;
+        })
+    }
 
     while (holder.querySelectorAll("form").length < 3) {
         addrow();
     }
 
-
+    return holder;
 }
