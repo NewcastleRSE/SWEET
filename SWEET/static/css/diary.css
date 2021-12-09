@@ -114,7 +114,7 @@ table.calendar div.events div.diary-item i.side-effect-ns {
     background-color: #f1dc1f;
 }
 
-table.calendar div.events div.diary-item i.side-effect-ns {
+table.calendar div.events div.diary-item i.side-effect-other {
     background-color: black;
 }
 
@@ -172,6 +172,10 @@ table.calendar div.events div.diary-item .impact .bar label {
 
 table.calendar div.events div.diary-item .se-notes {
     flex-basis: 100%;
+}
+
+#notes-data {
+    min-width: 50px;
 }
 
 #day-modal-adherence {
