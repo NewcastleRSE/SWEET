@@ -1,8 +1,21 @@
+import sentry_sdk
 from flask import Flask, render_template
+from sentry_sdk.integrations.flask import FlaskIntegration
 from . import data, secrets
 from .auth import login_required
 
 def create_app():
+
+    sentry_sdk.init(
+        dsn="https://44fb1b462eab4104bc0914e592660046@o1080315.ingest.sentry.io/6099137",
+        integrations=[FlaskIntegration()],
+
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production.
+        traces_sample_rate=1.0
+    )
+
     app = Flask(__name__)
     app.secret_key = secrets.key
 
