@@ -367,19 +367,9 @@ export async function myPersonalSupportRenderer(section) {
         message = `You did not answer the questions last time we asked, because ${{"no-concerns": "you did not have any concerns", "no-time": "you did not have time", "no-already": "your questions had already been answered"}[latest.refuseReason]}. If you would like to answer them now please click the button below.`;
     } else if (latest.result == "complete") {
         if (latest.concernAreas == "none") {
-            message = `Great to hear that you are getting on with your hormone therapy. We will check in with you again in the next few months.
-            
-            You can also access these questions at any time from the My Personal Support page.
-            
-            In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within HT &amp; Me. Alternatively you can speak to your breast cancer team or your GP.`
+            message = "Great to hear that you are getting on with your hormone therapy. We will check in with you again in the next few months.\n\nYou can also access these questions at any time from the My Personal Support page.\n\nIn the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within HT &amp; Me. Alternatively you can speak to your breast cancer team or your GP."
         } else {
-            message = `Based on your responses, we’ve selected a series of topics which are tailored to your concerns.
-    
-            You can read these now or save them and come back to them later. We hope these will be helpful for you.
-            
-            We’ll check in again in a few months. In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within the Me &amp; HT website. Alternatively you can speak to your breast cancer team or your GP.
-            
-            Expand any of the sections below to find out more.`;
+            message = "Based on your responses, we’ve selected a series of topics which are tailored to your concerns.\n\nYou can read these now or save them and come back to them later. We hope these will be helpful for you.\n\nWe’ll check in again in a few months. In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within the Me &amp; HT website. Alternatively you can speak to your breast cancer team or your GP.\n\nExpand any of the sections below to find out more.";
             renderDetails = true;
         }
     }

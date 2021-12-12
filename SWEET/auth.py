@@ -30,7 +30,7 @@ def login():
             session['user'] = token
             __logged_in_users[token] = user
 
-            anchor = "home" if "skipWelcome" in user and user["skipWelcome"] else "welcome"
+            anchor = "home" #if "skipWelcome" in user and user["skipWelcome"] else "welcome"
 
             return redirect(url_for("index", _anchor=anchor))
 
