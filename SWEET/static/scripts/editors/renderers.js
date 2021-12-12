@@ -559,9 +559,11 @@ export async function thoughtsRenderer(section) {
     if (!section.path) section.path = this.path;
 
     let holder = document.createElement("section");
+    holder.classList.add("thoughts-box", "so-alert");
+
     let thoughts = section.thoughts || await fetch(`/myapp/mythoughts?path=${encodeURIComponent(section.path)}`).then(response => response.json());
 
-    holder.insertAdjacentHTML("afterbegin", "<header><span>Critical, negative thoughts</span><span>Supportive, neutral thoughts</span></header>")
+    holder.insertAdjacentHTML("afterbegin", "<header><span>Critical, negative thoughts</span><span>&nbsp;</span><span>Supportive, neutral thoughts</span></header>")
 
     holder.insertAdjacentHTML("beforeend", "<footer><button type='button' id='add-thought' class='btn btn-primary'>Add more thoughts</button><button type='button' id='save-thoughts' class='btn btn-primary' disabled>Save</button></footer>")
     
