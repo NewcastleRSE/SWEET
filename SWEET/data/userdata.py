@@ -75,7 +75,7 @@ class UserData():
             # create user data files:
             udstore.upload_blob(f"{self.pathbase}_init", date.today().isoformat())
 
-            for fname in ["diary", "plans", "fillins"]:
+            for fname in ["diary", "plans", "fillins", "thoughts"]:
                 udstore.upload_blob(f"{self.pathbase}{fname}", json.dumps({}))
 
             for fname in ["goals", "contacts", "profilers"]:
@@ -102,6 +102,8 @@ class UserData():
         return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}fillins")
     def profilers(self):
         return AzurePersistentList(az_connection, usersource, f"{self.pathbase}profilers")
+    def thoughts(self):
+        return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}thoughts")
 
 
 
@@ -509,3 +511,32 @@ def savePlan(user, plan):
 
     plans[plan["type"]] = plan
     plans.commit()
+
+def saveThoughts(user, thoughts_in):
+    if user is None:
+        return None
+
+    if "path" not in thoughts_in or "details" not in thoughts_in:
+        return None
+
+    id = user["userID"]
+    thoughts = UserData(id).thoughts()
+    path = thoughts_in["path"]
+
+    thoughts[path] = thoughts_in["details"]
+    thoughts.commit()
+
+def getThoughts(user, path=None):
+    if user is None:
+        return
+
+    id = user["userID"]
+    thoughts = UserData(id).thoughts()
+
+    if path is None:
+        return thoughts
+
+    if path not in thoughts:
+        return None
+
+    return thoughts[path]

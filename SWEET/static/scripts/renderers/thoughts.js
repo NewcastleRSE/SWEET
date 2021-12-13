@@ -37,15 +37,27 @@ export function thoughtsPageRenderer(section) {
 
     fetch("/app/schemas/thoughts").then(response => response.json())
     .then(schema => {
-        let holders = Promise.allSettled(schema.thoughts.map(async t => await this.render({ type: "thoughts", path: t.path})))
+        Promise.allSettled(schema.thoughts.map(async t => {
+            let node = await this.render({ type: "thoughts", path: t.path})
+            if (node.hasThoughts) {
+                node.insertAdjacentHTML("afterbegin", `<h3>${t.title}</h3>`)
+                return node;
+            } else {
+                return await this.render({ type: "menu", content: [
+                    {
+                        type: "menu-item", text: t.title, link: t.path
+                    }
+                ]})
+            }
+        }))
         .then(holderPromises => holderPromises.map(p => p.value))
         .then(holders => {
-            if (holders.filter(h => h.childElementCount > 0).length == 0) {
+            if (holders.filter(h => h.hasThoughts).length == 0) {
                 // we have no thoughts in the app; create a single menu to link to thought pages:
                 this.render({
                     type: "container",
                     content: [
-                        "It looks like you haven't entered any thoughts you would like to change in the Side-Effects section – Hot flushes, Fatigue, or Sleep problems. To the pages where you can do that use the buttons below",
+                        "It looks like you haven't entered any thoughts you would like to change in the side effects section – hot flushes, night sweats, or sleep problems. To visit the pages where you can do that use the buttons below",
                         {
                             type: "menu",
                             content: schema.thoughts.map(s => { return { type: "menu-item", title: s.title, link: s.path } })

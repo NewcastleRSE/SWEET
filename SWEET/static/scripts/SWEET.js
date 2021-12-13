@@ -10,7 +10,7 @@ import { plansAndGoalsRenderer } from './renderers/planandgoal.js'
 import { reminderRenderer } from './renderers/remindersetter.js'
 import { contactFormRenderer, contactListRenderer, contactPageRenderer, contactRenderer } from './renderers/contacts.js'
 import { planRenderer, myPlansRenderer } from './renderers/plan.js'
-import { thoughtsRenderer, thoughtsPageRenderer } from './renderers/thoughts.js'
+import { thoughtsPageRenderer } from './renderers/thoughts.js'
 import { userDetailsPageRenderer } from './renderers/user_details.js'
 import { welcomeFooterRenderer } from './renderers/welcome.js'
 import { goalCheckerRenderer} from './renderers/goalchecker.js'
@@ -59,7 +59,7 @@ let SWEET = createApp({
         "contacts-page": contactPageRenderer,
         "plan": planRenderer,
         "my-plans": myPlansRenderer,
-        "thoughts": thoughtsRenderer,
+        "thoughts": r.thoughtsRenderer,
         "thoughts-page": thoughtsPageRenderer,
         "welcome-footer": welcomeFooterRenderer,
         "profiler-result": profilerResultRenderer, 

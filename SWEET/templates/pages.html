@@ -250,7 +250,7 @@
             customElements.define('content-editor', editors.ContentEditor);
             customElements.define('edit-inserter', editors.EditorInserter);
             
-            document.querySelector("#page-content").registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.AccordionEditor, editors.BlockquoteEditor, editors.MenuEditor, editors.AlertEditor, editors.GoalSetter, editors.PopupEditor, editors.PopupTriggerEditor, editors.FillInBoxEditor, editors.DescribedMenuEditor)
+            document.querySelector("#page-content").registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.AccordionEditor, editors.BlockquoteEditor, editors.MenuEditor, editors.AlertEditor, editors.GoalSetter, editors.PopupEditor, editors.PopupTriggerEditor, editors.FillInBoxEditor, editors.DescribedMenuEditor, editors.ThoughtsBox)
             
             editors.AccordionEditor.registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.BlockquoteEditor, editors.FillInBoxEditor, editors.PopupEditor, editors.PopupTriggerEditor);
             editors.AlertEditor.registerEditors(editors.MarkdownEditor, editors.BlockquoteEditor);
