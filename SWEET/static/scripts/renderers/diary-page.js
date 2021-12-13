@@ -115,7 +115,7 @@ export function diaryCalendarRenderer(section) {
 
                         this.render({type: "markdown", encoding: "raw", text: note.note })
                         .then(node => {
-                            existing.querySelector("section").innerHTML = `<h4>Notes</h4><p data-taken="${note.taken.date}T${note.taken.time}">${node.innerHTML}</p>`
+                            existing.querySelector("section").innerHTML = `<h4>Notes</h4><p id="notes-data" data-taken="${note.taken.date}T${note.taken.time}">${node.innerHTML}</p>`
                         })
                     }                    
                 }
@@ -344,6 +344,8 @@ export function diaryGraphRenderer(section) {
             .ftg { color: #196b1d; }
             .mood { color: var(--SWEET-grey); }
             .sleep { color: var(--SWEET-lilac); }
+            .ns { color: #f1dc1f; }
+            .other { color: black; }
         </style>
         <g id="axis-y-gen">
             <text x="-1" y="1">Extremely</text>

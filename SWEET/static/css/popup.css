@@ -26,3 +26,7 @@ a.popup-trigger + a.popup-trigger {
 a.popup-trigger + section {
     margin-top: 1.5em;
 }
+
+#new-contact label.lbl-small {
+    width: 162px;
+}
