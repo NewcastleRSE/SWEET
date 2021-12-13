@@ -224,6 +224,8 @@ def getSideEffects(user=None, sedate=None, type=None):
         else:
             return { "sideeffects": [se for d in diary.keys() for se in diary[d]["sideeffects"] if se['type'] == type]}
     else:
+        if sedate not in diary:
+            return None
         if type is None:
             return { "sideeffects": [se for se in diary[sedate]["sideeffects"]] }
         else:
@@ -313,7 +315,7 @@ def getAllProfilerResults(user):
         "refuseReason": profiler.get("reason"),
         "concernAreas": profiler.get("concernAreas"),
         "concernDetails": { "type": "accordion", "content": [responses[c] for c in profiler.get("concernSpecifics", [])]}
-    } for profiler in sorted(profilers, key=lambda p: p['dueDate']) if profiler['dueDate'] < date.today().isoformat()]}
+    } for profiler in sorted(profilers, key=lambda p: p['dueDate']) if profiler['dueDate'] <= date.today().isoformat()]}
 
 def getLatestProfiler(user):
     id = user["userID"]
