@@ -511,11 +511,12 @@ export function diaryGraphRenderer(section) {
     })
     
     holder.querySelector("select").addEventListener("change", e => {
-        fetch(`/myapp/mydiary`).then(response => response.json())
+        let basedate = this.contentHolder.querySelector("#cal-caption").dataset.basemonth;
+        fetch(`/myapp/mydiary?period=${basedate}`).then(response => response.json())
         .then(diary => {
-            let basedate = this.contentHolder.querySelector("#cal-caption").dataset.basemonth;
-            let se = diary.sideeffects.filter(se => se.date.startsWith(basedate) && se.type == e.target.value);
-            updateSpecific(se);
+            let entries = [].concat(...Object.keys(diary).map(d => "sideeffects" in diary[d]? diary[d].sideeffects.filter(se => se.type == e.target.value).map(se => Object.assign(se, { date: d}) ): []) );
+
+            updateSpecific(entries);
         })
 
     })
