@@ -345,7 +345,7 @@ export function diaryGraphRenderer(section) {
             .mood { color: var(--SWEET-grey); }
             .sleep { color: var(--SWEET-lilac); }
             .ns { color: #f1dc1f; }
-            .other { color: black; }
+            .other { color: turquoise; }
         </style>
         <g id="axis-y-gen">
             <text x="-1" y="1">Extremely</text>
