@@ -148,7 +148,7 @@ export function alertRenderer(section) {
 
 export function goalRenderer(section) {
     let holder = document.createElement("section");
-    holder.setAttribute("class", "row row-cols-1 row-cols-md-3 g-3 mt-3")
+    holder.setAttribute("class", "row row-cols-1 row-cols-md-3 g-3 mt-3 my-4")
     let isodate = function(d) { return d.toISOString().substr(0,10) }
 
     let newgoaltemplate = `<div class="col"><div class="card goal unset text-center shadow">
