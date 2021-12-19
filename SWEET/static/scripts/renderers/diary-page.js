@@ -332,7 +332,7 @@ export function diaryCalendarRenderer(section) {
         }
     })
 
-    this.addEventListener("postrender", oneoff = () => {
+    this.addEventListener("postrender", function oneoff() {
         c.dispatchEvent(new CustomEvent("redraw"));
         this.removeEventListener("postrender", oneoff);
     })
