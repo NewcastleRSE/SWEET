@@ -168,6 +168,7 @@ export function diaryCalendarRenderer(section) {
             </a>
             `;
             let dayfooter = "<button id='se-close' class='btn btn-primary'>Close</button>"
+            clickBack = () => modal.footer.querySelector("#se-close").dispatchEvent(new MouseEvent("click"));
 
             modal.title.textContent = new Date(d.dataset.thisdate).toDateString();
             modal.body.innerHTML = daytemplate;
@@ -232,9 +233,7 @@ export function diaryCalendarRenderer(section) {
                         }
                         
                         this.post("/myapp/notes/", note);
-                        if (!(modal.footer.querySelector("input[type='reset']"))) {
-                            modal.footer.querySelector("#se-close").insertAdjacentHTML("afterend", ` <input type="reset" form="${form.getAttribute("id")}" value="Delete Notes" class="btn btn-secondary">`)
-                        }
+                        clickBack();
                     })
 
                     form.addEventListener("reset", () => {
@@ -247,7 +246,7 @@ export function diaryCalendarRenderer(section) {
                         }
 
                         this.post("/myapp/notes/delete/", note);
-                        reset()
+                        clickBack();
                     })
                 }
 
@@ -274,9 +273,14 @@ export function diaryCalendarRenderer(section) {
                             }
                         })
 
+                        form.addEventListener("submit", () => {
+                            modal.footer.querySelector("input[type='reset']").remove();
+                            clickBack();
+                        })
 
                         form.addEventListener("reset", re => {
                             modal.footer.querySelector("input[type='reset']").remove();
+                            clickBack();
                         })
                 
                     })
@@ -328,8 +332,9 @@ export function diaryCalendarRenderer(section) {
         }
     })
 
-    this.addEventListener("postrender", () => {
-        c.dispatchEvent(new CustomEvent("redraw"))
+    this.addEventListener("postrender", oneoff = () => {
+        c.dispatchEvent(new CustomEvent("redraw"));
+        this.removeEventListener("postrender", oneoff);
     })
 
     return c
