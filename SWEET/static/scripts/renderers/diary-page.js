@@ -269,7 +269,7 @@ export function diaryCalendarRenderer(section) {
 
                         form.addEventListener("change", changeEvent => {
                             if (changeEvent.target.tagName == "SELECT" && !(modal.footer.querySelector("input[type='reset']"))) {
-                                modal.footer.querySelector("#se-close").insertAdjacentHTML("afterend", ` <input type="reset" form="${form.getAttribute("id")}" value="Clear details" class="btn btn-secondary">`)
+                                modal.footer.querySelector("#se-close").insertAdjacentHTML("afterend", ` <input type="reset" form="${form.getAttribute("id")}" value="Delete details" class="btn btn-secondary">`)
                             }
                         })
 
