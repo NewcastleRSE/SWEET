@@ -22,6 +22,10 @@ table.calendar td.disabled {
     color: silver;
 }
 
+table.calendar td.future {
+    color: var(--SWEET-grey)
+}
+
 table.calendar td.faded {
     opacity: 0.5;
 }
@@ -70,7 +74,7 @@ table.calendar td div.events > div {
     justify-content: flex-end;
 }
 
-table.calendar td.disabled div.events {
+table.calendar td:is(.disabled,.future) div.events {
     background-color: white;
     overflow: hidden;
 }

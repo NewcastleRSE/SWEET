@@ -7,7 +7,7 @@ export function diaryCalendarRenderer(section) {
         c.querySelectorAll("td").forEach(td => {
 
             if (td.dataset.thisdate > this.calendarDate(new Date())) {
-                td.classList.add("disabled");
+                td.classList.add("future");
             }
 
             if (td.dataset.thisdate.substr(0,7) != c.querySelector("#cal-caption").dataset.basemonth) {
@@ -144,7 +144,14 @@ export function diaryCalendarRenderer(section) {
             
             if (d.tagName != "TD") return false;
             
-            let daytemplate = `
+            let daytemplate = d.classList.contains("future") ?
+            `<a class="d-block card shadow mt-3" id="day-modal-add-note">
+                <div class="card-body">
+                    <h5 class="card-title">Add or update notes</h5>
+                </div>
+            </a>`
+            :
+            `
             <fieldset>
                 <label for="day-modal-adherence">I have taken my hormone therapy today</label>
                 <button type="button" id="day-modal-adherence">${d.querySelector(".events .adherence")? "&check;": ""}</button>
