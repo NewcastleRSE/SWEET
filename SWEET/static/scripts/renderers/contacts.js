@@ -17,7 +17,7 @@ export function contactRenderer(section) {
     holder.classList.add("contact");
 
     holder.innerHTML = `
-        <div>
+        <div class="my-3">
             <button class="edit" style="float: left;"></button>
             <button class="delete" style="float: left; clear: left;"></button>
             <h5>Key Contact: ${contact.type}</h5>
@@ -66,7 +66,12 @@ export function contactFormRenderer(section) {
     form.setAttribute("id", edit? section.contact.name.toLowerCase().replaceAll(" ", "_"): "new-contact")
 
     form.innerHTML = `
-        <label for="contact-type" class="p-2">Who is this person?</label><select id="contact-person-type" name="type"><option>Breast Cancer Nurse</option><option>GP Practice</option><option>Pharmacist</option><option>Other</option></select><br>
+        <label for="contact-type" class="p-2">Who is this person?</label><select id="contact-person-type" name="type">
+        <option disabled selected>Please select...</option>
+        <option>Breast Cancer Nurse</option>
+        <option>GP Practice</option>
+        <option>Pharmacist</option>
+        <option>Other</option></select><br>
         <label for="contact-name" class="p-2 lbl-small">Name:</label> <input type="text" id="contact-name" class="my-1" name="name"${edit?` value="${section.contact.name}"`:""} minlength="2" maxlength="25" required><br>
         <label for="contact-phone" class="p-2 lbl-small">Phone:</label> <input type="tel" id="contact-phone" class="my-1" name="phone"${edit?` value="${section.contact.phone}"`:""} minlength="6" maxlength="15"><br>
         <label for="contact-email" class="p-2 lbl-small">Email:</label> <input type="email" id="contact-email" class="my-1"name="email"${edit?` value="${section.contact.email}"`:""} minlength="6" maxlength="50"><br>

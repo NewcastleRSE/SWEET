@@ -68,6 +68,10 @@ ul.quick-links li a:hover {
     display:none;
 }
 
+#header-container {
+    padding: 0;
+}
+
 
 @media screen and (min-width: 200px) and (max-width: 967px) {
     .btn {

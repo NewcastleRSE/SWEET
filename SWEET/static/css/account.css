@@ -30,3 +30,7 @@ button.edit + button.cancel {
 .contact-list {
     margin-bottom: 2em;
 }
+
+.password-field {
+    float: right;
+}

@@ -81,9 +81,9 @@ export function userDetailsPageRenderer(section) {
         modal.title.textContent = "Change Password";
         modal.body.innerHTML = `
         <form id="change-pass-form">
-            <label for="oldpass">Current Password:</label> <input type="password" name="oldpass" id="oldpass"><br>
-            <label for="password">New Password:</label> <input type="password" name="password" id="password"><br>
-            <label for="confpass">Confirm New Password:</label> <input type="password" name="confpass" id="confpass">
+            <label for="oldpass" class="p-2 lbl-small">Current Password:</label> <input type="password" class="password-field" name="oldpass" id="oldpass" size="15" minlength="5" required><br>
+            <label for="password" class="p-2 lbl-small">New Password:</label> <input type="password" class="password-field" name="password" id="password" size="15" minlength="5"  required><br>
+            <label for="confpass" class="p-2 lbl-small">Confirm New Password:</label> <input type="password" class="password-field" name="confpass" id="confpass" size="15" minlength="5" required>
             <div id="errors"></div>
         </form>
         `

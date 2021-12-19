@@ -44,6 +44,7 @@ main footer {
 
 #page-title {
     margin-right: 1em;
+    margin-top: 20px;
     width: 100%;
     text-align: center;
 }
@@ -354,6 +355,7 @@ div + h4 { margin-top: 1.5em;}
     display: flex;
     justify-content: space-around;
 }
+
 
 @media screen and (min-width: 500px) and (max-width: 768px) {
 

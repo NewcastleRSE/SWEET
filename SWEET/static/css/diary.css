@@ -115,7 +115,7 @@ table.calendar div.events div.diary-item i.side-effect-ns {
 }
 
 table.calendar div.events div.diary-item i.side-effect-other {
-    background-color: black;
+    background-color: turquoise;
 }
 
 table.calendar div.events div.diary-item.adherence i {
