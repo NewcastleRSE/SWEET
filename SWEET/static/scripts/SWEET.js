@@ -111,6 +111,7 @@ SWEET.addEventListener("prerender", function(page) {
         let parent = this.path.substring(1, this.path.lastIndexOf("/"))
 
         b.setAttribute("href", `#${parent}`); 
+        b.removeAttribute("hidden")
         let strct = this.store.get("appStructure");
         let slugs = parent.split("/");
 
