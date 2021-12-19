@@ -48,9 +48,14 @@ export function markdownRenderer(section) {
 
     holder.querySelectorAll("code").forEach(code => {
         let [item, prop] = code.textContent.split(".");
-        console.log(`"${item}"`)
-        code.insertAdjacentHTML("beforebegin", this.store.get(item)[prop]);
-        code.remove();
+        try {
+            var replacer = this.store.get(item)[prop];
+        } finally {
+            if (replacer) {
+                code.insertAdjacentHTML("beforebegin", );
+                code.remove();
+            }
+        }
     })
 
     return holder;

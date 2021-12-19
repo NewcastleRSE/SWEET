@@ -69,7 +69,28 @@ let SWEET = createApp({
     },    
     load: function(path) {
         let url = `/app/content?path=${encodeURIComponent(path)}`;
-        return fetch(url).then(response => response.json());
+        return fetch(url).then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            if (response.status == 404) {
+                return {
+                    "slug": "NotFound",
+                    "title": `Error: page "${path}" not found.`,
+                    "content": [
+                        {
+                            "type": "markdown",
+                            "encoding": "raw",
+                            "text": `### 404 - Page Not Found
+                            
+Unfortunately, we were not able to find the page \`${path}\` that you requested. If you followed a link to get here, please click the "Back" button and try a different link. Otherwise, please type the address again checking the spelling carefully.
+
+If you followed a link, the application maintainers will be notified automatically and will fix the problem as soon as possible.`
+                        }
+                    ]
+                }
+            }
+        });
     },
     titleHolder: "#page-title",
     contentHolder: "#main-container",
