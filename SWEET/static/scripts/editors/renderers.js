@@ -50,7 +50,10 @@ export function markdownRenderer(section) {
         let [item, prop] = code.textContent.split(".");
         try {
             var replacer = this.store.get(item)[prop];
-        } finally {
+        } catch (e) { } finally {
+            // no need to catch specific errors - we'll either have a valid property identifer
+            // or we leave this as a normal code block in markdown.
+            
             if (replacer) {
                 code.insertAdjacentHTML("beforebegin", );
                 code.remove();

@@ -76,14 +76,14 @@ let SWEET = createApp({
             if (response.status == 404) {
                 return {
                     "slug": "NotFound",
-                    "title": `Error: page "${path}" not found.`,
+                    "title": "404 - Page Not Found",
                     "content": [
                         {
                             "type": "markdown",
                             "encoding": "raw",
-                            "text": `### 404 - Page Not Found
+                            "text": `### Error: content at "${path}" not found.
                             
-Unfortunately, we were not able to find the page \`${path}\` that you requested. If you followed a link to get here, please click the "Back" button and try a different link. Otherwise, please type the address again checking the spelling carefully.
+Unfortunately, we were not able to find a page at the location \`${path}\` that you requested. If you followed a link to get here, please click the "Back" button and try a different link. Otherwise, please type the address again checking the spelling carefully.
 
 If you followed a link, the application maintainers will be notified automatically and will fix the problem as soon as possible.`
                         }
