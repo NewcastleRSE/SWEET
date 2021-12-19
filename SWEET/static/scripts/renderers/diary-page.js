@@ -168,7 +168,7 @@ export function diaryCalendarRenderer(section) {
             </a>
             `;
             let dayfooter = "<button id='se-close' class='btn btn-primary'>Close</button>"
-            clickBack = () => modal.footer.querySelector("#se-close").dispatchEvent(new MouseEvent("click"));
+            const clickBack = () => modal.footer.querySelector("#se-close").dispatchEvent(new MouseEvent("click"));
 
             modal.title.textContent = new Date(d.dataset.thisdate).toDateString();
             modal.body.innerHTML = daytemplate;
