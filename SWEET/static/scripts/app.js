@@ -90,7 +90,7 @@ export function createApp(options={}) {
             settings.listeners[name] = [];
         }
         
-        settings.listeners[name].push(fn);
+        if (!settings.listeners[name].includes(fn)) settings.listeners[name].push(fn);
         
         return this;
     }
@@ -99,7 +99,7 @@ export function createApp(options={}) {
         if (settings.listeners[name].includes(fn)) {
             let list = settings.listeners[name];
             let loc = list.indexOf(fn);
-            list = list.slice(0,loc).concat(list.slice(loc+1))
+            settings.listeners[name] = list.slice(0,loc).concat(list.slice(loc+1))
         }
     }
 

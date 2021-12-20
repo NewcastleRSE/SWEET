@@ -69,7 +69,28 @@ let SWEET = createApp({
     },    
     load: function(path) {
         let url = `/app/content?path=${encodeURIComponent(path)}`;
-        return fetch(url).then(response => response.json());
+        return fetch(url).then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            if (response.status == 404) {
+                return {
+                    "slug": "NotFound",
+                    "title": "404 - Page Not Found",
+                    "content": [
+                        {
+                            "type": "markdown",
+                            "encoding": "raw",
+                            "text": `### Error: content at "${path}" not found.
+                            
+Unfortunately, we were not able to find a page at the location \`${path}\` that you requested. If you followed a link to get here, please click the "Back" button and try a different link. Otherwise, please type the address again checking the spelling carefully.
+
+If you followed a link, the application maintainers will be notified automatically and will fix the problem as soon as possible.`
+                        }
+                    ]
+                }
+            }
+        });
     },
     titleHolder: "#page-title",
     contentHolder: "#main-container",
@@ -81,19 +102,25 @@ SWEET.addEventListener("prerender", function(page) {
     document.querySelector("main").classList.add("flex-shrink-0", this.path.replace("#", "").replaceAll("/", "_"));
     
     document.querySelectorAll(".btn-up").forEach(b => { 
-        let parent = this.path.substring(1, this.path.lastIndexOf("/") == -1? this.path.length: this.path.lastIndexOf("/"))
-        console.log(parent);
+        if (this.path.lastIndexOf("/") == -1) {
+            b.setAttribute("hidden", "");
+            return;
+        }
+        // else 
+        
+        let parent = this.path.substring(1, this.path.lastIndexOf("/"))
+
         b.setAttribute("href", `#${parent}`); 
+        b.removeAttribute("hidden")
         let strct = this.store.get("appStructure");
         let slugs = parent.split("/");
-        console.log(slugs);
 
+        
         while (slugs.length) {
             let slug = slugs.shift();
 
             if (slug in strct) strct = strct[slug]
             else strct = strct.pages.filter(p => p.slug == slug)[0]
-            console.log(strct)
         }
 
         b.textContent = strct.title || "HT & Me";

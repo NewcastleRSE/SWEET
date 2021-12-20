@@ -22,7 +22,10 @@ def getPageDetails(path):
         if slug in struct:
             struct = struct[slug]
         else:
-            struct = next(i for i in struct['pages'] if i['slug'] == slug)
+            try:
+                struct = next(i for i in struct['pages'] if i['slug'] == slug)
+            except StopIteration:
+                return None
 
     # need to return a copy of the information to avoid contaminating the underlying data
     output = { "title": struct['title'], "slug": struct['slug']}

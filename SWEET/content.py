@@ -31,6 +31,9 @@ def getPageContent():
         logvisit(g.user, path)
         
         details = getPageDetails(path)
+        if details is None:
+            abort(404)
+            
         details["content"] = getPageContents(path) 
         return details
     else:

@@ -323,7 +323,7 @@ def getLatestProfiler(user):
     profilers = UserData(id).profilers()
 
     if len(profilers) == 0:
-        profilers.append({ "dueDate": date.today().isoformat })
+        profilers.append({ "dueDate": date.today().isoformat() })
         profilers.commit()
 
     latest = sorted(profilers, key=lambda p: p['dueDate'], reverse=True)[0]

@@ -7,7 +7,7 @@ export function diaryCalendarRenderer(section) {
         c.querySelectorAll("td").forEach(td => {
 
             if (td.dataset.thisdate > this.calendarDate(new Date())) {
-                td.classList.add("disabled");
+                td.classList.add("future");
             }
 
             if (td.dataset.thisdate.substr(0,7) != c.querySelector("#cal-caption").dataset.basemonth) {
@@ -144,7 +144,14 @@ export function diaryCalendarRenderer(section) {
             
             if (d.tagName != "TD") return false;
             
-            let daytemplate = `
+            let daytemplate = d.classList.contains("future") ?
+            `<a class="d-block card shadow mt-3" id="day-modal-add-note">
+                <div class="card-body">
+                    <h5 class="card-title">Add or update notes</h5>
+                </div>
+            </a>`
+            :
+            `
             <fieldset>
                 <label for="day-modal-adherence">I have taken my hormone therapy today</label>
                 <button type="button" id="day-modal-adherence">${d.querySelector(".events .adherence")? "&check;": ""}</button>
@@ -161,6 +168,7 @@ export function diaryCalendarRenderer(section) {
             </a>
             `;
             let dayfooter = "<button id='se-close' class='btn btn-primary'>Close</button>"
+            const clickBack = () => modal.footer.querySelector("#se-close").dispatchEvent(new MouseEvent("click"));
 
             modal.title.textContent = new Date(d.dataset.thisdate).toDateString();
             modal.body.innerHTML = daytemplate;
@@ -225,9 +233,7 @@ export function diaryCalendarRenderer(section) {
                         }
                         
                         this.post("/myapp/notes/", note);
-                        if (!(modal.footer.querySelector("input[type='reset']"))) {
-                            modal.footer.querySelector("#se-close").insertAdjacentHTML("afterend", ` <input type="reset" form="${form.getAttribute("id")}" value="Delete Notes" class="btn btn-secondary">`)
-                        }
+                        clickBack();
                     })
 
                     form.addEventListener("reset", () => {
@@ -240,7 +246,7 @@ export function diaryCalendarRenderer(section) {
                         }
 
                         this.post("/myapp/notes/delete/", note);
-                        reset()
+                        clickBack();
                     })
                 }
 
@@ -263,13 +269,18 @@ export function diaryCalendarRenderer(section) {
 
                         form.addEventListener("change", changeEvent => {
                             if (changeEvent.target.tagName == "SELECT" && !(modal.footer.querySelector("input[type='reset']"))) {
-                                modal.footer.querySelector("#se-close").insertAdjacentHTML("afterend", ` <input type="reset" form="${form.getAttribute("id")}" value="Clear details" class="btn btn-secondary">`)
+                                modal.footer.querySelector("#se-close").insertAdjacentHTML("afterend", ` <input type="reset" form="${form.getAttribute("id")}" value="Delete details" class="btn btn-secondary">`)
                             }
                         })
 
+                        form.addEventListener("submit", () => {
+                            modal.footer.querySelector("input[type='reset']").remove();
+                            clickBack();
+                        })
 
                         form.addEventListener("reset", re => {
                             modal.footer.querySelector("input[type='reset']").remove();
+                            clickBack();
                         })
                 
                     })
@@ -321,8 +332,9 @@ export function diaryCalendarRenderer(section) {
         }
     })
 
-    this.addEventListener("postrender", () => {
-        c.dispatchEvent(new CustomEvent("redraw"))
+    this.addEventListener("postrender", function oneoff() {
+        c.dispatchEvent(new CustomEvent("redraw"));
+        this.removeEventListener("postrender", oneoff);
     })
 
     return c

@@ -48,9 +48,17 @@ export function markdownRenderer(section) {
 
     holder.querySelectorAll("code").forEach(code => {
         let [item, prop] = code.textContent.split(".");
-        console.log(`"${item}"`)
-        code.insertAdjacentHTML("beforebegin", this.store.get(item)[prop]);
-        code.remove();
+        try {
+            var replacer = this.store.get(item)[prop];
+        } catch (e) { } finally {
+            // no need to catch specific errors - we'll either have a valid property identifer
+            // or we leave this as a normal code block in markdown.
+            
+            if (replacer) {
+                code.insertAdjacentHTML("beforebegin", );
+                code.remove();
+            }
+        }
     })
 
     return holder;

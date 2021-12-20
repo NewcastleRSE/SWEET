@@ -235,6 +235,10 @@ export function profilerModalRenderer(section) {
                     this.post(url, profilerResponse).then(response => response.json())
                     .then(result => {
                         if (result.status == "OK") {
+
+/*
+******* Old logic: not deleted for ease of restoration should update not be appropriate or desirable *******
+
                             section.modal.body.innerHTML = "";
                             result.details.content.forEach(c => this.render(c).then(node => section.modal.body.appendChild(node)))
 
@@ -243,6 +247,14 @@ export function profilerModalRenderer(section) {
                                 e.preventDefault(); e.stopPropagation();
                                 section.modal.hide(true);
                             })
+
+        *********************************************************************************************
+*/
+
+                            // following implementation of "My Personal Support" page, can close modal and reidrect app:
+
+                            this.path = "#home/my-support";
+                            section.modal.hide();
                         }
                     })
                 })
