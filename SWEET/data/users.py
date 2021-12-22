@@ -99,7 +99,7 @@ def registerUser(userID, password, role, **add_fields):
         __usermap[add_fields['email']] = userID
         __usermap.commit()
 
-    return True, user
+    return True, getUser(userID)
 
 def createUser(userID, email, firstName, lastName, role):
     if userID in __userstore:
