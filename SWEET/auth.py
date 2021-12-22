@@ -73,7 +73,7 @@ def register():
 
         return detail, 400 # we assume login failed due to an error in the request data
     
-    return render_template("register.html")
+    return render_template("login.html")
 
 @bp.route("/logout")
 def logout():
