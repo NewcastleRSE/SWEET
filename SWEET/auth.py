@@ -43,16 +43,21 @@ def login():
 @bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        uid = request.form['userID']
+        uid = request.form['regCode']
         fname = request.form['fullName']
+        email = request.form['email']
+        mobile = request.form['mobile']
         role = 'user'
         pwd = request.form['password']
 
         if not (uid.strip() or pwd.strip()):
-            flash("You must enter an email address and password")
-            return redirect(url_for("auth.register"))
+            flash("You must enter a registration code and password")
+            return redirect(url_for("auth.login"))
 
-        users.registerUser(uid, pwd, fname, role)
+        users.registerUser(uid, pwd, role, fullName=fname, email=email, mobile=mobile)
+        
+        # SEND EMAIL TO OXFORD & NEWCASTLE TEAMS WITH REGCODE; EMAIL; FULLNAME
+        
         return redirect(url_for("auth.login"))
     
     return render_template("register.html")
@@ -89,6 +94,14 @@ def activateAccount():
 
     return {"status": "error", "message": "Update request sent without json"}, 400
 
+@bp.route("check")
+def checkRegCode():
+    code = request.args.get("code")
+    if code is None:
+        return {"message": "Registration code not available"}, 404
+
+    else:
+        return {"message": "code available" }
 
 @bp.before_app_request
 def load_logged_in_user():

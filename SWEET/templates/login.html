@@ -92,14 +92,39 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script>
-      document.querySelector("form[action*='register']").addEventListener("submit", e => {
-          let pass = document.querySelector("[name='password']").value;
-          let passcnf = document.querySelector("[name='password_conf']").value;
+      document.querySelector("form[action*='register']").addEventListener("submit", async e => {
+          // to perform registration code checking, we need to prevent default submission:
+          // form will be programatically submitted if all validation checks pass.
+
+          // should probably show some kind of 'please wait...' inidcator while this process is going on
+
+          e.preventDefault();
           let message = document.getElementById("error-message");
+
+          // password confirmation matches?
+          let pass = e.target.elements['password'].value;
+          let passcnf = e.target.elements['password_conf'].value;
           if (pass != passcnf) {
               message.innerHTML="Password and confirmation do not match, please try again.";
-              e.preventDefault();
+              return;
           }
+
+          // other scripted validation checks (e.g. email not in use in the app?)
+
+          // confirm registration code not in use:
+          let response = await fetch(`{{url_for("auth.check")}}?code=${e.target.elements['regCode'].value}`);
+          if (response.status == 200) {
+            // code was found OK; we can continue to submit the form.
+            e.target.submit();
+            return;
+          } else if (response.status == 404) {
+            message.innerHTML = "This resgitration code is invalid or has already been used; please contact your study adminstrator to obtain another one.";
+            return;
+          } else {
+            message.innerHTML = "An error occurred while checking your registration code; please contact the service adminstrator for assistance.";
+            return;
+          }
+
       })
     </script>
   </body>
