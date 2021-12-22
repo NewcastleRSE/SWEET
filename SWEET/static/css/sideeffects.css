@@ -77,6 +77,10 @@ span.sidenote {
     font-weight: bold;
 }
 
+span.sidenote > strong {
+    font-size: 115%;
+}
+
 #dateinput label {
     vertical-align: top;
 }
