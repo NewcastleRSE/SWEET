@@ -1,0 +1,30 @@
+.login-form {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.login-form > h1 {
+    flex-basis: 100%;
+    font-weight: bold;
+    font-size: 250%;
+    width: 100%;
+    text-align: center;
+    padding-bottom: 0.5em;
+}
+
+.login-form > form {
+    flex-basis: 47.5%;
+    padding: 0.5em;
+    border-radius: 0.5em;
+    margin-bottom: 1em;
+}
+
+@media screen and (max-width: 1099px) {
+    .login-form > form {
+        flex-basis: 100%;
+    }
+        
+}

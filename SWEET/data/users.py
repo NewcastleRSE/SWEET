@@ -1,14 +1,15 @@
 from re import L
 from .az_persitent import AzurePersistentList, AzurePersitentDict
 from . import encryptUser, decryptUser
-from ..secrets import connstr as az_connection, usersource, usertable, userlist, userlog
+from ..secrets import connstr as az_connection, usersource, usertable, userlist, userlog, registration_list
 from datetime import datetime
 
 
 __userstore = AzurePersitentDict(az_connection, usersource, usertable)
-# usermap maps participant emails to user ids for 
+
 __usermap = AzurePersitentDict(az_connection, usersource, userlist)
 __userlog = AzurePersistentList(az_connection, usersource, userlog)
+__regcodes = AzurePersistentList(az_connection, usersource, registration_list)
 
 def logvisit(user, path):
     __userlog.append({
@@ -83,17 +84,22 @@ def validateUser(userID, password):
     return True, getUser(userID)
 
 
-def registerUser(userID, password, fullName, role):
+def registerUser(userID, password, role, **add_fields):
     
     if userID in __userstore:
         return False, { 'message': 'User with this UserID already exists'}
 
-    user = { 'password': password, 'fullName': fullName, 'role': role}
+    user = { 'password': password, 'role': role}
+    user.update(add_fields)
     
     __userstore[userID] = encryptUser(user)
     __userstore.commit()
 
-    return True, user
+    if 'email' in add_fields:
+        __usermap[add_fields['email']] = userID
+        __usermap.commit()
+
+    return True, getUser(userID)
 
 def createUser(userID, email, firstName, lastName, role):
     if userID in __userstore:
@@ -143,3 +149,18 @@ def updateUser(userID, **kwargs):
     
 def getAllUsers():
     return [getUser(user) for user in __userstore.keys()]
+
+def checkRegistrationCode(code):
+    return code in __regcodes
+
+def useRegistrationCode(code):
+    __regcodes.remove(code)
+    __regcodes.commit()
+
+def addRegistrationCode(code):
+    if isinstance(code, list):
+        __regcodes.extend(code)
+    else:
+        __regcodes.append(code)
+
+    __regcodes.commit()

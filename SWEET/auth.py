@@ -10,6 +10,14 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 __logged_in_users = {}
 
+def _login(user):
+    token = getToken(6)
+    session['user'] = token
+    __logged_in_users[token] = user
+
+    anchor = "home" #if "skipWelcome" in user and user["skipWelcome"] else "welcome"
+
+    return redirect(url_for("index", _anchor=anchor))
 
 def _logout(token):
     if token in __logged_in_users:
@@ -26,13 +34,7 @@ def login():
         success, user = users.validateUser(uid, pwd)
 
         if success:
-            token = getToken(6)
-            session['user'] = token
-            __logged_in_users[token] = user
-
-            anchor = "home" #if "skipWelcome" in user and user["skipWelcome"] else "welcome"
-
-            return redirect(url_for("index", _anchor=anchor))
+            return _login(user)
 
         flash('Incorrect username/password combination')
         flash('Your username is usually your email address')
@@ -40,22 +42,38 @@ def login():
 
     return render_template("login.html")
 
+
+
 @bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        uid = request.form['userID']
+        uid = request.form['regCode']
         fname = request.form['fullName']
+        email = request.form['email']
+        mobile = request.form['mobile']
         role = 'user'
         pwd = request.form['password']
 
         if not (uid.strip() or pwd.strip()):
-            flash("You must enter an email address and password")
-            return redirect(url_for("auth.register"))
+            flash("You must enter a registration code and password")
+            return redirect(url_for("auth.login"))
 
-        users.registerUser(uid, pwd, fname, role)
-        return redirect(url_for("auth.login"))
+        # check reg code in case client-side validation has been bypassed:
+        if not users.checkRegistrationCode(uid):
+            flash("Registration failed: the submitted registration code is invalid or has previously been used.")
+            return redirect(url_for('auth.login'))
+
+        result, detail = users.registerUser(uid, pwd, role, fullName=fname, email=email, mobile=mobile)
+        # if registration works detail is the user, otherwise it's a dict containing error info:
+
+        if result:
+            users.useRegistrationCode(uid)
+            # SEND EMAIL TO OXFORD & NEWCASTLE TEAMS WITH DETAILS FROM user
+            return _login(detail)
+
+        return detail, 400 # we assume login failed due to an error in the request data
     
-    return render_template("register.html")
+    return render_template("login.html")
 
 @bp.route("/logout")
 def logout():
@@ -89,6 +107,13 @@ def activateAccount():
 
     return {"status": "error", "message": "Update request sent without json"}, 400
 
+@bp.route("check")
+def checkRegCode():
+    code = request.args.get("code")
+    if users.checkRegistrationCode(code):
+        return {"message": "code available" }
+    else:
+        return {"message": "Registration code not available"}, 404
 
 @bp.before_app_request
 def load_logged_in_user():
