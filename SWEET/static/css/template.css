@@ -20,9 +20,11 @@ h5 {
     font-weight: 600;
 }
 
-p { margin-bottom: 1.5em; }
+p {
+    margin-bottom: 1.5em;
+}
 
-main > .container {
+main>.container {
     padding: 90px 15px 15px;
 }
 
@@ -38,6 +40,7 @@ main header, main footer {
 main header {
     margin-bottom: 1.5em;
 }
+
 main footer {
     margin-top: 1.5em;
 }
@@ -55,7 +58,7 @@ main :is(header, footer) a.hidden {
 
 
 .sidenav {
-    background: radial-gradient(circle, rgba(99,49,136,0.75) 26%, rgba(99,49,136,0.9) 93%), url('../images/splash.jpeg');
+    background: radial-gradient(circle, rgba(99, 49, 136, 0.75) 26%, rgba(99, 49, 136, 0.9) 93%), url('../images/splash.jpeg');
     background-position: center right;
 }
 
@@ -82,7 +85,7 @@ a:visited.card.submenu {
 }
 
 .form-check .no-box-shadow:focus {
-    box-shadow:none !important;
+    box-shadow: none !important;
 }
 
 /*
@@ -132,7 +135,8 @@ span a {
     border-color: var(--SWEET-grey);
     color: var(--SWEET-off-white);
 }
-.btn:focus,.btn:active {
+
+.btn:focus, .btn:active {
     outline: none !important;
     box-shadow: none;
 }
@@ -148,7 +152,11 @@ span a {
     box-shadow: 0 0 0 0.25rem rgb(99 49 136 / 25%);
 }
 
-nav.navbar-dark, footer.footer-dark {
+nav.navbar-dark {
+    background-color: var(--SWEET-off-white) !important;
+}
+
+footer.footer-dark {
     background-color: var(--SWEET-purple) !important;
 }
 
@@ -157,18 +165,18 @@ a.navbar-brand {
     padding: 0;
 }
 
-a.navbar-brand > strong {
+a.navbar-brand>strong {
     padding: 0 0.25em;
 }
 
 nav #app-buttons {
-    position:relative;
+    position: relative;
 }
 
 nav #app-buttons i {
     color: inherit;
     cursor: pointer;
-    font-size:24px;
+    font-size: 24px;
     color: var(--SWEET-off-white);
 }
 
@@ -180,7 +188,7 @@ nav #app-buttons .add-note {
     position: absolute;
     top: -.5rem;
     bottom: -.5rem;
-    right: var(--bs-gutter-x,-.75rem);
+    right: var(--bs-gutter-x, -.75rem);
     padding-top: 1rem !important;
     background-color: var(--SWEET-purple);
     color: var(--SWEET-off-white);
@@ -212,7 +220,7 @@ footer div.container span a:hover {
 }
 
 .card.shadow:hover {
-    box-shadow: 0 .5rem 1rem 0.5rem rgba(0,0,0,0.15) !important;
+    box-shadow: 0 .5rem 1rem 0.5rem rgba(0, 0, 0, 0.15) !important;
 }
 
 .quote {
@@ -228,11 +236,11 @@ section ul {
     list-style: none;
 }
 
-section ul > li {
+section ul>li {
     margin-bottom: 0.5em;
 }
 
-section ul > li:before {
+section ul>li:before {
     content: "\2022";
     color: var(--SWEET-gold);
     font-weight: bold;
@@ -245,7 +253,7 @@ section ul > li:before {
     top: 0.1em;
 }
 
-li > p {
+li>p {
     display: inline-block;
     vertical-align: text-top;
 }
@@ -279,7 +287,7 @@ button.accordion-button:not(.collapsed)::after {
 }
 
 .shadow-hover:hover {
-    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
 }
 
 .markdown :is(img, video) {
@@ -310,12 +318,15 @@ button.accordion-button:not(.collapsed)::after {
 .markdown :is(img, video).sm {
     max-width: 192px;
 }
+
 .markdown :is(img, video).md {
     max-width: 384px;
 }
+
 .markdown :is(img, video).lg {
     max-width: 640px;
 }
+
 .markdown :is(img, video).xl {
     max-width: 768px;
 }
@@ -324,11 +335,13 @@ button.accordion-button:not(.collapsed)::after {
     max-width: 1024px;
 }
 
-section.markdown > p:last-child {
+section.markdown>p:last-child {
     margin-bottom: 2em;
 }
 
-section, div.accordion { clear: both; }
+section, div.accordion {
+    clear: both;
+}
 
 figure {
     margin-top: 2em;
@@ -339,11 +352,13 @@ ul {
     margin-bottom: 1.5em;
 }
 
-p + ul {
+p+ul {
     margin-top: -1.25em;
 }
 
-div + h4 { margin-top: 1.5em;}
+div+h4 {
+    margin-top: 1.5em;
+}
 
 #error-message {
     font-size: 0.8em;
@@ -351,7 +366,7 @@ div + h4 { margin-top: 1.5em;}
     color: red;
 }
 
-.welcome-footer > div {
+.welcome-footer>div {
     display: flex;
     justify-content: space-around;
 }
@@ -359,8 +374,8 @@ div + h4 { margin-top: 1.5em;}
 
 @media screen and (min-width: 500px) and (max-width: 768px) {
 
-    ul.navbar-nav li.nav-item a.nav-link, ul.quick-links li a  {
-       font-size: 0.8em;
+    ul.navbar-nav li.nav-item a.nav-link, ul.quick-links li a {
+        font-size: 0.8em;
     }
 
     h1 {
@@ -379,16 +394,16 @@ div + h4 { margin-top: 1.5em;}
     #diary-page-graphs {
         margin-top: 4em;
     }
-    
+
     #diary-page-graphs h4 {
         font-size: 1.2em;
     }
-    
+
     #diary-page-graphs h5 {
         font-size: 1em;
     }
 
-    #diary-page-graphs select{
+    #diary-page-graphs select {
         font-size: 0.7em;
     }
 
