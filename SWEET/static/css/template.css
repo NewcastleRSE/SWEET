@@ -156,6 +156,19 @@ nav.navbar-dark {
     background-color: var(--SWEET-off-white) !important;
 }
 
+.navbar-dark .navbar-nav .nav-link.active, .navbar-dark .navbar-nav .show>.nav-link, nav.navbar-dark .navbar-nav .nav-link, .navbar-dark .navbar-brand {
+    color: var(--SWEET-dark-grey);
+}
+
+.navbar-dark .navbar-nav .show>.nav-link:hover, nav.navbar-dark .navbar-nav .nav-link:hover, .navbar-dark .navbar-brand:hover {
+    color: var(--SWEET-dark-grey);
+}
+
+nav.navbar-dark .navbar-nav .nav-link:focus, .navbar-dark .navbar-brand:focus {
+    color: var(--SWEET-charcoal);
+}
+
+
 footer.footer-dark {
     background-color: var(--SWEET-purple) !important;
 }

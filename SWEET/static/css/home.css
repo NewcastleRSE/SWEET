@@ -65,7 +65,7 @@ ul.quick-links li a:hover {
 }
 
 .custom-font-buttons {
-    display:none;
+    display: none;
 }
 
 #header-container {
@@ -82,9 +82,10 @@ ul.quick-links li a:hover {
 
 @media screen and (min-width: 200px) and (max-width: 500px) {
     .custom-font-buttons {
-        display: block; 
+        display: block;
         float: right;
     }
+
     .custom-font-buttons span {
         float: left;
         color: rgb(105, 102, 102);
