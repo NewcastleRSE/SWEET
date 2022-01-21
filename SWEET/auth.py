@@ -56,12 +56,12 @@ def register():
 
         if not (uid.strip() or pwd.strip()):
             flash("You must enter a registration code and password")
-            return redirect(url_for("auth.login"))
+            return redirect(url_for("auth.register"))
 
         # check reg code in case client-side validation has been bypassed:
         if not users.checkRegistrationCode(uid):
             flash("Registration failed: the submitted registration code is invalid or has previously been used.")
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('auth.register'))
 
         result, detail = users.registerUser(uid, pwd, role, fullName=fname, email=email, mobile=mobile)
         # if registration works detail is the user, otherwise it's a dict containing error info:
@@ -71,7 +71,10 @@ def register():
             # SEND EMAIL TO OXFORD & NEWCASTLE TEAMS WITH DETAILS FROM user
             return _login(detail)
 
-        return detail, 400 # we assume login failed due to an error in the request data
+        # if registration fails a reason message is returned in the details:
+        # flash message and return user to reg page.
+        flash(detail['message'])
+        return redirect(url_for('auth.register'))
     
     return render_template("login.html")
 

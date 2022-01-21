@@ -45,11 +45,46 @@ switch (page) {
   case "users":
     let holder = document.createElement("section");
     holder.innerHTML = `
-    <div>
+    <div hidden>
       <label>Click this button to add a new participant to the study:</label><button type="button" id="add-participant" class="btn btn-primary">Add Participant</button><br>
       <label>Click this button to add a new collaborator to the study:</label><button type="button" id="add-colab" class="btn btn-primary">Add Collaborator</button>
     </div>
+    <div><table id="user-list"></table></div>
     `
+    var table = holder.querySelector("#user-list")
+
+    fetch("/admin/data/allusers").then(response => response.json()).then(data => data.users)
+    .then(users => {
+      users.forEach(u => {
+        let tr = document.createElement("tr");
+        tr.dataset.userID = u.userID
+        tr.innerHTML = `<th>${u.firstName} ${u.lastName}</th><td>${u.email}</td><td><button class="edit">Edit</button><button class="reset">Reset Data</button><button class="Delete">Delete</button></td>`
+        table.appendChild(tr)
+      })
+    })
+
+    table.addEventListener("click", e => {
+      if (e.target.matches("button.reset, button.reset *")) {
+        if (confirm("Reset all entered data for this user?")) {
+          let src = e.target;
+          while (src.tagName != "TR" && src.parentNode) src = src.parentNode;
+
+          if (src.tagName != "TR" || !src.dataset.userID) {
+            console.log("failed to find parent node with userID; aborting");
+            return false;
+          }
+
+          post("/admin/data/reset", { UserID: src.dataset.userID}).then(response => {
+            if (response.ok) alert("User data successfully reset")
+            else {
+              console.log(reponse); alert("An error occurred, check the console for full details");
+            }
+          })
+        }
+      } else {
+        alert("This action is not currently implemented.")
+      }
+    })
 
     holder.querySelector("#add-participant").addEventListener("click", e => {
       let modal = createModal(true);
