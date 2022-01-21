@@ -89,6 +89,12 @@ def registerUser(userID, password, role, **add_fields):
     if userID in __userstore:
         return False, { 'message': 'User with this UserID already exists'}
 
+    if confirmUserID(userID) in __userstore:
+        return False, { 'message': 'User ID matches an email current used in the system' }
+
+    if 'email' in add_fields and confirmUserID(add_fields['email']) in __userstore:
+        return False, {'message': 'A user with this email address already exists in the system'}
+
     user = { 'password': password, 'role': role}
     user.update(add_fields)
     
