@@ -213,13 +213,14 @@ export function profilerModalRenderer(section) {
                 }
                 
                 section.modal.body.insertAdjacentHTML("beforeend", `<button type="submit" id="prof-p2-submit" class="btn btn-primary" form="prof-p2">Submit reponses</button>`)
+                section.modal.footer.querySelector("#prof-p1-submit").remove();
 
                 section.modal.body.querySelector("form").addEventListener("submit", e => {
                     e.preventDefault(); e.stopPropagation();
 
                     // validate that some concerns have been ticked:
                     if (Array.from(e.target.elements['agree']).filter(c => c.checked).length == 0) {
-                        aler("You have not ticked any specific concern items: if you have changed your mind please use the cross to close the popup");
+                        alert("You have not ticked any specific concern items: if you have changed your mind please use the cross to close the popup");
                         return;
                     }
                     
@@ -370,7 +371,7 @@ export async function myPersonalSupportRenderer(section) {
 
     let holder = document.createElement("section");
     holder.classList.add("prf-latest");
-    holder.insertAdjacentHTML("beforeend", "<h3>Your Current Suggestions</h3>");
+    //holder.insertAdjacentHTML("beforeend", "<h3>Your Current Suggestions</h3>");
 
     let message, renderDetails = false;
     if (latest.result == "postponed") {
