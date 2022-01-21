@@ -1,4 +1,4 @@
-from SWEET.data.users import confirmUserID
+from SWEET.data.users import updateUser
 from .az_persitent import AzurePersitentDict, AzurePersistentList
 from ..secrets import connstr as az_connection, usersource, usergoals, userdiary
 from . import getContainer, getProfilerResponses
@@ -70,6 +70,7 @@ class UserData():
     def __init__(self, userID):
         udstore = getContainer(usersource)
         self.pathbase = f"userdata/{userID}/"
+        self.user = userID
 
         try:
             # create user data files:
@@ -104,6 +105,23 @@ class UserData():
         return AzurePersistentList(az_connection, usersource, f"{self.pathbase}profilers")
     def thoughts(self):
         return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}thoughts")
+
+    def reset(self):
+        udstore = getContainer(usersource)
+
+        # re-create user data files:
+        udstore.upload_blob(f"{self.pathbase}_init", date.today().isoformat(), overwrite=True)
+
+        for fname in ["diary", "plans", "fillins", "thoughts"]:
+            udstore.upload_blob(f"{self.pathbase}{fname}", json.dumps({}), overwrite=True)
+
+        for fname in ["goals", "contacts", "profilers"]:
+            udstore.upload_blob(f"{self.pathbase}{fname}", json.dumps([]), overwrite=True)
+
+        udstore.upload_blob(f"{self.pathbase}reminders", json.dumps({ 'daily': {'reminder': False}, 'monthly': {'reminder': False}}), overwrite=True)
+
+        updateUser(self.user, tunnelsComplete=[])
+
 
 
 
@@ -542,3 +560,9 @@ def getThoughts(user, path=None):
         return None
 
     return thoughts[path]
+
+def resetAll(UserID=None):
+    if UserID is None:
+        return
+
+    UserData(UserID).reset()

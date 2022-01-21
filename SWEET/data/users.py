@@ -1,7 +1,7 @@
 from re import L
 from .az_persitent import AzurePersistentList, AzurePersitentDict
 from . import encryptUser, decryptUser
-from ..secrets import connstr as az_connection, usersource, usertable, userlist, userlog, registration_list
+from ..secrets import connstr as az_connection, usersource, usertable, userlist, userlog, registration_list, admin_user
 from datetime import datetime
 
 
@@ -44,12 +44,6 @@ def getUser(userID):
         dirty = True
         user["lastName"] = user["fullName"][user["fullName"].rfind(" ") + 1:]
 
-    from .userdata import __diary
-    if userID in __diary:
-        if "profile" in __diary[userID]:
-            dirty = True
-            user.update(**__diary[userID]["profile"])
-
     if dirty:
         __userstore[userID] = encryptUser(user)
         __userstore.commit()
@@ -90,7 +84,7 @@ def registerUser(userID, password, role, **add_fields):
         return False, { 'message': 'User with this UserID already exists'}
 
     if confirmUserID(userID) in __userstore:
-        return False, { 'message': 'User ID matches an email current used in the system' }
+        return False, { 'message': 'User ID matches an email currently used in the system' }
 
     if 'email' in add_fields and confirmUserID(add_fields['email']) in __userstore:
         return False, {'message': 'A user with this email address already exists in the system'}
@@ -154,7 +148,7 @@ def updateUser(userID, **kwargs):
     return True
     
 def getAllUsers():
-    return [getUser(user) for user in __userstore.keys()]
+    return [getUser(user) for user in __userstore.keys() if user != admin_user]
 
 def checkRegistrationCode(code):
     return code in __regcodes
