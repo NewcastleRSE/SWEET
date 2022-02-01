@@ -254,7 +254,9 @@ export function profilerModalRenderer(section) {
 
                             // following implementation of "My Personal Support" page, can close modal and reidrect app:
 
-                            this.path = "#home/my-support";
+                            if (this.path == "#home/my-support") this.load()
+                            else this.path = "#home/my-support";
+                            
                             section.modal.hide();
                         }
                     })
@@ -382,7 +384,7 @@ export async function myPersonalSupportRenderer(section) {
         if (latest.concernAreas == "none") {
             message = "Great to hear that you are getting on with your hormone therapy. We will check in with you again in the next few months.\n\nYou can also access these questions at any time from the My Personal Support page.\n\nIn the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within HT &amp; Me. Alternatively you can speak to your breast cancer team or your GP."
         } else {
-            message = "Based on your responses, we’ve selected a series of topics which are tailored to your concerns.\n\nYou can read these now or save them and come back to them later. We hope these will be helpful for you.\n\nWe’ll check in again in a few months. In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within the Me &amp; HT website. Alternatively you can speak to your breast cancer team or your GP.\n\nExpand any of the sections below to find out more.";
+            message = "Based on your responses, we’ve selected a series of topics which are tailored to your concerns.\n\nYou can read these now or save them and come back to them later. We hope these will be helpful for you.\n\nExpand any of the sections below to find out more.";
             renderDetails = true;
         }
     }
@@ -390,8 +392,11 @@ export async function myPersonalSupportRenderer(section) {
 
     await this.render({ type: "markdown", encoding: "raw", text: message}).then(node => holder.appendChild(node));
     
-    if (renderDetails) await this.render(latest.concernDetails).then(node => holder.appendChild(node));
-
+    if (renderDetails) {
+        await this.render(latest.concernDetails).then(node => holder.appendChild(node));
+        await this.render({ type: "markdown", encoding: "raw", text: "We’ll check in again in a few months. In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within the Me &amp; HT website. Alternatively you can speak to your breast cancer team or your GP.\n\n"}).then(node => holder.appendChild(node))
+    }
+    
     let newdets = { type: "profiler-launcher" };
     if (latest.result == "postponed") newdets.profiler = latest;
 
