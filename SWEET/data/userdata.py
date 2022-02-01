@@ -306,7 +306,7 @@ def recordProfiler(user, profiler):
 
     # ref gh issue #183: this code is throwing an error, but is no longer required following refactor to profiler logic.
     # commented out for now in case it needs reinstating: to be removed in future update.
-    
+
     # if profiler["result"] in ["postponed", "refused", "no-concerns"]:
     #     return True, { "result": profiler["result"] }
     # else:
@@ -468,7 +468,7 @@ def setReminders(user, reminders):
 
     savedreminders = UserData(id).reminders()
     savedreminders.update(reminders)
-    reminders.commit()
+    savedreminders.commit()
 
 def getContacts(user):
     if user is None:
