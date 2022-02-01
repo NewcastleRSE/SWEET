@@ -3,7 +3,7 @@ import requests
 from datetime import date
 
 def _processResponse(text):
-    code = text[:text.find(":")]
+    code = int(text[:text.find(":")])
     message = text[text.find(" ")+1:]
 
     return code, message
@@ -21,9 +21,13 @@ def _send(to, msg, **kwargs):
         else:
             return False, message
 
-def send_reminder(user, send_time):
-    msg = f"Hi {user['firstName']} {user['lastName']}, this is your daily reminder from HT & Me to take you hormone therapy tablets."
+def send_daily_reminder(user, send_time):
+    msg = f"Hi {user['firstName']}, remember your hormone therapy today."
     return _send(user['mobile'], msg, schedule=f"{date.today().isoformat()} {send_time}")
 
+
+def send_monthly_reminder(user, send_time):
+    msg = f"Hi {user['firstName']}, this is a reminder to order your next hormone therapy prescription."
+    return _send(user['mobile'], msg, schedule=f"{date.today().isoformat()} {send_time}")
 
 

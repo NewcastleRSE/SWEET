@@ -1,8 +1,8 @@
-from SWEET.data.users import updateUser
+from .users import updateUser, getAllUsers
 from .az_persitent import AzurePersitentDict, AzurePersistentList
-from ..secrets import connstr as az_connection, usersource, usergoals, userdiary
+from ..secrets import connstr as az_connection, usersource, usergoals, userdiary, userdatastore
 from . import getContainer, getProfilerResponses
-from datetime import date
+from datetime import date, timedelta, MINYEAR, MAXYEAR
 import json
 from azure.core.exceptions import ResourceExistsError
 from ..schemas import getSideEffectValueMappings
@@ -69,7 +69,7 @@ class UserData():
     
     def __init__(self, userID):
         udstore = getContainer(usersource)
-        self.pathbase = f"userdata/{userID}/"
+        self.pathbase = f"{userdatastore}/{userID}/"
         self.user = userID
 
         try:
@@ -566,3 +566,51 @@ def resetAll(UserID=None):
         return
 
     UserData(UserID).reset()
+
+def get_schedule(day):
+    schedule = []
+
+    def fixdate(yr, mth, dy):
+        if mth > 12:
+            yr +=1
+            mth -= 12
+
+        try:
+            tgdate = date(yr, mth, dy)
+        except ValueError:
+            # we've fixed months > 12, so either yr is outside max/min, or dy is outside mth.
+            # in the former case: re-raise the ValueError. In the latter case, try to construct the first of the following month.
+            # we do this recursively so this function can fix the month if this logic causes it to exceed 12.
+            if MINYEAR > yr > MAXYEAR:
+                raise
+            else:
+                tgdate = fixdate(yr, mth+1, 1)
+
+        return tgdate
+
+
+    for user in getAllUsers():
+        ud = UserData(user['userID'])
+        ur = ud.reminders()
+
+        d, m = ur['daily'], ur['monthly']
+
+        if d.get('reminder', False):
+            rd = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'daily'}
+            rd.update(d)
+            schedule.append(rd)
+
+        if m.get('reminder', False):
+            lastrem = date.fromisoformat(m.get('lastSent', m.get('start', date.today().isoformat()))) # if there's no start date this will never get sent
+            interval = 3 if m.get('frequency', "") == "three" else 1
+
+            target = fixdate(lastrem.year, lastrem.month + interval, lastrem.day)
+            if target <= day:
+                rm = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'monthly'}
+                rm.update(m)
+                schedule.append(rm)
+
+                m['lastSent'] = date.today().isoformat()
+                ur.commit()
+    
+    return schedule
