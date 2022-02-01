@@ -35,7 +35,6 @@ def dailyschedule(today):
 
     # scheduler uses
     s = scheduler(timefunc=_time,delayfunc=time.sleep)
-    basedate = datetime.fromisoformat(today)
 
     for item in items:
         #determine correct action:
@@ -56,7 +55,7 @@ def dailyschedule(today):
             else:
                 hr, mn = "08","00"
 
-            item_ts = basedate.replace(hour=int(hr), minute=int(mn)).timestamp()
+            item_ts = today.replace(hour=int(hr), minute=int(mn)).timestamp()
             item_action = email_daily_reminder if item['type'] == 'daily' else email_monthly_reminder
 
             #set up appropriate arguments

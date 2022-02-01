@@ -84,7 +84,7 @@ class UserData():
 
             udstore.upload_blob(f"{self.pathbase}reminders", json.dumps({ 'daily': {'reminder': False}, 'monthly': {'reminder': False}}))
 
-            transferLegacy(self, userID)
+            #transferLegacy(self, userID)
         except ResourceExistsError:
             # user data has previously been created
             pass

@@ -4,7 +4,7 @@ export function createApp(options={}) {
         renderers: {
             container: function(section) {
                 const holder = document.createElement("section");
-                this.render(content).then(nodes => holder.append(...nodes));
+                this.render(section.content).then(nodes => holder.append(...nodes));
                 return holder;
             },
             header: function(section) {

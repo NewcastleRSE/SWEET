@@ -334,8 +334,10 @@ export function goalRenderer(section) {
                     this.post("/myapp/mygoals/", goal).then(response => response.json())
                     .then(outcome => {
                         if (outcome.status == "error") {
-                            document.getElementById("toast-message-type").text("Error");
-                            document.getElementById("toast-message").text(`We were not able to save your new goal. ${outcome.message}`);
+                            //document.getElementById("toast-message-type").text("Error");
+                            //document.getElementById("toast-message").text(`We were not able to save your new goal. ${outcome.message}`);
+                            alert(`We were not able to save your requested goal:\n${outcome.message}`)
+
                         } else {
                             source.innerHTML = "";
                             source.appendChild(fillGoal(goal));
