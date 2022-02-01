@@ -272,7 +272,7 @@ export function profilerModalRenderer(section) {
                 this.post(url, profilerResponse)
 
                 // display a closing message.
-                section.modal.body.innerHTML = `<p>Great to hear that you are getting on with your hormone therapy. We will check in with you again in the next few months.</p><p>You can also access these questions at any time from the My Personal Support page.</p><p>In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within HT &amp Me. Alternatively you can speak to your breast cancer team or your GP.</p>`
+                section.modal.body.innerHTML = `<p>Great to hear that you are getting on well with your hormone therapy. We will check in with you again in the next few months.</p><p>You can also access these questions at any time from the My Personal Support page.</p><p>In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within HT &amp Me. Alternatively you can speak to your breast cancer team or your GP.</p>`
                 section.modal.footer.innerHTML = ` <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>`
             }
         }
