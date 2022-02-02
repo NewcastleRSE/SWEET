@@ -20,8 +20,7 @@ def _s_to_next_run():
     # if run before 2am, will return > 24 hours.
     # if run just before midnight, will return just over 2 hours.
     # other scheudling logic should account for this naivety
-    nextrun = datetime.fromordinal(_day()+1)
-    nextrun.hour = 2
+    nextrun = datetime.fromordinal(_day()+1).replace(hour=2)
     tdtonextrun = nextrun - datetime.now()
     return max(0, tdtonextrun.total_seconds())
 
@@ -118,7 +117,9 @@ def start():
     #   this will keep running until the schedule is empty:
     #   as the daily trigger adds itself to the schedule, it will keep running until
     #   cancelled with a stop() call, which causes the next scheduled trigger to abort early.
-    Thread(target=_sched.run).start()
+    t = Thread(target=_sched.run)
+    t.start()
+    
 
 def stop():
     _cancel.set()
