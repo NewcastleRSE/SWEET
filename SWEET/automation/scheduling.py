@@ -79,6 +79,8 @@ def start():
 
         if _cancel.is_set():
             _cancel.clear()
+            for e in _sched.queue:
+                _sched.cancel(e)
             return
 
         today_ord = _day()
@@ -105,7 +107,8 @@ def start():
 
     if _lastrun < _day():
         # the schedule hasn't run today: run today's daily schedule immediately
-        dailyschedule(datetime.today().date())
+        # disabled during initial testing to allow time for deletion of superfluous reminders
+        #dailyschedule(datetime.today().date())
         _lastrun = _day()
 
     # schedule a daily trigger for "tomorrow"
@@ -119,3 +122,5 @@ def start():
 
 def stop():
     _cancel.set()
+    for e in _sched.queue:
+        _sched.cancel(e)
