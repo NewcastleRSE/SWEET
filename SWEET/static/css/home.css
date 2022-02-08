@@ -7,14 +7,31 @@
     align-content: stretch;
 }
 
+.hmpg-acts .card-title {
+    color: var(--SWEET-gold);
+    font-weight: bolder;
+}
+
 .hmpg-sects a.card, .hmpg-acts a.card {
     overflow: hidden;
+    text-align: center;
     min-height: 7em;
 }
 
 .hmpg-acts a.card {
-    border-bottom-color: var(--SWEET-gold);
     min-height: 4.5em;
+}
+
+.hmpg-acts .btn-primary {
+    color: black;
+    background-color: var(--SWEET-gold);
+    border-color: var(--SWEET-gold);
+}
+
+.hmpg-acts .btn-primary:hover {
+    color: black;
+    background-color: var(--SWEET-light-gold);
+    border-color: var(--SWEET-light-gold);
 }
 
 img.card-icon {

@@ -1,14 +1,15 @@
 export function homepageMenuRenderer(section) {
     if (section.type != "homepage-menu") return null;
-
     function createItem() {
         let holder = document.createElement("div");
         holder.setAttribute("class", "d-block col");
         holder.innerHTML = `
-        <a class="d-block card shadow h-100" href="">
+        <div class="card text-center">
+        <a class="d-block card" href="">
             <div class="card-body">
                 <h5 class="card-title"></h5>
                 <p class="card-text"></p>
+                <a href="#" class="btn btn-primary">Read More</a>
             </div>
         </a>`
 
@@ -40,12 +41,12 @@ export function homepageMenuRenderer(section) {
         if (i.icon && i.icon != "none") {
 
             fetch(`/app/resources/${i.icon}`)
-            .then(response => response.json())
-            .then(resource => {
-                let img = item.$link.appendChild(document.createElement("img"))
-                img.src = resource.source;
-                img.classList.add("card-icon");
-            })
+                .then(response => response.json())
+                .then(resource => {
+                    let img = item.$link.appendChild(document.createElement("img"))
+                    img.src = resource.source;
+                    img.classList.add("card-icon");
+                })
         }
 
         menu.$sections.appendChild(item);
@@ -61,12 +62,12 @@ export function homepageMenuRenderer(section) {
         if (i.icon && i.icon != "none") {
 
             fetch(`/app/resources/${i.icon}`)
-            .then(response => response.json())
-            .then(resource => {
-                let img = item.$link.appendChild(document.createElement("img"))
-                img.src = resource.source;
-                img.classList.add("card-icon");
-            })
+                .then(response => response.json())
+                .then(resource => {
+                    let img = item.$link.appendChild(document.createElement("img"))
+                    img.src = resource.source;
+                    img.classList.add("card-icon");
+                })
         }
 
         menu.$actions.appendChild(item);
@@ -100,12 +101,12 @@ export function homepageMenuRenderer(section) {
         //profiler.$link.classList.add("pb-5");
 
         fetch(`/app/resources/${section.profiler.icon}`)
-        .then(response => response.json())
-        .then(resource => {
-            let img = profiler.$link.appendChild(document.createElement("img"))
-            img.src = resource.source;
-            img.classList.add("card-icon");
-        })
+            .then(response => response.json())
+            .then(resource => {
+                let img = profiler.$link.appendChild(document.createElement("img"))
+                img.src = resource.source;
+                img.classList.add("card-icon");
+            })
     }
 
     menu.$actions.insertBefore(profiler, menu.$actions.firstChild);
