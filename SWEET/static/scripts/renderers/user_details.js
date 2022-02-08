@@ -7,11 +7,13 @@ export function userDetailsPageRenderer(section) {
 
         <section id="my-personal-details">
             <h4>Personal Details</h4>
-            <div  class="row row-cols-2">
-                <div class="col"><label for="firstName">First Name</label> <span id="firstName">${this.store.get("currentUser").firstName}</span><button type="button" class="edit" data-for="firstName"><button type="button" class="cancel" data-for="firstName"></button></div>
+            <div  class="row row-cols-1">
+                <div class="col"><label for="firstName">First Name</label> <span id="firstName">${this.store.get("currentUser").firstName}</span>
+                <button type="button" class="edit" data-for="firstName"><button type="button" class="cancel" data-for="firstName"></button></div>
                 <div class="col"><label for="lastName">Last Name</label> <span id="lastName">${this.store.get("currentUser").lastName}</span><button type="button" class="edit" data-for="lastName"></button><button type="button" class="cancel" data-for="lastName"></div>
                 <div class="col"><label for="email">Email Address</label> <span id="email">${this.store.get("currentUser").email}</span><button type="button" class="edit" data-for="email"></button><button type="button" class="cancel" data-for="email"></div>
-                <div class="col"><button type="button" class="btn btn-primary">Change Password</button><br><span class="sidenote">[n.b. you will be required to log in again after you change your password]</span></div>
+            <div  class="row row-cols-2"> 
+                <div class="col offset-sm-6""><button type="button" class="btn-lg btn-primary">Change Password</button><br><span class="sidenote">[n.b. you will be required to log in again after you change your password]</span></div>
             </div>
         </section>
     `
@@ -24,12 +26,12 @@ export function userDetailsPageRenderer(section) {
                 let target = holder.querySelector(`#${which}`);
                 let input = document.createElement("input");
 
-                input.setAttribute("type", which=="email"?"email":"text");
+                input.setAttribute("type", which == "email" ? "email" : "text");
                 input.setAttribute("id", which);
                 input.value = target.textContent;
-                
+
                 target.remove();
-                
+
                 src.insertAdjacentElement("beforebegin", input);
                 src.classList.remove("edit");
                 src.classList.add("save");
@@ -42,7 +44,7 @@ export function userDetailsPageRenderer(section) {
                 let input = holder.querySelector(`#${which}`);
                 let user = this.store.get("currentUser");
                 user[which] = input.value;
-                
+
                 this.post("/myapp/mydetails/", user).then(response => {
                     let target = document.createElement("span");
                     target.setAttribute("id", which);
@@ -59,13 +61,13 @@ export function userDetailsPageRenderer(section) {
 
                 let input = holder.querySelector(`#${which}`);
                 let saver = holder.querySelector(`.save[data-for='${which}']`)
-                
+
                 let target = document.createElement("span");
                 target.setAttribute("id", which);
                 target.textContent = oldval;
-                
+
                 input.remove();
-                
+
                 saver.insertAdjacentElement("beforebegin", target);
                 saver.classList.remove("save");
                 saver.classList.add("edit");
@@ -104,17 +106,17 @@ export function userDetailsPageRenderer(section) {
                 user.password = form.elements["password"].value;
 
                 this.post("/myapp/mydetails/", user).then(response => response.json())
-                .then(output => {
-                    if (output.status == "OK") {
-                        location.pathname = "/auth/logout";
-                    } else {
-                        form.querySelector("#errors").innerHTML = `<p>${output.message}.</p>`;
-                        return false;
-                    }
-                })
+                    .then(output => {
+                        if (output.status == "OK") {
+                            location.pathname = "/auth/logout";
+                        } else {
+                            form.querySelector("#errors").innerHTML = `<p>${output.message}.</p>`;
+                            return false;
+                        }
+                    })
             }
         })
-        
+
         modal.show();
     })
 

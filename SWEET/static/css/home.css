@@ -1,6 +1,6 @@
 .row.homemenu {
     justify-content: space-around;
-    margin-top: -2em;
+    margin-top: 10em;
 }
 
 .hmpg-acts {
@@ -8,8 +8,13 @@
 }
 
 .hmpg-acts .card-title {
-    color: var(--SWEET-gold);
+    color: #ffb600;
     font-weight: bolder;
+}
+
+.hmpg-acts .card-text {
+    padding-top: 0.25em;
+    padding-bottom: 1em;
 }
 
 .hmpg-sects a.card, .hmpg-acts a.card {
@@ -20,6 +25,14 @@
 
 .hmpg-acts a.card {
     min-height: 4.5em;
+}
+
+.hmpg-acts .card-body, .hmpg-acts a.card {
+    background-color: var(--SWEET-off-white);
+}
+
+.hmpg-acts .card.text-center {
+    border: none;
 }
 
 .hmpg-acts .btn-primary {
@@ -39,14 +52,18 @@ img.card-icon {
     position: absolute;
     width: 7.5em;
     object-fit: contain;
-    bottom: -0.5em;
-    right: 0.25em;
+    top: 0.25em;
+    left: 30%;
+    /*bottom: -0.5em;*/
+    /* right: 0.25em; */
     opacity: 0.25;
+    padding: 0;
 }
 
 .hmpg-acts img.card-icon {
     width: 5em;
-    bottom: 0;
+    top: 2em;
+    bottom: 0em;
 }
 
 main.home :is(header, footer) {
@@ -69,7 +86,6 @@ ul.quick-links li {
 }
 
 ul.quick-links li a {
-    display: block;
     color: white;
     text-align: center;
     padding: 0 16px;

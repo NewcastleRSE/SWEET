@@ -5,7 +5,7 @@ export function homepageMenuRenderer(section) {
         holder.setAttribute("class", "d-block col");
         holder.innerHTML = `
         <div class="card text-center">
-        <a class="d-block card" href="">
+        <a class="d-block card" href=""</a>
             <div class="card-body">
                 <h5 class="card-title"></h5>
                 <p class="card-text"></p>
@@ -16,7 +16,6 @@ export function homepageMenuRenderer(section) {
         holder.$link = holder.querySelector("a");
         holder.$title = holder.querySelector(".card-title");
         holder.$subtitle = holder.querySelector(".card-text");
-
         return holder;
     }
 
@@ -30,6 +29,7 @@ export function homepageMenuRenderer(section) {
 
     menu.$sections = menu.querySelector(".hmpg-sects");
     menu.$actions = menu.querySelector(".hmpg-acts");
+
 
     section.mainitems.forEach(i => {
         let item = createItem();

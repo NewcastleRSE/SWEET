@@ -2,6 +2,19 @@
     margin-right: 2em;
 }
 
+#my-personal-details h4 {
+    color: var(--SWEET-purple);
+}
+
+#my-personal-details .btn-primary {
+    border-radius: 2rem;
+    text-align: center;
+}
+
+#firstName, #lastName, #email {
+    background-color: var(--SWEET-light-grey);
+}
+
 :is(#my-personal-details, .contact) button.edit::before {
     content: "\270D"
 }
@@ -19,11 +32,11 @@
     content: "\1f5d9"
 }
 
-button.edit + button.cancel {
+button.edit+button.cancel {
     display: none;
 }
 
-.contact  h5, .contact .contact-body {
+.contact h5, .contact .contact-body {
     margin-left: 3rem;
 }
 

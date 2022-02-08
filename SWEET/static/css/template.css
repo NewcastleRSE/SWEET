@@ -1,20 +1,26 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope");
 
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;1,100;1,200&display=swap');
 
 :root {
     font-size: 20px;
 
-    --bs-font-sans-serif: "Manrope", "Roboto", Arial, sans-serif;
+    --bs-font-sans-serif: "Raleway", "Manrope", "Roboto", Arial, sans-serif;
 
     --SWEET-purple: #633188;
     --SWEET-grey: #b3b3b2;
     --SWEET-light-grey: #e6e6e3;
     --SWEET-gold: #f0c048;
+    --SWEET-light-gold: #F9EDD0;
     --SWEET-pink: #d2c0d9;
     --SWEET-lilac: #a08db0;
     --SWEET-off-white: #fafafa;
     --SWEET-dark-grey: #828280;
     --SWEET-charcoal: #585857;
+}
+
+h1 {
+    color: var(--SWEET-off-white);
 }
 
 h5 {
@@ -25,8 +31,9 @@ p {
     margin-bottom: 1.5em;
 }
 
+
 main>.container {
-    padding: 90px 15px 15px;
+    padding: 125px 15px 15px;
 }
 
 main header, main footer {
@@ -79,10 +86,8 @@ a.card {
     background-repeat: no-repeat;
     background-position: bottom -20px right 10px;
     background-size: 120px;
-}
-
-a:visited.card.submenu {
-    background-color: #e4dbeb;
+    border: none;
+    background-color: none;
 }
 
 .form-check .no-box-shadow:focus {
@@ -97,10 +102,11 @@ a.card h5 {
 p a, li a {
     color: var(--SWEET-purple);
     font-weight: bold;
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 p a:hover {
+    background-color: var(--SWEET-gold);
     color: inherit;
     text-decoration: underline;
 }
@@ -174,6 +180,24 @@ nav.navbar-dark .bi.bi-list {
     border-color: none;
 }
 
+.btn-secondary, .btn-secondary:focus {
+    background-color: var(--SWEET-purple);
+    border-radius: 2rem;
+    padding: 3px;
+    margin-top: 9px;
+    margin-left: 0.5rem;
+
+}
+
+a.nav-link.btn-secondary {
+    color: var(--SWEET-off-white) !important;
+}
+
+.btn-secondary:hover {
+    background-color: var(--SWEET-lilac);
+    border-color: var(--SWEET-lilac);
+}
+
 footer.footer-dark {
     background-color: var(--SWEET-purple) !important;
 }
@@ -185,6 +209,7 @@ a.navbar-brand {
 
 a.navbar-brand>strong {
     padding: 0 0.25em;
+    color: var(--SWEET-purple);
 }
 
 nav #app-buttons {
@@ -229,9 +254,22 @@ footer div.container span a:hover {
     color: var(--SWEET-light-grey)
 }
 
+/*
 .card {
     border-bottom: solid 6px var(--SWEET-purple);
 }
+
+.card.text-center {
+    border-radius: 3em;
+}
+*/
+
+
+.card-title {
+    color: var(--SWEET-purple);
+    font-weight: bolder;
+}
+
 
 .card:hover {
     text-decoration: none !important;
@@ -392,10 +430,22 @@ div+h4 {
 }
 
 
-@media screen and (min-width: 500px) and (max-width: 768px) {
+@media screen and (min-width: 200px) and (max-width: 768px) {
 
     ul.navbar-nav li.nav-item a.nav-link, ul.quick-links li a {
         font-size: 0.8em;
+        text-align: center;
+    }
+
+    a.nav-link.btn-secondary {
+        margin: 0;
+        margin-top: 1rem;
+        position: relative;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+
     }
 
     h1 {
@@ -427,4 +477,70 @@ div+h4 {
         font-size: 0.7em;
     }
 
+}
+
+ul li:last-child a::after {
+    content: "";
+    position: absolute;
+    right: inherit;
+    bottom: 10px;
+    width: inherit;
+    height: 5px;
+    pointer-events: none;
+    border-radius: 5px;
+    /*transition*/
+    -webkit-transition: all .5s ease;
+    -moz-transition: all .5s ease;
+    -o-transition: all .5s ease;
+    transition: all .5s ease;
+}
+
+ul li:nth-child(1)~li:last-child a {
+    right: 31em;
+    width: 3.7em;
+}
+
+ul li:nth-child(2):hover~li:last-child a {
+    right: 23.8em;
+    width: 6.41em;
+}
+
+ul li:nth-child(3):hover~li:last-child a {
+    right: 16em;
+    width: 6.9em;
+}
+
+ul li:nth-child(4):hover~li:last-child a {
+    right: 6.7em;
+    width: 8.26em;
+}
+
+ul li:hover~li:last-child a::after,
+ul li:last-child:hover a::after {
+    background: var(--SWEET-purple)
+}
+
+ul li:last-child a {
+    min-width: 5em;
+    max-width: 5em;
+}
+
+nav.navbar-dark .navbar-nav ul li a:hover {
+    background-color: var(--SWEET-light-grey);
+}
+
+ul li a:hover,
+ul li a:focus {
+    color: var(--SWEET-purple);
+
+    /*transition*/
+    -webkit-transition: width .3s, right .3s, background-color .3s;
+    -moz-transition: width .3s, right .3s, background-color .3s;
+    -o-transition: width .3s, right .3s, background-color .3s;
+    transition: width .3s, right .3s, background-color .3s;
+}
+
+ul li a:focus {
+    border-bottom: 5px solid var(--SWEET-purple);
+    border-radius: 5px;
 }
