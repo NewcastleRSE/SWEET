@@ -24,10 +24,7 @@ jobs:
         pip install -r requirements.txt
     - name: Create Secrets
       run: |
-          printf $SECRETS_FILE >> SWEET/secrets.py
-          echo $SECRETS_FILE >> SWEET/secrets2.py
-          cat SWEET/secrets.py
-          cat SWEET/secrets2.py
+          echo "$SECRETS_FILE" >> SWEET/secrets.py
       shell: bash
       env:
         SECRETS_FILE : ${{secrets.STAGING_ENVS}}
