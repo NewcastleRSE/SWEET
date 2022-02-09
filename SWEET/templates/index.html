@@ -125,13 +125,16 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="{{ url_for('static', filename='scripts/libraries/sentry.bundle.min.js') }}"></script>
     <script type="module">
-      Sentry.init({
+      // Only catch errors in production and staging
+      if (window.location.hostname === "htandme.co.uk" || location.hostname === "sweet.ncldata.dev") {
+        Sentry.init({
         dsn: "https://44fb1b462eab4104bc0914e592660046@o1080315.ingest.sentry.io/6099137",
         // Set tracesSampleRate to 1.0 to capture 100%
         // of transactions for performance monitoring.
         // We recommend adjusting this value in production
         tracesSampleRate: 1.0,
       });
+    } 
     </script>
     <script src="{{ url_for('static', filename='scripts/lz-string.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/customfont.js') }}"></script>
