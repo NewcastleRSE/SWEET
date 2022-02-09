@@ -14,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.x
+    - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
-        python-version: 3.x
+        python-version: 3.8
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -33,7 +33,7 @@ jobs:
       with:
         source-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
         platform: python
-        platform-version: 3.x
+        platform-version: 3.8
     - name: Deploy web App using GH Action azure/webapps-deploy
       uses: azure/webapps-deploy@v2
       with:
