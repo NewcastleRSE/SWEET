@@ -53,6 +53,10 @@ resource "azurerm_app_service" "as" {
   app_service_plan_id = azurerm_app_service_plan.asp.id
   https_only          = "true"
 
+  site_config {                                                            
+     linux_fx_version = "PYTHON|3.8"                                        
+   }
+
   tags = {
     Name = var.project_name
     PI = var.project_pi
