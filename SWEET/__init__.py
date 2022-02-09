@@ -3,6 +3,7 @@ from flask import Flask, render_template
 from sentry_sdk.integrations.flask import FlaskIntegration
 from . import data, secrets
 from .auth import login_required
+from .automation import scheduling
 
 def create_app():
 
@@ -20,6 +21,7 @@ def create_app():
     app.secret_key = secrets.key
 
     data.ensureDataSources()
+    scheduling.start()
 
     # import and register app blueprints
     from . import auth, myapp, content, schemas, admin

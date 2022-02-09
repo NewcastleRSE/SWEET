@@ -6,6 +6,8 @@ from flask import (
 
 from .data import users, getToken
 
+from .automation.email import send_notify_register
+
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 __logged_in_users = {}
@@ -68,7 +70,10 @@ def register():
 
         if result:
             users.useRegistrationCode(uid)
+            
             # SEND EMAIL TO OXFORD & NEWCASTLE TEAMS WITH DETAILS FROM user
+            send_notify_register(detail)
+
             return _login(detail)
 
         # if registration fails a reason message is returned in the details:

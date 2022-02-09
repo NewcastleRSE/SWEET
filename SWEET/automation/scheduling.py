@@ -1,0 +1,127 @@
+from .sms import send_daily_reminder, send_monthly_reminder
+from .email import email_daily_reminder, email_monthly_reminder
+from datetime import datetime
+import time
+
+from sched import scheduler
+from threading import Thread, Event
+
+from . import email, sms
+from ..data.userdata import get_schedule
+
+def _day():
+    return datetime.today().toordinal()
+
+def _time():
+    return datetime.now().timestamp()
+
+def _s_to_next_run():
+    # naive implementation assumes that the next run is *tomorrow*, regardless of current time.
+    # if run before 2am, will return > 24 hours.
+    # if run just before midnight, will return just over 2 hours.
+    # other scheudling logic should account for this naivety
+    nextrun = datetime.fromordinal(_day()+1).replace(hour=2)
+    tdtonextrun = nextrun - datetime.now()
+    return max(0, tdtonextrun.total_seconds())
+
+_lastrun = 0
+_cancel = Event()
+_sched = scheduler(timefunc=_time, delayfunc=time.sleep)
+
+def dailyschedule(today):
+
+    items = get_schedule(today)
+
+    # scheduler uses
+    s = scheduler(timefunc=_time,delayfunc=time.sleep)
+
+    for item in items:
+        #determine correct action:
+        # using firetext, we will send any SMS directly to firetext with a schedule, emails will be added to the daily schedule
+        # if no time is specified use 08:00 as per team request
+        
+
+        if item['method'] == "sms":
+            item['mobile'] = item['to']
+            if item['type'] == "daily":
+                send_daily_reminder(item, item.get('time', "08:00"))
+            else:
+                send_monthly_reminder(item, item.get('time', '08:00'))
+        else:
+            # set up clock time for item:
+            if 'time' in item:
+                hr, mn = item['time'].split(":")
+            else:
+                hr, mn = "08","00"
+
+            item_ts = today.replace(hour=int(hr), minute=int(mn)).timestamp()
+            item_action = email_daily_reminder if item['type'] == 'daily' else email_monthly_reminder
+
+            #set up appropriate arguments
+            item['email'] = item['to']
+            item_args = (item,)
+            item_kwargs = {} # currently no kwargs for emails.
+
+            #schedule email:
+            s.enterabs(item_ts, 1, item_action, argument=item_args, kwargs=item_kwargs)
+
+    # thread will exit when scheduler stops, i.e. when all the scheduled items have been run.
+    t = Thread(target=s.run, name="daily")
+    t.start()
+    return s
+
+def start():
+    global _lastrun
+  
+    def trigger_daily():
+        global _lastrun
+
+        if _cancel.is_set():
+            _cancel.clear()
+            for e in _sched.queue:
+                _sched.cancel(e)
+            return
+
+        today_ord = _day()
+
+        if today_ord < _lastrun:
+            _cancel.set()
+            raise RuntimeError("ItsAllGoneWrongError") # how is today earlier than the last scheduled run?!
+
+        if today_ord == _lastrun:
+            # the schedule has already been run today (some form of scheduling fail?)
+            # _s_to_next_run always returns the total seconds to 2am *tomorrow*,
+            # so we don't need to do any complex calculation, just reschedule the trigger:
+            _sched.enter(_s_to_next_run(),1,trigger_daily)
+            return
+
+        # it's at least 1 day since the last run: 
+        # # create and start a daily schedule
+        # # update the last run date.
+        # # schedule a trigger event for tomorrow.
+        dailyschedule(datetime.today().date())
+        _lastrun = today_ord
+        _sched.enter(_s_to_next_run(),1,trigger_daily)
+
+
+    if _lastrun < _day():
+        # the schedule hasn't run today: run today's daily schedule immediately
+        # disabled during initial testing to allow time for deletion of superfluous reminders
+        #dailyschedule(datetime.today().date())
+        _lastrun = _day()
+
+    # schedule a daily trigger for "tomorrow"
+    _sched.enter(_s_to_next_run(),1,trigger_daily)
+
+    # run the schedule: 
+    #   this will keep running until the schedule is empty:
+    #   as the daily trigger adds itself to the schedule, it will keep running until
+    #   cancelled with a stop() call, which causes the next scheduled trigger to abort early.
+    t = Thread(target=_sched.run)
+    t.start()
+    
+
+def stop():
+    _cancel.set()
+    for e in _sched.queue:
+        _sched.cancel(e)
