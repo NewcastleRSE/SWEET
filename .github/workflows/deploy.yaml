@@ -26,8 +26,8 @@ jobs:
       run: |
           printf $SECRETS_FILE >> SWEET/secrets.py
           echo $SECRETS_FILE >> SWEET/secrets2.py
-          cat secrets.py
-          cat secrets2.py
+          cat SWEET/secrets.py
+          cat SWEET/secrets2.py
       shell: bash
       env:
         SECRETS_FILE : ${{secrets.STAGING_ENVS}}
