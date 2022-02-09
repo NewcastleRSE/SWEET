@@ -7,7 +7,7 @@ on:
 
 env:
   AZURE_WEBAPP_NAME: sweetapp # set this to your application's name
-  AZURE_WEBAPP_PACKAGE_PATH: './sweet' # set this to the path to your web app project, defaults to the repository root
+  AZURE_WEBAPP_PACKAGE_PATH: './SWEET' # set this to the path to your web app project, defaults to the repository root
 
 jobs:
   build:
