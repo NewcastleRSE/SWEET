@@ -28,10 +28,12 @@ jobs:
         pip install -r requirements.txt
     - name: Create Secrets
       run: |
-          echo "$SECRETS_FILE" >> SWEET/secrets.py
+          echo "$STAGING_ENVS" >> SWEET/secrets.py
+          echo "$SHARED_ENVS" >> SWEET/secrets.py
       shell: bash
       env:
-        SECRETS_FILE : ${{secrets.STAGING_ENVS}}
+        STAGING_ENVS : ${{secrets.STAGING_ENVS}}
+        SHARED_ENVS : ${{secrets.SHARED_ENVS}}
     - name: Building web app
       uses: azure/appservice-build@v2
       with:
