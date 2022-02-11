@@ -65,7 +65,7 @@ def send_welcome(user):
     _send_message(f"{fullname} <{user['email']}>", "welcome", fullname=fullname)
 
 def send_notify_register(user):
-    _send_message(settings['notify'], "notify_register", fullname=f"{user['firstName']} {user['lastName']}", email=user['email'], regcode=user['userID'])
+    _send_message(settings['notify'], "notify_register", regcode=user['userID'])
 
 def email_daily_reminder(user):
     fullname = f"{user['firstName']} {user['lastName']}"
