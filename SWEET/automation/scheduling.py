@@ -30,7 +30,7 @@ _sched = scheduler(timefunc=_time, delayfunc=time.sleep)
 
 def dailyschedule(today):
 
-    items = get_schedule(today)
+    items = get_schedule(today.date())
 
     # scheduler uses
     s = scheduler(timefunc=_time,delayfunc=time.sleep)
@@ -99,7 +99,7 @@ def start():
         # # create and start a daily schedule
         # # update the last run date.
         # # schedule a trigger event for tomorrow.
-        dailyschedule(datetime.today().date())
+        dailyschedule(datetime.today())
         _lastrun = today_ord
         _sched.enter(_s_to_next_run(),1,trigger_daily)
 
