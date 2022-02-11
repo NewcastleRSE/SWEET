@@ -18,7 +18,7 @@ def _send_message(to, template="welcome", **kwargs):
             "html": "<div><p>Dear {fullname},</p><p>Thank you for registering to use <strong>HT &amp; Me</p></div>",
             "plain": "Dear {fullname},\n\nThank you for registering to use HT & Me."
         },
-        "register_notify": {
+        "notify_register": {
             "subject": "A new user {fullname} has registered for HT&Me",
             "html": """
       <div><p>Dear SWEET Team,</p>
