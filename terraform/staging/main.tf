@@ -26,7 +26,7 @@ resource "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_storage_account" "storage" {
-  name                      = "${var.project_name}storage"
+  name                      = "${var.project_name}storage${var.resource_group_name}"
   resource_group_name       = azurerm_resource_group.rg.name
   location                  = azurerm_resource_group.rg.location
   account_tier              = "Standard"
@@ -34,7 +34,7 @@ resource "azurerm_storage_account" "storage" {
 }
 
 resource "azurerm_app_service_plan" "asp" {
-  name                = "${var.project_name}plan"
+  name                = "${var.project_name}plan${var.resource_group_name}"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   kind = "Linux"
@@ -47,7 +47,7 @@ resource "azurerm_app_service_plan" "asp" {
 }
 
 resource "azurerm_app_service" "as" {
-  name                = "${var.project_name}app"
+  name                = "${var.project_name}app${var.resource_group_name}"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   app_service_plan_id = azurerm_app_service_plan.asp.id
