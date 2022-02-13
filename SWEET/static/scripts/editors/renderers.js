@@ -299,55 +299,69 @@ export function goalRenderer(section) {
             form.addEventListener("submit", e => {
                 e.preventDefault(); e.stopImmediatePropagation();
 
-                goal = {
-                    goaltype: section.goaltype,
-                    status: 'active',
-                    reviewDate: isodate(((d) => { d.setDate(d.getDate()+7); return d;})(new Date())),
-                    detail: form.elements['activity'].value == "type-own"? form.elements['activity-other'].value: form.elements['activity'].value,
-                    days: form.elements['frequency'].value
-                }
-
-                if (schema.duration) {
-                    goal.minutes = form.elements['duration'].value
-                }
-
-                modal.title.innerHTML = "";
-                
-                modal.body.innerHTML = `
-                <h3 class='mb-5'>NEW ${schema.displayName.toUpperCase()} GOAL</h3>
-                <section>
-                <p>Well done!</p>
-                <p>You've set a new goal for the next week.</p>
-                <p>You can always see your goals by clicking <strong>My Goals</strong> on the ${section.goaltype == "activity"? "Being Active": "Healthy Eating"} homepage.</p>
-                <p>In one week, you can come back to get personal feedback on your goal.</p>
-                <p>It's a good idea to stick up a reminder somewhere in your house.</p>
-                <p>Your goal is: <strong>${goal.detail}</strong><br>
-                How often: <strong>${goal.days} days</strong>${
-                    goal.minutes?`<br>
-                For: <strong>${goal.minutes} minutes</strong>`:""
-                }.</p>
-                </section>`;
-
-                let submitButton = modal.footer.querySelector("button[type='submit']");
-                submitButton.setAttribute("type", "button");
-                submitButton.textContent = "Save";
-
-                submitButton.addEventListener("click", () => {
-                    this.post("/myapp/mygoals/", goal).then(response => response.json())
-                    .then(outcome => {
-                        if (outcome.status == "error") {
-                            //document.getElementById("toast-message-type").text("Error");
-                            //document.getElementById("toast-message").text(`We were not able to save your new goal. ${outcome.message}`);
-                            alert(`We were not able to save your requested goal:\n${outcome.message}`)
-
-                        } else {
-                            source.innerHTML = "";
-                            source.appendChild(fillGoal(goal));
-                            source.removeEventListener("click", newgoalhandler);
+                fetch(`/myapp/checkgoal?goaltype=${section.goaltype}&detail=${form.elements['activity'].value == "type-own"? form.elements['activity-other'].value: form.elements['activity'].value}`)
+                .then(response => response.json())
+                .then(outcome => {
+                    let showerror = (message) => {
+                        form.elements['activity'].insertAdjacentElement("afterend", `
+                        <p class="invalid-feedback">${message}</p>`)
+                    }
+                    if (outcome.status != "OK") {
+                        showerror("You must select an activity before continuing.")
+                    } else if (outcome.result) {
+                        showerror("Sorry, we were not able to save your requested goal: You can only log one goal for each type of activity. Why not try making a goal for a different activity?")
+                    } else {
+                        goal = {
+                            goaltype: section.goaltype,
+                            status: 'active',
+                            reviewDate: isodate(((d) => { d.setDate(d.getDate()+7); return d;})(new Date())),
+                            detail: form.elements['activity'].value == "type-own"? form.elements['activity-other'].value: form.elements['activity'].value,
+                            days: form.elements['frequency'].value
                         }
-
-                        modal.hide();
-                    }).catch(e => console.log(e))
+        
+                        if (schema.duration) {
+                            goal.minutes = form.elements['duration'].value
+                        }
+        
+                        modal.title.innerHTML = "";
+                        
+                        modal.body.innerHTML = `
+                        <h3 class='mb-5'>NEW ${schema.displayName.toUpperCase()} GOAL</h3>
+                        <section>
+                        <p>Well done!</p>
+                        <p>You've set a new goal for the next week.</p>
+                        <p>You can always see your goals by clicking <strong>My Goals</strong> on the ${section.goaltype == "activity"? "Being Active": "Healthy Eating"} homepage.</p>
+                        <p>In one week, you can come back to get personal feedback on your goal.</p>
+                        <p>It's a good idea to stick up a reminder somewhere in your house.</p>
+                        <p>Your goal is: <strong>${goal.detail}</strong><br>
+                        How often: <strong>${goal.days} days</strong>${
+                            goal.minutes?`<br>
+                        For: <strong>${goal.minutes} minutes</strong>`:""
+                        }.</p>
+                        </section>`;
+        
+                        let submitButton = modal.footer.querySelector("button[type='submit']");
+                        submitButton.setAttribute("type", "button");
+                        submitButton.textContent = "Save";
+        
+                        submitButton.addEventListener("click", () => {
+                            this.post("/myapp/mygoals/", goal).then(response => response.json())
+                            .then(outcome => {
+                                if (outcome.status == "error") {
+                                    //document.getElementById("toast-message-type").text("Error");
+                                    //document.getElementById("toast-message").text(`We were not able to save your new goal. ${outcome.message}`);
+                                    alert(`We were not able to save your requested goal:\n${outcome.message}`)
+        
+                                } else {
+                                    source.innerHTML = "";
+                                    source.appendChild(fillGoal(goal));
+                                    source.removeEventListener("click", newgoalhandler);
+                                }
+        
+                                modal.hide();
+                            }).catch(e => console.log(e))
+                        })
+                    }
                 })
             })
 

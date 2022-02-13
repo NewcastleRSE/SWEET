@@ -168,6 +168,17 @@ def updateGoals(user, goal):
 
     return False, f"Unrecognised new goal status {goal['status']}"
 
+def checkActiveGoal(user, goaltype, detail):
+    id = user['userID']
+
+    goals = UserData(id).goals()
+
+    if len([g for g in goals if g['status'] == 'active' and g['goaltype'] == goaltype and g['detail'] == detail]) > 0:
+        return True
+    
+    return False
+
+
 def getDiary(user=None, period=None):
     if user is None:
         return None
