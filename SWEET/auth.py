@@ -3,6 +3,7 @@ import functools
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
+from markupsafe import re
 
 from .data import users, getToken
 
@@ -122,6 +123,39 @@ def checkRegCode():
         return {"message": "code available" }
     else:
         return {"message": "Registration code not available"}, 404
+
+# password resetting:
+@bp.route("resetpassword")
+def resetPassword():
+    email = request.args.get("email")
+    resettoken = getToken(10)
+
+    result, user = users.unsetPassword(email, resettoken)
+    if result:
+        #send reset email:
+        # return appropriate response
+        pass
+    else:
+        return {"result": "No such user" }, 404
+
+@bp.route("passwordreset", methods=["GET", "POST"])
+def passwordReset():
+    if request.method == "GET":
+        uid = request.args.get("id")
+        token = request.args.get("token")
+        valid = users.validateResetToken(uid, token)
+        return render_template("resetpwd.html", valid=valid, user=uid, token=token)
+    else:
+        uid = request.form.get("id")
+        token = request.form.get("token")
+        if users.validateResetToken(uid, token):
+            # reset user password
+            password = request.form.get("password")
+            # should we be validating the password confirmation on the server-side?
+            users.updateUser(uid, password=password)
+            return _login(users.getUser(uid))
+        else:
+            return render_template("resetpwd.html", valid=False, user=uid, token=token)
 
 @bp.before_app_request
 def load_logged_in_user():

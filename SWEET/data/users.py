@@ -2,7 +2,7 @@ from re import L
 from .az_persitent import AzurePersistentList, AzurePersitentDict
 from . import encryptUser, decryptUser
 from ..secrets import connstr as az_connection, usersource, usertable, userlist, userlog, registration_list, admin_user
-from datetime import datetime
+from datetime import date, datetime, timedelta
 
 
 __userstore = AzurePersitentDict(az_connection, usersource, usertable)
@@ -139,7 +139,14 @@ def updateUser(userID, **kwargs):
         __usermap[kwargs["email"]] = userID
         __usermap.commit()
 
+
     user = decryptUser(__userstore[userID])
+
+    # handle clearing password resets:
+    if "password" in kwargs and 'resetToken' in user:
+        del user['resetToken']
+        del user['resetDate']
+
     user.update(**kwargs)
     __userstore[userID] = encryptUser(user)
 
@@ -147,6 +154,37 @@ def updateUser(userID, **kwargs):
         
     return True
     
+def unsetPassword(userID, token):
+    userID = confirmUserID(userID)
+
+    if userID is None:
+        return False, None
+
+    user = decryptUser(__userstore[userID])
+    
+    user['resetToken'] = token
+    user['resetDate'] = datetime.now().isoformat()
+
+    __userstore[userID] = encryptUser(user)
+
+    __userstore.commit()
+        
+    return True, getUser(userID)
+
+def validateResetToken(userID, token):
+    userID = confirmUserID(userID)
+
+    if userID is None:
+        return False, None
+
+    user = getUser(userID)
+    if 'resetToken' in user:
+        if user['resetToken'] == token:
+            if datetime.fromisoformat(user['resetDate']) > datetime.now() - timedelta(days=1):
+                return True
+
+    return False
+
 def getAllUsers():
     return [getUser(user) for user in __userstore.keys() if user != admin_user]
 

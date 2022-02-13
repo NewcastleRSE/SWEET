@@ -53,6 +53,7 @@
                  <div class="d-grid gap-2 mt-4">
                   <button class="btn btn-primary" type="submit">Login</button>
                 </div>
+                <div>Forgotten your password? <a id="reset-pass-link" href="#">Click here to reset.</a></div>
               </form>
               <form class="shadow" action="{{url_for('auth.register')}}" method="POST">
                 <h4>Register</h4>
@@ -124,6 +125,26 @@
             message.innerHTML = "An error occurred while checking your registration code; please contact the service adminstrator for assistance.";
             return;
           }
+        })
+      })
+    </script>
+    <script type="module">
+      import { createModal } from '{{url_for("static", filename="scripts/extensions/modal.js")}}'
+
+      document.querySelector("#reset-pass-link").addEventListener("click", e => {
+        e.preventDefault(); e.stopPropagation();
+        const m = createModal(true)
+        m.body.innerHTML = `    <h4>Reset HT &amp; Me Password</h4>
+        <form><label>Please enter your email address:</label><input type="text" name="email"><input type="submit" value="Submit"></form>`
+
+        m.body.querySelector("form").addEventListener("submit", e => {
+          e.preventDefault();
+          fetch(`/auth/resetpassword?email=${e.target.elements['email'].value}`);
+          m.body.innerHTML = "<h4>Reset HT &amp; Me Password</h4><p>We have received your request to reset your password. We will send a link by email; click on the link to open the reset password page. Please note that the link will only be valid for 24 hours.</p>"
+          m.footer.innerHTML = "<button class='btn btn-primary'>Close</button>"
+          m.footer.querySelector("button").addEventListener("click", () => {
+            m.hide();
+          })
         })
       })
     </script>

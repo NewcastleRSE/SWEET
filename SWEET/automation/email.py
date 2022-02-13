@@ -38,6 +38,11 @@ def _send_message(to, template="welcome", **kwargs):
             "html": "<div><p>Dear {fullname},</p><p>This is a reminder to order your next hormone therapy prescription.</p><p>From <strong>HT &amp; Me</strong></p></div>",
             "plain": "Dear {fullname}, This is a reminder to order your next hormone therapy prescription.\n\nFrom HT&Me"
         },
+        "password_reset": {
+            "subject": "You have asked to reset your HT&Me password",
+            "html": "<div><p>Dear {fullname},</p><p>You are receiving this email because someone has asked to reset your password for HT &amp; Me.</p><p>To reset the password, please visit <a href='https://htandme.co.uk/auth/passwordreset?id={uid}&token={token}'>https://htandme.co.uk/auth/passwordreset?id={uid}&token={token}</a>.</p><p>If you did not request a password reset, please ignore this email.</p></div>",
+            "plain": "Dear {fullname}, You are receiving this email because someone has asked to reset your password for HT & Me.\n\nTo reset the password, please visit https://htandme.co.uk/auth/passwordreset?id={uid}&token={token}\n\nIf you did not generate this request, please ignore this email.\n\nFrom HT&Me"
+        },
     }
 
     htmltemplate = """\
@@ -74,3 +79,7 @@ def email_daily_reminder(user):
 def email_monthly_reminder(user):
     fullname = f"{user['firstName']} {user['lastName']}"
     _send_message(f"{fullname} <{user['email']}>", "monthly_reminder", fullname=fullname)
+
+def send_password_reset(user, token):
+    fullname = f"{user['firstName']} {user['lastName']}"
+    _send_message(f"{fullname} <{user['email']}>", "password_reset", fullname=fullname, token=token, uid=user['userID'])
