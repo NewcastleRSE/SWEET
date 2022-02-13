@@ -6,6 +6,7 @@ from datetime import date, timedelta, MINYEAR, MAXYEAR
 import json
 from azure.core.exceptions import ResourceExistsError
 from ..schemas import getSideEffectValueMappings
+from ..data.content import getGoalMessage
 
 __diary = AzurePersitentDict(az_connection, usersource, userdiary)
 __goals = AzurePersitentDict(az_connection, usersource, usergoals)
@@ -149,7 +150,8 @@ def updateGoals(user, goal):
         goals.append(goal)
         goals.commit()
         
-        return True, "Update"
+        message, which = getGoalMessage(goal)
+        return True, message
 
     if goal['status'] == "active":
         activegoals = [g for g in goals if g['status'] == "active" and g['goaltype'] == goal['goaltype']]

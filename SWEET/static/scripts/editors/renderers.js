@@ -213,7 +213,9 @@ export function goalRenderer(section) {
                     goal.outcome = e.target.value;
                     this.post("/myapp/mygoals/", goal).then(response => response.json())
                     .then(outcome => {
-                        modal.body.innerHTML = "<h3 class='text-center mt-5 mb-5'>Thank you for reviewing your goal</h3>";
+                        modal.body.innerHTML = "";
+                        this.render({ type: "markdown", encoding: "raw", text: outcome.message}).then(node => modal.body.appendChild(node));
+                        
                         modal.footer.querySelector("button").removeAttribute("hidden");
                         modal.footer.querySelector("button").addEventListener("click", e => {
                             e.stopPropagation();
