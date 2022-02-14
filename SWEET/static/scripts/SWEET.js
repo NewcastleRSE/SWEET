@@ -69,8 +69,13 @@ let SWEET = createApp({
     },    
     load: function(path) {
         let url = `/app/content?path=${encodeURIComponent(path)}`;
-        return fetch(url).then(response => {
+        return fetch(url, {
+            headers: {
+                'X-SWEET-referrer': this.store.get("prevPath")
+            }
+        }).then(response => {
             if (response.ok) {
+                this.store.set("prevPath", path);
                 return response.json();
             }
             if (response.status == 404) {

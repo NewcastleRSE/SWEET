@@ -17,6 +17,8 @@ admin_user = "<ADMIN USER ID>"
 admin_fullName = "<ADMIN USER FULL NAME>"
 admin_role = "<ADMIN USER SYSTEM ROLE>"
 admin_password = "<ADMIN USER PASSWORD>"
+admin_email = "<your adminstrator email address>"
+
 email = {
     "server": "<your providers smtp server>",
     "port": 587, # the port for smtp: usually 587 for smtp with tls encryption

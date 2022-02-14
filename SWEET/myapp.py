@@ -5,7 +5,7 @@ from flask import (
 from .data.users import updateUser, validateUser
 
 from .data.userdata import (
-    getGoals, updateGoals, getSideEffects as getUserSideEffects, recordSideEffect, recordProfiler, 
+    checkActiveGoal, getGoals, updateGoals, getSideEffects as getUserSideEffects, recordSideEffect, recordProfiler, 
     getDiary as getUserDiary, getPrintDiary,
     addNote, getNotes, recordAdherence, saveFillin as saveUserFillin, getFillin as getUserFillin,
     getReminders, setReminders, 
@@ -47,6 +47,17 @@ def addOrUpdateGoal():
         return {"status": "error", "message": message}, 500
 
     return {"status": "error", "message": "Update request sent without json"}, 400
+
+@bp.route("/checkgoal")
+@login_required
+def checkGoalExists():
+    goaltype = request.args.get("goaltype")
+    detail = request.args.get("detail")
+
+    if goaltype is None or detail is None:
+        return {"status": "error", "message": "Checking for active goals requires both goaltype and detail aparameters in the querystring" }, 400
+    
+    return { "status": "OK", "result": checkActiveGoal(g.user, goaltype, detail) }
 
 @bp.route("/mydiary")
 @login_required
