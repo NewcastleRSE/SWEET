@@ -54,8 +54,9 @@ resource "azurerm_app_service" "as" {
   https_only          = "true"
 
   site_config {                                                            
-     linux_fx_version = "PYTHON|3.8"                                        
-   }
+    linux_fx_version = "PYTHON|3.8"  
+    app_command_line  = "gunicorn --bind=0.0.0.0 --timeout 600 \"SWEET:create_app()\""                                       
+  }
 
   tags = {
     Name = var.project_name
