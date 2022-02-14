@@ -6,7 +6,7 @@ from flask import (
 
 from .data import users, getToken
 
-from .automation.email import send_notify_register
+from .automation.email import send_notify_register, send_password_reset
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -122,6 +122,40 @@ def checkRegCode():
         return {"message": "code available" }
     else:
         return {"message": "Registration code not available"}, 404
+
+# password resetting:
+@bp.route("resetpassword")
+def resetPassword():
+    email = request.args.get("email")
+    resettoken = getToken(10)
+
+    result, user = users.unsetPassword(email, resettoken)
+    if result:
+        #send reset email:
+        send_password_reset(user, resettoken)
+        # return appropriate response
+        return {"result": "OK"}
+    else:
+        return {"result": "No such user" }, 404
+
+@bp.route("passwordreset", methods=["GET", "POST"])
+def passwordReset():
+    if request.method == "GET":
+        uid = request.args.get("id")
+        token = request.args.get("token")
+        valid = users.validateResetToken(uid, token)
+        return render_template("resetpwd.html", valid=valid, user=uid, token=token)
+    else:
+        uid = request.form.get("id")
+        token = request.form.get("token")
+        if users.validateResetToken(uid, token):
+            # reset user password
+            password = request.form.get("password")
+            # should we be validating the password confirmation on the server-side?
+            users.updateUser(uid, password=password)
+            return _login(users.getUser(uid))
+        else:
+            return render_template("resetpwd.html", valid=False, user=uid, token=token)
 
 @bp.before_app_request
 def load_logged_in_user():

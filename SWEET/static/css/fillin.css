@@ -42,6 +42,7 @@
 
 .thoughts-box form input[type='text'] {
     flex-basis: 42%;
+    min-width: 0;
 }
 
 .thoughts-box header span {

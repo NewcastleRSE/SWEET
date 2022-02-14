@@ -1,7 +1,7 @@
 export function profilerModalRenderer(section) {
     // create the modal 
     if (!section.modal) {
-        section.modal = this.createModal();
+        section.modal = this.createModal(true);
     }
 
     section.modal.size = 'lg';
@@ -254,8 +254,11 @@ export function profilerModalRenderer(section) {
 
                             // following implementation of "My Personal Support" page, can close modal and reidrect app:
 
-                            if (this.path == "#home/my-support") this.load()
-                            else this.path = "#home/my-support";
+                            if (this.path == "#home/my-support") { 
+                                this.load();
+                            } else {
+                                this.path = "#home/my-support";
+                            }
                             
                             section.modal.hide();
                         }
@@ -333,7 +336,15 @@ export function profilerResultRenderer(section) {
 export async function profilerLauncherRenderer(section) {
     if (section.type != "profiler-launcher") return null;
 
-    if (!section.profiler) section.profiler = this.store.get("latestProfiler") || { dueDate: this.calendarDate(new Date()) }
+    if (!section.profiler) {
+        let latest = await fetch("/myapp/profiler/latest").then(response => response.json());
+        if (latest.result && ["complete", "refused"].includes(latest.result)) {
+            section.profiler = { dueDate: this.calendarDate(new Date()) }
+        } else {
+            section.profiler = latest;
+        }
+    }
+
     section.profiler.type = "profiler";
 
     let node = await this.render({
@@ -367,7 +378,7 @@ export async function myPersonalSupportRenderer(section) {
 
     if (profilers.length == 0) return null;
 
-    profilers.sort((a, b) => a.dueDate == b.dueDate? 0: a.dueDate > b.dueDate? -1: 1);
+    profilers.sort((a, b) => a.dateComplete == b.dateComplete? 0: a.dateComplete > b.dateComplete? -1: 1);
 
     let latest = profilers.shift();
 

@@ -1,9 +1,8 @@
-from re import L
 from .az_persitent import AzurePersistentList, AzurePersitentDict
 from . import encryptUser, decryptUser
 from ..secrets import connstr as az_connection, usersource, usertable, userlist, userlog, registration_list, admin_user
-from datetime import datetime
-
+from datetime import date, datetime, timedelta
+from ua_parser.user_agent_parser import Parse
 
 __userstore = AzurePersitentDict(az_connection, usersource, usertable)
 
@@ -11,12 +10,18 @@ __usermap = AzurePersitentDict(az_connection, usersource, userlist)
 __userlog = AzurePersistentList(az_connection, usersource, userlog)
 __regcodes = AzurePersistentList(az_connection, usersource, registration_list)
 
-def logvisit(user, path):
-    __userlog.append({
+def logvisit(user, agent, **kwargs):
+    ua = Parse(agent)
+
+    entry = {
         "user": user["userID"],
-        "path": path,
+        "platform": f"{ua['os']['family']} {ua['os']['major']}.{ua['os']['minor']}",
+        "browser": f"{ua['user_agent']['family']} {ua['user_agent']['major']}.{ua['user_agent']['minor']}",
         "datetime": datetime.today().isoformat()
-    })
+    }
+
+    entry.update(**kwargs)
+    __userlog.append(entry)
     __userlog.commit()
 
 def confirmUserID(id):
@@ -139,7 +144,14 @@ def updateUser(userID, **kwargs):
         __usermap[kwargs["email"]] = userID
         __usermap.commit()
 
+
     user = decryptUser(__userstore[userID])
+
+    # handle clearing password resets:
+    if "password" in kwargs and 'resetToken' in user:
+        del user['resetToken']
+        del user['resetDate']
+
     user.update(**kwargs)
     __userstore[userID] = encryptUser(user)
 
@@ -147,6 +159,37 @@ def updateUser(userID, **kwargs):
         
     return True
     
+def unsetPassword(userID, token):
+    userID = confirmUserID(userID)
+
+    if userID is None:
+        return False, None
+
+    user = decryptUser(__userstore[userID])
+    
+    user['resetToken'] = token
+    user['resetDate'] = datetime.now().isoformat()
+
+    __userstore[userID] = encryptUser(user)
+
+    __userstore.commit()
+        
+    return True, getUser(userID)
+
+def validateResetToken(userID, token):
+    userID = confirmUserID(userID)
+
+    if userID is None:
+        return False
+
+    user = getUser(userID)
+    if 'resetToken' in user:
+        if user['resetToken'] == token:
+            if datetime.fromisoformat(user['resetDate']) > datetime.now() - timedelta(days=1):
+                return True
+
+    return False
+
 def getAllUsers():
     return [getUser(user) for user in __userstore.keys() if user != admin_user]
 

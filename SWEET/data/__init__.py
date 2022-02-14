@@ -67,4 +67,4 @@ def ensureDataSources():
         usercnt.upload_blob(secrets.userdiary, json.dumps({}))
 
     if getUser(secrets.admin_user) is None:
-        registerUser(secrets.admin_user, secrets.admin_password, secrets.admin_fullName, secrets.admin_role)
+        registerUser(secrets.admin_user, secrets.admin_password, secrets.admin_role, email=secrets.admin_email, fullName=secrets.admin_fullName)
