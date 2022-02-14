@@ -1,5 +1,6 @@
 import sentry_sdk
 from flask import Flask, render_template
+from werkzeug.user_agent import UserAgent
 from sentry_sdk.integrations.flask import FlaskIntegration
 from . import data, secrets
 from .auth import login_required

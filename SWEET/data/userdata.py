@@ -8,6 +8,9 @@ from azure.core.exceptions import ResourceExistsError
 from ..schemas import getSideEffectValueMappings
 from ..data.content import getGoalMessage
 
+from flask import request
+from .users import logvisit
+
 __diary = AzurePersitentDict(az_connection, usersource, userdiary)
 __goals = AzurePersitentDict(az_connection, usersource, usergoals)
 
@@ -123,7 +126,8 @@ class UserData():
 
         updateUser(self.user, tunnelsComplete=[])
 
-
+def log(user, action, old=None, new=None):
+    logvisit(user, request.user_agent.string, action=action, old=old, new=new)
 
 
 def getGoals(user=None):
@@ -150,6 +154,8 @@ def updateGoals(user, goal):
         goals.append(goal)
         goals.commit()
         
+        log(user, "update", old=oldgoal.copy(), new=goal.copy())
+
         message, which = getGoalMessage(goal)
         return True, message
 
@@ -161,6 +167,8 @@ def updateGoals(user, goal):
         if len(activegoals) < 3:
             goals.append(goal)
             goals.commit()
+
+            log(user, "add", new=goal.copy())
 
             return True, "New"
         
@@ -276,9 +284,12 @@ def recordSideEffect(user, sideeffect):
     existing = next((s for s in diary[sideeffect["date"]]["sideeffects"] if s["type"] == sideeffect["type"]), None)
 
     if existing:
+        ex = existing.copy()
         existing.update(sideeffect)
+        log(user, "update", old=ex, new=existing.copy())
     else:
         diary[sideeffect["date"]]["sideeffects"].append(sideeffect)
+        log(user, "add", new=sideeffect.copy())
 
     diary.commit()
 
@@ -297,6 +308,7 @@ def deleteSideEffect(user, sideeffect):
 
     if existing:
         diary[sideeffect["date"]]["sideeffects"].remove(existing)
+        log(user, "delete", old=existing)
 
     diary.commit()
 
@@ -312,9 +324,12 @@ def recordProfiler(user, profiler):
     existing = next((p for p in profilers if 'dueDate' in p and p["dueDate"] == profiler["dueDate"]), None)
 
     if existing:
+        ex = existing.copy()
         existing.update(profiler)
+        log(user, "update", old=ex, new=existing.copy())
     else:
         profilers.append(profiler)
+        log(user, "add", new=profiler.copy())
 
     if profiler['result'] in ["complete", "refused"]:
         # remove dueDate as this profiler is no longer 'due'
@@ -402,12 +417,16 @@ def addNote(user, note):
 
     if "notes" not in diary[note["date"]]:
         diary[note["date"]]["notes"] = note
+        log(user, "add", new=note.copy())
     else:
         notes = diary[note["date"]]["notes"]
         if isinstance(notes, list):
             diary[note["date"]]["notes"] = note
+            log(user, "add", new=note.copy())
         else:
+            ex = diary[note["date"]]["notes"].copy()
             diary[note["date"]]["notes"].update(note)
+            log(user, "update", old=ex, new=diary[note["date"]]["notes"].copy())
     
     diary.commit()
 
@@ -436,8 +455,10 @@ def deleteNote(user, note):
     if notedate not in diary:
         return False
     else:
+        log(user, "delete", old=diary[notedate]["notes"].copy())
         diary[notedate]["notes"] = {}
         diary.commit()
+
         return True
 
 def recordAdherence(user, adh):
@@ -454,10 +475,14 @@ def recordAdherence(user, adh):
     if adh["date"] not in diary:
         diary[adh["date"]] = { "sideeffects": [], "notes": {}}
 
+    ex = diary[adh["date"]].get("adherence")
 
     diary[adh["date"]]['adherence'] = True if adh["action"] == "record" else False
-    diary.commit()
 
+    diary.commit()
+    log(user, "update", old=ex, new=adh.copy())
+
+    
 def saveFillin(user, fillin):
     id = user['userID']
 
@@ -498,8 +523,11 @@ def setReminders(user, reminders):
     id = user['userID']
 
     savedreminders = UserData(id).reminders()
+    ex=savedreminders.copy()
     savedreminders.update(reminders)
     savedreminders.commit()
+    log(user, "update", old=ex, new=savedreminders.copy())
+
 
 def getContacts(user):
     if user is None:
@@ -518,6 +546,8 @@ def addContact(user, contact):
     contacts.append(contact)
     contacts.commit()
 
+    log(user, "add", new=contact.copy())
+
 def deleteContact(user, contact):
 
     if user is None:
@@ -530,9 +560,10 @@ def deleteContact(user, contact):
     if contact in contacts:
         contacts.remove(contact)
         contacts.commit()
+        log(user, "delete", old=contact)
 
 
-def  updateContact(user, old, new):
+def updateContact(user, old, new):
     if user is None:
         return None
     
@@ -543,6 +574,8 @@ def  updateContact(user, old, new):
     if old in contacts:
         contacts[contacts.index(old)] = new
         contacts.commit()
+
+        log(user, "update", old=old, new=new.copy())
 
 def getPlan(user, plan):
     if user is None:
@@ -565,8 +598,15 @@ def savePlan(user, plan):
 
     plans = UserData(id).plans()
 
+    ex = plans.get(plan["type"]).copy()
+
     plans[plan["type"]] = plan
     plans.commit()
+
+    if ex:
+        log(user, "update", old=ex, new=plan.copy())
+    else:
+        log(user, "add", new=plan.copy())
 
 def saveThoughts(user, thoughts_in):
     if user is None:
@@ -578,6 +618,11 @@ def saveThoughts(user, thoughts_in):
     id = user["userID"]
     thoughts = UserData(id).thoughts()
     path = thoughts_in["path"]
+
+    if path in thoughts:
+        log(user, "update", old={"path": path, "details": thoughts[path].copy()}, new=thoughts_in.copy())
+    else:
+        log(user, "add", new=thoughts_in.copy())
 
     thoughts[path] = thoughts_in["details"]
     thoughts.commit()

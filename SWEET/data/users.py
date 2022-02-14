@@ -1,9 +1,8 @@
-from re import L
 from .az_persitent import AzurePersistentList, AzurePersitentDict
 from . import encryptUser, decryptUser
 from ..secrets import connstr as az_connection, usersource, usertable, userlist, userlog, registration_list, admin_user
 from datetime import date, datetime, timedelta
-
+from ua_parser.user_agent_parser import Parse
 
 __userstore = AzurePersitentDict(az_connection, usersource, usertable)
 
@@ -11,12 +10,18 @@ __usermap = AzurePersitentDict(az_connection, usersource, userlist)
 __userlog = AzurePersistentList(az_connection, usersource, userlog)
 __regcodes = AzurePersistentList(az_connection, usersource, registration_list)
 
-def logvisit(user, path):
-    __userlog.append({
+def logvisit(user, agent, **kwargs):
+    ua = Parse(agent)
+
+    entry = {
         "user": user["userID"],
-        "path": path,
+        "platform": f"{ua['os']['family']} {ua['os']['major']}.{ua['os']['minor']}",
+        "browser": f"{ua['user_agent']['family']} {ua['user_agent']['major']}.{ua['user_agent']['minor']}",
         "datetime": datetime.today().isoformat()
-    })
+    }
+
+    entry.update(**kwargs)
+    __userlog.append(entry)
     __userlog.commit()
 
 def confirmUserID(id):
