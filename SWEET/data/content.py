@@ -127,7 +127,7 @@ def saveResource(newres):
     __resources[newres['name']] = input
     __resources.commit()
 
-def getGoalMessage(goal):
+def getGoalMessage(goal, which):
     messages = {
         "activity": {
             'y': [
@@ -188,7 +188,7 @@ def getGoalMessage(goal):
     }
 
     msglist = messages[goal['goaltype']][goal['outcome']]
-    message = random.choice(msglist)
-    index = msglist.index(message)
+    message = msglist[which]
+    index = 0 if which+1 == len(msglist) else which+1
 
     return message, index

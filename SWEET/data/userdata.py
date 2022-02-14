@@ -80,7 +80,7 @@ class UserData():
             # create user data files:
             udstore.upload_blob(f"{self.pathbase}_init", date.today().isoformat())
 
-            for fname in ["diary", "plans", "fillins", "thoughts"]:
+            for fname in ["diary", "plans", "fillins", "thoughts", "meta"]:
                 udstore.upload_blob(f"{self.pathbase}{fname}", json.dumps({}))
 
             for fname in ["goals", "contacts", "profilers"]:
@@ -109,6 +109,8 @@ class UserData():
         return AzurePersistentList(az_connection, usersource, f"{self.pathbase}profilers")
     def thoughts(self):
         return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}thoughts")
+    def metadata(self):
+        return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}meta")
 
     def reset(self):
         udstore = getContainer(usersource)
@@ -144,7 +146,8 @@ def getGoals(user=None):
 def updateGoals(user, goal):
     id = user['userID']
 
-    goals = UserData(id).goals()
+    ud = UserData(id)
+    goals = ud.goals()
 
     if goal['status'] == "complete":
         oldgoal = next(g for g in goals if g['goaltype'] == goal['goaltype'] and g['reviewDate'] == goal['reviewDate'] and g['detail'] == goal['detail'])
@@ -153,10 +156,30 @@ def updateGoals(user, goal):
             
         goals.append(goal)
         goals.commit()
-        
+
         log(user, "update", old=oldgoal.copy(), new=goal.copy())
 
-        message, which = getGoalMessage(goal)
+        meta = ud.metadata()
+
+        if "goalmsg" not in meta:
+            meta['goalmsg'] = {
+                'activity': {
+                    'y': 0,
+                    'p': 0,
+                    'n': 0
+                },
+                'eating': {
+                    'y': 0,
+                    'p': 0,
+                    'n': 0
+                }
+            }
+
+        which = meta['goalmsg'][goal['goaltype']][goal['outcome']]
+        message, nextmsg = getGoalMessage(goal, which)
+        meta['goalmsg'][goal['goaltype']][goal['outcome']] = nextmsg
+        meta.commit()
+
         return True, message
 
     if goal['status'] == "active":
