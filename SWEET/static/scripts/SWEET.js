@@ -266,6 +266,7 @@ Promise.allSettled([
         SWEET.store.set("currentUser", profile);
     
     }),
+    fetch("/myapp/profiler/latest").then(response => response.json()).then(profiler => SWEET.store.set("latestProfiler", profiler)),
     // tunnel schema fetch
     fetch("/app/schemas/tunnels").then(response => response.json()).then(tunnels => SWEET.store.set("tunnels", tunnels)),
     // app structure fetch
