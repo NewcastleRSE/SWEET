@@ -9,16 +9,18 @@ export function sideEffectFormRenderer(section) {
             <section>
             <span id="form-se-type"><label for="type">What side effect do you want to record?</label><select id="form-se-type-input" name="type"><option value="">Choose a side effect...</option></select><input type="hidden" name="description"><br></span>
             <span id="form-se-date" hidden><label for="date"> Which day do you wish to record for?</label><span id="dateinput"></span><br></span>
-            <span id="form-se-frequency" hidden><label for="frequency">How many <span data-replace="embedtext"></span> did you have?</label><span><input type="number" id="frequency" name="frequency"></span><br></span>
-            <span id="form-se-severity" hidden><label for="severity">How bad <span data-switch="embedplural" data-true="were" data-false="was"></span> your <span data-replace="embedtext"></span>?</label><span id="severityinput"></span><br></span>
-            <span id="form-se-impact" hidden><label for="impact">How much did your <span data-replace="embedtext"></span> impact your daily life?</label><span id="impactinput"></span><br></span>
-            <span id="form-se-notes" hidden><label for="notes">Notes: <span class="sidenote">You can use this box to record further details, e.g. the times of day, triggers, things you tried to help</span></label><br>
+            <span id="form-se-frequency" hidden><label for="frequency">How many <span data-replace="embedtext"></span> did you have?</label><span><input type="number" id="frequency" name="frequency" min="0" max="50"></span><br></span>
+            <span id="form-se-severity" hidden><label for="severity">How bad <span data-switch="embedplural" data-true="were" data-false="was"></span> your <span data-replace="embedtext"></span>?</label>
+            <span id="severityinput"><label class="scale">Not at all</label> <input type="range" min="0" max="5" step="0.1" class="form-range" name="severity"> <label class="scale">Extremely</label></span><br></span>
+            <span id="form-se-impact" hidden><label for="impact">How badly did your <span data-replace="embedtext"></span> impact your daily life?</label>
+            <span id="impactinput"><label class="scale">Not at all</label> <input type="range" min="0" max="5" step="0.1" class="form-range" name="impact"> <label class="scale">Extremely</label></span><br></span>
+            <span id="form-se-notes" hidden><label for="notes">Notes: <span class="sidenote">[e.g. the times of day, triggers, things you tried to help]</span></label><br>
             <span id="notesinput"><textarea name="notes" id="notes" cols="50" rows="5"></textarea></span></span>
             </section>
             `
 
         form.querySelector("#form-se-type-input").insertAdjacentHTML('beforeend', schema.types.map(t => `<option value="${t.name}">${t.description}</option>`).join(""));
-        form.querySelector("#form-se-type-input").addEventListener("change", e => {
+        form.querySelector("#form-se-type-input").addEventListener("change", async e => {
             let type = e.target.value;
             let scheme = schema.types.filter(t => t.name == type)[0];
             
@@ -37,24 +39,21 @@ export function sideEffectFormRenderer(section) {
                     q.setAttribute("hidden", "")
                 }
             })
-            scheme.questions.forEach(q => form.querySelector(`#form-se-${q}`).removeAttribute("hidden"));
+
+            if (section.date) {
+                let existing = await fetch(`/myapp/mydiary/sideeffects?date=${section.date}&type=${type}`).then(response => response.status == 204? null: response.json())
+                if (existing) {
+                    if (existing.severity == "mild") existing.severity = 1;
+                    if (existing.severity == "moderate") existing.severity = 3;
+                    if (existing.severity == "severe") existing.severity = 5;
+                    if (existing.impact == "a little") existing.impact = 1;
+                    if (existing.impact == "moderately") existing.impact = 3;
+                    if (existing.impact == "a lot") existing.impact = 5;
+
+                    scheme.questions.forEach(q => form.elements[q].value = existing[q]);
+                }
+            }
         })
-
-        form.querySelector("#severityinput").innerHTML = (() => {
-            let opts = [];
-            for (let opt of ["mild", "moderate", "severe"]) {
-                opts.push(`<input type="radio" hidden id="severity-${opt}" name="severity" value="${opt}"><label for="severity-${opt}">${opt}</label>`)
-            }
-            return opts.join("");
-        })();
-
-        form.querySelector("#impactinput").innerHTML = (() => {
-            let opts = [];
-            for (let opt of ["a little", "moderately", "a lot"]) {
-                opts.push(`<input type="radio" hidden id="impact-${opt}" name="impact" value="${opt}"><label for="impact-${opt}">${opt}</label>`)
-            }
-            return opts.join("");
-        })();
 
         if (section.date) {
             form.querySelector("#dateinput").innerHTML = `<input type="hidden" name="date" value="${section.date}" data-date="${section.date}" />`;
@@ -120,6 +119,21 @@ export function sideEffectFormRenderer(section) {
         this.post("/myapp/mydiary/sideeffects/",sideeffect)
     })
 
+    form.addEventListener("reset", e => {
+        let sideeffect = {
+            type: form.elements['type'].value,
+            date: form.elements['date'].value
+        }
+
+        this.post("/myapp/mydiary/sideeffects/delete/", sideeffect);
+
+        ["date", "frequency", "severity", "impact", "notes"].forEach(s => {
+            form.querySelector(`#form-se-${s}`).setAttribute("hidden", "");
+        })
+
+        form.querySelector("select").value = "";
+    })
+
     return form;
 }
 
@@ -133,7 +147,7 @@ export function sideEffectModalRenderer() {
     this.render({type: "sideeffectform"}).then(form => {
         form.setAttribute("id", "modal-se-form")
         holder.body.appendChild(form)
-        holder.footer.innerHTML = `<input type="submit" form="${form.getAttribute("id")}" value="Save details"><button type="button" id="se-form-cancel">Cancel</button>`
+        holder.footer.innerHTML = `<button type="button" id="se-form-cancel">Cancel</button><input type="submit" form="${form.getAttribute("id")}" value="Save details">`
         holder.footer.querySelector("#se-close").addEventListener("click", e => {
             holder.hide(true);
         })

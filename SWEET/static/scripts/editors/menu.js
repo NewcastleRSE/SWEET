@@ -79,8 +79,8 @@ export class MenuEditor extends HTMLElement {
         i.classList.add("item");
         i.innerHTML = `
         <button class="move-up"></button><button class="move-down"></button><button class="delete"></button>
-        <label title="The text shown on the button">Display Text:</label><input name="title" type="text"></input><br />
-        <label>Link target:</label><input name="link" type="text"></input><br />
+        <label title="The text shown on the button">Display Text:</label><input name="title" type="text" required></input><br />
+        <label>Link target:</label><input name="link" type="text" required></input><br />
         <label>Icon:</label><input name="icon" type="text" value="none"></input>`
         i.addEventListener("click", e => { 
             e.preventDefault(); e.stopPropagation();
@@ -153,7 +153,7 @@ export function menuItemRenderer(section) {
     holder.setAttribute("class", "d-block col");
 
     const card = document.createElement("a");
-    card.setAttribute("class", "d-block card");
+    card.setAttribute("class", "d-block card submenu h-100");
     card.setAttribute("href", section.link);
 
     const cardBody = document.createElement("div");

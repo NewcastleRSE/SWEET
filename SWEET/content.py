@@ -1,10 +1,12 @@
 from flask import (
-    Blueprint, request, abort
+    Blueprint, request, abort, send_file, g
 )
 
 from .data.content import (
-    getStructure, getPageContents, getPageDetails, getResource as getNamedResource, getResources, getPages
+    getResourceBlob, getStructure, getPageContents, getPageDetails, getResource as getNamedResource, getResources, getPages
 )
+
+from.data.users import logvisit
 
 from .auth import login_required
 
@@ -27,7 +29,13 @@ def getPageContent():
             path = "#home"
         
         details = getPageDetails(path)
-        details["content"] = getPageContents(path) 
+
+        if details is None:
+            logvisit(g.user, request.user_agent.string, action="navigate", page=path, referrer=request.headers.get("X-SWEET-referrer"), status="404")
+            abort(404)
+            
+        logvisit(g.user, request.user_agent.string, action="navigate", page=path, referrer=request.headers.get("X-SWEET-referrer"), status="200")
+        details["content"] = getPageContents(path)
         return details
     else:
         return getPages()
@@ -45,3 +53,12 @@ def getResource(name):
         abort(404)
 
     return res
+
+@bp.route("/resources/files/<name>")
+@login_required
+def getResourceFile(name):
+    res = getResourceBlob(name)
+    if res is None:
+        abort(404)
+    
+    return send_file(res['file'], mimetype=res['content-type'], download_name=res['downloadName'])

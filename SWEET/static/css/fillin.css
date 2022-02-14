@@ -1,7 +1,7 @@
 .fill-in {
     display: block;
-    margin: auto;
     width: 80%;
+    margin: 1.5em 0;
 }
 
 .fill-in form {
@@ -15,8 +15,36 @@
 }
 .fill-in.large form textarea {
     width: 100%;
+    border: 2px solid black;
 }
 
 .fill-in form input[type='text'] {
     flex-grow: 1;
+    border: 2px solid black;
+}
+
+.thoughts-box {
+    padding: 1em 2em;
+}
+
+.thoughts-box header {
+    justify-content: space-around;
+}
+
+.thoughts-box form {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.thoughts-box form input[type='text'] {
+    flex-basis: 42%;
+    min-width: 0;
+}
+
+.thoughts-box header span {
+    font-weight: bold;
 }

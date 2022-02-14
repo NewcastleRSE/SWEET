@@ -73,12 +73,14 @@ select[name='setype'] + form > section > label {
 }
 
 span.sidenote {
-    display: none;
-    position: absolute;
     font-size: 75%;
-    background-color: silver;
-    max-width: 25em;
+    font-weight: bold;
 }
+
+span.sidenote > strong {
+    font-size: 115%;
+}
+
 #dateinput label {
     vertical-align: top;
 }
@@ -100,8 +102,14 @@ label:hover span.sidenote {
 }
 
 :is(#severityinput, #impactinput, #notesinput) {
-    display: block;
+    display: flex;
     text-align: center;
+}
+
+:is(#severityinput, #impactinput) label {
+    font-weight: bold;
+    padding: 0.1em 1em;
+    white-space: nowrap;
 }
 
 :is(#severityinput, #impactinput) input[type="radio"]:checked + label {
@@ -111,4 +119,28 @@ label:hover span.sidenote {
 
 input[type='number'] {
     max-width: 3em;
+}
+
+
+#form-se-type-input {
+    padding-left: 5px;
+    margin-left: 10px;
+}
+
+#form-se-type label, #form-se-severity label, #form-se-frequency label, #form-se-impact label {
+    padding: 5px 0;
+}
+
+#form-se-type .scale, #form-se-severity .scale, #form-se-frequency .scale, #form-se-impact .scale {
+    padding: 5px 10px;
+}
+
+#frequency {
+    max-height: 30px;
+    margin-left: 10px;
+}
+
+#se-graph-title {
+    font-size: 1.2em;
+    padding: 10px 0 40px 0;
 }

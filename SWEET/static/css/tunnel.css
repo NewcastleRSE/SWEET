@@ -1,0 +1,36 @@
+div.tunnel {
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background-color: #633188cc;
+    overflow: auto scroll;
+    z-index: 800;
+}
+
+#tunnel-container {
+    width: 90%;
+    margin: 5em auto 0;
+    background-color: var(--SWEET-off-white);
+    padding: 1em;
+    border-radius: 0.5em;
+    outline: 0.25em solid var(--SWEET-dark-grey);
+}
+
+#tunnel-container > header {
+    display: flex;
+}
+#tunnel-container > header > :is(h1, h2, h3, h4, h5, h6) {
+    width: 100%;
+    text-align: center;
+}
+#tunnel-container > header > .btn-close {
+    padding: 0.5em;
+    margin: -0.5em -0.5em -0.5em auto;
+}
+
+#tunnel-container > footer {
+    text-align: right;
+}
+
+#tunnel-pagecount {
+    display: inline-block; min-width: 10em; text-align: center;
+}

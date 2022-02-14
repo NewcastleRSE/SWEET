@@ -8,7 +8,10 @@ export class GoalSetter extends HTMLElement {
         this.$ = {};
         const root = this.$.root = this.attachShadow({mode: "open"});
         root.innerHTML = `
-        <label>Type of Goal:</label><select name="type"><option>activity</option></select>
+        <label>Type of Goal:</label><select name="type">
+            <option value="activity">Being Active</option>
+            <option value="eating">Healthy Eating</option>
+        </select>
         `
     }
 
@@ -24,9 +27,6 @@ export class GoalSetter extends HTMLElement {
             goaltype: this.$.root.querySelector("select").value
         }
     }
-
-
-
 }
 
 export function goalRenderer(section) {
@@ -52,7 +52,7 @@ export function goalRenderer(section) {
 
 
         goalCardContent.innerHTML = `<h5 class="goal-summary">
-                    Do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.
+                    ${goal.goaltype == "activity"? "Do some ": ""}<strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week${goal.minutes? `, for <strong>${goal.minutes} minutes</strong> per day`:""}.
                 </h5>`;
 
         let today = this.calendarDate(new Date());
@@ -69,9 +69,9 @@ export function goalRenderer(section) {
                 const modal = this.createModal(true);
                 modal.size = "lg";
                 
-                modal.title.innerHTML = "Review Goal";
+                modal.title.innerHTML = "   ";
                 modal.body.innerHTML = `
-                <p><em>${goal.detail}; ${goal.days} days; ${goal.minutes} minutes per day</em></p>
+                <p><em>${goal.detail}; ${goal.days} days${goal.minutes? `; ${goal.minutes} minutes per day`: ""}</em></p>
                 <p>Have you been successful and completed your goal?</p>
                 <div id="review-box-buttons" class="d-flex justify-content-evenly mt-5 mb-5">
                     <button class="btn btn-light" value="y">Yes, Totally</button><button class="btn btn-light" value="p">Yes, Partly</button><button class="btn btn-light" value="n">No, not at all</button>
@@ -135,19 +135,33 @@ export function goalRenderer(section) {
 
             let goal = {};
 
-            modal.title.innerHTML = "Set New Goal";
+            modal.title.textContent = "Set New Goal";
 
             let form = modal.body.appendChild(document.createElement("form"));
             form.setAttribute("id", "goal-setup-form");
             let list = form.appendChild(document.createElement("datalist"));
-            list.setAttribute("id", "activity");
             schema.activity.forEach(i => list.insertAdjacentHTML("beforeend", `<option>${i}</option>`))
+            list.insertAdjacentHTML("beforeend", `<option value="type-own">Something else...</option>`)
 
             let daysInput = schema.frequency.map(f => `<input class="form-check-input" type="radio" name="frequency" id="frequency-${f}" value="${f}"><label class="form-check-label" for="frequency-${f}">${f}</label>`).join("");
    
-            form.appendChild(document.createElement("p")).innerHTML = "<label>Activity: </label><input class='form-control w-50 d-inline-block' type='text' name='activity' list='activity' placeholder='choose an activity'><br><em>You can choose from the list or type your own</em>";
-            form.appendChild(document.createElement("p")).innerHTML = `<label>How many days?</label>${daysInput}`;
-            form.appendChild(document.createElement("p")).innerHTML = `<label>How many minutes per day? </label><input class='form-control d-inline-block' type='number' name='duration' list='duration'>`;
+            form.appendChild(document.createElement("p")).innerHTML = `<label>Activity: </label> <select class='form-control w-50 d-inline-block' name='activity' placeholder='choose an activity' autocomplete='off'></select><br>
+            <span id="activity-other-wrapper" hidden><label>Write your own here:</label><input type="text" name="activity-other" class='form-control w-50 d-inline-block' ></span><br>`;
+
+            form.appendChild(document.createElement("p")).innerHTML = `<label>How many days?</label> ${daysInput}`;
+            if (schema.duration) {
+                form.appendChild(document.createElement("p")).innerHTML = `<label>How many minutes per day? </label><input class='form-control d-inline-block' type='number' name='duration' min='0'>`;
+            }
+
+            form.querySelector("select").innerHTML = list.innerHTML;
+            form.querySelector("select").addEventListener("change", e => {
+                if (e.target.value == "type-own") {
+                    form.querySelector("#activity-other-wrapper").removeAttribute("hidden")
+                } else {
+                    form.querySelector("#activity-other-wrapper").setAttribute("hidden", "")
+                }
+            })
+
             modal.body.appendChild(form);
 
             modal.footer.innerHTML = `<button type="button" class="btn btn-secondary">Cancel</button><button type="submit" form="${form.getAttribute("id")}" class="btn btn-primary">Next</button>`
@@ -159,22 +173,32 @@ export function goalRenderer(section) {
                 e.preventDefault(); e.stopImmediatePropagation();
 
                 goal = {
-                    goaltype: 'activity',
+                    goaltype: section.goaltype,
                     status: 'active',
                     reviewDate: isodate(((d) => { d.setDate(d.getDate()+7); return d;})(new Date())),
-                    detail: form.elements['activity'].value,
-                    days: form.elements['frequency'].value,
-                    minutes: form.elements['duration'].value,
+                    detail: form.elements['activity'].value == "type-own"? form.elements['activity-other'].value: form.elements['activity'].value,
+                    days: form.elements['frequency'].value
                 }
 
+                if (schema.duration) {
+                    goal.minutes = form.elements['duration'].value
+                }
 
+                modal.title.innerHTML = "";
+                
                 modal.body.innerHTML = `
-                <h3 class='mb-5'>You're ready to set a new goal for the next week!</h3>
+                <h3 class='mb-5'>NEW ${schema.displayName.toUpperCase()} GOAL</h3>
                 <section>
-                <p>You can always see your goals by clicking <strong>My Goals</strong> on the Being Active homepage.</p>
-                <p>In one week, you can come back to review your goal and to get a feedback message.</p>
-                <p>You may want to stick a reminder somewhere in your house.</p>
-                <p>Your goal is: to do some <strong>${goal.detail}</strong> on <strong>${goal.days} days</strong> this week, for <strong>${goal.minutes} minutes</strong> per day.</p>
+                <p>Well done!</p>
+                <p>You've set a new goal for the next week.</p>
+                <p>You can always see your goals by clicking <strong>My Goals</strong> on the ${section.goaltype == "activity"? "Being Active": "Healthy Eating"} homepage.</p>
+                <p>In one week, you can come back to get personal feedback on your goal.</p>
+                <p>It's a good idea to stick up a reminder somewhere in your house.</p>
+                <p>Your goal is: <strong>${goal.detail}</strong><br>
+                How often: <strong>${goal.days} days</strong>${
+                    goal.minutes?`<br>
+                For: <strong>${goal.minutes} minutes</strong>`:""
+                }.</p>
                 </section>`;
 
                 let submitButton = modal.footer.querySelector("button[type='submit']");
@@ -187,6 +211,7 @@ export function goalRenderer(section) {
                         if (outcome.status == "error") {
                             document.getElementById("toast-message-type").text("Error");
                             document.getElementById("toast-message").text(`We were not able to save your new goal. ${outcome.message}`);
+                            alert(`We were not able to save your requested goal:\n${outcome.message}`)
                         } else {
                             source.innerHTML = "";
                             source.appendChild(fillGoal(goal));
@@ -203,7 +228,7 @@ export function goalRenderer(section) {
     }
 
     // get user's active goals
-    fetch("/myapp/mygoals")
+    fetch(`/myapp/mygoals/${section.goaltype}`)
     .then(response => response.json())
     .then(goals => {
 

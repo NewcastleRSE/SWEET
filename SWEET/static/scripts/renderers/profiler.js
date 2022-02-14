@@ -1,7 +1,7 @@
 export function profilerModalRenderer(section) {
     // create the modal 
     if (!section.modal) {
-        section.modal = this.createModal();
+        section.modal = this.createModal(true);
     }
 
     section.modal.size = 'lg';
@@ -14,8 +14,8 @@ export function profilerModalRenderer(section) {
     const renderers = [
         () => { /* page 0 renderer */ 
             
-            section.modal.title.textContent = "Profiler";
-            section.modal.body.innerHTML = `<p>Hi there, we'd like to ask you some questions to see how you are getting on with your hormone therapy. Answering these questions will allow us to guide you to relevant sections of the web-app that you may find helpful.</p>
+            //section.modal.title.textContent = "Profiler";
+            section.modal.body.innerHTML = `<p>Hi there, in this section you can access help and support which has been tailored to meet your needs. In order to provide this personalised support, we'd like to ask you some questions to see how you are getting on with your hormone therapy. Answering these questions will allow us to guide you to relevant sections of the HT&amp;Me website that you may find helpful.</p>
             <p>Are you happy to answer these questions?</p>`;
             section.modal.footer.innerHTML = `<button type="button" id="prof-yes" class="btn btn-primary">Yes</button>
             <button type="button" id="prof-later" class="btn btn-secondary">Complete Later</button>
@@ -68,26 +68,26 @@ export function profilerModalRenderer(section) {
         () => { 
             /* page 1 renderer */
             
-                section.modal.title.textContent = `Profiler`;
+                //section.modal.title.textContent = `Profiler`;
                 section.modal.body.innerHTML = `<form id="prof-p1">
                     <p>Please indicate whether you agree or disagree with the following statements:</p>
                     <table class="table table-borderless">
                         <tr><td>&nbsp;</td><th>Disagree</th><th>Uncertain</th><th>Agree</th></tr>
                         <tr>
                             <td class="pe-3">Taking my hormone therapy is very important to me.</td>
-                            <td class="text-center align-middle"><input class="form-check-input" type="radio" name="imp" id="imp-dis" value="disagree" /></td>
+                            <td class="text-center align-middle"><input class="form-check-input" type="radio" name="imp" id="imp-dis" value="disagree" required/></td>
                             <td class="text-center align-middle"><input class="form-check-input" type="radio" name="imp" id="imp-con" value="uncertain" /></td>
                             <td class="text-center align-middle"><input class="form-check-input" type="radio" name="imp" id="imp-agr" value="agree" /></td>
                         </tr>
                         <tr>
                             <td class="pe-3">I have concerns about my hormone therapy.</td>
-                            <td class="text-center align-middle"><input class="form-check-input" type="radio" name="con" id="con-dis" value="disagree" /></td>
+                            <td class="text-center align-middle"><input class="form-check-input" type="radio" name="con" id="con-dis" value="disagree" required /></td>
                             <td class="text-center align-middle"><input class="form-check-input" type="radio" name="con" id="con-unc" value="uncertain" /></td>
                             <td class="text-center align-middle"><input class="form-check-input" type="radio" name="con" id="con-agr" value="agree" /></td>
                         </tr>
                         <tr>
                             <td class="pe-3">Taking my hormone therapy is difficult for me.</td>
-                            <td class="text-center align-middle"><input class="form-check-input" type="radio" name="diff" id="diff-dis" value="disagree" /></td>
+                            <td class="text-center align-middle"><input class="form-check-input" type="radio" name="diff" id="diff-dis" value="disagree" required/></td>
                             <td class="text-center align-middle"><input class="form-check-input" type="radio" name="diff" id="diff-unc" value="uncertain" /></td>
                             <td class="text-center align-middle"><input class="form-check-input" type="radio" name="diff" id="diff-agr" value="agree" /></td>
                         </tr>
@@ -129,7 +129,9 @@ export function profilerModalRenderer(section) {
             if (concerns) {
                 // render further questions:
                 section.modal.body.innerHTML = `<form id="prof-p2">
-                    <p>We'd like to ask you for a bit more detail: please let us know which of the following statements you agree with.</p>
+                    <p>We'd like to ask you for a bit more detail.<br>
+                    <strong>Please tick all that apply to you.</strong><br>
+                    Please note that you may need to scroll to see all the text.</p>
                     <table class="table table-borderless">
                         <thead>
                             <tr>
@@ -152,7 +154,7 @@ export function profilerModalRenderer(section) {
                             </tr>
                             <tr>
                                 <td class="pe-3">I’m not convinced that hormone therapy is worth it for me</td>
-                                <td class="text-center align-middle"><input type="checkbox" name="agreee" value="N4" class="form-check-input"></td>
+                                <td class="text-center align-middle"><input type="checkbox" name="agree" value="N4" class="form-check-input"></td>
                             </tr>
                         </tbody>
                         <tbody id="C-concerns">
@@ -210,11 +212,18 @@ export function profilerModalRenderer(section) {
                     section.modal.body.querySelector("#C-concerns").remove();
                 }
                 
-                section.modal.footer.innerHTML = `<button type="submit" id="prof-p2-submit" class="btn btn-primary" form="prof-p2">Submit reponses</button>`
+                section.modal.body.insertAdjacentHTML("beforeend", `<button type="submit" id="prof-p2-submit" class="btn btn-primary" form="prof-p2">Submit reponses</button>`)
+                section.modal.footer.querySelector("#prof-p1-submit").remove();
 
                 section.modal.body.querySelector("form").addEventListener("submit", e => {
                     e.preventDefault(); e.stopPropagation();
 
+                    // validate that some concerns have been ticked:
+                    if (Array.from(e.target.elements['agree']).filter(c => c.checked).length == 0) {
+                        alert("You have not ticked any specific concern items: if you have changed your mind please use the cross to close the popup");
+                        return;
+                    }
+                    
                     // post completed profiler;
                     const profilerResponse = {
                         dueDate: section.dueDate,
@@ -226,8 +235,11 @@ export function profilerModalRenderer(section) {
 
                     this.post(url, profilerResponse).then(response => response.json())
                     .then(result => {
-                        console.log(result);
                         if (result.status == "OK") {
+
+/*
+******* Old logic: not deleted for ease of restoration should update not be appropriate or desirable *******
+
                             section.modal.body.innerHTML = "";
                             result.details.content.forEach(c => this.render(c).then(node => section.modal.body.appendChild(node)))
 
@@ -236,6 +248,19 @@ export function profilerModalRenderer(section) {
                                 e.preventDefault(); e.stopPropagation();
                                 section.modal.hide(true);
                             })
+
+        *********************************************************************************************
+*/
+
+                            // following implementation of "My Personal Support" page, can close modal and reidrect app:
+
+                            if (this.path == "#home/my-support") { 
+                                this.load();
+                            } else {
+                                this.path = "#home/my-support";
+                            }
+                            
+                            section.modal.hide();
                         }
                     })
                 })
@@ -243,7 +268,7 @@ export function profilerModalRenderer(section) {
                 // post a 'no concerns' response to the server
                 const profilerResponse = {
                     dueDate: section.dueDate,
-                    dateCompleted: this.calendarDate(new Date()),
+                    dateComplete: this.calendarDate(new Date()),
                     result: "complete",
                     concernAreas: "none"
                 }
@@ -252,7 +277,7 @@ export function profilerModalRenderer(section) {
                 this.post(url, profilerResponse)
 
                 // display a closing message.
-                section.modal.body.innerHTML = `<p>Great to hear that you are getting on with your hormone therapy. We will check in with you again in the next few months.</p><p>You can also access these questions at any time from the SWEET home page.</p><p>In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within Managing HT. Alternatively you can speak to your breast cancer team or your GP.</p>`
+                section.modal.body.innerHTML = `<p>Great to hear that you are getting on well with your hormone therapy. We will check in with you again in the next few months.</p><p>You can also access these questions at any time from the My Personal Support page.</p><p>In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within HT &amp Me. Alternatively you can speak to your breast cancer team or your GP.</p>`
                 section.modal.footer.innerHTML = ` <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>`
             }
         }
@@ -260,4 +285,152 @@ export function profilerModalRenderer(section) {
 
     // call the appropriate renderer:
     renderers[page].call(this, section);
+}
+
+export function profilerResultRenderer(section) {
+    if (section.type != "profiler-result") return null;
+
+    let holder = document.createElement("article");
+    holder.classList.add("profiler-result");
+
+    if (!section.date) section.date = section.dateComplete || section.reminderDate || section.dueDate;
+
+    holder.insertAdjacentHTML("beforeend", `<h4>Your personal support concerns on ${new Date(section.date).toDateString()}</h4>`);
+    if (section.result == "postponed") {
+        // handle how to show a postponed profiler during general rendering
+        holder.insertAdjacentHTML("beforeend", `
+        <div>
+            <label for="take-profiler">You didn't have time to complete the questions last time we asked. If you want to do it now please click this button:</label>
+            <button type="button" id="take-profiler" class="btn btn-primary">Answer Questions</button>
+        </div>`);
+        holder.querySelector("#take-profiler").addEventListener("click", e => {
+            section.type="profiler";
+            this.render(section);
+        })
+    } else if (section.result == "refused") {
+        // handle refusal to complete the profiler
+        holder.insertAdjacentHTML("beforeend", `
+        <div>
+            <p>You did not answer the questions on this occasion because ${{"no-concern": "you did not have any concerns", "no-time": "you did not have time", "no-already": "your questions had already been answered"}[section.refuseReason]}.</p>
+        </div>`)
+    } else if (section.result == "complete") {
+        if (section.concernAreas == "none") {
+            // no concern result
+            holder.insertAdjacentHTML("beforeend", `<div><p>You were getting on fine with your hormone therapy when you answered the questions.</p></div>`)
+        } else {
+            // render concern responses (section.concernDetails : this is an accordion content section)
+            holder.insertAdjacentHTML("beforeend", `
+            <div>
+                <p>Based on your responses, we selected a series of topics which were tailored to your concerns. You can read these below. We hope these will be helpful for you.</p>
+            </div>`)
+
+            this.render(section.concernDetails).then(node => holder.appendChild(node));
+        }
+    } else {
+        return null;
+    }
+
+    return holder;
+}
+
+export async function profilerLauncherRenderer(section) {
+    if (section.type != "profiler-launcher") return null;
+
+    if (!section.profiler) {
+        let latest = await fetch("/myapp/profiler/latest").then(response => response.json());
+        if (latest.result && ["complete", "refused"].includes(latest.result)) {
+            section.profiler = { dueDate: this.calendarDate(new Date()) }
+        } else {
+            section.profiler = latest;
+        }
+    }
+
+    section.profiler.type = "profiler";
+
+    let node = await this.render({
+        type: "described-menu",
+        content: [
+            {
+                type: "described-menu-item",
+                title: "<i class='bi bi-box-arrow-up-right'>&#8203;</i>",
+                link: "",
+                description: {
+                    type: "paragraph",
+                    text: "To answer the questions again and get support personalised for your concerns, click this button:"
+                }
+            }
+        ]
+    });
+
+    node.addEventListener("click", e => {
+        e.preventDefault(); e.stopPropagation();
+
+        this.render(section.profiler);
+    });
+
+    return node;
+}
+
+export async function myPersonalSupportRenderer(section) {
+    if (section.type != "my-personal-support") return null;
+
+    let profilers = await fetch("/myapp/profiler/responses").then(response => response.json()).then(p => p.profilers);
+
+    if (profilers.length == 0) return null;
+
+    profilers.sort((a, b) => a.dateComplete == b.dateComplete? 0: a.dateComplete > b.dateComplete? -1: 1);
+
+    let latest = profilers.shift();
+
+    let holder = document.createElement("section");
+    holder.classList.add("prf-latest");
+    //holder.insertAdjacentHTML("beforeend", "<h3>Your Current Suggestions</h3>");
+
+    let message, renderDetails = false;
+    if (latest.result == "postponed") {
+        message = "You didn't have time to complete the questions last time we asked; if you want to do it now you can click the button below."
+    } else if (latest.result == "refused") {
+        message = `You did not answer the questions last time we asked, because ${{"no-concerns": "you did not have any concerns", "no-time": "you did not have time", "no-already": "your questions had already been answered"}[latest.refuseReason]}. If you would like to answer them now please click the button below.`;
+    } else if (latest.result == "complete") {
+        if (latest.concernAreas == "none") {
+            message = "Great to hear that you are getting on with your hormone therapy. We will check in with you again in the next few months.\n\nYou can also access these questions at any time from the My Personal Support page.\n\nIn the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within HT &amp; Me. Alternatively you can speak to your breast cancer team or your GP."
+        } else {
+            message = "Based on your responses, we’ve selected a series of topics which are tailored to your concerns.\n\nYou can read these now or save them and come back to them later. We hope these will be helpful for you.\n\nExpand any of the sections below to find out more.";
+            renderDetails = true;
+        }
+    }
+
+
+    await this.render({ type: "markdown", encoding: "raw", text: message}).then(node => holder.appendChild(node));
+    
+    if (renderDetails) {
+        await this.render(latest.concernDetails).then(node => holder.appendChild(node));
+        await this.render({ type: "markdown", encoding: "raw", text: "We’ll check in again in a few months. In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within the Me &amp; HT website. Alternatively you can speak to your breast cancer team or your GP.\n\n"}).then(node => holder.appendChild(node))
+    }
+    
+    let newdets = { type: "profiler-launcher" };
+    if (latest.result == "postponed") newdets.profiler = latest;
+
+    await this.render(newdets).then(node => { holder.appendChild(node); });
+
+    await this.render({ type: "markdown", encoding: "raw", text: "### Your Previous Responses and Suggestions\n\nBelow you will find a list of the results when you have answered these questions before, arranged by date with the most recent first."}).then(node => holder.appendChild(node));
+
+    await this.render({
+        type: "accordion",
+        content: profilers.map(p => { // fix-up 24/11/2021: async callback for .map was creating array of promises, *NOT* content objects. Logic here does not require async execution anyway!
+            p.type = "profiler-result";
+            if (!p.date) p.date = p.dateComplete || p.reminderDate || p.dueDate;
+            
+            return {
+                type: "accordion-item",
+                header: new Date(p.date).toDateString(),
+                content: [
+                    p
+                ]
+            }
+        })
+    }).then(node => holder.appendChild(node));
+
+
+    return holder;
 }

@@ -250,9 +250,9 @@
             customElements.define('content-editor', editors.ContentEditor);
             customElements.define('edit-inserter', editors.EditorInserter);
             
-            document.querySelector("#page-content").registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.AccordionEditor, editors.BlockquoteEditor, editors.MenuEditor, editors.AlertEditor, editors.GoalSetter, editors.PopupEditor, editors.FillInBoxEditor, editors.DescribedMenuEditor)
+            document.querySelector("#page-content").registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.AccordionEditor, editors.BlockquoteEditor, editors.MenuEditor, editors.AlertEditor, editors.GoalSetter, editors.PopupEditor, editors.PopupTriggerEditor, editors.FillInBoxEditor, editors.DescribedMenuEditor, editors.ThoughtsBox)
             
-            editors.AccordionEditor.registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.BlockquoteEditor, editors.FillInBoxEditor);
+            editors.AccordionEditor.registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.BlockquoteEditor, editors.FillInBoxEditor, editors.PopupEditor, editors.PopupTriggerEditor);
             editors.AlertEditor.registerEditors(editors.MarkdownEditor, editors.BlockquoteEditor);
             editors.PopupEditor.registerEditors(editors.AccordionEditor, editors.MarkdownEditor, editors.BlockquoteEditor, editors.AlertEditor, editors.FillInBoxEditor);
             
@@ -374,28 +374,56 @@
                 let preview = document.querySelector("#add-resource-preview");
                 let type = document.querySelector("#add-resource input[name='media-type']")
                 let name = document.querySelector("#add-resource input[name='name']")
+                let blob = document.querySelector("#add-resource input[name='blob']")
+                let useblob = document.querySelector("#add-resource input[name='useblob']")
+                useblob.value = "false";
+
                 let f = this.files[0]
                 name.value = f.name.substr(0, f.name.lastIndexOf("."))
                 let ext = f.name.substr(f.name.lastIndexOf("."))
+                type.value = f.type;
 
                 switch (ext) {
                     case ".svg":
-                        type.value = "image/svg+xml";
+                        if (!type.value) type.value = "image/svg+xml";
                         f.text().then(t => {
-                            preview.setAttribute("src", `data:image/svg+xml;base64,${btoa(t)}`)
+                            blob.value = btoa(t);
+                            if (f.size < 1024 * 512) preview.setAttribute("data", `data:${type.value};base64,${blob.value}`)
                         })
                         break;
                     case ".jpg":
                     case ".jpeg":
                     case ".png":
                     case ".gif":
-                        type.value=`image/${ext.substr(1)}`;
+                        if (!type.value) type.value=`image/${ext.substr(1)}`;
                         f.arrayBuffer().then(b => {
-                            let bs = Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte))
-                            preview.setAttribute("src", `data:${type.value};base64,${btoa(bs.join(""))}`)
+                            blob.value = btoa(Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte)).join(""))
+                            if (f.size < 1024 * 512) preview.setAttribute("data", `data:${type.value};base64,${blob.value}`)
                         })
+                        break;
+                    case ".mp4":
+                    case ".ogg":
+                        type.value=`video/${ext.substr(1)}`;
+                        f.arrayBuffer().then(b => {
+                            blob.value = btoa(Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte)).join(""))
+                            if (f.size < 1024 * 512) preview.setAttribute("data", `data:${type.value};base64,${blob.value}`)
+                        })
+                        break;
+                    case ".mov":
+                    case ".qt":
+                        type.value="video/quicktime";
+                        f.arrayBuffer().then(b => {
+                            blob.value = btoa(Array.from(new Uint8Array(b)).map(byte => String.fromCharCode(byte)).join(""))
+                            if (f.size < 1024 * 512) preview.setAttribute("data", `data:${type.value};base64,${blob.value}`)
+                        })
+                        break;
                 }
 
+                if (f.size >= (1024*512)) {
+                    useblob.value = "true";
+                    preview.setAttribute("data", "data:text/html;base64,PGgxPlByZXZpZXcgTm90IEF2YWlsYWJsZTwvaDE+PGgzPkZpbGUgdG9vIGxhcmdlPC9oMz4=")
+                }
+                
                 preview.classList.add("show");
             })
 
@@ -405,7 +433,14 @@
                 let resource = {
                     name: this.elements['name'].value,
                     description: this.elements['description'].value,
-                    source: this.querySelector("#add-resource-preview").src
+                    'content-type': this.elements['media-type'].value,
+                    filename: this.elements['file'].files[0].name
+                }
+
+                if (this.elements['useblob'].value == "true") {
+                    resource.blob = this.elements['blob'].value;
+                } else {
+                    resource.source = this.querySelector("#add-resource-preview").data;
                 }
 
                 fetch("/admin/resources/", {
@@ -448,13 +483,14 @@
                     <summary>Add a new resource</summary>
                     <form id="add-resource">
                         <fieldset>
+                            <input type="hidden" name="blob" /><input type="hidden" name="useblob" value="false" />
                             <input type="file" name="file"><br />
-                            <label>Name:</label><input type="text" name="name"><br />
-                            <label>File type:</label><input type="text" name="media-type"><br />
-                            <label>Description:</label><input type="text" name="description" length="80"><br />
+                            <label>Name:</label><input type="text" name="name" minlength="3" maxlength="50" required><br />
+                            <label>File type:</label><input type="text" name="media-type" minlength="3" maxlength="50" required><br />
+                            <label>Description:</label><input type="text" name="description" length="80" minlength="3" maxlength="150" required><br />
                             <input type="submit" value="Add">
                         </fieldset>
-                        <img id="add-resource-preview" />
+                        <object id="add-resource-preview"></object>
                     </form>
                 </details>
             </div>
@@ -468,15 +504,15 @@
                 <p><label title="A short string (containing only letters and '-') that is used to build the link to the page.">Slug:</label><input type="text" name="page-slug" disabled></p>
                 </fieldset>
                 <fieldset id="fs-seq-details"><legend>Page Sequencing:</legend>
-                    <p><label title="The path the the previous page">Previous:</label><input type="text" name="page-prev"></p>
-                    <p><label title="The path to the next page in sequence">Next:</label><input type="text" name="page-next"></p>
+                    <p><label title="The path to the previous page">Previous:</label><input type="text" name="page-prev" minlength="3" maxlength="50" required></p>
+                    <p><label title="The path to the next page in sequence">Next:</label><input type="text" name="page-next" minlength="3" maxlength="50" required></p>
                 </fieldset>
             </div>
             <details id="page-content-details"><summary>Content</summary><content-editor id="page-content"></content-editor></details>
             <details><summary>Sub-pages</summary>
                 <p id="add-details">
-                    <label>Page title:</label><input type="text" name="add-title"><br />
-                    <label id="add-slug-label">Slug: <span class="path"></span></label><input type="text" name="add-slug"><br />
+                    <label>Page title:</label><input type="text" name="add-title" minlength="3" maxlength="50" required><br />
+                    <label id="add-slug-label">Slug: <span class="path"></span></label><input type="text" name="add-slug" minlength="3" maxlength="50" required><br />
                     <button id="add-page">Add page</button></p><p id="page-subpages"></p></details>
         </div>
         <div id="page-preview">
@@ -608,10 +644,12 @@
                     while(holder.firstElementChild.nextSibling) {
                         holder.removeChild(holder.firstElementChild.nextSibling);
                     }
+                    let blob = `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxIDEiPjxyZWN0IGZpbGw9ImJsYWNrIiB4PSIwIiB5PSIwIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIj48L3JlY3Q+PHRleHQgeD0iMCIgeT0iMC4zNSIgZmlsbD0id2hpdGUiIGZvbnQtc2l6ZT0iMC4yIj5ObyBQcmV2aWV3PC90ZXh0Pjx0ZXh0IHg9IjAiIHk9IjAuNiIgZmlsbD0id2hpdGUiIGZvbnQtc2l6ZT0iMC4yIj5BdmFpbGFibGU8L3RleHQ+PC9zdmc+`;
+
                     Object.keys(data).forEach(k => {
                         // create a resource listing for each key
                         holder.insertAdjacentHTML("beforeend", 
-                            `<div class="resource"><span>${k}</span><img src="${data[k].source}" class="thumbnail" alt="${data[k].description}" title="${data[k].description}" /></div>`)
+                            `<div class="resource"><span>${k}</span><img src="${data[k].source == "none"? blob: data[k].source}" class="thumbnail" alt="${data[k].description}" title="${data[k].description}" /></div>`)
                     })
                 })
             }

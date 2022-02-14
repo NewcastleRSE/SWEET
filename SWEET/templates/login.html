@@ -10,22 +10,39 @@
 
     <!-- App CSS -->
     <link href="{{url_for('static', filename='css/template.css')}}" rel="stylesheet">
-    <title>SWEET</title>
+    <link href="{{url_for('static', filename='css/login.css')}}" rel="stylesheet">
+    <title>HT&amp;Me</title>
   </head>
   <body>
     <div class="row">
       <div class="sidenav col-sm-3 d-none d-sm-block">
         <div class="sidebar-text d-flex flex-column min-vh-100 justify-content-center">
            <h1>Login</h1>
-           <p>Use this page to login or <a href="/register">register here</a> to request access.</p>
+           <p>Use this page to login to HT&amp;Me or register for access.</p>
         </div>
      </div>
      <div class="col-sm-9 col-xs-12">
-        <div class="col-md-6 offset-md-1 col-lg-4 offset-lg-1 d-flex flex-column min-vh-100 justify-content-center align-items-left">
+        <div class="col-10 offset-1 min-vh-100 justify-content-center align-items-left">
            <div class="login-form m-4">
-             <img src="{{ url_for('static', filename='images/logo-1.png')}}" class="img-fluid" alt="logo" />
-              <form action="/auth/login" method="POST">
-                 <div class="mb-3">
+             <!-- img src="{{ url_for('static', filename='images/logo-1.png')}}" class="img-fluid" alt="logo" /-->
+              <h1>HT &amp; Me</h1>
+              {% with messages = get_flashed_messages() %}
+              {% if messages %}
+              <div class="alert alert-danger mt-4" role="alert">
+                <h4 class="alert-heading">Login/Registration Error</h4>
+                <p>There was a problem with your details.</p>
+                <hr>
+                <ul class="flashes">
+                {% for message in messages %}
+                  <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+              </div>
+              {% endif %}
+              {% endwith %}
+              <form class="shadow" action="{{url_for('auth.login')}}" method="POST">
+                <h4>Log in</h4>
+                <div class="mb-3">
                     <label>Email Address</label>
                     <input type="text" class="form-control" placeholder="Email" name="userID">
                  </div>
@@ -33,29 +50,106 @@
                     <label>Password</label>
                     <input type="password" class="form-control" placeholder="Password" name="password">
                  </div>
-                 {% if save_fragment %}<input type="hidden" name="fragment" /><script>document.querySelector("input[name='fragment']").value = location.hash.substr(1)</script>{% endif %}
                  <div class="d-grid gap-2 mt-4">
                   <button class="btn btn-primary" type="submit">Login</button>
                 </div>
+                <div>Forgotten your password? <a id="reset-pass-link" href="#">Click here to reset.</a></div>
               </form>
-          {% with messages = get_flashed_messages() %}
-            {% if messages %}
-              <div class="alert alert-danger mt-4" role="alert">
-                <h4 class="alert-heading">Login Error</h4>
-                <p>There was a problem logging you in.</p>
-                <hr>
-                <ul class=flashes>
-                  {% for message in messages %}
-                    <li>{{ message }}</li>
-                  {% endfor %}
-                  </ul>
-              </div>
-            {% endif %}
-          {% endwith %}
+              <form class="shadow" action="{{url_for('auth.register')}}" method="POST">
+                <h4>Register</h4>
+                <div class="mb-3">
+                  <label>Registration Code</label>
+                  <input type="text" class="form-control" placeholder=" provided by the SWEET team" title="The registration code you were given by the SWEET team" name="regCode" required>
+                </div>
+                <div class="mb-3">
+                  <label>Full Name</label>
+                  <input type="text" class="form-control" placeholder="Full Name" name="fullName" minlength="2" maxlength="100" required>
+                </div>
+                <div class="mb-3">
+                   <label>Email Address</label>
+                   <input type="email" class="form-control" placeholder="Email" name="email" required>
+                </div>
+                <div class="mb-3">
+                  <label>Mobile Phone Number</label>
+                  <input type="tel" class="form-control" placeholder="Mobile Phone" name="mobile" pattern="07[0-9]{9}" title="Please use numbers only; a mobile phone number should be 11 numbers long and start with '07'">
+               </div>
+               <div class="mb-3">
+                   <label>Password</label>
+                   <input type="password" class="form-control" placeholder="Password" name="password" minlength="5" title="Password must contain at least one number and one uppercase and lowercase letter" required>
+                </div>
+                <div class="mb-3">
+                   <label>Confirm Password</label>
+                   <input type="password" class="form-control" placeholder="Password" name="password_conf" >
+                </div>
+                <div class="d-grid gap-2 mt-4">
+                 <button class="btn btn-primary" type="submit">Register</button>
+               </div>
+                <div id="error-message"></div>
+             </form>
            </div>
         </div>
      </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+      document.querySelector("form[action*='register']").addEventListener("submit", e => {
+        // to perform registration code checking, we need to prevent default submission:
+        // form will be programatically submitted if all validation checks pass.
+
+        // should probably show some kind of 'please wait...' inidcator while this process is going on
+
+        e.preventDefault();
+        let message = document.getElementById("error-message");
+
+        // password confirmation matches?
+        let pass = e.target.elements['password'].value;
+        let passcnf = e.target.elements['password_conf'].value;
+        if (pass != passcnf) {
+            message.innerHTML="Password and confirmation do not match, please try again.";
+            return;
+        }
+
+        // other scripted validation checks (e.g. email not in use in the app?)
+
+        // confirm registration code not in use:
+        fetch(`{{url_for("auth.checkRegCode")}}?code=${e.target.elements['regCode'].value}`)
+        .then(response => {
+          if (response.status == 200) {
+            // code was found OK; we can continue to submit the form.
+            e.target.submit();
+            return;
+          } else if (response.status == 404) {
+            message.innerHTML = "This resgitration code is invalid or has already been used; please contact your study adminstrator to obtain another one.";
+            return;
+          } else {
+            message.innerHTML = "An error occurred while checking your registration code; please contact the service adminstrator for assistance.";
+            return;
+          }
+        })
+      })
+    </script>
+    <script type="module">
+      import { createModal } from '{{url_for("static", filename="scripts/extensions/modal.js")}}'
+
+      document.querySelector("#reset-pass-link").addEventListener("click", e => {
+        e.preventDefault(); e.stopPropagation();
+        const m = createModal(true);
+
+        m.body.innerHTML = `    <h4>Reset HT &amp; Me Password</h4>
+        <form><label>Please enter your email address:</label><input type="text" name="email"><input type="submit" value="Submit"></form>`
+
+        m.body.querySelector("form").addEventListener("submit", e => {
+          e.preventDefault();
+          fetch(`/auth/resetpassword?email=${e.target.elements['email'].value}`);
+          m.body.innerHTML = "<h4>Reset HT &amp; Me Password</h4><p>We have received your request to reset your password. We will send a link by email; click on the link to open the reset password page. Please note that the link will only be valid for 24 hours.</p>"
+          m.footer.innerHTML = "<button class='btn btn-primary'>Close</button>"
+          m.footer.querySelector("button").addEventListener("click", () => {
+            m.hide();
+          })
+        })
+
+        m.show()
+      })
+    </script>
   </body>
 </html>

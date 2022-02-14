@@ -4,6 +4,7 @@ import { homepageMenuRenderer } from '../renderers/home_page.js'
 import { profilerModalRenderer } from '../renderers/profiler.js'
 import { sideEffectModalRenderer, sideEffectFormRenderer } from '../renderers/side_effects.js'
 import { diaryCalendarRenderer } from "../renderers/diary-page.js";
+import { thoughtsPageRenderer } from "../renderers/thoughts.js";
 import { createModal } from '../extensions/modal.js'
 import { createCalendar } from '../extensions/calendar.js'
 
@@ -27,6 +28,7 @@ export function SWEETPreviewer() {
                 markdown: r.markdownRenderer,
                 external: r.embedRenderer,
                 popup: r.popupRenderer,
+                "popup-trigger": r.popupTriggerRenderer,
                 "block-quote": r.blockquoteRenderer,
                 standout: r.alertRenderer,
                 goalsetter: r.goalRenderer,
@@ -40,7 +42,9 @@ export function SWEETPreviewer() {
                 "diary-calendar": diaryCalendarRenderer,
                 fillin: r.fillInBoxRenderer,
                 "described-menu": r.describedMenuRenderer,
-                "described-menu-item": r.describedMenuItemRenderer
+                "described-menu-item": r.describedMenuItemRenderer,
+                thoughts: r.thoughtsRenderer,
+                "thoughts-page": thoughtsPageRenderer
             },
             titleHolder: "#page-title",
             contentHolder: "#main-container",

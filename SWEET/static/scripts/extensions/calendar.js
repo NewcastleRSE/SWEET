@@ -24,10 +24,12 @@ function populateDays(body, basedate=new Date()) {
     body.innerHTML = "";
     for (let w=0; w<rows; w++) {
         let row = body.appendChild(document.createElement("tr"));
+        row.setAttribute("role", "row");
         for (let d of [0,1,2,3,4,5,6]) {
             let days = 7*w+d;
             let thisdate = new Date(day1.getFullYear(), day1.getMonth(), day1.getDate() + days);
             let cell = row.appendChild(document.createElement("td"));
+            cell.setAttribute("role", "gridcell");
             cell.setAttribute("data-thisdate", calendarutils.attributise(thisdate));
         }
     }
@@ -38,8 +40,10 @@ function populateMonths(body) {
     let months = [["Jan", "Feb", "Mar", "Apr"], ["May", "Jun", "Jul", "Aug"], ["Sep", "Oct", "Nov", "Dec"]]
     for (let block of months) {
         let row = body.appendChild(document.createElement("tr"));
+        row.setAttribute("role", "row")
         for (let month of block) {
             let cell = row.appendChild(document.createElement("td"));
+            cell.setAttribute("role", "gridcell");
             cell.setAttribute("data-thismonth", month);
             cell.textContent = month;
         }
@@ -49,15 +53,28 @@ function populateMonths(body) {
 export function createCalendar(selectedDate=new Date()) {
     let cal = document.createElement("table");
     cal.classList.add("calendar");
+    cal.setAttribute("role", "grid")
+    cal.setAttribute("aria-labelledby", "calendar-caption")
 
     let caption = cal.appendChild(document.createElement("caption"));
-    caption.innerHTML = `<section><span class="prev">&lt;</span> <span id="cal-caption" data-basedate="${calendarutils.attributise(selectedDate)}">${calendarutils.monthnames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}</span><span class="next">&gt;</span></section>`;
+    caption.innerHTML = `<section><span class="prev">&lt;</span> <span id="cal-caption" data-basemonth="${calendarutils.attributise(selectedDate).substr(0,7)}">${calendarutils.monthnames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}</span><span class="next">&gt;</span></section>`;
+    caption.setAttribute("id", "calendar-caption")
+
     let tbody = cal.appendChild(document.createElement("tbody"));
+    tbody.setAttribute("role", "rowgroup");
+
     tbody.dataset.mode = "select";
+
     populateDays(tbody, selectedDate);
-    cal.querySelector(`[data-thisdate='${calendarutils.attributise(selectedDate)}']`).classList.add("selected");
     
-    // prevent calendar from receiving focus:
+    cal.querySelector(`[data-thisdate='${calendarutils.attributise(selectedDate)}']`).classList.add("selected");
+    cal.querySelector(`[data-thisdate='${calendarutils.attributise(selectedDate)}']`).focus();
+    
+    // prevent calendar from receiving pointer focus 
+    
+    // I don't think this will break accessibility (should still be kb navigable):
+    // I think this was an issue when I used the calendar as part of an input widget
+    // this may not be required in all situations; will assess later [JM-19.11.2021]
     cal.addEventListener("mousedown", e => e.preventDefault());
 
     cal.addEventListener("click", e => {
@@ -83,12 +100,13 @@ export function createCalendar(selectedDate=new Date()) {
                 // no id, no prev/next class, someone's been messing with the code!
                 if (dir == 0) throw `Unknown span in calendar caption: ${src}`;
 
-                let basedate = new Date(cal.querySelector("#cal-caption").dataset.basedate + "T12:00:00Z");
+                // base calendar date off 14th (mid-month) so we don't get unexpected behaviour at end of month/with Feb
+                let basedate = new Date(cal.querySelector("#cal-caption").dataset.basemonth + "-14T12:00:00Z");
                 basedate.setMonth(basedate.getMonth() + dir);
                 populateDays(cal.querySelector("tbody"), basedate);
 
                 cal.querySelector("#cal-caption").textContent = `${calendarutils.monthnames[basedate.getMonth()]} ${basedate.getFullYear()}`;
-                cal.querySelector("#cal-caption").dataset.basedate = calendarutils.attributise(basedate);
+                cal.querySelector("#cal-caption").dataset.basemonth = calendarutils.attributise(basedate).substr(0,7);
 
                 cal.dispatchEvent(new CustomEvent("redraw"));
             }

@@ -57,10 +57,14 @@ def ensureDataSources():
     usercnt = getContainer(secrets.usersource)
     if secrets.usertable not in [blob.name for blob in usercnt.list_blobs()]:
         usercnt.upload_blob(secrets.usertable, json.dumps({}))
+    if secrets.userlist not in [blob.name for blob in usercnt.list_blobs()]:
+        usercnt.upload_blob(secrets.userlist, json.dumps({}))
+    if secrets.userlog not in [blob.name for blob in usercnt.list_blobs()]:
+        usercnt.upload_blob(secrets.userlog, json.dumps({}))
     if secrets.usergoals not in [blob.name for blob in usercnt.list_blobs()]:
         usercnt.upload_blob(secrets.usergoals, json.dumps({}))
     if secrets.userdiary not in [blob.name for blob in usercnt.list_blobs()]:
         usercnt.upload_blob(secrets.userdiary, json.dumps({}))
 
     if getUser(secrets.admin_user) is None:
-        registerUser(secrets.admin_user, secrets.admin_password, secrets.admin_fullName, secrets.admin_role)
+        registerUser(secrets.admin_user, secrets.admin_password, secrets.admin_role, email=secrets.admin_email, fullName=secrets.admin_fullName)

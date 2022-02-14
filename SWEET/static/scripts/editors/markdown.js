@@ -51,16 +51,25 @@ export class MarkdownEditor extends HTMLElement {
     get jsonvalue() {
         return {
             type: "markdown",
-            encoding: "lz-string:UTF16",
-            text: LZString.compressToUTF16(this.markdown)
+            encoding: "lz-string:B64",
+            text: LZString.compressToBase64(this.markdown)
         }
     }
 
     load(content) {
         if (content.type != this.constructor.contentType) return;
-        if (content.encoding != "lz-string:UTF16") { console.log(content.encoding); return; }
 
-        this.markdown = LZString.decompressFromUTF16(content.text);
+        if (content.encoding == "lz-string:UTF16") { 
+            this.markdown = LZString.decompressFromUTF16(content.text);
+        } else if (content.encoding == "lz-string:B64") {
+            this.markdown = LZString.decompressFromBase64(content.text);
+        } else if (content.encoding == "raw") {
+            this.markdown = content.text;
+        } else {
+            this.markdown = `Load failed for unknown content encoding 'content.encoding'`;
+            console.log(content.encoding);
+        }
+
     }
 
     appendMarkdown(newMD, para=true) {
@@ -75,13 +84,25 @@ export function markdownRenderer(section) {
     let holder = document.createElement("section");
     holder.classList.add("markdown")
     if (section.encoding == "lz-string:UTF16") {
-        holder.innerHTML = marked(LZString.decompressFromUTF16(section.text));
+        holder.innerHTML = marked.parse(LZString.decompressFromUTF16(section.text));
+    } else if (section.encoding == "lz-string:B64") {
+        holder.innerHTML = marked.parse(LZString.decompressFromBase64(section.text));
     } else if (section.encoding == "raw") {
-        holder.innerHTML = marked(section.text);
+        holder.innerHTML = marked.parse(section.text);
     } else {
         holder.innerHTML = `<p class="error">Unknown markdown section encoding: ${section.encoding}</p>`;
     }
     
+    holder.querySelectorAll("a[href^='http']").forEach(a => a.setAttribute("target", "_blank"));
+    
+    holder.querySelectorAll("a[href^='%']").forEach(a => {
+        a.addEventListener("click", e => {
+            e.preventDefault();
+            let popup = a.getAttribute("href").substr(1);
+            bootstrap.Modal.getInstance(document.querySelector(`#popup-${popup}`)).show();
+        })
+    });
+
     holder.querySelectorAll("img").forEach(img => {
         if (img.getAttribute("src").startsWith("http")) return; //ignore absolute image paths
 
@@ -89,10 +110,29 @@ export function markdownRenderer(section) {
 
         fetch(`/app/resources/${name}`).then(response => response.json())
         .then(resource => {
-            img.setAttribute("src", resource.source);
-            img.setAttribute("alt", resource.description);
-            if (position) img.classList.add(position);
+            if (resource['content-type'] === undefined || resource['content-type'].startsWith("image")) {
+                if (resource.source == "useblob") {
+                    img.setAttribute("src", `/app/resources/files/${name}`);
+                } else {
+                    img.setAttribute("src", resource.source);
+                }
+                img.setAttribute("alt", resource.description);
+                if (position) img.classList.add(...position.split(";"));
+            } else if (resource['content-type'].startsWith("video")) {
+                let src = resource.source == "useblob"? `/app/resources/files/${name}`: resource.source;
+                img.insertAdjacentHTML("beforebegin", `<video controls src="${src}"${position? ` class="${position.replace(';',' ')}"`:""}><p>${resource.description}</p></video>`);
+                img.remove();
+                // maybe do some work with position.
+                // maybe do some work with popups.
+            }
         })
+    })
+
+    holder.querySelectorAll("code").forEach(code => {
+        let [item, prop] = code.textContent.split(".");
+        console.log(`"${item}"`)
+        code.insertAdjacentHTML("beforebegin", this.store.get(item)[prop]);
+        code.remove();
     })
 
     return holder;

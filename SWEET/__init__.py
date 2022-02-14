@@ -1,12 +1,28 @@
+import sentry_sdk
 from flask import Flask, render_template
+from werkzeug.user_agent import UserAgent
+from sentry_sdk.integrations.flask import FlaskIntegration
 from . import data, secrets
 from .auth import login_required
+from .automation import scheduling
 
 def create_app():
+
+    sentry_sdk.init(
+        dsn="https://44fb1b462eab4104bc0914e592660046@o1080315.ingest.sentry.io/6099137",
+        integrations=[FlaskIntegration()],
+
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production.
+        traces_sample_rate=1.0
+    )
+
     app = Flask(__name__)
     app.secret_key = secrets.key
 
     data.ensureDataSources()
+    scheduling.start()
 
     # import and register app blueprints
     from . import auth, myapp, content, schemas, admin
@@ -20,6 +36,11 @@ def create_app():
     @login_required
     def index():
         return render_template("index.html")
+
+    @app.route("/welcome")
+    @login_required
+    def welcome():
+        return render_template("welcome.html")    
 
     return app
 

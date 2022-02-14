@@ -51,10 +51,23 @@ export class PopupEditor extends HTMLElement {
         this.$.title.setAttribute("name", "title");
         fields.insertAdjacentHTML("beforeend", "<br />");
 
-        fields.insertAdjacentHTML("beforeend", "<label>Link text</label>");
-        this.$.byline = fields.appendChild(document.createElement("input"));
-        this.$.byline.setAttribute("type", "text");
-        this.$.byline.setAttribute("name", "byline");
+        fields.insertAdjacentHTML("beforeend", "<label>Popup Name</label>");
+        this.$.name = fields.appendChild(document.createElement("input"));
+        this.$.name.setAttribute("type", "text");
+        this.$.name.setAttribute("name", "name");
+        this.$.name.setAttribute("pattern", "[a-z-]+");
+        fields.insertAdjacentHTML("beforeend", "<br />");
+
+        fields.insertAdjacentHTML("beforeend", "<label>Popup Size</label>");
+        this.$.size = fields.appendChild(document.createElement("select"));
+        this.$.size.setAttribute("name", "size");
+        this.$.size.innerHTML = `
+            <option value="sm">Small</option">
+            <option value="">Medium</option>
+            <option value="lg">Large</option>
+            <option value="xl">Extra Large</option>
+            <option value="fs">Full Screen</value>
+        `
         fields.insertAdjacentHTML("beforeend", "<br />");
 
         fields.insertAdjacentHTML("beforeend", "<label>Content:</label>");
@@ -66,8 +79,9 @@ export class PopupEditor extends HTMLElement {
     get jsonvalue() {
         return {
             type: this.constructor.contentType,
+            name: this.$.name.value,
             title: this.$.title.value,
-            byline: this.$.byline.value,
+            size: this.$.size.value,
             content: this.$.content.jsonvalue
         }
     }
@@ -75,32 +89,90 @@ export class PopupEditor extends HTMLElement {
     load(content) {
         if (content.type != this.constructor.contentType) return;
 
+        this.$.name.value = content.name;
         this.$.title.value = content.value;
-        this.$.byline.value = content.byline;
+        this.$.size.value = content.size;
         this.$.content.load(content.content);
     }
 
-    get isContainer() { return false; }
+    get isContainer() { return true; }
 
 }
 
 export function popupRenderer(section) {
 
-    let modal = this.createModal(true);
-    modal.size = "fs";
+    let modal = this.createModal();
+    modal.size = section.size;
+    modal.id = `popup-${section.name}`
 
-    modal.title.textContent = section.title;
+    modal.title.textContent = section.title? section.title: "";
     section.content.forEach(s => this.render(s).then(node => modal.body.appendChild(node)));
     modal.footer.innerHTML = "<button type='button' class='btn btn-primary'>Close</button>";
-    modal.footer.querySelector("button").addEventListener("click", () => modal.hide(true));
-    
+    modal.footer.querySelector("button").addEventListener("click", () => modal.hide());
+
+    return modal.__node;
+}
+
+export class PopupTriggerEditor extends HTMLElement {
+    static get contentType() { return "popup-trigger"; }
+    static get tagName() { return "popup-trigger-editor"; }
+    static get description() { return "Pop-up Trigger - A stand-alone link to open a pop-up"; }
+
+    constructor() {
+        super();
+        this.$ = {}
+
+        const root = this.$.root = this.attachShadow({mode: "open"});
+        root.innerHTML = `
+        <style>
+            :host {
+                display: block;
+                margin-left: 1em;
+                background-color: #ebe0ff;
+            }
+            label { display: inline-block; width: 7.5em; text-align: right; vertical-align: top; }
+            label[title] { text-decoration: underline dotted; }
+
+            textarea, input { width: 50%; }
+            textarea { height: 5em; }
+        </style>
+        <fieldset>
+            <label>Trigger Text:</label><input type="text" name="linktext" required><br />
+            <label>Popup Name:</label><input type="text" name="name" pattern="[a-z-]+" required><br />
+        </fieldset>
+        `;
+
+        this.$.linktext = root.querySelector("[name='linktext']");
+        this.$.name = root.querySelector("[name='name']")
+    }
+
+    get jsonvalue() {
+        return {
+            type: this.constructor.contentType,
+            linktext: this.$.linktext,
+            name: this.$.name.value
+        }
+    }
+
+    load(content) {
+        if (content.type != this.constructor.contentType) return;
+
+        this.$.linktext.value = content.linktext;
+        this.$.name.value = content.name;
+    }
+
+    get isContainer() { return false; }
+}
+
+
+export function popupTriggerRenderer(section) {
     let trigger = document.createElement("a");
     trigger.classList.add("popup-trigger");
-    trigger.textContent = section.byline;
+    trigger.textContent = section.linktext;
 
     trigger.addEventListener("click", function(e) {
         e.preventDefault(); e.stopPropagation();
-        modal.show();
+        bootstrap.Modal.getInstance(document.querySelector(`#popup-${section.name}`)).show()
     })
 
     return trigger;

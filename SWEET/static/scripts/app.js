@@ -4,7 +4,7 @@ export function createApp(options={}) {
         renderers: {
             container: function(section) {
                 const holder = document.createElement("section");
-                section.content.forEach(item => this.render(item).then(node => holder.appendChild(node)));
+                this.render(section.content).then(nodes => holder.append(...nodes));
                 return holder;
             },
             header: function(section) {
@@ -77,21 +77,64 @@ export function createApp(options={}) {
     // merge defaults and incoming options into single settings object
     let settings = Object.assign({}, defaults, options);
 
+    if (!settings.store) settings.store = {};
+
+    settings.listeners = {
+        "preload": [],
+        "prerender": [],
+        "postrender": []
+    }
+
+    function addEvent(name, fn) {
+        if (!(name in settings.listeners)) {
+            settings.listeners[name] = [];
+        }
+        
+        if (!settings.listeners[name].includes(fn)) settings.listeners[name].push(fn);
+        
+        return this;
+    }
+
+    function delEvent(name, fn) {
+        if (settings.listeners[name].includes(fn)) {
+            let list = settings.listeners[name];
+            let loc = list.indexOf(fn);
+            settings.listeners[name] = list.slice(0,loc).concat(list.slice(loc+1))
+        }
+    }
+
+    function dispatchEvent(name, ...args) {
+        settings.listeners[name].forEach(l => l.call(this, ...args))
+    }
+
     if (!(settings.contentHolder instanceof HTMLElement)) settings.contentHolder = document.querySelector(settings.contentHolder);
     if (!(settings.titleHolder instanceof HTMLElement)) settings.titleHolder = document.querySelector(settings.titleHolder);
     
     if (!document.querySelector("title")) document.head.appendChild(document.createElement("title"));
 
     function render(content) {
+        if (Array.isArray(content)) {
+            // if we are passed an array of content, we return an array of nodes which will be rendered in order correctly.
+            return Promise.allSettled(content.map(c => this.render(c))).then(promises => promises.map(p => p.value))
+        }
+
         let renderer = settings.renderers[content.type];
         let rendered = null;
 
-        if (renderer) { rendered = renderer.call(this, content); } 
+        if (renderer) { 
+            try {
+                rendered = renderer.call(this, content); 
+            } catch (e) {
+                console.log(e);
+                rendered = document.createElement("p");
+                rendered.innerHTML = `It was not possible to render this <code>${content.type}</code> block.`;
+            }
+        } 
         else if (content instanceof String) { rendered = document.createTextNode(` ${content} `); } 
         else if (content instanceof Object) { console.error("Attempt to render unrecognised content section:", content); }
         else { rendered = document.createTextNode(` ${content} `); }
 
-        if (renderer instanceof Promise) return rendered
+        if (rendered instanceof Promise) return rendered
         else return Promise.resolve(rendered);
     }
 
@@ -113,65 +156,27 @@ export function createApp(options={}) {
             settings.path = location.hash && location.hash.length > 1? location.hash: settings.defaultPath;
         }
 
-        settings.load(settings.path).then(page => {
+        dispatchEvent.call(this, "preload");
+
+        settings.load.call(this, settings.path).then(page => {
             settings.titleHolder.textContent = page.title;
             document.querySelector("title").textContent = page.title? page.title: settings.name;
 
-            // handle sequential navigation if set up
-            // i.e. template has buttons with data-rel attribute:
-            const relbuttons = Array.from(document.querySelectorAll("[data-rel]"))
-            let prevlink = document.head.querySelector("link[rel='prev']");
-            let nextlink = document.head.querySelector("link[rel='next']");
-
-            if (relbuttons.length) { 
-                if (page.prev) {
-                    // we are using sequence navigation & have a 'prev' link in the page info:
-                    if (!prevlink) {
-                        prevlink = document.head.appendChild(document.createElement("link"));
-                        prevlink.setAttribute("rel", "prev");
-                    }
-                    
-
-                    relbuttons.filter(b => b.dataset.rel == "prev").forEach(prev => {
-                        prev.setAttribute("href", page.prev);
-                        prev.classList.remove("hidden");
-                    })
-                    prevlink.setAttribute("href", page.prev);
-                } else {
-                    relbuttons.filter(b => b.dataset.rel == "prev").forEach(prev => {
-                        prev.classList.add("hidden");
-                        prev.removeAttribute("href");
-                    })
-                    
-                    if (prevlink) prevlink.remove();
-                }
-
-                if (page.next) {
-                    // we are using sequence navigation & have a 'next' link in the page info:
-                    if (!nextlink) {
-                        nextlink = document.head.appendChild(document.createElement("link"));
-                        nextlink.setAttribute("rel", "next");
-                    }
-                    relbuttons.filter(b => b.dataset.rel == "next").forEach(nextButton => {
-                        nextButton.setAttribute("href", page.next);
-                        nextButton.classList.remove("hidden");
-                    })
-
-                    nextlink.setAttribute("href", page.next);
-                } else {
-                    relbuttons.filter(b => b.dataset.rel == "next").forEach(nextButton => {
-                        nextButton.classList.add("hidden");
-                        nextButton.removeAttribute("href");
-                    })
-                    if (nextlink) nextlink.remove();
-                }
-                
-                relbuttons.forEach(b => b.blur());
-            }
-
+            dispatchEvent.call(this, "prerender", page);
+            
             while (settings.contentHolder.firstChild) settings.contentHolder.removeChild(settings.contentHolder.lastChild);
-            page.content.forEach(c => this.render(c).then(node => settings.contentHolder.appendChild(node)));
+            Promise.allSettled(page.content.map(c => this.render(c))).then(promises => promises.map(p => p.value)).then(nodes => settings.contentHolder.append(...nodes))
+            .then(() => dispatchEvent.call(this, "postrender"));
         })
+    }
+
+    function store(key, value=undefined) {
+        if (value === undefined) return settings.store[key];
+
+        if (value === null && key in settings.store) { delete settings.store[key]; }
+        else { settings.store[key] = value; }
+         
+        return;
     }
 
     const app = {
@@ -192,7 +197,16 @@ export function createApp(options={}) {
 
         get defaultPath() { return settings.defaultPath; }, set defaultPath(v) { settings.defaultPath = v; },
 
-        load: function() { refresh.call(this)}
+        load: function() { refresh.call(this)},
+
+        store: {
+            set: function(k,v) { store.call(this, k, v) },
+            get: function(k) { return store.call(this, k) }
+        },
+
+        addEventListener: function(name, fn) { return addEvent.call(this, name, fn); },
+        removeEventListener: function(name, fn) { return delEvent.call(this, name, fn); },
+        dispatchEvent: function(name, ...args) { return dispatchEvent.call(this, name, ...args); }
     }
 
     function init() {
@@ -243,7 +257,7 @@ export function createApp(options={}) {
             app.load();
         }
     } else {
-        Object.defineProperty(app, "start", app.load);
+        Object.defineProperty(app, "start", { value: app.load });
     }
 
     return app;

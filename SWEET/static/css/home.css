@@ -1,5 +1,6 @@
 .row.homemenu {
     justify-content: space-around;
+    margin-top: -2em;
 }
 
 .hmpg-acts {
@@ -23,10 +24,76 @@ img.card-icon {
     object-fit: contain;
     bottom: -0.5em;
     right: 0.25em;
-    opacity: 0.1;
+    opacity: 0.25;
 }
 
 .hmpg-acts img.card-icon {
     width: 5em;
     bottom: 0;
+}
+
+main.home :is(header, footer) {
+    display: none;
+}
+
+main.welcome :is(.header-buttons, .footer-buttons) {
+    display: none;
+}
+
+ul.quick-links {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+ul.quick-links li {
+    float: left;
+}
+
+ul.quick-links li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 0 16px;
+    text-decoration: none;
+    opacity: 0.6;
+}
+
+ul.quick-links li a:hover {
+    opacity: 0.8;
+}
+
+.custom-font-buttons {
+    display:none;
+}
+
+#header-container {
+    padding: 0;
+}
+
+
+@media screen and (min-width: 200px) and (max-width: 967px) {
+    .btn {
+        font-size: 0.8rem;
+        margin-bottom: 30px;
+    }
+}
+
+@media screen and (min-width: 200px) and (max-width: 500px) {
+    .custom-font-buttons {
+        display: block; 
+        float: right;
+    }
+    .custom-font-buttons span {
+        float: left;
+        color: rgb(105, 102, 102);
+        padding-left: 5px;
+        cursor: pointer;
+        height: 30px;
+    }
+
+    #btn-print {
+        float: none;
+    }
 }
