@@ -21,10 +21,6 @@ jobs:
         python-version: ${{ env.PYTHON_VERSION }}
     - name: Install dependencies
       run: |
-        sudo apt install python${{ env.PYTHON_VERSION }}-venv
-        python -m venv --copies antenv
-        source antenv/bin/activate
-        pip install setuptools
         pip install -r requirements.txt
     - name: Create Secrets
       run: |
