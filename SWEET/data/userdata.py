@@ -306,13 +306,31 @@ def recordProfiler(user, profiler):
 
     profilers = UserData(id).profilers()
 
-    existing = next((p for p in profilers if p["dueDate"] == profiler["dueDate"]), None)
+    # check if we're updating a due profiler:
+    # this will usually be the case: the UI logic retrieves the next due profiler, 
+    # which is always created whne a previous profiler is completed.
+    existing = next((p for p in profilers if 'dueDate' in p and p["dueDate"] == profiler["dueDate"]), None)
 
     if existing:
         existing.update(profiler)
     else:
         profilers.append(profiler)
 
+    if profiler['result'] in ["complete", "refused"]:
+        # remove dueDate as this profiler is no longer 'due'
+        if existing:
+            del existing['dueDate']
+        else :
+            del profiler['dueDate']
+
+        # schedule the next profiler:
+        # technically the schedule is 3 months, but since months are variable length
+        # I have substituted 91days.
+        nextdue = date.today() + timedelta(days=91)
+        profilers.append({"dueDate": nextdue.isoformat() })
+
+
+    # save any changes:
     profilers.commit()
     
     return True, { "result": profiler["result"] }
@@ -344,14 +362,13 @@ def getAllProfilerResults(user):
 
     responses = getProfilerResponses()
     return {"profilers": [{
-        "dueDate": profiler["dueDate"],
-        "result": profiler["result"],
+        "result": profiler.get("result"),
         "reminderDate": profiler.get("reminderDate"),
         "dateComplete": profiler.get("dateComplete"),
         "refuseReason": profiler.get("reason"),
         "concernAreas": profiler.get("concernAreas"),
         "concernDetails": { "type": "accordion", "content": [responses[c] for c in profiler.get("concernSpecifics", [])]}
-    } for profiler in sorted(profilers, key=lambda p: p['dueDate']) if profiler['dueDate'] <= date.today().isoformat()]}
+    } for profiler in profilers if "dateComplete" in profiler]}
 
 def getLatestProfiler(user):
     id = user["userID"]
@@ -359,10 +376,11 @@ def getLatestProfiler(user):
     profilers = UserData(id).profilers()
 
     if len(profilers) == 0:
-        profilers.append({ "dueDate": date.today().isoformat() })
+        nextdue = date.today() + timedelta(days=7)
+        profilers.append({ "dueDate": nextdue.isoformat() })
         profilers.commit()
 
-    latest = sorted(profilers, key=lambda p: p['dueDate'], reverse=True)[0]
+    latest = sorted(profilers, key=lambda p: p.get('dueDate') or p.get("dateComplete"), reverse=True)[0]
     responses = getProfilerResponses()
 
     if "concernSpecifics" in latest:

@@ -133,7 +133,8 @@
 
       document.querySelector("#reset-pass-link").addEventListener("click", e => {
         e.preventDefault(); e.stopPropagation();
-        const m = createModal(true)
+        const m = createModal(true);
+
         m.body.innerHTML = `    <h4>Reset HT &amp; Me Password</h4>
         <form><label>Please enter your email address:</label><input type="text" name="email"><input type="submit" value="Submit"></form>`
 
@@ -146,6 +147,8 @@
             m.hide();
           })
         })
+
+        m.show()
       })
     </script>
   </body>

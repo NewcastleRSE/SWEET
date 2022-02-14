@@ -272,8 +272,8 @@ export function goalRenderer(section) {
 
             let daysInput = schema.frequency.map(f => `<input class="form-check-input" type="radio" name="frequency" id="frequency-${f}" value="${f}"><label class="form-check-label" for="frequency-${f}">${f}</label>`).join("");
    
-            form.appendChild(document.createElement("p")).innerHTML = `<label>Activity: </label> <select class='form-control w-50 d-inline-block my-2' name='activity' placeholder='choose an activity' autocomplete='off'></select><br>
-            <span id="activity-other-wrapper" hidden><label>Write your own here:</label><input type="text" name="activity-other" class='form-control w-50 d-inline-block my-2' ></span><br>`;
+            form.appendChild(document.createElement("p")).innerHTML = `<label>Activity: </label> <select class='form-control w-50 d-inline-block my-2' name='activity' placeholder='choose an activity' autocomplete='off'></select>
+            <span id="activity-other-wrapper" hidden><br><label>Write your own here:</label><input type="text" name="activity-other" class='form-control w-50 d-inline-block my-2' ></span>`;
 
             form.appendChild(document.createElement("p")).innerHTML = `<label>How many days?</label> ${daysInput}`;
             if (schema.duration) {
@@ -303,8 +303,8 @@ export function goalRenderer(section) {
                 .then(response => response.json())
                 .then(outcome => {
                     let showerror = (message) => {
-                        form.elements['activity'].insertAdjacentElement("afterend", `
-                        <p class="invalid-feedback">${message}</p>`)
+                        form.elements['activity'].insertAdjacentHTML("afterend", `
+                        <p style="font-size: 80%; color: red; margin-bottom: 0;">${message}</p>`)
                     }
                     if (outcome.status != "OK") {
                         showerror("You must select an activity before continuing.")

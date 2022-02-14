@@ -3,11 +3,10 @@ import functools
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
-from markupsafe import re
 
 from .data import users, getToken
 
-from .automation.email import send_notify_register
+from .automation.email import send_notify_register, send_password_reset
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -133,8 +132,9 @@ def resetPassword():
     result, user = users.unsetPassword(email, resettoken)
     if result:
         #send reset email:
+        send_password_reset(user, resettoken)
         # return appropriate response
-        pass
+        return {"result": "OK"}
     else:
         return {"result": "No such user" }, 404
 

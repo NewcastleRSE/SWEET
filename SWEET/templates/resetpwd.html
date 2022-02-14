@@ -24,9 +24,9 @@
      <div class="col-sm-9 col-xs-12">
         <div class="col-10 offset-1 min-vh-100 justify-content-center align-items-left">
             {% if valid %}
-            <form id="passwordreset">
+            <form id="passwordreset" method="post">
                 <h4>Use this form to reset your password</h4>
-                <input type="hidden" name="id" value="{{uid}}">
+                <input type="hidden" name="id" value="{{user}}">
                 <input type="hidden" name="token" value="{{token}}">
                 <label>New Password:</label> <input type="password" name="password"><br>
                 <label>Confirm Password:</label> <input type="password" id="password-confirmation"><br>

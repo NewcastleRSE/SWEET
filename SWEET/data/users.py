@@ -175,7 +175,7 @@ def validateResetToken(userID, token):
     userID = confirmUserID(userID)
 
     if userID is None:
-        return False, None
+        return False
 
     user = getUser(userID)
     if 'resetToken' in user:

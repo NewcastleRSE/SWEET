@@ -37,6 +37,7 @@ export function planRenderer(section) {
         modal.footer.querySelector("button").addEventListener("click", () => {
             modal.hide();
         })
+        modal.show()
     })
 
     fetch(`/myapp/myplans/${section.plan}`).then(response => response.json())
