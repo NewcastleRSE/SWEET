@@ -1,4 +1,4 @@
-from ..secrets import email as settings
+from ..secrets import email as settings, hostname
 
 from smtplib import SMTP
 from email.message import EmailMessage
@@ -40,8 +40,8 @@ def _send_message(to, template="welcome", **kwargs):
         },
         "password_reset": {
             "subject": "You have asked to reset your HT&Me password",
-            "html": "<div><p>Dear {fullname},</p><p>You are receiving this email because someone has asked to reset your password for HT &amp; Me.</p><p>To reset the password, please visit <a href='https://htandme.co.uk/auth/passwordreset?id={uid}&token={token}'>https://htandme.co.uk/auth/passwordreset?id={uid}&token={token}</a>.</p><p>If you did not request a password reset, please ignore this email.</p></div>",
-            "plain": "Dear {fullname}, You are receiving this email because someone has asked to reset your password for HT & Me.\n\nTo reset the password, please visit https://htandme.co.uk/auth/passwordreset?id={uid}&token={token}\n\nIf you did not generate this request, please ignore this email.\n\nFrom HT&Me"
+            "html": "<div><p>Dear {fullname},</p><p>You are receiving this email because someone has asked to reset your password for HT &amp; Me.</p><p>To reset the password, please visit <a href='https://{hostname}/auth/passwordreset?id={uid}&token={token}'>https://{hostname}/auth/passwordreset?id={uid}&token={token}</a>.</p><p>If you did not request a password reset, please ignore this email.</p></div>",
+            "plain": "Dear {fullname}, You are receiving this email because someone has asked to reset your password for HT & Me.\n\nTo reset the password, please visit https://{hostname}/auth/passwordreset?id={uid}&token={token}\n\nIf you did not generate this request, please ignore this email.\n\nFrom HT&Me"
         },
     }
 
