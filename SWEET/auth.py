@@ -53,7 +53,7 @@ def register():
         fname = request.form['fullName']
         email = request.form['email']
         mobile = request.form['mobile']
-        role = 'staff' if uid[:2] in ["CT", "RT"] else 'user'
+        role = 'staff' if uid[:2] == "RT" else 'user'
         pwd = request.form['password']
 
         if not (uid.strip() or pwd.strip()):
