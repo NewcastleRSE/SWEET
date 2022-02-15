@@ -117,7 +117,10 @@ def profiler():
         result, output = recordProfiler(g.user, prof)
 
         if result:
-            return { "status": "OK", "details": output }
+            l = getLatestProfiler(g.user)
+            l.update(status="OK")
+            return l
+            
 
     return {"status": "error", "message": "Update request sent without json"}, 400
 

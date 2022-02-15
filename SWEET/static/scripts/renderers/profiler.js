@@ -41,7 +41,7 @@ export function profilerModalRenderer(section) {
                     reminderDate: this.calendarDate(((d) => {d.setDate(d.getDate()+3); return d})(new Date())),
                 }
                 
-                this.post(url, profilerResponse);
+                this.post(url, profilerResponse).then(response => response.json()).then(profiler => this.store.set("latestProfiler", profiler));
                 // clear the modal
                 section.modal.hide(true);
             });
@@ -57,7 +57,7 @@ export function profilerModalRenderer(section) {
                     }
 
                     // post section back to server
-                    this.post(url, profilerResponse)
+                    this.post(url, profilerResponse).then(response => response.json()).then(profiler => this.store.set("latestProfiler", profiler))
                     // clear the modal
                     section.modal.hide(true);
                 });
@@ -237,30 +237,25 @@ export function profilerModalRenderer(section) {
                     .then(result => {
                         if (result.status == "OK") {
 
-/*
-******* Old logic: not deleted for ease of restoration should update not be appropriate or desirable *******
-
-                            section.modal.body.innerHTML = "";
-                            result.details.content.forEach(c => this.render(c).then(node => section.modal.body.appendChild(node)))
-
-                            section.modal.footer.innerHTML = `<button type="button" class="btn btn-primary" id="prof-finish">Finish</button>`;
-                            section.modal.footer.querySelector("#prof-finish").addEventListener("click", e => {
-                                e.preventDefault(); e.stopPropagation();
-                                section.modal.hide(true);
-                            })
-
-        *********************************************************************************************
-*/
-
+                            this.store.set("latestProfiler", result)
                             // following implementation of "My Personal Support" page, can close modal and reidrect app:
 
                             if (this.path == "#home/my-support") { 
                                 this.load();
+                                section.modal.hide();
                             } else {
-                                this.path = "#home/my-support";
+
+                                section.modal.body.innerHTML = `
+                                    <p>Based on your responses, we selected a series of topics which were tailored to your concerns. To read them now <a href="#home/my-support">visit the My Personal Support section</a></p>
+                                    <p>You can read these at any time my clicking the 'My Personal Support' button on the website home page. You can now close this window.</p>
+                                `;
+                                section.modal.body.querySelector("a").addEventListener("click", () => section.modal.hide());
+                                section.modal.footer.innerHTML = `<button type="button" class="btn btn-primary" id="prof-finish">Close</button>`;
+                                section.modal.footer.querySelector("#prof-finish").addEventListener("click", e => {
+                                    e.preventDefault(); e.stopPropagation();
+                                    section.modal.hide(true);
+                                })
                             }
-                            
-                            section.modal.hide();
                         }
                     })
                 })
@@ -274,7 +269,8 @@ export function profilerModalRenderer(section) {
                 }
 
                 // post response
-                this.post(url, profilerResponse)
+                this.post(url, profilerResponse).then(response => response.json()).then(profiler => this.store.set("latestProfiler", profiler))
+                
 
                 // display a closing message.
                 section.modal.body.innerHTML = `<p>Great to hear that you are getting on well with your hormone therapy. We will check in with you again in the next few months.</p><p>You can also access these questions at any time from the My Personal Support page.</p><p>In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within HT &amp Me. Alternatively you can speak to your breast cancer team or your GP.</p>`
