@@ -723,4 +723,30 @@ def get_schedule(day):
         elif "dueDate" in p and p["dueDate"] == day.isoformat():
                 schedule.append({'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'profiler-due', 'method': 'email', 'to': user['email']})
     
+        gs = [g for g in ud.goals() if g['reviewDate'] == day.isoformat()]
+
+        if len(gs):
+            if len([g for g in gs if g['goaltype'] == 'activity']):
+                schedule.append({
+                    'firstName': user['firstName'], 
+                    'lastName': user['lastName'], 
+                    'type': 'goal-reminder', 
+                    'method': 'email', 
+                    'to': user['email'],
+                    'shortType': 'activity',
+                    'longType': 'being active'
+                })
+            if len([g for g in gs if g['goaltype'] == 'eating']):
+                schedule.append({
+                    'firstName': user['firstName'], 
+                    'lastName': user['lastName'], 
+                    'type': 'goal-reminder', 
+                    'method': 'email', 
+                    'to': user['email'],
+                    'shortType': 'eating',
+                    'longType': 'eating healthily'
+                })
+
+
+
     return schedule
