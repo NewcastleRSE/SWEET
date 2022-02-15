@@ -1,5 +1,5 @@
 from .sms import send_daily_reminder, send_monthly_reminder
-from .email import email_daily_reminder, email_monthly_reminder
+from .email import email_daily_reminder, email_monthly_reminder, send_profiler_reminder
 from datetime import datetime
 import time
 
@@ -55,7 +55,12 @@ def dailyschedule(today):
                 hr, mn = "08","00"
 
             item_ts = today.replace(hour=int(hr), minute=int(mn)).timestamp()
-            item_action = email_daily_reminder if item['type'] == 'daily' else email_monthly_reminder
+            item_action = {
+                'daily': email_daily_reminder,
+                'monthly': email_monthly_reminder,
+                'profiler-reminder': send_profiler_reminder,
+                'profiler-due': send_profiler_reminder
+             }[item['type']]
 
             #set up appropriate arguments
             item['email'] = item['to']
