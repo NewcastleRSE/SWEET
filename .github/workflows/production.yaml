@@ -1,0 +1,44 @@
+name: Production
+
+on:
+  release:
+    branches:
+      - main
+
+env:
+  AZURE_WEBAPP_NAME: sweetappproduction # set this to your application's name
+  AZURE_WEBAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
+  PYTHON_VERSION: '3.8'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+    - name: Create Secrets
+      run: |
+          echo "$PRODUCTION_ENVS" >> SWEET/secrets.py
+          echo "$SHARED_ENVS" >> SWEET/secrets.py
+      shell: bash
+      env:
+        PRODUCTION_ENVS : ${{secrets.PRODUCTION_ENVS}}
+        SHARED_ENVS : ${{secrets.SHARED_ENVS}}
+    - name: Building web app
+      uses: azure/appservice-build@v2
+      with:
+        source-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+        platform: python
+        platform-version: ${{ env.PYTHON_VERSION }}
+    - name: Deploy web App using GH Action azure/webapps-deploy
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.PRODUCTION_PUBLISH_PROFILE }}
+        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
