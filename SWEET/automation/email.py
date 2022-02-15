@@ -3,9 +3,9 @@ from ..secrets import email as settings, hostname
 from smtplib import SMTP
 from email.message import EmailMessage
 
-client = SMTP(settings["server"], settings["port"])
 
 def _send(msg):
+    client = SMTP(settings["server"], settings["port"])
     client.starttls()
     client.login(settings["user"], settings["password"])
     client.send_message(msg)
