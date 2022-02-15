@@ -43,6 +43,11 @@ def _send_message(to, template="welcome", **kwargs):
             "html": "<div><p>Dear {fullname},</p><p>You are receiving this email because someone has asked to reset your password for HT &amp; Me.</p><p>To reset the password, please visit <a href='https://{hostname}/auth/passwordreset?id={uid}&token={token}'>https://{hostname}/auth/passwordreset?id={uid}&token={token}</a>.</p><p>If you did not request a password reset, please ignore this email.</p></div>",
             "plain": "Dear {fullname}, You are receiving this email because someone has asked to reset your password for HT & Me.\n\nTo reset the password, please visit https://{hostname}/auth/passwordreset?id={uid}&token={token}\n\nIf you did not generate this request, please ignore this email.\n\nFrom HT&Me"
         },
+        "profiler_reminder": {
+            "subject": "",
+            "html": "<p>Hello {fullname},</p><p>Did you know that you can use the My Personal Support feature in the HT&Me website to receive help and support which is tailored to you? This includes help with managing side effects, remembering the medication and dealing with any doubts or concerns about the treatment.</p><p>To go back to the HT&Me website, and use My Personal Support, visit <a href='https://{hostname}/'>https://{hostname}/</a>. If clicking on this link doesn’t work, please copy and paste or type the link into your browser (the bar at the top of your screen where you can type things in to search for them).</p><p>If you have any problems accessing the website please call 07737 747393 or email HTandMe@brookes.ac.uk</p><p>The HT & Me Team</p><p><hr><br>This is an automatic email. Please DO NOT reply to this email as any reply will not be received.</p>",
+            "plain": "Hello {fullname},\n\ndid you know that you can use the My Personal Support feature in the HT&Me website to receive help and support which is tailored to you? This includes help with managing side effects, remembering the medication and dealing with any doubts or concerns about the treatment.\n\nTo go back to the HT&Me website, and use My Personal Support, visit 'https://{hostname}/' (you can copy and paste or type the link into your browser (the bar at the top of your screen where you can type things in to search for them)).\n\nIf you have any problems accessing the website please call 07737 747393 or email HTandMe@brookes.ac.uk.\n\nThe HT & Me Team\n-----------------------------------------------------------\nThis is an automatic email. Please DO NOT reply to this email as any reply will not be received."
+        }
     }
 
     htmltemplate = """\
@@ -83,3 +88,11 @@ def email_monthly_reminder(user):
 def send_password_reset(user, token):
     fullname = f"{user['firstName']} {user['lastName']}"
     _send_message(f"{fullname} <{user['email']}>", "password_reset", fullname=fullname, token=token, uid=user['userID'], hostname=hostname)
+
+def send_profiler_reminder(user):
+    fullname = f"{user['firstName']} {user['lastName']}"
+    _send_message(f"{fullname} <{user['email']}>", "profiler_reminder", fullname=fullname, hostname=hostname)
+
+def send_profiler_due(user):
+    fullname = f"{user['firstName']} {user['lastName']}"
+    _send_message(f"{fullname} <{user['email']}>", "profiler_reminder", fullname=fullname, hostname=hostname)

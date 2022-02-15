@@ -716,5 +716,11 @@ def get_schedule(day):
 
                 m['lastSent'] = date.today().isoformat()
                 ur.commit()
+
+        p = getLatestProfiler(user)
+        if "reminderDate" in p and p["reminderDate"] == day.isoformat():
+                schedule.append({'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'profiler-reminder', 'method': 'email', 'to': user['email']})
+        elif "dueDate" in p and p["dueDate"] == day.isoformat():
+                schedule.append({'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'profiler-due', 'method': 'email', 'to': user['email']})
     
     return schedule
