@@ -65,6 +65,8 @@ def ensureDataSources():
         usercnt.upload_blob(secrets.usergoals, json.dumps({}))
     if secrets.userdiary not in [blob.name for blob in usercnt.list_blobs()]:
         usercnt.upload_blob(secrets.userdiary, json.dumps({}))
+    if secrets.registration_list not in [blob.name for blob in usercnt.list_blobs()]:
+        usercnt.upload_blob(secrets.registration_list, json.dumps([]))
 
     if getUser(secrets.admin_user) is None:
         registerUser(secrets.admin_user, secrets.admin_password, secrets.admin_role, email=secrets.admin_email, fullName=secrets.admin_fullName)

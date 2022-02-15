@@ -80,7 +80,7 @@ export function homepageMenuRenderer(section) {
     profiler.addEventListener("click", async e => {
         e.preventDefault(); e.stopPropagation();
 
-        let latestp = await fetch("/myapp/profiler/latest").then(response => response.json());
+        let latestp = this.store.get("latestProfiler")
         let today = this.calendarDate(new Date());
 
         if (
