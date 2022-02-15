@@ -82,4 +82,4 @@ def email_monthly_reminder(user):
 
 def send_password_reset(user, token):
     fullname = f"{user['firstName']} {user['lastName']}"
-    _send_message(f"{fullname} <{user['email']}>", "password_reset", fullname=fullname, token=token, uid=user['userID'])
+    _send_message(f"{fullname} <{user['email']}>", "password_reset", fullname=fullname, token=token, uid=user['userID'], hostname=hostname)

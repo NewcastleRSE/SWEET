@@ -78,7 +78,7 @@ export function reminderRenderer(section) {
                     let prefix = name.substring(0,name.indexOf("-")+1);
                     let value = this.store.get("currentUser")[e.target.value == "sms"? "mobile":"email"];
 
-                    holder.querySelector(`[name='${prefix}-to']`).value = value || "";
+                    holder.querySelector(`[name='${prefix}to']`).value = value || "";
                 }
             })
         })
