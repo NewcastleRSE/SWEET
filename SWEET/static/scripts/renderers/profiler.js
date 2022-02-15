@@ -409,28 +409,29 @@ export async function myPersonalSupportRenderer(section) {
     }
     
     let newdets = { type: "profiler-launcher" };
-    if (latest.result == "postponed") newdets.profiler = latest;
+    if (latest && latest.result == "postponed") newdets.profiler = latest;
 
     await this.render(newdets).then(node => { holder.appendChild(node); });
 
-    await this.render({ type: "markdown", encoding: "raw", text: "### Your Previous Responses and Suggestions\n\nBelow you will find a list of the results when you have answered these questions before, arranged by date with the most recent first."}).then(node => holder.appendChild(node));
+    if (profilers.length) {
+        await this.render({ type: "markdown", encoding: "raw", text: "### Your Previous Responses and Suggestions\n\nBelow you will find a list of the results when you have answered these questions before, arranged by date with the most recent first."}).then(node => holder.appendChild(node));
 
-    await this.render({
-        type: "accordion",
-        content: profilers.map(p => { // fix-up 24/11/2021: async callback for .map was creating array of promises, *NOT* content objects. Logic here does not require async execution anyway!
-            p.type = "profiler-result";
-            if (!p.date) p.date = p.dateComplete || p.reminderDate || p.dueDate;
-            
-            return {
-                type: "accordion-item",
-                header: new Date(p.date).toDateString(),
-                content: [
-                    p
-                ]
-            }
-        })
-    }).then(node => holder.appendChild(node));
-
+        await this.render({
+            type: "accordion",
+            content: profilers.map(p => { // fix-up 24/11/2021: async callback for .map was creating array of promises, *NOT* content objects. Logic here does not require async execution anyway!
+                p.type = "profiler-result";
+                if (!p.date) p.date = p.dateComplete || p.reminderDate || p.dueDate;
+                
+                return {
+                    type: "accordion-item",
+                    header: new Date(p.date).toDateString(),
+                    content: [
+                        p
+                    ]
+                }
+            })
+        }).then(node => holder.appendChild(node));
+    }
 
     return holder;
 }

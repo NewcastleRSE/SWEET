@@ -84,12 +84,12 @@ def addUser():
 
 
 @bp.route("/data/allusers")
-@admin_required
+@staff_required
 def getAllUserDetails():
     return { "users": getAllUsers() }
 
 @bp.route("/data/reset", methods=["POST"])
-@admin_required
+@staff_required
 def resetUserData():
     if request.is_json:
         user = request.json['UserID']
