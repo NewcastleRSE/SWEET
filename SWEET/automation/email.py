@@ -44,9 +44,14 @@ def _send_message(to, template="welcome", **kwargs):
             "plain": "Dear {fullname}, You are receiving this email because someone has asked to reset your password for HT & Me.\n\nTo reset the password, please visit https://{hostname}/auth/passwordreset?id={uid}&token={token}\n\nIf you did not generate this request, please ignore this email.\n\nFrom HT&Me"
         },
         "profiler_reminder": {
-            "subject": "",
+            "subject": "HT & Me - My Personal Support",
             "html": "<p>Hello {fullname},</p><p>Did you know that you can use the My Personal Support feature in the HT&Me website to receive help and support which is tailored to you? This includes help with managing side effects, remembering the medication and dealing with any doubts or concerns about the treatment.</p><p>To go back to the HT&Me website, and use My Personal Support, visit <a href='https://{hostname}/'>https://{hostname}/</a>. If clicking on this link doesn’t work, please copy and paste or type the link into your browser (the bar at the top of your screen where you can type things in to search for them).</p><p>If you have any problems accessing the website please call 07737 747393 or email HTandMe@brookes.ac.uk</p><p>The HT & Me Team</p><p><hr><br>This is an automatic email. Please DO NOT reply to this email as any reply will not be received.</p>",
             "plain": "Hello {fullname},\n\ndid you know that you can use the My Personal Support feature in the HT&Me website to receive help and support which is tailored to you? This includes help with managing side effects, remembering the medication and dealing with any doubts or concerns about the treatment.\n\nTo go back to the HT&Me website, and use My Personal Support, visit 'https://{hostname}/' (you can copy and paste or type the link into your browser (the bar at the top of your screen where you can type things in to search for them)).\n\nIf you have any problems accessing the website please call 07737 747393 or email HTandMe@brookes.ac.uk.\n\nThe HT & Me Team\n-----------------------------------------------------------\nThis is an automatic email. Please DO NOT reply to this email as any reply will not be received."
+        },
+        "goal_reminder": {
+            "subject": "Review your Goals at HT & Me",
+            "html": "<p>Hello {fullname},</p><p>It’s been a week since you set yourself some {shorttype} goals.</p><p>Now it’s time to review your goals. Each time you review your goals you will get personalised feedback which can help you to get the most out of {longtype}.</p><p>Just log on to HT&Me website and go to My Goals and Plans page and tell us how you got on with your goals this week.</p><p><a href='https://{hostname}/'>Click here to go to the HT&Me website</a></p><p>The HT & Me Team</p>",
+            "plain": "Hello {fullname},\n\nIt’s been a week since you set yourself some {shorttype} goals.\n\nNow it’s time to review your goals. Each time you review your goals you will get personalised feedback which can help you to get the most out of {longtype}.\n\nJust log on to HT&Me website and go to My Goals and Plans page and tell us how you got on with your goals this week.\n\nVisit the HT&Me website at https://{hostname}/.\n\nThe HT & Me Team."
         }
     }
 
@@ -96,3 +101,7 @@ def send_profiler_reminder(user):
 def send_profiler_due(user):
     fullname = f"{user['firstName']} {user['lastName']}"
     _send_message(f"{fullname} <{user['email']}>", "profiler_reminder", fullname=fullname, hostname=hostname)
+
+def send_goal_reminder(detail):
+    fullname = f"{detail['firstName']} {detail['lastName']}"
+    _send_message(f"{fullname} <{detail['email']}>", "goal_reminder", fullname=fullname, hostname=hostname, shorttype=detail['shortType'], longtype=detail['longType'])
