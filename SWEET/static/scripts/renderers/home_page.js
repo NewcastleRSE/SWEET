@@ -89,9 +89,23 @@ export function homepageMenuRenderer(section) {
         })
     }
 
+    profiler.$link.addEventListener("click", e => {
+        e.preventDefault();
+        fetch("/myapp/profiler/responses").then(response => response.json())
+        .then(output => {
+            if (output.profilers.length) {
+                this.path = profiler.$link.getAttribute("href");
+            } else {
+                let latestp = this.store.get("latestProfiler");
+                latestp.type = "profiler";
+                this.render(latestp);
+            }
+        })
+    })
+
     menu.$actions.insertBefore(profiler, menu.$actions.firstChild);
 
-    // chevckc if we need to display a profiler:
+    // check if we need to display a profiler:
     let latestp = this.store.get("latestProfiler")
     let today = this.calendarDate(new Date());
 
