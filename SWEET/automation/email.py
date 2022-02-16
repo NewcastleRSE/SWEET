@@ -39,7 +39,7 @@ def _send_message(to, template="welcome", **kwargs):
             "plain": "Dear {fullname}, This is a reminder to order your next hormone therapy prescription.\n\nFrom HT&Me"
         },
         "password_reset": {
-            "subject": "You have asked to reset your HT&Me password",
+            "subject": "A message from the HT&Me Team",
             "html": "<div><p>Dear {fullname},</p><p>You are receiving this email because someone has asked to reset your password for HT &amp; Me.</p><p>To reset the password, please visit <a href='https://{hostname}/auth/passwordreset?id={uid}&token={token}'>https://{hostname}/auth/passwordreset?id={uid}&token={token}</a>.</p><p>If you did not request a password reset, please ignore this email.</p></div>",
             "plain": "Dear {fullname}, You are receiving this email because someone has asked to reset your password for HT & Me.\n\nTo reset the password, please visit https://{hostname}/auth/passwordreset?id={uid}&token={token}\n\nIf you did not generate this request, please ignore this email.\n\nFrom HT&Me"
         },
