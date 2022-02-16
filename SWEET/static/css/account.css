@@ -36,6 +36,19 @@ button.edit+button.cancel {
     display: none;
 }
 
+.contact {
+    padding: 0.5rem;
+    border-radius: 1rem;
+    background-color: white;
+    display: inline-block;
+    overflow: hidden;
+    box-shadow: 0px 8px 12px 0px #acacac;
+}
+
+.contact h5 {
+    color: var(--SWEET-purple);
+}
+
 .contact h5, .contact .contact-body {
     margin-left: 3rem;
 }
@@ -43,6 +56,8 @@ button.edit+button.cancel {
 .contact-list {
     margin-bottom: 2em;
 }
+
+.contact button.edit, .contact button.delete {}
 
 .password-field {
     float: right;

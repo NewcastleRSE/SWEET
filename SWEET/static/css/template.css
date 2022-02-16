@@ -448,6 +448,14 @@ div+h4 {
 
     }
 
+    ul li:last-child a::after {
+        display: none;
+    }
+
+    ul li a:focus {
+        display: none;
+    }
+
     h1 {
         font-size: 1.5em;
     }
@@ -486,7 +494,6 @@ ul li:last-child a::after {
     bottom: 10px;
     width: inherit;
     height: 5px;
-    pointer-events: none;
     border-radius: 5px;
     /*transition*/
     -webkit-transition: all .5s ease;
@@ -496,22 +503,22 @@ ul li:last-child a::after {
 }
 
 ul li:nth-child(1)~li:last-child a {
-    right: 31em;
+    right: 31.6em;
     width: 3.7em;
 }
 
 ul li:nth-child(2):hover~li:last-child a {
-    right: 23.8em;
+    right: 24.4em;
     width: 6.41em;
 }
 
 ul li:nth-child(3):hover~li:last-child a {
-    right: 16em;
+    right: 16.5em;
     width: 6.9em;
 }
 
 ul li:nth-child(4):hover~li:last-child a {
-    right: 6.7em;
+    right: 7.2em;
     width: 8.26em;
 }
 
@@ -529,8 +536,7 @@ nav.navbar-dark .navbar-nav ul li a:hover {
     background-color: var(--SWEET-light-grey);
 }
 
-ul li a:hover,
-ul li a:focus {
+ul li a:hover {
     color: var(--SWEET-purple);
 
     /*transition*/
