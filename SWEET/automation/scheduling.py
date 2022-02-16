@@ -27,6 +27,7 @@ def _s_to_next_run():
 _lastrun = 0
 _cancel = Event()
 _sched = scheduler(timefunc=_time, delayfunc=time.sleep)
+_running = []
 
 def dailyschedule(today):
 
@@ -105,7 +106,7 @@ def start():
         # # create and start a daily schedule
         # # update the last run date.
         # # schedule a trigger event for tomorrow.
-        dailyschedule(datetime.today())
+        _running.append(dailyschedule(datetime.today()))
         _lastrun = today_ord
         _sched.enter(_s_to_next_run(),1,trigger_daily)
 
@@ -131,3 +132,21 @@ def stop():
     _cancel.set()
     for e in _sched.queue:
         _sched.cancel(e)
+
+    for s in _running:
+        for e in s.queue:
+            s.cancel(e)
+
+def running():
+    operations = []
+    for s in _running:
+        if s.empty():
+            _running.remove(s)
+        else:
+            operations.extend([f"{e.action.__name__} at {datetime.fromtimestamp(e.time)} for {e.argument[0]}" for e in s.queue])
+    
+    operations.extend([f"{e.action.__name__} at {datetime.fromtimestamp(e.time)}" for e in _sched.queue])
+    return operations
+
+def status():
+    return "running" if len(_sched.queue) else "stopped"

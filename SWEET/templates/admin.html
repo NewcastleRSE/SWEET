@@ -1,8 +1,18 @@
 {% extends 'index.html' %}
+{% block headextensions %}
+<style>
+  .running { color: darkgreen; }
+  .stopped { color: darkred; }
+  .operation { font-family: monospace; }
+</style>
+{% endblock %}
 {% block navitems %}
 {% if g.user['role'] in ['sysadmin', 'editor'] %}
           <li class="nav-item">
             <a class="nav-link" href="/admin/edit">Editor</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/scheduling">Scheduling</a>
           </li>
 {% endif %}
           <li class="nav-item">
@@ -43,7 +53,7 @@ switch (page) {
   case "resources":
     break;
   case "users":
-    let holder = document.createElement("section");
+    var holder = document.createElement("section");
     holder.innerHTML = `
     <div hidden>
       <label>Click this button to add a new participant to the study:</label><button type="button" id="add-participant" class="btn btn-primary">Add Participant</button><br>
@@ -164,6 +174,61 @@ switch (page) {
     })
 
     document.querySelector("#main_content").appendChild(holder)
+    break;
+  case "scheduling":
+    var holder = document.createElement("section");
+    let status = "";
+    let refresh = () => {
+      fetch("/admin/sched/status").then(response => response.json())
+      .then(schedule => {
+        status = schedule.status;
+        let statuslabel = holder.querySelector("#sched-status");
+        statuslabel.classList.remove(...statuslabel.classList.values())
+
+        if (status == "stopped") {
+          statuslabel.classList.add("stopped")
+          statuslabel.textContent = "The scheduler is stopped";
+          holder.querySelector("#schedule-items").innerHTML = "";
+          holder.querySelector("button").textContent = "Start Scheduler"
+        } else {
+          statuslabel.classList.add("running")
+          statuslabel.textContent = "The scheduler is running";
+          holder.querySelector("button").textContent = "Stop Scheduler"
+          fetch("/admin/sched/running").then(response => response.status == 204? false: response.json())
+          .then(schedule => {
+            if (!schedule) {
+              holder.querySelector("#schedule-items").innerHTML = "";
+            } else {
+              schedule.operations.forEach(op => {
+                holder.querySelector("#schedule-items").insertAdjacentHTML("beforeend", `<span class="operation">${op}</span><br>`)
+              })
+            }
+          })
+          holder.querySelector("#schedule-items").innerHTML = "";
+
+        }
+      })
+    }
+
+    holder.innerHTML = `
+    <h4>Scheduled task management</h4>
+    <div><span id="sched-status"></span> <button id="start-stop" class="btn btn-primary"></button></div>
+    <div id="schedule-items"></div>
+    `
+    holder.querySelector("button").addEventListener("click", e => {
+      if (status == "") return;
+
+      if (status == "stopped") {
+        fetch("/admin/sched/start", { method: "POST" });
+      }  else {
+        fetch("/admin/sched/stop", { method: "POST" });
+      }
+
+      refresh();
+    })
+
+    document.querySelector("#main_content").appendChild(holder)
+    refresh();
     break;
 }
 </script>
