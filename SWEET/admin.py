@@ -3,6 +3,7 @@ from .auth import role_required
 from .data.content import updateStructure as updateAppStructure, updatePageContent, saveResource
 from .data.users import getAllUsers, createUser
 from .data.userdata import resetAll
+from .automation.scheduling import running, start, stop, status
 
 bp = Blueprint("admin", __name__, url_prefix="/admin")
 admin_required = role_required(roles=["editor", "sysadmin"])
@@ -24,6 +25,10 @@ def users():
 def resources():
     return render_template('admin.html')
 
+@bp.route("/scheduling")
+@admin_required
+def scheduling():
+    return render_template('admin.html')
 
 # content management
 @bp.route("/edit")
@@ -98,3 +103,38 @@ def resetUserData():
         return { "status": "OK"}
     else:
         return { "status": "error", "message": "Update request sent without json data"}, 400
+
+
+# scheduling
+@bp.route("/sched/status")
+@admin_required
+def getScheduleStatus():
+    return {"status": status() }
+
+@bp.route("/sched/running")
+@admin_required
+def getRunnningTasks():
+    if status() == "running":
+        ops = running()
+        if len(ops):
+            return { "operations": ops }
+
+    return {}, 204 # No Content
+
+@bp.route("/sched/start", methods=["POST"])
+@admin_required
+def startSchedule():
+    if status() == "stopped":
+        start()
+
+    return '', 204
+
+@bp.route("/sched/stop", methods=["POST"])
+@admin_required
+def stopSchedule():
+    if status() == "running":
+        stop()
+
+    return '', 204
+
+

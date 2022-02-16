@@ -706,7 +706,7 @@ def get_schedule(day):
 
         if m.get('reminder', False):
             lastrem = date.fromisoformat(m.get('lastSent', m.get('start', date.today().isoformat()))) # if there's no start date this will never get sent
-            interval = 3 if m.get('frequency', "") == "three" else 1
+            interval = 0 if lastrem == m.get('start') and 'lastSent' not in m else 3 if m.get('frequency', "") == "three" else  1
 
             target = fixdate(lastrem.year, lastrem.month + interval, lastrem.day)
             if target <= day:
