@@ -139,6 +139,14 @@
       });
     } 
     </script>
+    <script>
+      document.addEventListener('click', function (event) {
+        // If the clicked element doesn't have the right selector, bail
+        if (!event.target.matches('#navbarCollapse .nav-link')) return;
+        var bsCollapse = new bootstrap.Collapse(document.getElementById('navbarCollapse'))
+        bsCollapse.toggle()
+      }, false);
+    </script>
     <script src="{{ url_for('static', filename='scripts/lz-string.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/customfont.js') }}"></script>
     {% block bodyscript %}
