@@ -6,6 +6,12 @@ export function profilerModalRenderer(section) {
 
     section.modal.size = 'lg';
 
+    section.modal.addEventListener("click", e => {
+        if (e.target.matches("button.btn-close, button.btn-close *, #prof-p1-cancel")) {
+            section.answers = [];
+        }
+    })
+
     if (!section.answers) section.answers = [];
     let page = section.answers.length;
     let url = "/myapp/profiler/";
@@ -116,7 +122,6 @@ export function profilerModalRenderer(section) {
 
                 // set up the cancel button
                 section.modal.footer.querySelector("#prof-p1-cancel").addEventListener("click", e => {
-                    e.stopPropagation();
                     section.modal.hide(true);
                 })
 
