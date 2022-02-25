@@ -33,6 +33,7 @@
   <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top shadow">
     <div class="container-fluid">
       <a class="navbar-brand" href="#home"><strong>HT &amp; Me</strong> <img src="{{ url_for('static', filename='images/logo-swirl-only.png') }}" alt="logo" height="36" class="d-inline-block align-text-top"></a>
+      <a class="nav-link d-block d-sm-none" aria-current="page" href="#home"><i class="bi bi-house text-white"></i></a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -137,6 +138,14 @@
         tracesSampleRate: 1.0,
       });
     } 
+    </script>
+    <script>
+      document.addEventListener('click', function (event) {
+        // If the clicked element doesn't have the right selector, bail
+        if (!event.target.matches('#navbarCollapse .nav-link')) return;
+        var bsCollapse = new bootstrap.Collapse(document.getElementById('navbarCollapse'))
+        bsCollapse.toggle()
+      }, false);
     </script>
     <script src="{{ url_for('static', filename='scripts/lz-string.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/customfont.js') }}"></script>
