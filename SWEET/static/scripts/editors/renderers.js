@@ -607,6 +607,7 @@ export async function thoughtsRenderer(section) {
         let allthoughts = Array.from(holder.querySelectorAll("form")).filter(f => f.elements['negative'].value && f.elements['positive'].value).map(f => { return { negative: f.elements['negative'].value, positive: f.elements['positive'].value}; });
         this.post("/myapp/mythoughts/", { path: section.path, details: allthoughts});
         e.target.setAttribute("disabled", "");
+        this.showPopupMessage("Great! Information you added to My Thoughts Activity has been saved.");
     })
 
     if (thoughts) {
