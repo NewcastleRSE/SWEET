@@ -6,6 +6,12 @@ export function profilerModalRenderer(section) {
 
     section.modal.size = 'lg';
 
+    section.modal.addEventListener("click", e => {
+        if (e.target.matches("button.btn-close, button.btn-close *, #prof-p1-cancel")) {
+            section.answers = [];
+        }
+    })
+
     if (!section.answers) section.answers = [];
     let page = section.answers.length;
     let url = "/myapp/profiler/";
@@ -15,7 +21,7 @@ export function profilerModalRenderer(section) {
         () => { /* page 0 renderer */ 
             
             //section.modal.title.textContent = "Profiler";
-            section.modal.body.innerHTML = `<p>Hi there, in this section you can access help and support which has been tailored to meet your needs. In order to provide this personalised support, we'd like to ask you some questions to see how you are getting on with your hormone therapy. Answering these questions will allow us to guide you to relevant sections of the HT&amp;Me website that you may find helpful.</p>
+            section.modal.body.innerHTML = `<p>Hi there, in the My Personal Support section you can access help and support which has been tailored to meet your needs. In order to provide this personalised support, we'd like to ask you some questions to see how you are getting on with your hormone therapy. Answering these questions will allow us to guide you to relevant sections of the HT&amp;Me website that you may find helpful.</p>
             <p>Are you happy to answer these questions?</p>`;
             section.modal.footer.innerHTML = `<button type="button" id="prof-yes" class="btn btn-primary">Yes</button>
             <button type="button" id="prof-later" class="btn btn-secondary">Complete Later</button>
@@ -94,7 +100,7 @@ export function profilerModalRenderer(section) {
                     </table>
                 </form>`;
                 section.modal.footer.innerHTML =  `
-                <button type="button" id="prof-p1-cancel" class="btn">Cancel</button>
+                <button type="button" id="prof-p1-cancel" class="btn btn-secondary">Cancel</button>
                 <button type="submit" id="prof-p1-submit" class="btn btn-primary" form="prof-p1">Next</button>
                 `
 
@@ -116,7 +122,6 @@ export function profilerModalRenderer(section) {
 
                 // set up the cancel button
                 section.modal.footer.querySelector("#prof-p1-cancel").addEventListener("click", e => {
-                    e.stopPropagation();
                     section.modal.hide(true);
                 })
 

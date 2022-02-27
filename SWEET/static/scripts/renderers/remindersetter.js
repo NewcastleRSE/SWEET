@@ -39,6 +39,7 @@ export function reminderRenderer(section) {
             }
 
             this.post("/myapp/myreminders/", reminders).then(() => e.submitter.setAttribute("disabled", ""));
+            this.showPopupMessage("Great! You've set a new reminder.");
         })
 
         holder.querySelector("input[name='daily']").addEventListener("change", e => {
