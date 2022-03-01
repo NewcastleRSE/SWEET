@@ -621,13 +621,13 @@ def savePlan(user, plan):
 
     plans = UserData(id).plans()
 
-    ex = plans.get(plan["type"]).copy()
+    ex = plans.get(plan["type"])
 
     plans[plan["type"]] = plan
     plans.commit()
 
     if ex:
-        log(user, "update", old=ex, new=plan.copy())
+        log(user, "update", old=ex.copy(), new=plan.copy())
     else:
         log(user, "add", new=plan.copy())
 
