@@ -357,7 +357,7 @@ div + h4 { margin-top: 1.5em;}
 }
 
 
-@media screen and (min-width: 500px) and (max-width: 768px) {
+@media screen and (max-width: 768px) {
 
     ul.navbar-nav li.nav-item a.nav-link, ul.quick-links li a  {
        font-size: 0.8em;
@@ -391,5 +391,4 @@ div + h4 { margin-top: 1.5em;}
     #diary-page-graphs select{
         font-size: 0.7em;
     }
-
 }
