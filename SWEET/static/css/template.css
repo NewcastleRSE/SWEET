@@ -391,9 +391,4 @@ div + h4 { margin-top: 1.5em;}
     #diary-page-graphs select{
         font-size: 0.7em;
     }
-
-    #prof-p1 th {
-        writing-mode: vertical-lr;
-        transform: rotate(0deg);
-    }
 }
