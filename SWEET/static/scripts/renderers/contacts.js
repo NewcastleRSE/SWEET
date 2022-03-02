@@ -32,7 +32,7 @@ export function contactRenderer(section) {
     holder.querySelector("button.edit").addEventListener("click", e => {
         let modal = this.createModal(true);
         modal.title.textContent = "Edit Contact";
-        modal.footer.innerHTML = "<button type='button' class='close btn btn-secondary'>Cancel</button> <button type='submit' class='submit btn btn-primary'>Save Changes</button>"
+        modal.footer.innerHTML = "<button type='button' class='close btn btn-primary'>Cancel</button> <button type='submit' class='submit btn btn-primary'>Save Changes</button>"
 
         this.render({ type: "contact-form", "contact": contact }).then(form => {
             form.$opener = holder;
@@ -132,7 +132,7 @@ export function contactPageRenderer(section) {
                     holder.querySelector("button.add").addEventListener("click", e => {
                         let modal = this.createModal(true);
                         modal.title.textContent = "Add Contact";
-                        modal.footer.innerHTML = "<button type='button' class='close btn btn-secondary'>Cancel</button> <button type='submit' class='submit btn btn-primary'>Save Changes</button>"
+                        modal.footer.innerHTML = "<button type='button' class='close btn btn-primary'>Cancel</button> <button type='submit' class='submit btn btn-primary'>Save Changes</button>"
 
                         this.render({ type: "contact-form" }).then(form => {
                             form.$modal = modal;

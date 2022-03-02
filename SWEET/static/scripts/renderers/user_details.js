@@ -12,8 +12,8 @@ export function userDetailsPageRenderer(section) {
                 <button type="button" class="edit" data-for="firstName"><button type="button" class="cancel" data-for="firstName"></button></div>
                 <div class="col"><label for="lastName">Last Name</label> <span id="lastName">${this.store.get("currentUser").lastName}</span><button type="button" class="edit" data-for="lastName"></button><button type="button" class="cancel" data-for="lastName"></div>
                 <div class="col"><label for="email">Email Address</label> <span id="email">${this.store.get("currentUser").email}</span><button type="button" class="edit" data-for="email"></button><button type="button" class="cancel" data-for="email"></div>
-            <div  class="row row-cols-2"> 
-                <div class="col offset-sm-6""><button type="button" class="btn-lg btn-primary">Change Password</button><br><span class="sidenote">[n.b. you will be required to log in again after you change your password]</span></div>
+                <div  class="row row-cols-2"> 
+                <div class="col offset-sm-6""><button type="button" class="btn btn-primary">Change Password</button><br><span class="sidenote">[n.b. you will be required to log in again after you change your password]</span></div>
             </div>
         </section>
     `
