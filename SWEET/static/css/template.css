@@ -77,7 +77,7 @@ a.card {
     background-size: 120px;
 }
 
-a:visited.card.submenu {
+a.card.submenu:visited {
     background-color: #e4dbeb;
 }
 
