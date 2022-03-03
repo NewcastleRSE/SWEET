@@ -4,7 +4,7 @@ export function createApp(options={}) {
         renderers: {
             container: function(section) {
                 const holder = document.createElement("section");
-                section.content.forEach(item => this.render(item).then(node => holder.appendChild(node)));
+                this.render(section.content).then(nodes => holder.append(...nodes));
                 return holder;
             },
             header: function(section) {
@@ -113,6 +113,11 @@ export function createApp(options={}) {
     if (!document.querySelector("title")) document.head.appendChild(document.createElement("title"));
 
     function render(content) {
+        if (Array.isArray(content)) {
+            // if we are passed an array of content, we return an array of nodes which will be rendered in order correctly.
+            return Promise.allSettled(content.map(c => this.render(c))).then(promises => promises.map(p => p.value))
+        }
+
         let renderer = settings.renderers[content.type];
         let rendered = null;
 
@@ -153,7 +158,7 @@ export function createApp(options={}) {
 
         dispatchEvent.call(this, "preload");
 
-        settings.load(settings.path).then(page => {
+        settings.load.call(this, settings.path).then(page => {
             settings.titleHolder.textContent = page.title;
             document.querySelector("title").textContent = page.title? page.title: settings.name;
 

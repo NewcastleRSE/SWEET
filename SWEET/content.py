@@ -28,13 +28,14 @@ def getPageContent():
         if path == "#":
             path = "#home"
         
-        logvisit(g.user, path)
-        
         details = getPageDetails(path)
+
         if details is None:
+            logvisit(g.user, request.user_agent.string, action="navigate", page=path, referrer=request.headers.get("X-SWEET-referrer"), status="404")
             abort(404)
             
-        details["content"] = getPageContents(path) 
+        logvisit(g.user, request.user_agent.string, action="navigate", page=path, referrer=request.headers.get("X-SWEET-referrer"), status="200")
+        details["content"] = getPageContents(path)
         return details
     else:
         return getPages()

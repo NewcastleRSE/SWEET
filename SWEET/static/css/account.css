@@ -1,5 +1,22 @@
-#my-personal-details :is(label, span, input) {
-    margin-right: 2em;
+#my-personal-details .col {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+#my-personal-details .col>div {
+    margin: 0.25em;
+    margin-bottom: 1em;
+}
+
+#my-personal-details .col>div>label {
+    min-width: 8em;
+}
+
+#my-personal-details .col>div> :is(span, input)[id] {
+    width: 12em;
+}
+
+#my-personal-details .col>div>span.buttons {
+    float: right;
 }
 
 #my-personal-details h4 {

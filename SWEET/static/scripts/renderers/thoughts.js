@@ -45,7 +45,7 @@ export function thoughtsPageRenderer(section) {
             } else {
                 return await this.render({ type: "menu", content: [
                     {
-                        type: "menu-item", text: t.title, link: t.path
+                        type: "menu-item", title: t.title, link: t.path
                     }
                 ]})
             }

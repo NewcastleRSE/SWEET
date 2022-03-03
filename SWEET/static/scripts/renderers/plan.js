@@ -29,7 +29,15 @@ export function planRenderer(section) {
             plan: form.elements["plan"].value,
         }
 
-        this.post("/myapp/myplans/", plan)
+        this.post("/myapp/myplans/", plan);
+
+        let modal = this.createModal(true);
+        modal.body.textContent = "Well done for making a plan. Now you can try and put this into practice over the next few weeks. You might find it helpful to read this plan aloud to yourself several times or display it on a note somewhere."
+        modal.footer.innerHTML = "<button class='btn btn-primary'>Close</button>"
+        modal.footer.querySelector("button").addEventListener("click", () => {
+            modal.hide();
+        })
+        modal.show()
     })
 
     fetch(`/myapp/myplans/${section.plan}`).then(response => response.json())

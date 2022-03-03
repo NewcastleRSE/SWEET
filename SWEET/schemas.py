@@ -104,26 +104,17 @@ def getThoughtSchemas():
     path = request.args.get("path", "")
 
     schema = {
-        "#home/dealing-se/hot-flushes/cbt/change-think-hf": {
-            "title": "Changing the way you think about hot flushes",
-            "negfillin": "hotflushestochange",
-            "neglabel": "These are the thoughts I want to change about Hot Flushes:",
-            "posfillin": "hotflusheschanged",
-            "poslabel": "Alternative self-supportive response:"
+        "#home/dealing-se/hot-flushes/thoughts/hfactivity": {
+            "title": "Change the way you think about hot flushes",
         },
-        "#home/dealing-se/hot-flushes/cbt/change-think-ns": {
-            "title": "Changing the way you think about night sweats",
-            "negfillin": "nightsweatstochange",
-            "neglabel": "These are the thoughts I want to change about night sweats:",
-            "posfillin": "nightsweatschanged",
-            "poslabel": "Alternative self-supportive response:"
+        "#home/dealing-se/hot-flushes/thoughts/nsactivity": {
+            "title": "Change the way you think about night sweats",
         },
-        "#home/dealing-se/sleep/cbt": {
-            "title": "Changing the way you think about sleep problems",
-            "negfillin": "sleeptochange",
-            "neglabel": "These are the thoughts I want to change about sleep problems:",
-            "posfillin": "sleepchanged",
-            "poslabel": "Alternative self-supportive response:"
+        "#home/dealing-se/sleep/cbt/changesleep": {
+            "title": "Change the way you think about sleep problems",
+        },
+        "#home/dealing-se/mood/managing-mood": {
+            "title": "Do My Thoughts activity to manage mood changes",
         }
     }
     if path:

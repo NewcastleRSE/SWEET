@@ -7,13 +7,38 @@ export function userDetailsPageRenderer(section) {
 
         <section id="my-personal-details">
             <h4>Personal Details</h4>
-            <div  class="row row-cols-1">
-                <div class="col"><label for="firstName">First Name</label> <span id="firstName">${this.store.get("currentUser").firstName}</span>
-                <button type="button" class="edit" data-for="firstName"><button type="button" class="cancel" data-for="firstName"></button></div>
-                <div class="col"><label for="lastName">Last Name</label> <span id="lastName">${this.store.get("currentUser").lastName}</span><button type="button" class="edit" data-for="lastName"></button><button type="button" class="cancel" data-for="lastName"></div>
-                <div class="col"><label for="email">Email Address</label> <span id="email">${this.store.get("currentUser").email}</span><button type="button" class="edit" data-for="email"></button><button type="button" class="cancel" data-for="email"></div>
-                <div  class="row row-cols-2"> 
-                <div class="col offset-sm-6""><button type="button" class="btn btn-primary">Change Password</button><br><span class="sidenote">[n.b. you will be required to log in again after you change your password]</span></div>
+            <div class="row row-cols-2">
+                <div class="col">
+                    <div>
+                        <label for="firstName">First Name</label> <span id="firstName">${this.store.get("currentUser").firstName}</span><span class="buttons"><button type="button" class="edit" data-for="firstName"><button type="button" class="cancel" data-for="firstName"></button></span>
+                    </div>
+                </div>
+                <div class="col">
+                    <div>
+                        <label for="lastName">Last Name</label> <span id="lastName">${this.store.get("currentUser").lastName}</span><span class="buttons"><button type="button" class="edit" data-for="lastName"></button><button type="button" class="cancel" data-for="lastName"></span>
+                    </div>
+                </div>
+                <div class="col">
+                    <div>
+                        <label for="email">Email Address</label> <span id="email">${this.store.get("currentUser").email}</span><span class="buttons"><button type="button" class="edit" data-for="email"></button><button type="button" class="cancel" data-for="email"></span>
+                    </div>
+                    <div>
+                        <span class="sidenote"><strong class="mx-2">IMPORTANT</strong> If you change your email address, you will need to make sure that you use the new email address next time you log in, but you do not need to register again. You will get an email to remind you of this.<span>
+                    </div>
+                </div>
+                <div class="col">
+                    <div>
+                        <label for="mobile">Mobile Phone</label> <span id="mobile">${this.store.get("currentUser").mobile}</span><span class="buttons"><button type="button" class="edit" data-for="mobile"></button><button type="button" class="cancel" data-for="mobile"></span>
+                    </div>
+                </div>
+                <div class="col">
+                    <div>
+                        <button type="button" class="btn btn-primary">Change Password</button>
+                    </div>
+                    <div>
+                        <span class="sidenote">[n.b. you will be required to log in again after you change your password]</span>
+                    </div>
+                </div>
             </div>
         </section>
     `
@@ -30,9 +55,9 @@ export function userDetailsPageRenderer(section) {
                 input.setAttribute("id", which);
                 input.value = target.textContent;
 
+                target.insertAdjacentElement("beforebegin", input);
                 target.remove();
 
-                src.insertAdjacentElement("beforebegin", input);
                 src.classList.remove("edit");
                 src.classList.add("save");
 
@@ -49,8 +74,8 @@ export function userDetailsPageRenderer(section) {
                     let target = document.createElement("span");
                     target.setAttribute("id", which);
                     target.textContent = input.value;
+                    input.insertAdjacentElement("beforebegin", target);
                     input.remove();
-                    src.insertAdjacentElement("beforebegin", target);
                     src.classList.remove("save");
                     src.classList.add("edit");
                 })
@@ -66,9 +91,9 @@ export function userDetailsPageRenderer(section) {
                 target.setAttribute("id", which);
                 target.textContent = oldval;
 
+                input.insertAdjacentElement("beforebegin", target);
                 input.remove();
 
-                saver.insertAdjacentElement("beforebegin", target);
                 saver.classList.remove("save");
                 saver.classList.add("edit");
             } else {

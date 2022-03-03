@@ -6,10 +6,20 @@ from flask import (
 
 from .data import users, getToken
 
+from .automation.email import send_notify_register, send_password_reset
+
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 __logged_in_users = {}
 
+def _login(user):
+    token = getToken(6)
+    session['user'] = token
+    __logged_in_users[token] = user
+
+    anchor = "home" #if "skipWelcome" in user and user["skipWelcome"] else "welcome"
+
+    return redirect(url_for("index", _anchor=anchor))
 
 def _logout(token):
     if token in __logged_in_users:
@@ -26,13 +36,7 @@ def login():
         success, user = users.validateUser(uid, pwd)
 
         if success:
-            token = getToken(6)
-            session['user'] = token
-            __logged_in_users[token] = user
-
-            anchor = "home" #if "skipWelcome" in user and user["skipWelcome"] else "welcome"
-
-            return redirect(url_for("index", _anchor=anchor))
+            return _login(user)
 
         flash('Incorrect username/password combination')
         flash('Your username is usually your email address')
@@ -40,22 +44,44 @@ def login():
 
     return render_template("login.html")
 
+
+
 @bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        uid = request.form['userID']
+        uid = request.form['regCode']
         fname = request.form['fullName']
-        role = 'user'
+        email = request.form['email']
+        mobile = request.form['mobile']
+        role = 'staff' if uid[:2] == "RT" else 'user'
         pwd = request.form['password']
 
         if not (uid.strip() or pwd.strip()):
-            flash("You must enter an email address and password")
+            flash("You must enter a registration code and password")
             return redirect(url_for("auth.register"))
 
-        users.registerUser(uid, pwd, fname, role)
-        return redirect(url_for("auth.login"))
+        # check reg code in case client-side validation has been bypassed:
+        if not users.checkRegistrationCode(uid):
+            flash("Registration failed: the submitted registration code is invalid or has previously been used.")
+            return redirect(url_for('auth.register'))
+
+        result, detail = users.registerUser(uid, pwd, role, fullName=fname, email=email, mobile=mobile)
+        # if registration works detail is the user, otherwise it's a dict containing error info:
+
+        if result:
+            users.useRegistrationCode(uid)
+            
+            # SEND EMAIL TO OXFORD & NEWCASTLE TEAMS WITH DETAILS FROM user
+            send_notify_register(detail)
+
+            return _login(detail)
+
+        # if registration fails a reason message is returned in the details:
+        # flash message and return user to reg page.
+        flash(detail['message'])
+        return redirect(url_for('auth.register'))
     
-    return render_template("register.html")
+    return render_template("login.html")
 
 @bp.route("/logout")
 def logout():
@@ -89,6 +115,47 @@ def activateAccount():
 
     return {"status": "error", "message": "Update request sent without json"}, 400
 
+@bp.route("check")
+def checkRegCode():
+    code = request.args.get("code")
+    if users.checkRegistrationCode(code):
+        return {"message": "code available" }
+    else:
+        return {"message": "Registration code not available"}, 404
+
+# password resetting:
+@bp.route("resetpassword")
+def resetPassword():
+    email = request.args.get("email")
+    resettoken = getToken(10)
+
+    result, user = users.unsetPassword(email, resettoken)
+    if result:
+        #send reset email:
+        send_password_reset(user, resettoken)
+        # return appropriate response
+        return {"result": "OK"}
+    else:
+        return {"result": "No such user" }, 404
+
+@bp.route("passwordreset", methods=["GET", "POST"])
+def passwordReset():
+    if request.method == "GET":
+        uid = request.args.get("id")
+        token = request.args.get("token")
+        valid = users.validateResetToken(uid, token)
+        return render_template("resetpwd.html", valid=valid, user=uid, token=token)
+    else:
+        uid = request.form.get("id")
+        token = request.form.get("token")
+        if users.validateResetToken(uid, token):
+            # reset user password
+            password = request.form.get("password")
+            # should we be validating the password confirmation on the server-side?
+            users.updateUser(uid, password=password)
+            return _login(users.getUser(uid))
+        else:
+            return render_template("resetpwd.html", valid=False, user=uid, token=token)
 
 @bp.before_app_request
 def load_logged_in_user():
