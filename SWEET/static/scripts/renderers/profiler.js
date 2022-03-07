@@ -6,6 +6,12 @@ export function profilerModalRenderer(section) {
 
     section.modal.size = 'lg';
 
+    section.modal.addEventListener("click", e => {
+        if (e.target.matches("button.btn-close, button.btn-close *, #prof-p1-cancel")) {
+            section.answers = [];
+        }
+    })
+
     if (!section.answers) section.answers = [];
     let page = section.answers.length;
     let url = "/myapp/profiler/";
@@ -15,7 +21,7 @@ export function profilerModalRenderer(section) {
         () => { /* page 0 renderer */ 
             
             //section.modal.title.textContent = "Profiler";
-            section.modal.body.innerHTML = `<p>Hi there, in this section you can access help and support which has been tailored to meet your needs. In order to provide this personalised support, we'd like to ask you some questions to see how you are getting on with your hormone therapy. Answering these questions will allow us to guide you to relevant sections of the HT&amp;Me website that you may find helpful.</p>
+            section.modal.body.innerHTML = `<p>Hi there, in the My Personal Support section you can access help and support which has been tailored to meet your needs. In order to provide this personalised support, we'd like to ask you some questions to see how you are getting on with your hormone therapy. Answering these questions will allow us to guide you to relevant sections of the HT&amp;Me website that you may find helpful.</p>
             <p>Are you happy to answer these questions?</p>`;
             section.modal.footer.innerHTML = `<button type="button" id="prof-yes" class="btn btn-primary">Yes</button>
             <button type="button" id="prof-later" class="btn btn-secondary">Complete Later</button>
@@ -41,7 +47,7 @@ export function profilerModalRenderer(section) {
                     reminderDate: this.calendarDate(((d) => {d.setDate(d.getDate()+3); return d})(new Date())),
                 }
                 
-                this.post(url, profilerResponse);
+                this.post(url, profilerResponse).then(response => response.json()).then(profiler => this.store.set("latestProfiler", profiler));
                 // clear the modal
                 section.modal.hide(true);
             });
@@ -57,7 +63,7 @@ export function profilerModalRenderer(section) {
                     }
 
                     // post section back to server
-                    this.post(url, profilerResponse)
+                    this.post(url, profilerResponse).then(response => response.json()).then(profiler => this.store.set("latestProfiler", profiler))
                     // clear the modal
                     section.modal.hide(true);
                 });
@@ -94,7 +100,7 @@ export function profilerModalRenderer(section) {
                     </table>
                 </form>`;
                 section.modal.footer.innerHTML =  `
-                <button type="button" id="prof-p1-cancel" class="btn">Cancel</button>
+                <button type="button" id="prof-p1-cancel" class="btn btn-secondary">Cancel</button>
                 <button type="submit" id="prof-p1-submit" class="btn btn-primary" form="prof-p1">Next</button>
                 `
 
@@ -116,7 +122,6 @@ export function profilerModalRenderer(section) {
 
                 // set up the cancel button
                 section.modal.footer.querySelector("#prof-p1-cancel").addEventListener("click", e => {
-                    e.stopPropagation();
                     section.modal.hide(true);
                 })
 
@@ -237,30 +242,25 @@ export function profilerModalRenderer(section) {
                     .then(result => {
                         if (result.status == "OK") {
 
-/*
-******* Old logic: not deleted for ease of restoration should update not be appropriate or desirable *******
-
-                            section.modal.body.innerHTML = "";
-                            result.details.content.forEach(c => this.render(c).then(node => section.modal.body.appendChild(node)))
-
-                            section.modal.footer.innerHTML = `<button type="button" class="btn btn-primary" id="prof-finish">Finish</button>`;
-                            section.modal.footer.querySelector("#prof-finish").addEventListener("click", e => {
-                                e.preventDefault(); e.stopPropagation();
-                                section.modal.hide(true);
-                            })
-
-        *********************************************************************************************
-*/
-
+                            this.store.set("latestProfiler", result)
                             // following implementation of "My Personal Support" page, can close modal and reidrect app:
 
                             if (this.path == "#home/my-support") { 
                                 this.load();
+                                section.modal.hide();
                             } else {
-                                this.path = "#home/my-support";
+
+                                section.modal.body.innerHTML = `
+                                    <p>Based on your responses, we selected a series of topics which were tailored to your concerns. To read them now <a href="#home/my-support">visit the My Personal Support section</a></p>
+                                    <p>You can read these at any time my clicking the 'My Personal Support' button on the website home page. You can now close this window.</p>
+                                `;
+                                section.modal.body.querySelector("a").addEventListener("click", () => section.modal.hide());
+                                section.modal.footer.innerHTML = `<button type="button" class="btn btn-primary" id="prof-finish">Close</button>`;
+                                section.modal.footer.querySelector("#prof-finish").addEventListener("click", e => {
+                                    e.preventDefault(); e.stopPropagation();
+                                    section.modal.hide(true);
+                                })
                             }
-                            
-                            section.modal.hide();
                         }
                     })
                 })
@@ -274,7 +274,8 @@ export function profilerModalRenderer(section) {
                 }
 
                 // post response
-                this.post(url, profilerResponse)
+                this.post(url, profilerResponse).then(response => response.json()).then(profiler => this.store.set("latestProfiler", profiler))
+                
 
                 // display a closing message.
                 section.modal.body.innerHTML = `<p>Great to hear that you are getting on well with your hormone therapy. We will check in with you again in the next few months.</p><p>You can also access these questions at any time from the My Personal Support page.</p><p>In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within HT &amp Me. Alternatively you can speak to your breast cancer team or your GP.</p>`
@@ -356,7 +357,7 @@ export async function profilerLauncherRenderer(section) {
                 link: "",
                 description: {
                     type: "paragraph",
-                    text: "To answer the questions again and get support personalised for your concerns, click this button:"
+                    text: "To answer the questions now and get support personalised for your concerns, click this button:"
                 }
             }
         ]
@@ -376,8 +377,6 @@ export async function myPersonalSupportRenderer(section) {
 
     let profilers = await fetch("/myapp/profiler/responses").then(response => response.json()).then(p => p.profilers);
 
-    if (profilers.length == 0) return null;
-
     profilers.sort((a, b) => a.dateComplete == b.dateComplete? 0: a.dateComplete > b.dateComplete? -1: 1);
 
     let latest = profilers.shift();
@@ -387,7 +386,9 @@ export async function myPersonalSupportRenderer(section) {
     //holder.insertAdjacentHTML("beforeend", "<h3>Your Current Suggestions</h3>");
 
     let message, renderDetails = false;
-    if (latest.result == "postponed") {
+    if (!latest) {
+        message = "It looks like you haven't completed the support questions yet.\n\nFrom time to time we'll ask you a few questions, to check how you're getting on with your hormone therapy.\n\nIf you want to answer the questions now, click the button below, or you can explore the rest of the website and we'll remind you when it's time to come back."
+    } else if (latest.result == "postponed") {
         message = "You didn't have time to complete the questions last time we asked; if you want to do it now you can click the button below."
     } else if (latest.result == "refused") {
         message = `You did not answer the questions last time we asked, because ${{"no-concerns": "you did not have any concerns", "no-time": "you did not have time", "no-already": "your questions had already been answered"}[latest.refuseReason]}. If you would like to answer them now please click the button below.`;
@@ -409,28 +410,29 @@ export async function myPersonalSupportRenderer(section) {
     }
     
     let newdets = { type: "profiler-launcher" };
-    if (latest.result == "postponed") newdets.profiler = latest;
+    if (latest && latest.result == "postponed") newdets.profiler = latest;
 
     await this.render(newdets).then(node => { holder.appendChild(node); });
 
-    await this.render({ type: "markdown", encoding: "raw", text: "### Your Previous Responses and Suggestions\n\nBelow you will find a list of the results when you have answered these questions before, arranged by date with the most recent first."}).then(node => holder.appendChild(node));
+    if (profilers.length) {
+        await this.render({ type: "markdown", encoding: "raw", text: "### Your Previous Responses and Suggestions\n\nBelow you will find a list of the results when you have answered these questions before, arranged by date with the most recent first."}).then(node => holder.appendChild(node));
 
-    await this.render({
-        type: "accordion",
-        content: profilers.map(p => { // fix-up 24/11/2021: async callback for .map was creating array of promises, *NOT* content objects. Logic here does not require async execution anyway!
-            p.type = "profiler-result";
-            if (!p.date) p.date = p.dateComplete || p.reminderDate || p.dueDate;
-            
-            return {
-                type: "accordion-item",
-                header: new Date(p.date).toDateString(),
-                content: [
-                    p
-                ]
-            }
-        })
-    }).then(node => holder.appendChild(node));
-
+        await this.render({
+            type: "accordion",
+            content: profilers.map(p => { // fix-up 24/11/2021: async callback for .map was creating array of promises, *NOT* content objects. Logic here does not require async execution anyway!
+                p.type = "profiler-result";
+                if (!p.date) p.date = p.dateComplete || p.reminderDate || p.dueDate;
+                
+                return {
+                    type: "accordion-item",
+                    header: new Date(p.date).toDateString(),
+                    content: [
+                        p
+                    ]
+                }
+            })
+        }).then(node => holder.appendChild(node));
+    }
 
     return holder;
 }

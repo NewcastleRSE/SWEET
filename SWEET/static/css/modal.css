@@ -11,3 +11,9 @@
     border-radius : 1rem;
     border: 3px solid rgba(0,0,0,.2);
 }
+
+@media screen and (max-width: 768px) {
+    .modal {
+        font-size: 0.8rem;
+    }
+}

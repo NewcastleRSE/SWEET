@@ -43,6 +43,3 @@ def create_app():
         return render_template("welcome.html")    
 
     return app
-
-sweetapp = create_app()
-

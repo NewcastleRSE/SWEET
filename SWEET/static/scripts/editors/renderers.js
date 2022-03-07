@@ -102,7 +102,7 @@ export function popupRenderer(section) {
     modal.size = section.size;
     modal.id = `popup-${section.name}`
 
-    modal.title.textContent = section.title? section.title: "";
+    modal.title.textContent = section.title && section.title != "undefined" ? section.title: "";
     section.content.forEach(s => this.render(s).then(node => modal.body.appendChild(node)));
     modal.footer.innerHTML = "<button type='button' class='btn btn-primary'>Close</button>";
     modal.footer.querySelector("button").addEventListener("click", () => modal.hide());
@@ -607,6 +607,7 @@ export async function thoughtsRenderer(section) {
         let allthoughts = Array.from(holder.querySelectorAll("form")).filter(f => f.elements['negative'].value && f.elements['positive'].value).map(f => { return { negative: f.elements['negative'].value, positive: f.elements['positive'].value}; });
         this.post("/myapp/mythoughts/", { path: section.path, details: allthoughts});
         e.target.setAttribute("disabled", "");
+        this.showPopupMessage("Great! Information you added to My Thoughts Activity has been saved.");
     })
 
     if (thoughts) {

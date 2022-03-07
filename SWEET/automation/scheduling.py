@@ -1,5 +1,5 @@
 from .sms import send_daily_reminder, send_monthly_reminder
-from .email import email_daily_reminder, email_monthly_reminder
+from .email import email_daily_reminder, email_monthly_reminder, send_profiler_reminder, send_goal_reminder
 from datetime import datetime
 import time
 
@@ -27,6 +27,7 @@ def _s_to_next_run():
 _lastrun = 0
 _cancel = Event()
 _sched = scheduler(timefunc=_time, delayfunc=time.sleep)
+_running = []
 
 def dailyschedule(today):
 
@@ -55,7 +56,13 @@ def dailyschedule(today):
                 hr, mn = "08","00"
 
             item_ts = today.replace(hour=int(hr), minute=int(mn)).timestamp()
-            item_action = email_daily_reminder if item['type'] == 'daily' else email_monthly_reminder
+            item_action = {
+                'daily': email_daily_reminder,
+                'monthly': email_monthly_reminder,
+                'profiler-reminder': send_profiler_reminder,
+                'profiler-due': send_profiler_reminder,
+                'goal-reminder': send_goal_reminder
+             }[item['type']]
 
             #set up appropriate arguments
             item['email'] = item['to']
@@ -99,7 +106,7 @@ def start():
         # # create and start a daily schedule
         # # update the last run date.
         # # schedule a trigger event for tomorrow.
-        dailyschedule(datetime.today())
+        _running.append(dailyschedule(datetime.today()))
         _lastrun = today_ord
         _sched.enter(_s_to_next_run(),1,trigger_daily)
 
@@ -125,3 +132,21 @@ def stop():
     _cancel.set()
     for e in _sched.queue:
         _sched.cancel(e)
+
+    for s in _running:
+        for e in s.queue:
+            s.cancel(e)
+
+def running():
+    operations = []
+    for s in _running:
+        if s.empty():
+            _running.remove(s)
+        else:
+            operations.extend([f"{e.action.__name__} at {datetime.fromtimestamp(e.time)} for {e.argument[0]}" for e in s.queue])
+    
+    operations.extend([f"{e.action.__name__} at {datetime.fromtimestamp(e.time)}" for e in _sched.queue])
+    return operations
+
+def status():
+    return "running" if len(_sched.queue) else "stopped"

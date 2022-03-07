@@ -77,25 +77,6 @@ export function homepageMenuRenderer(section) {
     profiler.$subtitle.textContent = section.profiler.description;
     profiler.$link.setAttribute("href", "#home/my-support");
 
-    profiler.addEventListener("click", async e => {
-        e.preventDefault(); e.stopPropagation();
-
-        let latestp = await fetch("/myapp/profiler/latest").then(response => response.json());
-        let today = this.calendarDate(new Date());
-
-        if (
-            (latestp.dueDate > today) ||
-            (latestp.result == "complete" || latestp.result == "refused") ||
-            (latestp.result == "postponed" && latestp.reminderDate > today)
-        ) {
-            this.path = "#home/my-support";
-            return;
-        }
-
-        latestp.type = "profiler";
-        this.render(latestp);
-    })
-
     if (section.profiler.icon && section.profiler.icon != "none") {
         //profiler.$link.classList.add("pb-5");
 
@@ -108,7 +89,33 @@ export function homepageMenuRenderer(section) {
         })
     }
 
+    profiler.$link.addEventListener("click", e => {
+        e.preventDefault();
+        fetch("/myapp/profiler/responses").then(response => response.json())
+        .then(output => {
+            if (output.profilers.length) {
+                this.path = profiler.$link.getAttribute("href");
+            } else {
+                let latestp = this.store.get("latestProfiler");
+                latestp.type = "profiler";
+                this.render(latestp);
+            }
+        })
+    })
+
     menu.$actions.insertBefore(profiler, menu.$actions.firstChild);
+
+    // check if we need to display a profiler:
+    let latestp = this.store.get("latestProfiler")
+    let today = this.calendarDate(new Date());
+
+    if (
+        (latestp.result == "postponed" && latestp.reminderDate <= today) ||
+        (!('result' in latestp) && latestp.dueDate <= today) 
+    ) {
+        latestp.type = "profiler";
+        this.render(latestp);
+    }
 
     return menu;
 }

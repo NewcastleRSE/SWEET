@@ -28,6 +28,11 @@ export function userDetailsPageRenderer(section) {
                 </div>
                 <div class="col">
                     <div>
+                        <label for="mobile">Mobile Phone</label> <span id="mobile">${this.store.get("currentUser").mobile}</span><span class="buttons"><button type="button" class="edit" data-for="mobile"></button><button type="button" class="cancel" data-for="mobile"></span>
+                    </div>
+                </div>
+                <div class="col">
+                    <div>
                         <button type="button" class="btn btn-primary">Change Password</button>
                     </div>
                     <div>

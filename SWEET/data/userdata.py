@@ -621,13 +621,13 @@ def savePlan(user, plan):
 
     plans = UserData(id).plans()
 
-    ex = plans.get(plan["type"]).copy()
+    ex = plans.get(plan["type"])
 
     plans[plan["type"]] = plan
     plans.commit()
 
     if ex:
-        log(user, "update", old=ex, new=plan.copy())
+        log(user, "update", old=ex.copy(), new=plan.copy())
     else:
         log(user, "add", new=plan.copy())
 
@@ -705,10 +705,14 @@ def get_schedule(day):
             schedule.append(rd)
 
         if m.get('reminder', False):
-            lastrem = date.fromisoformat(m.get('lastSent', m.get('start', date.today().isoformat()))) # if there's no start date this will never get sent
-            interval = 3 if m.get('frequency', "") == "three" else 1
+            lastrem = date.fromisoformat(m.get('lastSent', m.get('start', date.today().isoformat())))
+            interval = 3 if m.get('frequency', "") == "three" else  1
 
-            target = fixdate(lastrem.year, lastrem.month + interval, lastrem.day)
+            # if the reminder hasn't been sent before AND day == start (which is held in lastrem)
+            # we want to send the reminder on lastrem - i.e. the start date.
+            # This will deal with start dates set in the past:
+            # # they will not be sent immediately and will wait for the appropriate interval
+            target = lastrem if day == lastrem and 'lastSent' not in m else fixdate(lastrem.year, lastrem.month + interval, lastrem.day)
             if target <= day:
                 rm = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'monthly'}
                 rm.update(m)
@@ -716,5 +720,37 @@ def get_schedule(day):
 
                 m['lastSent'] = date.today().isoformat()
                 ur.commit()
+
+        p = getLatestProfiler(user)
+        if "reminderDate" in p and p["reminderDate"] == day.isoformat():
+                schedule.append({'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'profiler-reminder', 'method': 'email', 'to': user['email']})
+        elif "dueDate" in p and p["dueDate"] == day.isoformat():
+                schedule.append({'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'profiler-due', 'method': 'email', 'to': user['email']})
     
+        gs = [g for g in ud.goals() if g['reviewDate'] == day.isoformat()]
+
+        if len(gs):
+            if len([g for g in gs if g['goaltype'] == 'activity']):
+                schedule.append({
+                    'firstName': user['firstName'], 
+                    'lastName': user['lastName'], 
+                    'type': 'goal-reminder', 
+                    'method': 'email', 
+                    'to': user['email'],
+                    'shortType': 'activity',
+                    'longType': 'being active'
+                })
+            if len([g for g in gs if g['goaltype'] == 'eating']):
+                schedule.append({
+                    'firstName': user['firstName'], 
+                    'lastName': user['lastName'], 
+                    'type': 'goal-reminder', 
+                    'method': 'email', 
+                    'to': user['email'],
+                    'shortType': 'eating',
+                    'longType': 'eating healthily'
+                })
+
+
+
     return schedule

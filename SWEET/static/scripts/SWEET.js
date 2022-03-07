@@ -29,7 +29,30 @@ let SWEET = createApp({
             })
         },
         createCalendar: createCalendar,
-        calendarDate: function(d) { return `${d.getFullYear()}-${d.getMonth()<9?"0":""}${d.getMonth()+1}-${d.getDate()<10?"0":""}${d.getDate()}` }
+        calendarDate: function(d) { return `${d.getFullYear()}-${d.getMonth()<9?"0":""}${d.getMonth()+1}-${d.getDate()<10?"0":""}${d.getDate()}` },
+        showPopupMessage: function(content, title=undefined, buttons=["Close"]) {
+            let modal = this.createModal(true);
+            
+            if (title !== undefined) modal.title.textContent = title;
+            this.render(content).then(node => modal.body.appendChild(node));
+            for (const b of buttons) {
+                let button = document.createElement("button");
+                button.textContent = b;
+                button.setAttribute("name", b.toLowerCase());
+                button.classList.add("btn", "btn-primary");
+                modal.footer.appendChild(button);
+            }
+            modal.addEventListener("click", e => {
+                if (e.target.matches("button, button *")) {
+                    switch (e.target.name) {
+                        case "close":
+                            modal.hide();
+                    }
+                }
+            })
+
+            modal.show();
+        }
     },
     renderers: {
         markdown: r.markdownRenderer,
@@ -266,6 +289,7 @@ Promise.allSettled([
         SWEET.store.set("currentUser", profile);
     
     }),
+    fetch("/myapp/profiler/latest").then(response => response.json()).then(profiler => SWEET.store.set("latestProfiler", profiler)),
     // tunnel schema fetch
     fetch("/app/schemas/tunnels").then(response => response.json()).then(tunnels => SWEET.store.set("tunnels", tunnels)),
     // app structure fetch

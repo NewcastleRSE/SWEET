@@ -1,11 +1,11 @@
-from ..secrets import email as settings
+from ..secrets import email as settings, hostname
 
 from smtplib import SMTP
 from email.message import EmailMessage
 
-client = SMTP(settings["server"], settings["port"])
 
 def _send(msg):
+    client = SMTP(settings["server"], settings["port"])
     client.starttls()
     client.login(settings["user"], settings["password"])
     client.send_message(msg)
@@ -39,10 +39,20 @@ def _send_message(to, template="welcome", **kwargs):
             "plain": "Dear {fullname}, This is a reminder to order your next hormone therapy prescription.\n\nFrom HT&Me"
         },
         "password_reset": {
-            "subject": "You have asked to reset your HT&Me password",
-            "html": "<div><p>Dear {fullname},</p><p>You are receiving this email because someone has asked to reset your password for HT &amp; Me.</p><p>To reset the password, please visit <a href='https://htandme.co.uk/auth/passwordreset?id={uid}&token={token}'>https://htandme.co.uk/auth/passwordreset?id={uid}&token={token}</a>.</p><p>If you did not request a password reset, please ignore this email.</p></div>",
-            "plain": "Dear {fullname}, You are receiving this email because someone has asked to reset your password for HT & Me.\n\nTo reset the password, please visit https://htandme.co.uk/auth/passwordreset?id={uid}&token={token}\n\nIf you did not generate this request, please ignore this email.\n\nFrom HT&Me"
+            "subject": "A message from the HT&Me Team",
+            "html": "<div><p>Dear {fullname},</p><p>You are receiving this email because someone has asked to reset your password for HT &amp; Me.</p><p>To reset the password, please visit <a href='https://{hostname}/auth/passwordreset?id={uid}&token={token}'>https://{hostname}/auth/passwordreset?id={uid}&token={token}</a>.</p><p>If you did not request a password reset, please ignore this email.</p></div>",
+            "plain": "Dear {fullname}, You are receiving this email because someone has asked to reset your password for HT & Me.\n\nTo reset the password, please visit https://{hostname}/auth/passwordreset?id={uid}&token={token}\n\nIf you did not generate this request, please ignore this email.\n\nFrom HT&Me"
         },
+        "profiler_reminder": {
+            "subject": "HT & Me - My Personal Support",
+            "html": "<p>Hello {fullname},</p><p>Did you know that you can use the My Personal Support feature in the HT&Me website to receive help and support which is tailored to you? This includes help with managing side effects, remembering the medication and dealing with any doubts or concerns about the treatment.</p><p>To go back to the HT&Me website, and use My Personal Support, visit <a href='https://{hostname}/'>https://{hostname}/</a>. If clicking on this link doesn’t work, please copy and paste or type the link into your browser (the bar at the top of your screen where you can type things in to search for them).</p><p>If you have any problems accessing the website please call 07737 747393 or email HTandMe@brookes.ac.uk</p><p>The HT & Me Team</p><p><hr><br>This is an automatic email. Please DO NOT reply to this email as any reply will not be received.</p>",
+            "plain": "Hello {fullname},\n\ndid you know that you can use the My Personal Support feature in the HT&Me website to receive help and support which is tailored to you? This includes help with managing side effects, remembering the medication and dealing with any doubts or concerns about the treatment.\n\nTo go back to the HT&Me website, and use My Personal Support, visit 'https://{hostname}/' (you can copy and paste or type the link into your browser (the bar at the top of your screen where you can type things in to search for them)).\n\nIf you have any problems accessing the website please call 07737 747393 or email HTandMe@brookes.ac.uk.\n\nThe HT & Me Team\n-----------------------------------------------------------\nThis is an automatic email. Please DO NOT reply to this email as any reply will not be received."
+        },
+        "goal_reminder": {
+            "subject": "Review your Goals at HT & Me",
+            "html": "<p>Hello {fullname},</p><p>It’s been a week since you set yourself some {shorttype} goals.</p><p>Now it’s time to review your goals. Each time you review your goals you will get personalised feedback which can help you to get the most out of {longtype}.</p><p>Just log on to HT&Me website and go to My Goals and Plans page and tell us how you got on with your goals this week.</p><p><a href='https://{hostname}/'>Click here to go to the HT&Me website</a></p><p>The HT & Me Team</p>",
+            "plain": "Hello {fullname},\n\nIt’s been a week since you set yourself some {shorttype} goals.\n\nNow it’s time to review your goals. Each time you review your goals you will get personalised feedback which can help you to get the most out of {longtype}.\n\nJust log on to HT&Me website and go to My Goals and Plans page and tell us how you got on with your goals this week.\n\nVisit the HT&Me website at https://{hostname}/.\n\nThe HT & Me Team."
+        }
     }
 
     htmltemplate = """\
@@ -82,4 +92,16 @@ def email_monthly_reminder(user):
 
 def send_password_reset(user, token):
     fullname = f"{user['firstName']} {user['lastName']}"
-    _send_message(f"{fullname} <{user['email']}>", "password_reset", fullname=fullname, token=token, uid=user['userID'])
+    _send_message(f"{fullname} <{user['email']}>", "password_reset", fullname=fullname, token=token, uid=user['userID'], hostname=hostname)
+
+def send_profiler_reminder(user):
+    fullname = f"{user['firstName']} {user['lastName']}"
+    _send_message(f"{fullname} <{user['email']}>", "profiler_reminder", fullname=fullname, hostname=hostname)
+
+def send_profiler_due(user):
+    fullname = f"{user['firstName']} {user['lastName']}"
+    _send_message(f"{fullname} <{user['email']}>", "profiler_reminder", fullname=fullname, hostname=hostname)
+
+def send_goal_reminder(detail):
+    fullname = f"{detail['firstName']} {detail['lastName']}"
+    _send_message(f"{fullname} <{detail['email']}>", "goal_reminder", fullname=fullname, hostname=hostname, shorttype=detail['shortType'], longtype=detail['longType'])
