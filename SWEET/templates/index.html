@@ -52,7 +52,7 @@
           <li class="nav-item">
             <a class="nav-link" href="#about">About the Team</a>
           </li>
-          {% if g.user['role'] in ['sysadmin', 'editor', 'staff'] %}
+          {% if g.user['role'] in ['sysadmin', 'studyadmin', 'editor', 'staff'] %}
           <li class="nav-item">
             <a class="nav-link" href="{{url_for('admin.home')}}" target="_blank">ADMIN</a>
           </li>
