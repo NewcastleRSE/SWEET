@@ -5,11 +5,11 @@ export function homepageMenuRenderer(section) {
         holder.setAttribute("class", "d-block col");
         holder.innerHTML = `
         <div class="card text-center">
-        <a class="d-block card" href=""</a>
+        <a class="d-block card" href="">
             <div class="card-body">
                 <h5 class="card-title"></h5>
                 <p class="card-text"></p>
-                <a href="" class="btn btn-primary">Read More</a>
+                <p class="btn btn-primary">Read More</p>
             </div>
         </a>`
 
