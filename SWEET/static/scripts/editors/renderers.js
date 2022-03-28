@@ -423,12 +423,6 @@ export function accordionRenderer(section) {
                 header.setAttribute("id", "header-" + index);
                 header.setAttribute("class", "accordion-header");
 
-                if (item.icon) {
-                    // set  up accordion icon: 
-                    // **** background image for button?
-                    // **** actual img element added to header?
-
-                }
 
                 const headerButton = document.createElement("button");
                 headerButton.setAttribute("class", "accordion-button collapsed");
@@ -436,7 +430,26 @@ export function accordionRenderer(section) {
                 headerButton.setAttribute("data-bs-toggle", "collapse");
                 headerButton.setAttribute("data-bs-target", "#collapse-" + randomID + "-" + index);
                 headerButton.setAttribute("aria-controls", "collapse-" + index);
-                headerButton.innerText = item.header;
+
+                if (item.icon) {
+                    let img = document.createElement("img")
+                    headerButton.appendChild(img)
+                    fetch(`/app/resources/${item.icon}`).then(response => response.json())
+                    .then(resource => {
+                        if (resource['content-type'] === undefined || resource['content-type'].startsWith("image")) {
+                            if (resource.source == "useblob") {
+                                img.setAttribute("src", `/app/resources/files/${item.icon}`);
+                            } else {
+                                img.setAttribute("src", resource.source);
+                            }
+                            img.setAttribute("alt", resource.description);
+                        } else {
+                            console.log("attempt to use non-image file as accordion icon");
+                            img.remove();
+                        }
+                    })
+                }
+                headerButton.insertAdjacentText("beforeend", item.header);
 
                 header.appendChild(headerButton);
 
