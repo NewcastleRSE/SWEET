@@ -157,7 +157,7 @@ def updateUser(userID, **kwargs):
 
     __userstore.commit()
         
-    return True
+    return True, ""
     
 def unsetPassword(userID, token):
     userID = confirmUserID(userID)

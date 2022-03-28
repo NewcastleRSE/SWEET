@@ -705,10 +705,14 @@ def get_schedule(day):
             schedule.append(rd)
 
         if m.get('reminder', False):
-            lastrem = date.fromisoformat(m.get('lastSent', m.get('start', date.today().isoformat()))) # if there's no start date this will never get sent
-            interval = 0 if lastrem == m.get('start') and 'lastSent' not in m else 3 if m.get('frequency', "") == "three" else  1
+            lastrem = date.fromisoformat(m.get('lastSent', m.get('start', date.today().isoformat())))
+            interval = 3 if m.get('frequency', "") == "three" else  1
 
-            target = fixdate(lastrem.year, lastrem.month + interval, lastrem.day)
+            # if the reminder hasn't been sent before AND day == start (which is held in lastrem)
+            # we want to send the reminder on lastrem - i.e. the start date.
+            # This will deal with start dates set in the past:
+            # # they will not be sent immediately and will wait for the appropriate interval
+            target = lastrem if day == lastrem and 'lastSent' not in m else fixdate(lastrem.year, lastrem.month + interval, lastrem.day)
             if target <= day:
                 rm = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'monthly'}
                 rm.update(m)

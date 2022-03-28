@@ -7,22 +7,22 @@
 </style>
 {% endblock %}
 {% block navitems %}
-{% if g.user['role'] in ['sysadmin', 'editor'] %}
+{% if g.user['role'] in ['sysadmin', 'studyadmin'] %}
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/scheduling">Scheduling</a>
+          </li>
+{% endif %}
+{% if g.user['role'] in ['sysadmin', 'studyadmin', 'editor'] %}
           <li class="nav-item">
             <a class="nav-link" href="/admin/edit">Editor</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/admin/scheduling">Scheduling</a>
+            <a class="nav-link" href="/admin/resources">Resources</a>
           </li>
 {% endif %}
           <li class="nav-item">
             <a class="nav-link" href="/admin/users">Users</a>
           </li>
-          {% if g.user['role'] in ['sysadmin', 'editor'] %}
-          <li class="nav-item">
-            <a class="nav-link" href="/admin/resources">Resources</a>
-          </li>
-          {% endif %}
           <li class="nav-item">
             <a class="nav-link" href="/admin/home">Admin Home</a>
           </li>
@@ -74,21 +74,92 @@ switch (page) {
     })
 
     table.addEventListener("click", e => {
-      if (e.target.matches("button.reset, button.reset *")) {
-        if (confirm("Reset all entered data for this user?")) {
-          let src = e.target;
-          while (src.tagName != "TR" && src.parentNode) src = src.parentNode;
+      let getUserId = function() {
+        let src = e.target;
+        while (src.tagName != "TR" && src.parentNode) src = src.parentNode;
 
-          if (src.tagName != "TR" || !src.dataset.userID) {
-            console.log("failed to find parent node with userID; aborting");
-            return false;
-          }
+        if (src.tagName != "TR" || !src.dataset.userID) {
+          console.log("failed to find parent node with userID; aborting");
+          return false;
+        }
+
+        return src.dataset.userID;
+      }
+
+      if (e.target.matches("button.reset, button.reset *")) {
+        let user = getUserId();
+        if (user && confirm("Reset all entered data for this user?")) {
 
           post("/admin/data/reset", { UserID: src.dataset.userID}).then(response => {
             if (response.ok) alert("User data successfully reset")
             else {
               console.log(reponse); alert("An error occurred, check the console for full details");
             }
+          })
+        }
+      } else if (e.target.matches("button.edit, button.edit *")) { 
+        let userid = getUserId();
+        if (userid) {
+          fetch(`/admin/data/users/${userid}`).then(response => response.json())
+          .then(user => {
+            let modal = createModal(true);
+
+            modal.title.textContent = `Edit user ${user.firstName} ${user.lastName}`;
+            modal.body.innerHTML = `
+              <h4>User Details:</h4>
+              <form id="edit-user-form">
+                <label>User Name:</label><input type="text" name="firstName" value="${user.firstName}"> <input type="text" name="lastName" value="${user.lastName}"><br>
+                <label>User Email:</label><input type="email" name="email" value="${user.email}"><br>
+                <label>User Mobile:</label><input type="tel" name="mobile" value="${user.mobile || ""}"<br><br>
+                <label>User Role:</label><select name="role">
+                  <option value="sysadmin">System Adminstrator</option>
+                  <option value="studyadmin">Study Administrator</option>
+                  <option value="editor">Content Manager</option>
+                  <option value="staff">Research Team Member</option>
+                  <option value="user">Standard User</option>
+                </select>
+              </form>
+            `
+
+            modal.footer.innerHTML = "<button type='button' class='btn btn-secondary'>Cancel</button> <button type='submit' form='edit-user-form' class='btn btn-primary'>Save Details</button>"
+
+            let adminroles = ["sysadmin", "studyadmin", "editor", "staff", "user"];
+            let myrole = adminroles.indexOf("{{g.user['role']}}")
+            if (adminroles.indexOf(user.role) < myrole) {
+              modal.body.querySelector("select").setAttribute("disabled", "");
+            } else {
+              adminroles.forEach((role, i) => {
+                if (i < myrole) {
+                  modal.body.querySelector(`option[value='${role}']`).remove();
+                }
+              })
+            }
+
+            modal.body.querySelector("select").value = user.role;
+
+            modal.body.querySelector("form").addEventListener("submit", e => {
+              e.preventDefault();
+
+              let updets =  {}
+              new FormData(e.target).forEach((value, name) => {
+                updets[name] = value;
+              })
+
+              console.log(updets);
+              post(`/admin/data/users/${user.userID}`, updets).then(response => response.json())
+              .then(result => {
+                // handle the result
+
+                // close the modal
+                modal.hide();
+              })
+            })
+
+            modal.footer.querySelector("button[type='button']").addEventListener("click", e => {
+              modal.hide();
+            })
+          
+            modal.show();
           })
         }
       } else {

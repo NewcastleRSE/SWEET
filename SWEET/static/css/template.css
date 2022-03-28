@@ -86,8 +86,10 @@ a.card {
     background-repeat: no-repeat;
     background-position: bottom -20px right 10px;
     background-size: 120px;
-    border: none;
-    background-color: none;
+}
+
+a.card.submenu:visited {
+    background-color: #ffffff;
 }
 
 .form-check .no-box-shadow:focus {

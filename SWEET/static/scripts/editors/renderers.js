@@ -423,6 +423,13 @@ export function accordionRenderer(section) {
                 header.setAttribute("id", "header-" + index);
                 header.setAttribute("class", "accordion-header");
 
+                if (item.icon) {
+                    // set  up accordion icon: 
+                    // **** background image for button?
+                    // **** actual img element added to header?
+
+                }
+
                 const headerButton = document.createElement("button");
                 headerButton.setAttribute("class", "accordion-button collapsed");
                 headerButton.setAttribute("type", "button");
