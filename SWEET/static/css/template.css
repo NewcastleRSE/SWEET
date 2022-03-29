@@ -331,6 +331,11 @@ li>p {
     vertical-align: text-top;
 }
 
+button.accordion-button img {
+    width: 50px;
+    padding-right: 1rem;
+}
+
 button.accordion-button {
     font-weight: bold;
 }
