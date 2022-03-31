@@ -3,18 +3,21 @@
     margin-top: 10em;
 }
 
+.card-title {
+    padding-top: 5em;
+}
+
+.hmpg-acts .card-title {
+    padding: 0;
+}
+
 .hmpg-acts {
     align-content: stretch;
 }
 
 .hmpg-acts .card-title {
-    color: #ffb600;
+    color: var(--SWEET-charcoal);
     font-weight: bolder;
-}
-
-.hmpg-acts .card-text {
-    padding-top: 0.25em;
-    padding-bottom: 1em;
 }
 
 .hmpg-sects a.card, .hmpg-acts a.card {
@@ -25,6 +28,10 @@
 
 .hmpg-acts a.card {
     min-height: 4.5em;
+}
+
+.hmpg-acts .card:hover {
+    box-shadow: none;
 }
 
 .hmpg-acts .card-body, .hmpg-acts a.card {
@@ -51,16 +58,17 @@
 img.card-icon {
     display: block;
     position: absolute;
-    width: 7.5em;
-    top: -5px;
-    left: 32%;
-    padding: 0px;
+    width: 6em;
+    padding-top: 0.5em;
+    top: -1px;
+    left: 33%;
 }
 
 .hmpg-acts img.card-icon {
     width: 5em;
-    top: 2em;
-    bottom: 0em;
+    top: 4em;
+    left: 0.5em;
+    opacity: 40%;
 }
 
 main.home :is(header, footer) {
