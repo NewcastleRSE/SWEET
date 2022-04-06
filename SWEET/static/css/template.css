@@ -316,7 +316,7 @@ section ul>li {
 }
 
 section ul>li:before {
-    content: "\2022";
+    content: "\2023";
     color: var(--SWEET-gold);
     font-weight: bold;
     font-size: 36px;
