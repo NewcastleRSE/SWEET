@@ -55,7 +55,12 @@ button.edit+button.cancel {
     background-color: white;
     display: inline-block;
     overflow: hidden;
+    overflow-wrap: break-word;
+    min-width: 400px;
+    max-width: 400px;
+    box-sizing: border-box;
     box-shadow: 0px 8px 12px 0px #acacac;
+
 }
 
 section.contact {
