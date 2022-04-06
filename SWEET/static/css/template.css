@@ -49,6 +49,15 @@ main header {
     margin-bottom: 1.5em;
 }
 
+.bg-image {
+    height: 300px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+
 main footer {
     margin-top: 1.5em;
 }
