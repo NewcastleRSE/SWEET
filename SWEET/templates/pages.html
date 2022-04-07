@@ -250,12 +250,12 @@
             customElements.define('content-editor', editors.ContentEditor);
             customElements.define('edit-inserter', editors.EditorInserter);
             
-            document.querySelector("#page-content").registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.AccordionEditor, editors.BlockquoteEditor, editors.MenuEditor, editors.AlertEditor, editors.GoalSetter, editors.PopupEditor, editors.PopupTriggerEditor, editors.FillInBoxEditor, editors.DescribedMenuEditor, editors.ThoughtsBox)
+            document.querySelector("#page-content").registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.AccordionEditor, editors.BlockquoteEditor, editors.MenuEditor, editors.AlertEditor, editors.GoalSetter, editors.PopupEditor, editors.PopupTriggerEditor, editors.FillInBoxEditor, editors.DescribedMenuEditor, editors.ThoughtsBox, editors.CarouselEditor)
             
             editors.AccordionEditor.registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.BlockquoteEditor, editors.FillInBoxEditor, editors.PopupEditor, editors.PopupTriggerEditor);
             editors.AlertEditor.registerEditors(editors.MarkdownEditor, editors.BlockquoteEditor);
             editors.PopupEditor.registerEditors(editors.AccordionEditor, editors.MarkdownEditor, editors.BlockquoteEditor, editors.AlertEditor, editors.FillInBoxEditor);
-            
+            editors.CarouselEditor.registerEditor(editors.MarkdownEditor);
 
             document.querySelector("#add-page").addEventListener("click", e => {
                 if (document.querySelector("#add-details input[name='add-slug']").value.replace(/[a-z-]*/, "").length > 0) {
@@ -430,6 +430,7 @@
                 let resource = {
                     name: this.elements['name'].value,
                     description: this.elements['description'].value,
+                    caption: this.elements['caption'].value,
                     'content-type': this.elements['media-type'].value,
                     filename: this.elements['file'].files[0].name
                 }
@@ -485,6 +486,7 @@
                             <label>Name:</label><input type="text" name="name" minlength="3" maxlength="50" required><br />
                             <label>File type:</label><input type="text" name="media-type" minlength="3" maxlength="50" required><br />
                             <label>Description:</label><input type="text" name="description" length="80" minlength="3" maxlength="150" required><br />
+                            <label>Caption:</label><input type="text" name="caption" length="80" minlength="3" maxlength="200"><br />
                             <input type="submit" value="Add">
                         </fieldset>
                         <object id="add-resource-preview"></object>
@@ -640,7 +642,7 @@
                     Object.keys(data).forEach(k => {
                         // create a resource listing for each key
                         holder.insertAdjacentHTML("beforeend", 
-                            `<div class="resource"><span>${k}</span><img src="${data[k].source == "none"? blob: data[k].source}" class="thumbnail" alt="${data[k].description}" title="${data[k].description}" /></div>`)
+                            `<div class="resource"><span>${k}</span><img src="${data[k].source == "none"? blob: data[k].source}" class="thumbnail" alt="${data[k].description}" title="${data[k].caption}" /></div>`)
                     })
                 })
             }

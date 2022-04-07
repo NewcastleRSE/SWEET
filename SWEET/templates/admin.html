@@ -4,6 +4,8 @@
   .running { color: darkgreen; }
   .stopped { color: darkred; }
   .operation { font-family: monospace; }
+  img.thumb { max-height: 3em; margin: 0.25em auto; }
+  img.preview { max-height: 20em; max-width: 20em;}
 </style>
 {% endblock %}
 {% block navitems %}
@@ -51,6 +53,89 @@ switch (page) {
   case "home":
     break;
   case "resources":
+    var holder = document.createElement("div");
+    holder.innerHTML = `
+    <h3>Resources available in this app:</h3>
+    <table>
+      <tr>
+        <th>Resource Name</th>
+        <th>Description</th>
+        <th>Thumbnail</th>
+        <td>actions:</td>
+      </tr>
+    </table>`
+
+    fetch("/app/resources").then(response => response.json())
+    .then(resources => {
+      Object.keys(resources).forEach(k => {
+        holder.querySelector("table").insertAdjacentHTML("beforeend", `
+          <tr>
+            <td>${k}</td>
+            <td>${resources[k].description}</td>
+            <td>${ resources[k]['content-type'] === undefined || resources[k]['content-type'].startsWith("image")?
+                    `<img class="thumb" src="${ resources[k].source == "none"? `/app/resources/files/${k}`: resources[k].source}"`:
+                    "NO THUMBNAIL"
+                  }</td>
+            <td><button class="edit" data-resource="${k}">Edit</button><button class="delete" disabled>Delete</button></td>
+          </tr>
+        `)
+      })
+      holder.addEventListener("click", async e => {
+        let src = e.target;
+        
+        if (src.matches("button.edit, button.edit *")) {
+          while (src.tagName != "BUTTON" && src.parentNode) src = src.parentNode;
+          if (src.tagName != "BUTTON") return;
+
+          let resource = await fetch(`/app/resources/${src.dataset.resource}`).then(response => response.json());
+
+          let m = createModal(true);
+          m.size = "fs";
+          let resourceholder = document.createElement("div");
+          resourceholder.classList.add("row");
+          let details = resourceholder.appendChild(document.createElement("div"))
+          details.classList.add("col");
+          details.innerHTML = `
+            <h4>${resource.name}</h4>
+            <div>
+              <label title="This must be a description of the content of the image, for accessibility purposes">Resource Description:</label><input type="text" name="description" value="${resource.description}"><br>
+              <label title="This may be descriptive text or additional information about the image which will be associated with it when it is rendered">Resource Caption:</label><input type="text" name="caption" value="${resource.caption}"<br>
+            </div>
+          `
+          let preview = resourceholder.appendChild(document.createElement("div"));
+          preview.classList.add("col");
+          let source = resource.source == "useblob"? `/app/resources/files/${resource.name}`: resource.source;
+          if (resource['content-type'].startsWith("image")) {
+            preview.innerHTML = `<img src="${source}" class="preview" alt="${resource.description}" title="${resource.caption}" />`
+          } else if (resource['content-type'].startsWith("video")) {
+            preview.innerHTML = `<video controls src="${source}" title="${resource.caption}"><p>${resource.description}</p></video>`;
+          }
+
+          m.body.appendChild(resourceholder);
+
+          m.footer.innerHTML = `<button class="btn btn-primary save" type="button">Save Changes</button><button class="btn btn-secondary cancel">Cancel</button>`
+          m.footer.querySelector("button.save").addEventListener("click", e => {
+            let caption = m.body.querySelector("input[name='caption']").value;
+            let description = m.body.querySelector("input[name='description']").value;
+
+            if (caption == resource.caption && description == resource.description) {
+              alert("No changes made to save"); return;
+            }
+
+            post("/admin/resources/", { name: resource.name, description: description, caption: caption})
+            m.hide();
+          })
+          m.footer.querySelector("button.cancel").addEventListener("click", () => {
+            m.hide();
+          })
+
+          m.show();
+        }
+      })
+
+    })
+    document.querySelector("#main_content").appendChild(holder)
+
     break;
   case "users":
     var holder = document.createElement("section");

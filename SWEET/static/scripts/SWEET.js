@@ -14,6 +14,9 @@ import { thoughtsPageRenderer } from './renderers/thoughts.js'
 import { userDetailsPageRenderer } from './renderers/user_details.js'
 import { welcomeFooterRenderer } from './renderers/welcome.js'
 import { goalCheckerRenderer} from './renderers/goalchecker.js'
+import { carouselRenderer, carouselSlideRender } from './renderers/carousel.js'
+import { tiledResourcesRenderer } from './renderers/tiledresources.js'
+import { splashImageRenderer } from './renderers/splashimage.js'
 
 
 let SWEET = createApp({
@@ -88,7 +91,11 @@ let SWEET = createApp({
         "profiler-result": profilerResultRenderer, 
         "profiler-launcher": profilerLauncherRenderer, 
         "my-personal-support": myPersonalSupportRenderer,
-        goalchecker: goalCheckerRenderer
+        goalchecker: goalCheckerRenderer,
+        carousel: carouselRenderer,
+        "carousel-slide": carouselSlideRender,
+        splashimage: splashImageRenderer,
+        tiledresources: tiledResourcesRenderer
     },    
     load: function(path) {
         let url = `/app/content?path=${encodeURIComponent(path)}`;
@@ -129,6 +136,18 @@ SWEET.addEventListener("prerender", function(page) {
     document.querySelector("main").classList.remove(...document.querySelector("main").classList.values())
     document.querySelector("main").classList.add("flex-shrink-0", this.path.replace("#", "").replaceAll("/", "_"));
     
+    if (page.headerImage) {
+        fetch(`/app/resources/${page.headerImage}`).then(response => response.json())
+        .then(resource => {
+            if (resource['content-type'] === undefined || resource['content-type'].startsWith("image")) {
+                let splash = document.querySelector(".bg-image");
+                splash.setAttribute("style", `background-image: url(${ resource.source == "useblob"? `/app/resources/files/${page.headerImage}`: resource.source})`);
+            }
+        })
+    } else {
+        document.querySelector(".bg-image").removeAttribute("style");
+    }
+
     document.querySelectorAll(".btn-up").forEach(b => { 
         if (this.path.lastIndexOf("/") == -1) {
             b.setAttribute("hidden", "");

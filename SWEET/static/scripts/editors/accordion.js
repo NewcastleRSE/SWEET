@@ -138,6 +138,7 @@ export class AccordionEditor extends HTMLElement {
         content.content.forEach(i => {
             let item = this._item;
             item.querySelector("input[name='title']").value = i.header;
+            item.querySelector("input[name='icon']").value = i.icon;
             item.querySelector("content-editor").load(i.content);
             this.$.add.insertAdjacentElement('beforebegin', item)
         })
