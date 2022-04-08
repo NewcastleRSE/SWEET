@@ -7,10 +7,6 @@ export function carouselRenderer(section) {
     let id = `carousel-${section.name.toLowerCase().replaceAll(/\s+/g, "-").replaceAll(/\W+/g, "")}`
     carousel.setAttribute("id", id)
 
-    if (!section.autostart) {
-        carousel.setAttribute("data-bs-pause", "true");
-    }
-
     if (section.indicators) {
         let indicators = carousel.appendChild(document.createElement("div"));
         indicators.classList.add("carousel-indicators");
@@ -44,7 +40,8 @@ export function carouselRenderer(section) {
         inner.querySelector(".carousel-item").classList.add("active");
     })
 
-    let controller = new bootstrap.Carousel(carousel)
+    let controller = bootstrap.Carousel.getOrCreateInstance(carousel);
+    if (section.autostart) controller.cycle();
 
     return carousel;
 }

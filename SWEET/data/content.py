@@ -118,6 +118,7 @@ def saveResource(newres):
     if name in __resources:
         del newres['name']
         __resources[name].update(newres)
+        __resources.commit()
         return
     
     input = { 'description': newres['description'], 'content-type': newres['content-type'], 'filename': newres['filename'], 'caption': newres.get('caption', "") }

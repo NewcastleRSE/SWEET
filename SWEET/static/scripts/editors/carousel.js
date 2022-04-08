@@ -37,9 +37,8 @@ class CarouselTiledResoucesEditor extends HTMLElement {
         this.$ = {};
         const root = this.$.root = this.attachShadow({mode: "open"});
         let rowtemplate = `<label>Resource name:</label><input type="text" name="resource"><br>`
-        root.innerHTML = "<fieldset><legend>Resources:</legend><button class='add' type='button'>Add another</button></fieldset>";
-        root.querySelector("button.add").insertAdjacentHTML("beforebegin", rowtemplate);
-
+        root.innerHTML = "<fieldset><legend>Resources:</legend><button class='add' type='button'>Add a resource</button></fieldset>";
+        
         root.addEventListener("click", e => {
             if (e.target.matches("button.add, button.add *")) {
                 root.querySelector("button.add").insertAdjacentHTML("beforebegin", rowtemplate);
@@ -56,7 +55,7 @@ class CarouselTiledResoucesEditor extends HTMLElement {
 
     load(content) {
         content.resources.forEach(r => {
-            root.querySelector("button.add").insertAdjacentHTML("beforebegin", `<label>Resource name:</label><input type="text" name="resource" value="${r}">`)
+            this.$.root.querySelector("button.add").insertAdjacentHTML("beforebegin", `<label>Resource name:</label><input type="text" name="resource" value="${r}"><br>`)
         });
     }
 
@@ -164,7 +163,11 @@ export class CarouselEditor extends HTMLElement {
         
         add.addEventListener("click", e => {
             if (e.target.matches("button, button *")) {
-                add.insertAdjacentElement('beforebegin', this._slide)
+                let newslide = this._slide;
+                let editor = newslide.appendChild(document.createElement(this.$.root.querySelector("select").value))
+                editor.classList.add("slide-content");
+        
+                add.insertAdjacentElement('beforebegin', newslide)
             }
         })
     }
@@ -173,8 +176,6 @@ export class CarouselEditor extends HTMLElement {
         let i = document.createElement("fieldset");
         i.classList.add("slide");
         i.innerHTML = this.$.slidetemplate;
-        let editor = i.appendChild(document.createElement(this.$.root.querySelector("select").value))
-        editor.classList.add("slide-content");
         i.addEventListener("click", e => { 
             e.preventDefault(); e.stopPropagation();
 
@@ -221,7 +222,7 @@ export class CarouselEditor extends HTMLElement {
         this.$.root.querySelector("input[name='controls']").checked = content.controls;
         this.$.root.querySelector("input[name='indicators']").checked = content.indicators;
         this.$.root.querySelector("input[name='autostart']").checked = content.autostart;
-        this.$.root.querySelector("input[name='dark']").checked = section.darkmode;
+        this.$.root.querySelector("input[name='dark']").checked = content.darkmode;
 
         content.slides.forEach(i => {
             if (i.type != "carousel-slide") {
@@ -234,12 +235,12 @@ export class CarouselEditor extends HTMLElement {
                 let slide = this._slide;
                 slide.querySelector("input[name='title']").value = i.header;
                 let editor = slide.appendChild(document.createElement(type.tagName));
+                editor.classList.add("slide-content");
                 editor.load(i.content);
                 this.$.add.insertAdjacentElement('beforebegin', slide)
             } else {
                 console.log(`Content type ${i.content.type} has not been registered as a carousel slide content type.`)
             }
-            
         })
     }
 
