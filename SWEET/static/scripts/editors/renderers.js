@@ -55,7 +55,7 @@ export function markdownRenderer(section) {
             // or we leave this as a normal code block in markdown.
             
             if (replacer) {
-                code.insertAdjacentHTML("beforebegin", );
+                code.insertAdjacentHTML("beforebegin", replacer);
                 code.remove();
             }
         }

@@ -10,3 +10,4 @@ export {PopupEditor, PopupTriggerEditor} from './popup.js';
 export {FillInBoxEditor} from './fillinbox.js';
 export {DescribedMenuEditor} from './descmenu.js';
 export {ThoughtsBox} from './thoughts.js';
+export {CarouselEditor} from './carousel.js';
