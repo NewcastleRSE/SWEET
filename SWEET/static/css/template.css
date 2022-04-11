@@ -531,22 +531,23 @@ ul li a:hover {
 ul li a:focus {
     border-bottom: 5px solid var(--SWEET-purple);
     margin-bottom: -10px;
+}
 
-    .bg-image {
-        height: 300px;
-        width: 100%;
-        margin-top: 3em;
-        background-size: cover;
+.bg-image {
+    height: 300px;
+    width: 100%;
+    margin-top: 3em;
+    background-size: cover;
+}
+
+@media screen and (max-width: 825px) {
+
+    ul.navbar-nav li.nav-item a.nav-link, ul.quick-links li a {
+        font-size: 0.8em;
+        text-align: center;
     }
 
-    @media screen and (max-width: 825px) {
-
-        ul.navbar-nav li.nav-item a.nav-link, ul.quick-links li a {
-            font-size: 0.8em;
-            text-align: center;
-        }
-
-        /* a.nav-link.btn-secondary {
+    /* a.nav-link.btn-secondary {
         margin: 0;
         margin-top: 1rem;
         position: relative;
@@ -558,41 +559,41 @@ ul li a:focus {
     }
     */
 
-        ul li:last-child a::after {
-            display: none;
+    ul li:last-child a::after {
+        display: none;
 
-        }
-
-        ul li a:focus {
-            display: none;
-        }
-
-        h1 {
-            font-size: 1.5em;
-        }
-
-        h5 {
-            font-size: 1.2em;
-        }
-
-        body, .form-control, label {
-            font-size: 0.9em;
-
-        }
-
-        #diary-page-graphs {
-            margin-top: 4em;
-        }
-
-        #diary-page-graphs h4 {
-            font-size: 1.2em;
-        }
-
-        #diary-page-graphs h5 {
-            font-size: 1em;
-        }
-
-        #diary-page-graphs select {
-            font-size: 0.7em;
-        }
     }
+
+    ul li a:focus {
+        display: none;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    h5 {
+        font-size: 1.2em;
+    }
+
+    body, .form-control, label {
+        font-size: 0.9em;
+
+    }
+
+    #diary-page-graphs {
+        margin-top: 4em;
+    }
+
+    #diary-page-graphs h4 {
+        font-size: 1.2em;
+    }
+
+    #diary-page-graphs h5 {
+        font-size: 1em;
+    }
+
+    #diary-page-graphs select {
+        font-size: 0.7em;
+    }
+}
