@@ -472,22 +472,22 @@ ul li:last-child a::after {
 }
 
 ul li:nth-child(1)~li:last-child a {
-    right: 31.1em;
+    right: 27.7em;
     width: 3.7em;
 }
 
 ul li:nth-child(2):hover~li:last-child a {
-    right: 23.9em;
+    right: 21em;
     width: 6.41em;
 }
 
 ul li:nth-child(3):hover~li:last-child a {
-    right: 16.1em;
+    right: 14.1em;
     width: 6.9em;
 }
 
 ul li:nth-child(4):hover~li:last-child a {
-    right: 6.9em;
+    right: 5.9em;
     width: 8.26em;
 }
 
