@@ -5,7 +5,7 @@
 }
 
 img.splash {
-    width:  100%;
+    width: 100%;
     object-fit: contain;
 }
 
@@ -20,12 +20,28 @@ img.splash {
     margin: 2em auto;
 }
 
+.tile-caption {
+    display: block;
+    text-align: center;
+}
+
+.carousel-indicators {
+    margin-bottom: 2rem;
+}
+
 .carousel-indicators,
 .carousel-control-next-icon,
 .carousel-control-prev-icon {
     background-color: #0003;
     border-radius: 0.5em;
 }
+
+.carousel-indicators button {
+    height: 0.5em !important;
+    width: 0.5em !important;
+    border-radius: 50%;
+}
+
 .carousel-dark .carousel-indicators {
     background-color: #fff3;
 }
