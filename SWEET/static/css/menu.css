@@ -17,9 +17,6 @@
     */
 }
 
-.card .img {
-    border-radius: 50%;
-}
 
 :is(.nav-normal, .nav-described) .card {
     border-radius: 2em;
@@ -28,6 +25,7 @@
     width: 100%;
     padding-top: 1rem;
     background-position: top;
+    background-position-y: 1rem;
 
 
     /* border-radius: 2em;
