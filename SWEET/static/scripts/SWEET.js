@@ -102,7 +102,8 @@ let SWEET = createApp({
         return fetch(url, {
             headers: {
                 'X-SWEET-referrer': this.store.get("prevPath")
-            }
+            },
+            redirect: 'error'
         }).then(response => {
             if (response.ok) {
                 this.store.set("prevPath", path);
@@ -125,6 +126,14 @@ If you followed a link, the application maintainers will be notified automatical
                     ]
                 }
             }
+        },
+        reject => {
+            // failure to fetch is either a network error or a redirect due to no auth token:
+            //   sending the app to the logout url will attempt to logout the user if logged in,
+            //   then automatically redirect to login page.
+            // if the fetch failed due to a network error, the user's browser should notify them 
+            //   of the error while trying to load the login page
+            location.href = '/auth/logout';
         });
     },
     titleHolder: "#page-title",
