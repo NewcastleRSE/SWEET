@@ -201,12 +201,6 @@ def getPrintDiary(user, period):
                 if "date" not in se:
                     se["date"] = d
 
-                if isinstance(se["severity"], str) and se["severity"] in seschema:
-                    se["severity"] = seschema[se["severity"]]
-
-                if isinstance(se["impact"], str) and se["impact"] in seschema:
-                    se["impact"] = seschema[se["impact"]]
-
                 se["sevdesc"] = seschema[round(float(se["severity"]))]
                 se["impdesc"] = seschema[round(float(se["impact"]))]
 
