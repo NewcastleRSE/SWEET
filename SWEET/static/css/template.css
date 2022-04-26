@@ -1,11 +1,15 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope");
 
-@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;1,100;1,200&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Raleway');
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat');
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins');
 
 :root {
     font-size: 20px;
 
-    --bs-font-sans-serif: "Raleway", "Manrope", "Roboto", Arial, sans-serif;
+    --bs-font-sans-serif: "Manrope", "Roboto", Arial, sans-serif;
 
     --SWEET-purple: #633188;
     --SWEET-grey: #b3b3b2;
