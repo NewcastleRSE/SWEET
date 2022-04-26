@@ -1,12 +1,12 @@
 from .users import updateUser, getAllUsers
 from .az_persitent import AzurePersitentDict, AzurePersistentList
 from ..secrets import connstr as az_connection, usersource, usergoals, userdiary, userdatastore
-from . import getContainer, getProfilerResponses
+from . import getContainer
+from .content import getProfilerResponses, getGoalMessage
 from datetime import date, timedelta, MINYEAR, MAXYEAR
 import json
 from azure.core.exceptions import ResourceExistsError
 from ..schemas import getSideEffectValueMappings
-from ..data.content import getGoalMessage
 
 from flask import request
 from .users import logvisit

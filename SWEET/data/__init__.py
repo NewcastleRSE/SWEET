@@ -5,8 +5,6 @@ from cryptography.fernet import Fernet
 __cryptor = Fernet(secrets.fernetkey)
 
 # utility methods
-def getProfilerResponses():
-    return json.loads(getContainer(secrets.usersource).download_blob("profilerResponses.json").readall())
 
 def encryptUser(user):
     return __cryptor.encrypt(json.dumps(user).encode("utf8")).decode("utf8")
