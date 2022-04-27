@@ -1,4 +1,4 @@
-.nav-normal, .nav-described {
+.nav-normal {
     margin-bottom: 1.5em;
 }
 
@@ -17,8 +17,14 @@
     */
 }
 
+:is(.nav-described) .card {
+    border: 0.2em solid var(--SWEET-purple);
+    border-radius: 0.5em;
+    padding: 0;
 
-:is(.nav-normal, .nav-described) .card {
+}
+
+:is(.nav-normal) .card {
     border-radius: 2em;
     display: inline-flex;
     align-items: flex-end;
@@ -57,4 +63,8 @@
 .nav-described .card, .nav-described .card-body {
     padding: 0.2em;
 
+}
+
+.nav-described .card-title {
+    padding-top: 0;
 }
