@@ -29,19 +29,15 @@ export function markdownRenderer(section) {
         fetch(`/app/resources/${name}`).then(response => response.json())
         .then(resource => {
             if (resource['content-type'] === undefined || resource['content-type'].startsWith("image")) {
-                if (resource.source == "useblob") {
-                    img.setAttribute("src", `/app/resources/files/${name}`);
-                } else {
-                    img.setAttribute("src", resource.source);
-                }
+                img.setAttribute("src", resource.source);
                 img.setAttribute("alt", resource.description);
+                img.setAttribute("title", resourse.caption);
+
                 if (position) img.classList.add(...position.split(";"));
             } else if (resource['content-type'].startsWith("video")) {
-                let src = resource.source == "useblob"? `/app/resources/files/${name}`: resource.source;
+                let src = resource.source;
                 img.insertAdjacentHTML("beforebegin", `<video controls src="${src}"${position? ` class="${position.replace(';',' ')}"`:""}><p>${resource.description}</p></video>`);
                 img.remove();
-                // maybe do some work with position.
-                // maybe do some work with popups.
             }
         })
     })

@@ -1,9 +1,9 @@
 from flask import (
-    Blueprint, request, abort, send_file, g
+    Blueprint, request, abort, send_file, g, url_for
 )
 
 from .data.content import (
-    getResourceBlob, getStructure, getPageContents, getPageDetails, getResource as getNamedResource, getResources, getPages
+    loadResourceBlob, getStructure, getPageContents, getPageDetails, getResource as getNamedResource, getResources, getPages
 )
 
 from.data.users import logvisit
@@ -43,7 +43,12 @@ def getPageContent():
 @bp.route("/resources")
 @login_required
 def resources():
-    return getResources()
+    all = getResources()
+    for name in all:
+        if 'source' not in all[name]:
+            all[name]['source'] = url_for('getResourceFile', name=name)
+
+    return all
 
 @bp.route("/resources/<name>")
 @login_required
@@ -57,8 +62,12 @@ def getResource(name):
 @bp.route("/resources/files/<name>")
 @login_required
 def getResourceFile(name):
-    res = getResourceBlob(name)
+    res = getNamedResource(name)
     if res is None:
         abort(404)
-    
-    return send_file(res['file'], mimetype=res['content-type'], download_name=res['downloadName'])
+
+    blob = loadResourceBlob(name)
+    if blob is None:
+        abort(404)
+
+    return send_file(blob, mimetype=res['content-type'], download_name=res['filename'])

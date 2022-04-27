@@ -35,12 +35,9 @@ export function accordionRenderer(section) {
                     fetch(`/app/resources/${item.icon}`).then(response => response.json())
                     .then(resource => {
                         if (resource['content-type'] === undefined || resource['content-type'].startsWith("image")) {
-                            if (resource.source == "useblob") {
-                                img.setAttribute("src", `/app/resources/files/${item.icon}`);
-                            } else {
-                                img.setAttribute("src", resource.source);
-                            }
+                            img.setAttribute("src", resource.source);
                             img.setAttribute("alt", resource.description);
+                            img.setAttribute("title", resource.caption);
                         } else {
                             console.log("attempt to use non-image file as accordion icon");
                             img.remove();

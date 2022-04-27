@@ -1,8 +1,7 @@
-import random
 from .az_persitent import AzurePersitentDict
 from ..secrets import connstr as az_connection, datasource as az_content_cntr, structure, content, resources, goal_messages, profiler_responses
 
-from . import recursiveUpdate
+from . import recursiveUpdate, getContainer
 
 __structure = AzurePersitentDict(az_connection, az_content_cntr, structure)
 __content = AzurePersitentDict(az_connection, az_content_cntr, content)
@@ -77,68 +76,71 @@ def updatePageContent(details):
 
 def getResources():
     return { 
-        k: { 'name': k, 'description': v['description'], 'caption': v.get("caption", ""), 'source': v['source'] if 'source' in v else 'none' }
-        for k,v in __resources.items()
+        k: getResource(k)
+        for k in __resources
     }
         
 def getResource(name):
     if name in __resources:
         r = __resources[name]
-        output = { "name": name, "description": r['description'], "caption": r.get('caption', "")}
+        output = { "name": name, "content-type": r['content-type'], "description": r['description'], "caption": r.get('caption', ""), "filename": r.get('filename', "")}
 
-        if 'content-type' in r:
-            output['content-type'] = r['content-type']
-        else:
-            if 'source' in r and r['source'].startswith("data:"):
-                output['content-type'] = r['source'][5:r['source'].find(';')]
-            else:
-                return None
-
-        if 'source' in r:
-            output['source'] = r['source']
-        else:
-            output['source'] = "useblob"
-
+        if r['blobsize'] < 512*1024:
+            blob = getResourceBlobString(name)
+            output['source'] = f"data:{r['content-type']};base64,{blob}"
+        
         return output
     
     return None
 
-def getResourceBlob(name):
-    if name not in __resources:
-        return None
+def getResourceBlobString(name):
+    from base64 import b64encode
+    return b64encode(loadResourceBlob(name)).encode()
 
-    r = __resources[name]
-
-    if 'blob' not in r:
-        return None
-
-    from io import BytesIO
-    from base64 import b64decode
-
-    f = BytesIO(b64decode(r['blob'].encode('utf8')))
-    t = r['content-type']
-    n = r['filename']
-
-    return {'name': name, 'file': f, 'content-type': t, 'downloadName': n }
 
 def saveResource(newres):
     name = newres['name']
+    input = { 
+        'description': newres['description'], 
+        'caption': newres['caption'], 
+    }
 
     if name in __resources:
-        del newres['name']
-        __resources[name].update(newres)
+        if 'content-type' in newres or 'filename' in newres or 'blob' in newres:
+            # only description and caption are editable for existing resources;
+            # if we've been sent any other values it is an error.
+            raise ValueError
+
+        __resources[name].update(input)
         __resources.commit()
         return
+
+    for field in ['content-type', 'filename', 'blob']:
+        # for a new resource we require all fields to be present.
+        if field not in newres:
+            raise ValueError
+
+    blob = newres['blob']
+
+    input.update({'content-type': newres['content-type'], 'filename': newres['filename'], 'blobsize': len(blob)})
     
-    input = { 'description': newres['description'], 'content-type': newres['content-type'], 'filename': newres['filename'], 'caption': newres.get('caption', "") }
-    if 'source' in newres:
-        input['source'] = newres['source']
-
-    if 'blob' in newres:
-        input['blob'] = newres['blob']
-
     __resources[name] = input
     __resources.commit()
+
+    saveResourceBlob(name, blob)
+
+def saveResourceBlob(name, blobstring):
+    from base64 import b64decode
+    cnt = getContainer(az_content_cntr)
+    blobname = f"/resourceblobs/{name}"
+    cnt.upload_blob(blobname, b64decode(blobstring), overwrite=True)
+
+def loadResourceBlob(name):
+    if name not in __resources:
+        return None
+
+    cnt = getContainer(az_content_cntr)
+    return cnt.download_blob(f"/resourceblobs/{name}").readall()
 
 def getGoalMessage(goal, which):
     messages = getGoalResponses()

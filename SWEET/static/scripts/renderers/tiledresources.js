@@ -14,7 +14,7 @@ export function tiledResourcesRenderer(section) {
 
                 let img = document.createElement("img");
                 img.classList.add("tile-img")
-                img.setAttribute("src", resource.source == "useblob"? `/app/resources/files/${section.resource}`: resource.source);
+                img.setAttribute("src", resource.source);
                 img.setAttribute("alt", resource.description);
                 img.setAttribute("title", resource.caption);
                 tile.appendChild(img);
