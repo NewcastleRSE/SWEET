@@ -157,7 +157,6 @@ span a {
     box-shadow: none;
 }
 
-
 .form-check-input:checked {
     background-color: var(--SWEET-purple);
     border-color: var(--SWEET-purple);
@@ -211,6 +210,23 @@ margin-left: 0.5rem;
     border-color: var(--SWEET-grey);
 }
 
+.btn-dark, .btn-dark:focus, .btn-dark:active {
+    background-color: var(--SWEET-purple);
+    border-radius: 2rem;
+    padding: 3px;
+    margin-top: 6px;
+    margin-left: 0.5rem;
+}
+
+a.nav-link.btn-dark {
+    color: var(--SWEET-off-white) !important;
+}
+
+.btn-dark:hover {
+    background-color: var(--SWEET-lilac);
+    border-color: var(--SWEET-lilac);
+}
+
 footer.footer-dark {
     background-color: var(--SWEET-purple) !important;
 }
@@ -218,6 +234,10 @@ footer.footer-dark {
 a.navbar-brand {
     font-size: 32px;
     padding: 0;
+}
+
+a.navbar-brand img {
+    margin-top: 5px;
 }
 
 a.navbar-brand:hover, a.navbar-brand:focus {
