@@ -34,8 +34,8 @@
     box-shadow: none;
 }
 
-.hmpg-acts .card-body, .hmpg-acts a.card {
-    background-color: var(--SWEET-off-white);
+.flex-shrink-0 , .hmpg-acts .card-body, .hmpg-acts a.card {
+    background-color: #f7f7f7;
 }
 
 .hmpg-acts .card.text-center {
