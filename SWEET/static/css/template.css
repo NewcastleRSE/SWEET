@@ -202,7 +202,6 @@ margin-left: 0.5rem;
 
 .btn-secondary, .btn-secondary:focus {
     background-color: var(--SWEET-charcoal);
-    margin-top: 20px;
 }
 
 .btn-secondary:hover {
