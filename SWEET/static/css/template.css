@@ -573,7 +573,7 @@ ul li a:focus {
         text-align: center;
     }
 
-    /* a.nav-link.btn-secondary {
+ a.btn-dark {
         margin: 0;
         margin-top: 1rem;
         position: relative;
@@ -583,7 +583,7 @@ ul li a:focus {
         transform: translate(-50%, -50%);
 
     }
-    */
+    
 
     ul li:last-child a::after {
         display: none;
