@@ -301,7 +301,7 @@ export class ContentEditor extends HTMLElement {
        this.$.editors.forEach(t => inserter.addContentType(t.description, t.tagName));
 
         holder.addEventListener("click", e => { 
-            e.preventDefault(); e.stopPropagation();
+            if (e.target.matches("button")) { e.preventDefault(); e.stopPropagation(); }
 
             if (e.target.classList.contains("delete")) {
                 holder.remove(); inserter.remove(); 

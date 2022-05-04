@@ -1,143 +1,170 @@
 <!doctype html>
 <html lang="en" class="h-100">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>HT&amp;Me</title>
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HT&amp;Me</title>
 
-    <!-- Custom styles for this template -->
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/template.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/sideeffects.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/home.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/diary.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/standout.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/goal.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/menu.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/fillin.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/modal.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/embed.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/popup.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/tunnel.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/account.css') }}">
-    {% block headextensions %}
-    {% endblock %}
-  </head>
-  <body class="d-flex flex-column h-100 bg-light">
-    
-<header>
-  <!-- Fixed navbar -->
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top shadow">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#home"><strong>HT &amp; Me</strong> <img src="{{ url_for('static', filename='images/logo-swirl-only.png') }}" alt="logo" height="36" class="d-inline-block align-text-top"></a>
-      <a class="nav-link d-block d-md-none" aria-current="page" href="#home"><i class="bi bi-house text-white h3"></i></a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarCollapse">
-        <ul class="navbar-nav ms-auto mb-2 mb-md-0">
-          {% block navitems %}
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#home">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#my-account">My Account</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#my-contacts">My Contacts</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#about">About the Team</a>
-          </li>
-          {% if g.user['role'] in ['sysadmin', 'studyadmin', 'editor', 'staff'] %}
-          <li class="nav-item">
-            <a class="nav-link" href="{{url_for('admin.home')}}" target="_blank">ADMIN</a>
-          </li>
-          {% endif %}
-          <li class="nav-item">
-            <a class="nav-link" href="{{url_for('auth.logout')}}">Log Out</a>
-          </li>
-          {% endblock %}
-        </ul>
-    </div>
-  </nav>
-</header>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">
 
-<!-- Begin page content -->
-<main class="flex-shrink-0">
-  <div class="container">
+  <!-- Custom styles for this template -->
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/template.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/sideeffects.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/home.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/diary.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/standout.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/goal.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/menu.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/fillin.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/modal.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/embed.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/popup.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/tunnel.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/account.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/carousel.css') }}">
+  {% block headextensions %}
+  {% endblock %}
+</head>
 
-    <div class="custom-font-buttons text-center">
-      <span id="sizeDown" data-bs-toggle="tooltip" data-bs-placement="top" title="Decrease font"><i style="font-size: 1rem;" class="bi bi-dash-circle-fill"></i></span>
-      <span id="normal" data-bs-toggle="tooltip" data-bs-placement="top" title="Reset font"><i style="font-size: 1rem;" class="bi bi-circle-fill"></i></span>
-      <span id="sizeUp" data-bs-toggle="tooltip" data-bs-placement="top" title="Increase font"><i style="font-size: 1rem;" class="bi bi-plus-circle-fill"></i></span>
-    </div>
+<body class="d-flex flex-column h-100 bg-light">
 
-    {% block maincontent %}
-    <header>
-      <div id="header-container" class="container">
-        <div class="row">
-          <div class="col-12 mt-3 y-3 header-buttons"> 
-            <a href="javascript:history.go(-1)" class="btn btn-primary">Back</a> <a href="#home" class="btn btn-primary btn-up">Home</a>
-            <span id="btn-print"><a href="#" class="btn btn-primary">Print &nbsp; <i class="bi bi-printer"></i></a></span>
-          </div>
-          <div class="col"><h1 id="page-title"></h1>  </div> 
+  <header>
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top shadow">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#home"><strong>HT &amp; Me</strong> <img
+            src="{{ url_for('static', filename='images/logo-sweet_.png') }}" alt="logo" height="36"
+            class="d-inline-block align-text-top"></a>
+        <a class="nav-link d-block d-md-none" aria-current="page" href="#home"><i
+            class="bi bi-house text-white h3"></i></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+          aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="bi bi-list"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+            {% block navitems %}
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#home">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#my-account">My Account</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#my-contacts">My Contacts</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#about">About the Team</a>
+            </li>
+            {% if g.user['role'] in ['sysadmin', 'studyadmin', 'editor', 'staff'] %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{url_for('admin.home')}}" target="_blank">ADMIN</a>
+            </li>
+            {% endif %}
+            <li class="nav-item">
+              <a class="btn btn-dark" href="{{url_for('auth.logout')}}">Log Out</a>
+            </li>
+            {% endblock %}
+          </ul>
         </div>
-      </div> 
-    </header>
+    </nav>
+  </header>
 
-    <div id="main-container"></div>
-    <footer>
-      <div class="row">
-        <div class="col-12 mt-3 y-3 footer-buttons"> 
-          <a href="javascript:history.go(-1)" class="btn btn-primary">Back</a> <a href="#home" class="btn btn-primary btn-up">Home</a>
+  <div class="bg-image">
+    <div class="mask">
+      <h1 id="page-title"></h1>
+    </div>
+
+    <!-- Begin page content -->
+
+    <main class="flex-shrink-0">
+      <div class="container">
+
+        <div class="custom-font-buttons text-center">
+          <span id="sizeDown" data-bs-toggle="tooltip" data-bs-placement="top" title="Decrease font"><i
+              style="font-size: 1rem;" class="bi bi-dash-circle-fill"></i></span>
+          <span id="normal" data-bs-toggle="tooltip" data-bs-placement="top" title="Reset font"><i
+              style="font-size: 1rem;" class="bi bi-circle-fill"></i></span>
+          <span id="sizeUp" data-bs-toggle="tooltip" data-bs-placement="top" title="Increase font"><i
+              style="font-size: 1rem;" class="bi bi-plus-circle-fill"></i></span>
+        </div>
+
+        {% block maincontent %}
+        <header>
+          <div id="header-container" class="container">
+            <div class="row">
+              <div class="col-12 mt-3 y-3 header-buttons">
+                <a href="javascript:history.go(-1)" class="btn btn-primary">Back</a> <a href="#home"
+                  class="btn btn-primary btn-up">Home</a>
+                <span id="btn-print"><a href="#" class="btn btn-primary">Print &nbsp; <i
+                      class="bi bi-printer"></i></a></span>
+              </div>
+              <div class="col">
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div id="main-container"></div>
+        <footer>
+          <div class="row">
+            <div class="col-12 mt-3 y-3 footer-buttons">
+              <a href="javascript:history.go(-1)" class="btn btn-primary">Back</a> <a href="#home"
+                class="btn btn-primary btn-up">Home</a>
+            </div>
+          </div>
+        </footer>
+        {% endblock %}
+
+      </div>
+    </main>
+
+    <footer class="footer mt-auto py-3 footer-dark">
+      <ul class="quick-links">
+        <li><a href="https://breastcancernow.org/information-support/support-you/email-our-nurses" target="_blank">Ask
+            a
+            Nurse &nbsp; <i class="bi bi-chat-left-quote"></i></a></li>
+        <li><a
+            href="https://forum.breastcancernow.org/?_ga=2.173266467.1075776305.1622643174-918319471.1619612063&_gac=1.28114638.1620658026.Cj0KCQjws-OEBhCkARIsAPhOkIadNEUBKMKZ_5fTMY6vhAhJ2lih_e5GnDoxYueDR6sj8LhkovRGs20aAqxUEALw_wcB"
+            target="_blank">Patient Forum &nbsp; <i class="bi bi-chat-dots"></i></a></li>
+      </ul>
+      <div class="container" hidden>
+        <span><a href="#">USER GUIDE</a></span><span><a href="#">Privacy Notice</a></span><span>... logos ...</span>
+      </div>
+      <!-- Toast -->
+      <div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
+        <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header">
+            <img src="..." class="rounded me-2" alt="...">
+            <strong class="me-auto" id="toast-message-type"></strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+          <div class="toast-body" id="toast-message"></div>
         </div>
       </div>
     </footer>
-    {% endblock %}
-  
-  </div>
-</main>
-
-<footer class="footer mt-auto py-3 footer-dark">
-  <ul class="quick-links">
-    <li><a href="https://breastcancernow.org/information-support/support-you/email-our-nurses" target="_blank">Ask a Nurse &nbsp; <i class="bi bi-chat-left-quote"></i></a></li>
-    <li><a href="https://forum.breastcancernow.org/?_ga=2.173266467.1075776305.1622643174-918319471.1619612063&_gac=1.28114638.1620658026.Cj0KCQjws-OEBhCkARIsAPhOkIadNEUBKMKZ_5fTMY6vhAhJ2lih_e5GnDoxYueDR6sj8LhkovRGs20aAqxUEALw_wcB" target="_blank">Patient Forum &nbsp; <i class="bi bi-chat-dots"></i></a></li>
-  </ul>
-  <div class="container" hidden>
-    <span><a href="#">USER GUIDE</a></span><span><a href="#">Privacy Notice</a></span><span>... logos ...</span>
-  </div>
-  <!-- Toast -->
-  <div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
-    <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="toast-header">
-        <img src="..." class="rounded me-2" alt="...">
-        <strong class="me-auto" id="toast-message-type"></strong>
-        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-      <div class="toast-body" id="toast-message"></div>
-    </div>
-  </div>
-</footer>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="{{ url_for('static', filename='scripts/libraries/sentry.bundle.min.js') }}"></script>
     <script type="module">
       // Only catch errors in production and staging
       if (window.location.hostname === "htandme.co.uk" || location.hostname === "sweet.ncldata.dev") {
         Sentry.init({
-        dsn: "https://44fb1b462eab4104bc0914e592660046@o1080315.ingest.sentry.io/6099137",
-        // Set tracesSampleRate to 1.0 to capture 100%
-        // of transactions for performance monitoring.
-        // We recommend adjusting this value in production
-        tracesSampleRate: 1.0,
-      });
-    } 
+          dsn: "https://44fb1b462eab4104bc0914e592660046@o1080315.ingest.sentry.io/6099137",
+          // Set tracesSampleRate to 1.0 to capture 100%
+          // of transactions for performance monitoring.
+          // We recommend adjusting this value in production
+          tracesSampleRate: 1.0,
+        });
+      } 
     </script>
     <script>
       document.addEventListener('click', function (event) {
@@ -154,5 +181,6 @@
       import "{{url_for('static', filename='scripts/SWEET.js') }}";
     </script>
     {% endblock %}
-  </body>
+</body>
+
 </html>

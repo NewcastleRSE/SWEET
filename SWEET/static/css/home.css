@@ -1,35 +1,74 @@
 .row.homemenu {
     justify-content: space-around;
-    margin-top: -2em;
+}
+
+.card-title {
+    padding-top: 5em;
+    text-align: center;
+}
+
+.hmpg-acts .card-title {
+    padding: 0;
 }
 
 .hmpg-acts {
     align-content: stretch;
 }
 
+.hmpg-acts .card-title {
+    color: var(--SWEET-charcoal);
+    font-weight: bolder;
+}
+
 .hmpg-sects a.card, .hmpg-acts a.card {
     overflow: hidden;
+    text-align: center;
     min-height: 7em;
 }
 
 .hmpg-acts a.card {
-    border-bottom-color: var(--SWEET-gold);
     min-height: 4.5em;
 }
+
+.hmpg-acts .card:hover {
+    box-shadow: none;
+}
+
+.flex-shrink-0 , .hmpg-acts .card-body, .hmpg-acts a.card {
+    background-color: #f7f7f7;
+}
+
+.hmpg-acts .card.text-center {
+    border: none;
+}
+
+.hmpg-acts .btn-primary {
+    color: black;
+    background-color: var(--SWEET-gold);
+    border-color: var(--SWEET-gold);
+}
+
+.hmpg-acts .btn-primary:hover {
+    color: black;
+    background-color: var(--SWEET-light-gold);
+    border-color: var(--SWEET-light-gold);
+}
+
 
 img.card-icon {
     display: block;
     position: absolute;
-    width: 7.5em;
-    object-fit: contain;
-    bottom: -0.5em;
-    right: 0.25em;
-    opacity: 0.25;
+    width: 6em;
+    padding-top: 0.5em;
+    top: -1px;
+    left: 33%;
 }
 
 .hmpg-acts img.card-icon {
     width: 5em;
-    bottom: 0;
+    top: 4em;
+    left: 0.5em;
+    opacity: 40%;
 }
 
 main.home :is(header, footer) {
@@ -52,7 +91,6 @@ ul.quick-links li {
 }
 
 ul.quick-links li a {
-    display: block;
     color: white;
     text-align: center;
     padding: 0 16px;
@@ -65,7 +103,7 @@ ul.quick-links li a:hover {
 }
 
 .custom-font-buttons {
-    display:none;
+    display: none;
 }
 
 #header-container {
@@ -82,9 +120,10 @@ ul.quick-links li a:hover {
 
 @media screen and (min-width: 200px) and (max-width: 500px) {
     .custom-font-buttons {
-        display: block; 
+        display: block;
         float: right;
     }
+
     .custom-font-buttons span {
         float: left;
         color: rgb(105, 102, 102);

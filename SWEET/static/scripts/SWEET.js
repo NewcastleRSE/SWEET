@@ -13,13 +13,16 @@ import { planRenderer, myPlansRenderer } from './renderers/plan.js'
 import { thoughtsPageRenderer } from './renderers/thoughts.js'
 import { userDetailsPageRenderer } from './renderers/user_details.js'
 import { welcomeFooterRenderer } from './renderers/welcome.js'
-import { goalCheckerRenderer} from './renderers/goalchecker.js'
+import { goalCheckerRenderer } from './renderers/goalchecker.js'
+import { carouselRenderer, carouselSlideRender } from './renderers/carousel.js'
+import { tiledResourcesRenderer } from './renderers/tiledresources.js'
+import { splashImageRenderer } from './renderers/splashimage.js'
 
 
 let SWEET = createApp({
     extensions: {
         createModal: createModal,
-        post: function(url, data) {
+        post: function (url, data) {
             return fetch(url, {
                 method: "POST",
                 headers: {
@@ -29,10 +32,10 @@ let SWEET = createApp({
             })
         },
         createCalendar: createCalendar,
-        calendarDate: function(d) { return `${d.getFullYear()}-${d.getMonth()<9?"0":""}${d.getMonth()+1}-${d.getDate()<10?"0":""}${d.getDate()}` },
-        showPopupMessage: function(content, title=undefined, buttons=["Close"]) {
+        calendarDate: function (d) { return `${d.getFullYear()}-${d.getMonth() < 9 ? "0" : ""}${d.getMonth() + 1}-${d.getDate() < 10 ? "0" : ""}${d.getDate()}` },
+        showPopupMessage: function (content, title = undefined, buttons = ["Close"]) {
             let modal = this.createModal(true);
-            
+
             if (title !== undefined) modal.title.textContent = title;
             this.render(content).then(node => modal.body.appendChild(node));
             for (const b of buttons) {
@@ -85,12 +88,16 @@ let SWEET = createApp({
         "thoughts": r.thoughtsRenderer,
         "thoughts-page": thoughtsPageRenderer,
         "welcome-footer": welcomeFooterRenderer,
-        "profiler-result": profilerResultRenderer, 
-        "profiler-launcher": profilerLauncherRenderer, 
+        "profiler-result": profilerResultRenderer,
+        "profiler-launcher": profilerLauncherRenderer,
         "my-personal-support": myPersonalSupportRenderer,
-        goalchecker: goalCheckerRenderer
-    },    
-    load: function(path) {
+        goalchecker: goalCheckerRenderer,
+        carousel: carouselRenderer,
+        "carousel-slide": carouselSlideRender,
+        splashimage: splashImageRenderer,
+        tiledresources: tiledResourcesRenderer
+    },
+    load: function (path) {
         let url = `/app/content?path=${encodeURIComponent(path)}`;
         return fetch(url, {
             headers: {
@@ -125,25 +132,37 @@ If you followed a link, the application maintainers will be notified automatical
     name: "HT&Me"
 });
 
-SWEET.addEventListener("prerender", function(page) {
+SWEET.addEventListener("prerender", function (page) {
     document.querySelector("main").classList.remove(...document.querySelector("main").classList.values())
     document.querySelector("main").classList.add("flex-shrink-0", this.path.replace("#", "").replaceAll("/", "_"));
-    
-    document.querySelectorAll(".btn-up").forEach(b => { 
+
+    if (page.headerImage) {
+        fetch(`/app/resources/${page.headerImage}`).then(response => response.json())
+            .then(resource => {
+                if (resource['content-type'] === undefined || resource['content-type'].startsWith("image")) {
+                    let splash = document.querySelector(".bg-image");
+                    splash.setAttribute("style", `background-image: url(${resource.source == "useblob" ? `/app/resources/files/${page.headerImage}` : resource.source})`);
+                }
+            })
+    } else {
+        document.querySelector(".bg-image").removeAttribute("style");
+    }
+
+    document.querySelectorAll(".btn-up").forEach(b => {
         if (this.path.lastIndexOf("/") == -1) {
             b.setAttribute("hidden", "");
             return;
         }
         // else 
-        
+
         let parent = this.path.substring(1, this.path.lastIndexOf("/"))
 
-        b.setAttribute("href", `#${parent}`); 
+        b.setAttribute("href", `#${parent}`);
         b.removeAttribute("hidden")
         let strct = this.store.get("appStructure");
         let slugs = parent.split("/");
 
-        
+
         while (slugs.length) {
             let slug = slugs.shift();
 
@@ -158,7 +177,7 @@ SWEET.addEventListener("prerender", function(page) {
 // link intercept for tunnelled pages (prevent section home showing until tunnel is complete);
 document.querySelector("#main-container").addEventListener("click", e => {
     let src = e.target;
-                
+
     while (src.tagName != "A" && src.parentNode) src = src.parentNode;
     if (src.tagName != "A") return true;
     let path = src.getAttribute("href");
@@ -182,7 +201,7 @@ document.querySelector("#main-container").addEventListener("click", e => {
     // intercept internal links in tunnel and display in modal:
     tunnel.addEventListener("click", e => {
         let src = e.target;
-            
+
         while (src.tagName != "A" && src.parentNode) src = src.parentNode;
         if (src.tagName != "A") return true;
         let path = src.getAttribute("href");
@@ -193,18 +212,18 @@ document.querySelector("#main-container").addEventListener("click", e => {
         let modal = SWEET.createModal(true);
         modal.size = "xl";
         fetch(`/app/content?path=${encodeURIComponent(path)}`).then(response => response.json())
-        .then(page => {
-            modal.title.textContent = page.title;
-            page.content.forEach(c => SWEET.render(c).then(node => modal.body.appendChild(node)));
-            modal.footer.innerHTML = `<button type="button" class="btn-primary" data-bs-dismiss="modal" aria-label="Close">Close</button>`;
-            modal.show();
-        })
+            .then(page => {
+                modal.title.textContent = page.title;
+                page.content.forEach(c => SWEET.render(c).then(node => modal.body.appendChild(node)));
+                modal.footer.innerHTML = `<button type="button" class="btn-primary" data-bs-dismiss="modal" aria-label="Close">Close</button>`;
+                modal.show();
+            })
     })
 
 
     let base = path;
     let route = SWEET.store.get("tunnels")[base];
-    let currentStop = SWEET.store.get(`tunnel:${base}:stop`) === undefined? 0: SWEET.store.get(`tunnel:${base}:stop`);
+    let currentStop = SWEET.store.get(`tunnel:${base}:stop`) === undefined ? 0 : SWEET.store.get(`tunnel:${base}:stop`);
     let prevbutton = tunnel.querySelector("#tunnel-prev");
     let nextbutton = tunnel.querySelector("#tunnel-next");
     let pagecount = tunnel.querySelector("#tunnel-pagecount");
@@ -213,20 +232,20 @@ document.querySelector("#main-container").addEventListener("click", e => {
     function renderInTunnel() {
         let url = `/app/content?path=${encodeURIComponent(`${base}/${route[currentStop]['path']}`)}`;
         fetch(url).then(response => response.json())
-        .then(page => {
-            tunnel.querySelector("#tunnel-title").textContent = page.title;
-            while (tunnel.querySelector("#tunnel-main").firstChild) tunnel.querySelector("#tunnel-main").removeChild(tunnel.querySelector("#tunnel-main").lastChild);
-            tunnel.scrollTo(0,0)
-            page.content.forEach(c => SWEET.render(c).then(node => tunnel.querySelector("#tunnel-main").appendChild(node)));
+            .then(page => {
+                tunnel.querySelector("#tunnel-title").textContent = page.title;
+                while (tunnel.querySelector("#tunnel-main").firstChild) tunnel.querySelector("#tunnel-main").removeChild(tunnel.querySelector("#tunnel-main").lastChild);
+                tunnel.scrollTo(0, 0)
+                page.content.forEach(c => SWEET.render(c).then(node => tunnel.querySelector("#tunnel-main").appendChild(node)));
 
-            // append any additional content from the tunnel schema:
-            route[currentStop]['content'].forEach(c => SWEET.render(c).then(node => tunnel.querySelector("#tunnel-main").appendChild(node)));
+                // append any additional content from the tunnel schema:
+                route[currentStop]['content'].forEach(c => SWEET.render(c).then(node => tunnel.querySelector("#tunnel-main").appendChild(node)));
 
-            // set page count text.
-            pagecount.textContent = `page ${currentStop+1} of ${route.length}`;
+                // set page count text.
+                pagecount.textContent = `page ${currentStop + 1} of ${route.length}`;
 
-            SWEET.store.set(`tunnel:${base}:stop`, currentStop);
-        })
+                SWEET.store.set(`tunnel:${base}:stop`, currentStop);
+            })
     }
 
     nextbutton.addEventListener("click", e => {
@@ -236,8 +255,8 @@ document.querySelector("#main-container").addEventListener("click", e => {
             SWEET.path = base; // as we're using link intercept we need to send the user to the relevant homepage
         } else {
             renderInTunnel();
-            e.target.textContent = currentStop+1 == route.length? "Finish": "Next";
-            if (currentStop+1 == route.length && !(base in SWEET.store.get("currentUser")["tunnelsComplete"])) {
+            e.target.textContent = currentStop + 1 == route.length ? "Finish" : "Next";
+            if (currentStop + 1 == route.length && !(base in SWEET.store.get("currentUser")["tunnelsComplete"])) {
                 SWEET.store.get("currentUser")["tunnelsComplete"].push(base);
                 SWEET.post("/myapp/mydetails/", SWEET.store.get("currentUser"));
             }
@@ -265,14 +284,14 @@ document.querySelector("#main-container").addEventListener("click", e => {
 
 });
 
-document.querySelector("#btn-print > a").addEventListener("click", e => { 
+document.querySelector("#btn-print > a").addEventListener("click", e => {
 
-    e.preventDefault(); e.stopPropagation(); 
-    
+    e.preventDefault(); e.stopPropagation();
+
     if (SWEET.path == "#home/diary") {
         open(`/myapp/mydiary/print?period=${e.currentTarget.dataset.period}`);
     } else {
-        window.alert("Here you will be able to download .pdf versions of some pages."); 
+        window.alert("Here you will be able to download .pdf versions of some pages.");
     }
 })
 
@@ -280,14 +299,14 @@ document.querySelector("#btn-print > a").addEventListener("click", e => {
 Promise.allSettled([
     // user profile retrieval, validation, update and storage:
     fetch("/myapp/mydetails").then(response => response.json()).then(profile => {
-    
+
         if (!("tunnelsComplete" in profile)) {
             profile["tunnelsComplete"] = [];
             SWEET.post("/myapp/mydetails/", profile);
         }
-        
+
         SWEET.store.set("currentUser", profile);
-    
+
     }),
     fetch("/myapp/profiler/latest").then(response => response.json()).then(profiler => SWEET.store.set("latestProfiler", profiler)),
     // tunnel schema fetch
@@ -295,5 +314,4 @@ Promise.allSettled([
     // app structure fetch
     fetch("/app/structure").then(response => response.json()).then(structure => SWEET.store.set("appStructure", structure))
 ]).then(() => SWEET.start());
-    
-    
+
