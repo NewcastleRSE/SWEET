@@ -1,4 +1,4 @@
-.nav-normal, .nav-described {
+.nav-normal {
     margin-bottom: 1.5em;
 }
 
@@ -17,17 +17,21 @@
     */
 }
 
-.card .img {
-    border-radius: 50%;
+:is(.nav-described) .card {
+    border: 0.2em solid var(--SWEET-purple);
+    border-radius: 0.5em;
+    padding: 0;
+
 }
 
-:is(.nav-normal, .nav-described) .card {
+:is(.nav-normal) .card {
     border-radius: 2em;
     display: inline-flex;
     align-items: flex-end;
     width: 100%;
     padding-top: 1rem;
     background-position: top;
+    background-position-y: 1rem;
 
 
     /* border-radius: 2em;
@@ -59,4 +63,8 @@
 .nav-described .card, .nav-described .card-body {
     padding: 0.2em;
 
+}
+
+.nav-described .card-title {
+    padding-top: 0;
 }

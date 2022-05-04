@@ -1,11 +1,15 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope");
 
-@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;1,100;1,200&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Raleway');
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat');
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins');
 
 :root {
     font-size: 20px;
 
-    --bs-font-sans-serif: "Raleway", "Manrope", "Roboto", Arial, sans-serif;
+    --bs-font-sans-serif: "Manrope", "Roboto", Arial, sans-serif;
 
     --SWEET-purple: #633188;
     --SWEET-grey: #b3b3b2;
@@ -31,11 +35,10 @@ p {
     margin-bottom: 1.5em;
 }
 
-/*
 main>.container {
-    padding: 125px 15px 15px;
+    padding: 15px 15px 50px;
 }
-*/
+
 
 main header, main footer {
     display: flex;
@@ -133,6 +136,7 @@ span a {
     background-color: var(--SWEET-purple);
     border-color: var(--SWEET-purple);
     margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 .btn-primary:hover {
@@ -152,7 +156,6 @@ span a {
     outline: none !important;
     box-shadow: none;
 }
-
 
 .form-check-input:checked {
     background-color: var(--SWEET-purple);
@@ -199,12 +202,28 @@ margin-left: 0.5rem;
 
 .btn-secondary, .btn-secondary:focus {
     background-color: var(--SWEET-charcoal);
-    margin-top: 20px;
 }
 
 .btn-secondary:hover {
     background-color: var(--SWEET-grey);
     border-color: var(--SWEET-grey);
+}
+
+.btn-dark, .btn-dark:focus, .btn-dark:active {
+    background-color: var(--SWEET-purple);
+    border-radius: 2rem;
+    padding: 3px;
+    margin-top: 6px;
+    margin-left: 0.5rem;
+}
+
+a.nav-link.btn-dark {
+    color: var(--SWEET-off-white) !important;
+}
+
+.btn-dark:hover {
+    background-color: var(--SWEET-lilac);
+    border-color: var(--SWEET-lilac);
 }
 
 footer.footer-dark {
@@ -214,6 +233,10 @@ footer.footer-dark {
 a.navbar-brand {
     font-size: 32px;
     padding: 0;
+}
+
+a.navbar-brand img {
+    margin-top: 5px;
 }
 
 a.navbar-brand:hover, a.navbar-brand:focus {
@@ -306,6 +329,8 @@ footer div.container span a:hover {
 
 .quote p {
     font-style: italic;
+    font-weight: bold;
+    font-family: Helvetica, sans-serif;
     color: var(--SWEET-purple);
 }
 
@@ -548,7 +573,7 @@ ul li a:focus {
         text-align: center;
     }
 
-    /* a.nav-link.btn-secondary {
+ a.btn-dark {
         margin: 0;
         margin-top: 1rem;
         position: relative;
@@ -558,7 +583,7 @@ ul li a:focus {
         transform: translate(-50%, -50%);
 
     }
-    */
+    
 
     ul li:last-child a::after {
         display: none;
