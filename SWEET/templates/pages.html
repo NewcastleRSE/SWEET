@@ -67,7 +67,7 @@
 
             #page-details {
                 position: relative;
-                top: 15em;
+                top: 20em;
                 display: none;
             }
 
@@ -250,12 +250,12 @@
             customElements.define('content-editor', editors.ContentEditor);
             customElements.define('edit-inserter', editors.EditorInserter);
             
-            document.querySelector("#page-content").registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.AccordionEditor, editors.BlockquoteEditor, editors.MenuEditor, editors.AlertEditor, editors.GoalSetter, editors.PopupEditor, editors.PopupTriggerEditor, editors.FillInBoxEditor, editors.DescribedMenuEditor, editors.ThoughtsBox)
+            document.querySelector("#page-content").registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.AccordionEditor, editors.BlockquoteEditor, editors.MenuEditor, editors.AlertEditor, editors.GoalSetter, editors.PopupEditor, editors.PopupTriggerEditor, editors.FillInBoxEditor, editors.DescribedMenuEditor, editors.ThoughtsBox, editors.CarouselEditor)
             
             editors.AccordionEditor.registerEditors(editors.MarkdownEditor, editors.EmbedEditor, editors.BlockquoteEditor, editors.FillInBoxEditor, editors.PopupEditor, editors.PopupTriggerEditor);
             editors.AlertEditor.registerEditors(editors.MarkdownEditor, editors.BlockquoteEditor);
             editors.PopupEditor.registerEditors(editors.AccordionEditor, editors.MarkdownEditor, editors.BlockquoteEditor, editors.AlertEditor, editors.FillInBoxEditor);
-            
+            editors.CarouselEditor.registerEditor(editors.MarkdownEditor);
 
             document.querySelector("#add-page").addEventListener("click", e => {
                 if (document.querySelector("#add-details input[name='add-slug']").value.replace(/[a-z-]*/, "").length > 0) {
@@ -340,11 +340,8 @@
                 if (details.title != document.querySelector("input[name='page-title']").value) {
                     content.title = document.querySelector("input[name='page-title']").value;
                 }
-                if (details.prev != document.querySelector("input[name='page-prev']").value) {
-                    content.prev = document.querySelector("input[name='page-prev']").value;
-                }
-                if (details.next != document.querySelector("input[name='page-next']").value) {
-                    content.next = document.querySelector("input[name='page-next']").value;
+                if (details.headerImage != document.querySelector("input[name='page-header-image']").value) {
+                    content.headerImage = document.querySelector("input[name='page-header-image']").value;
                 }
 
                 fetch("/admin/content/", {
@@ -433,6 +430,7 @@
                 let resource = {
                     name: this.elements['name'].value,
                     description: this.elements['description'].value,
+                    caption: this.elements['caption'].value,
                     'content-type': this.elements['media-type'].value,
                     filename: this.elements['file'].files[0].name
                 }
@@ -488,6 +486,7 @@
                             <label>Name:</label><input type="text" name="name" minlength="3" maxlength="50" required><br />
                             <label>File type:</label><input type="text" name="media-type" minlength="3" maxlength="50" required><br />
                             <label>Description:</label><input type="text" name="description" length="80" minlength="3" maxlength="150" required><br />
+                            <label>Caption:</label><input type="text" name="caption" length="80" minlength="3" maxlength="200"><br />
                             <input type="submit" value="Add">
                         </fieldset>
                         <object id="add-resource-preview"></object>
@@ -502,10 +501,7 @@
                     <legend>Page Details:</legend>
                 <p><label>Page title:</label><input type="text" name="page-title"></p>
                 <p><label title="A short string (containing only letters and '-') that is used to build the link to the page.">Slug:</label><input type="text" name="page-slug" disabled></p>
-                </fieldset>
-                <fieldset id="fs-seq-details"><legend>Page Sequencing:</legend>
-                    <p><label title="The path to the previous page">Previous:</label><input type="text" name="page-prev" minlength="3" maxlength="50" required></p>
-                    <p><label title="The path to the next page in sequence">Next:</label><input type="text" name="page-next" minlength="3" maxlength="50" required></p>
+                <p><label title="The name of a resource to use as the header of this page">Header Image:</label><input type="text" name="page-header-image"></p>
                 </fieldset>
             </div>
             <details id="page-content-details"><summary>Content</summary><content-editor id="page-content"></content-editor></details>
@@ -544,8 +540,7 @@
                         slug: page.slug,
                         path: `${ancestor? ancestor + "/": "#"}${page.slug}`,
                         pages: page.pages? page.pages.map(p => { return { slug: p.slug, title: p.title}; }): null,
-                        prev: page.prev || "",
-                        next: page.next || ""
+                        headerImage: page.headerImage
                     };
 
                     let edit = item.appendChild(document.createElement("button"));
@@ -580,13 +575,11 @@
                         let details = document.querySelector("#page-details");
                         details.dataset.path = item.pageInfo.path;
                         details.dataset.title = item.pageInfo.title || "";
-                        details.dataset.prev = item.pageInfo.prev;
-                        details.dataset.next = item.pageInfo.next;
+                        details.dataset.headerImage = item.pageInfo.headerImage;
 
                         details.querySelector("input[name='page-title']").value = item.pageInfo.title;
                         details.querySelector("input[name='page-slug']").value = item.pageInfo.slug;
-                        details.querySelector("input[name='page-prev']").value = item.pageInfo.prev;
-                        details.querySelector("input[name='page-next']").value = item.pageInfo.next;
+                        details.querySelector("input[name='page-header-image']").value = item.pageInfo.headerImage;
 
                         document.querySelector("#add-details span.path").textContent = item.pageInfo.path + "/";
 
@@ -649,7 +642,7 @@
                     Object.keys(data).forEach(k => {
                         // create a resource listing for each key
                         holder.insertAdjacentHTML("beforeend", 
-                            `<div class="resource"><span>${k}</span><img src="${data[k].source == "none"? blob: data[k].source}" class="thumbnail" alt="${data[k].description}" title="${data[k].description}" /></div>`)
+                            `<div class="resource"><span>${k}</span><img src="${data[k].source == "none"? blob: data[k].source}" class="thumbnail" alt="${data[k].description}" title="${data[k].caption}" /></div>`)
                     })
                 })
             }

@@ -62,7 +62,8 @@ export class AccordionEditor extends HTMLElement {
         this.$.itemtemplate = `
         <legend>Accordion Item</legend>
         <button class="move-up"></button><button class="move-down"></button><button class="delete"></button>
-        <p><label>Title</label><input type="text" name="title" /></p>
+        <p><label>Title</label><input type="text" name="title" /><br>
+        <label>Icon</label><input type="text" name="icon" /></p>
         <content-editor></content-editor>
         `
         const add = this.$.add = root.appendChild(document.createElement("button"));
@@ -123,6 +124,7 @@ export class AccordionEditor extends HTMLElement {
             output.content.push({
                 type: "accordion-item",
                 header: i.querySelector("input[name='title']").value,
+                icon: i.querySelector("input[name='icon']").value,
                 content: i.querySelector("content-editor").jsonvalue
             })
         })
@@ -136,6 +138,7 @@ export class AccordionEditor extends HTMLElement {
         content.content.forEach(i => {
             let item = this._item;
             item.querySelector("input[name='title']").value = i.header;
+            item.querySelector("input[name='icon']").value = i.icon;
             item.querySelector("content-editor").load(i.content);
             this.$.add.insertAdjacentElement('beforebegin', item)
         })

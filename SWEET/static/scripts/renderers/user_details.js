@@ -51,13 +51,13 @@ export function userDetailsPageRenderer(section) {
                 let target = holder.querySelector(`#${which}`);
                 let input = document.createElement("input");
 
-                input.setAttribute("type", which=="email"?"email":"text");
+                input.setAttribute("type", which == "email" ? "email" : "text");
                 input.setAttribute("id", which);
                 input.value = target.textContent;
-                
+
                 target.insertAdjacentElement("beforebegin", input);
                 target.remove();
-                
+
                 src.classList.remove("edit");
                 src.classList.add("save");
 
@@ -69,7 +69,7 @@ export function userDetailsPageRenderer(section) {
                 let input = holder.querySelector(`#${which}`);
                 let user = this.store.get("currentUser");
                 user[which] = input.value;
-                
+
                 this.post("/myapp/mydetails/", user).then(response => {
                     let target = document.createElement("span");
                     target.setAttribute("id", which);
@@ -86,14 +86,14 @@ export function userDetailsPageRenderer(section) {
 
                 let input = holder.querySelector(`#${which}`);
                 let saver = holder.querySelector(`.save[data-for='${which}']`)
-                
+
                 let target = document.createElement("span");
                 target.setAttribute("id", which);
                 target.textContent = oldval;
 
                 input.insertAdjacentElement("beforebegin", target);
                 input.remove();
-                
+
                 saver.classList.remove("save");
                 saver.classList.add("edit");
             } else {
@@ -131,17 +131,17 @@ export function userDetailsPageRenderer(section) {
                 user.password = form.elements["password"].value;
 
                 this.post("/myapp/mydetails/", user).then(response => response.json())
-                .then(output => {
-                    if (output.status == "OK") {
-                        location.pathname = "/auth/logout";
-                    } else {
-                        form.querySelector("#errors").innerHTML = `<p>${output.message}.</p>`;
-                        return false;
-                    }
-                })
+                    .then(output => {
+                        if (output.status == "OK") {
+                            location.pathname = "/auth/logout";
+                        } else {
+                            form.querySelector("#errors").innerHTML = `<p>${output.message}.</p>`;
+                            return false;
+                        }
+                    })
             }
         })
-        
+
         modal.show();
     })
 

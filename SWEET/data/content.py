@@ -30,10 +30,9 @@ def getPageDetails(path):
 
     # need to return a copy of the information to avoid contaminating the underlying data
     output = { "title": struct['title'], "slug": struct['slug']}
-    if 'prev' in struct:
-        output['prev'] = struct['prev']
-    if 'next' in struct:
-        output['next'] = struct['next']
+
+    if 'headerImage' in struct:
+        output['headerImage'] = struct['headerImage']
     if 'pages' in struct:
         output['pages'] = [{"slug": p['slug'], 'title': p['title']} for p in struct['pages']]
 
@@ -50,7 +49,7 @@ def updatePageContent(details):
     __content.commit()
 
     #check for structure updates:
-    if "title" in details or "prev" in details or "next" in details:
+    if "title" in details or "headerImage" in details:
         struct = __structure
         slugs = details["path"][1:].split("/")
         for slug in slugs:
@@ -62,24 +61,21 @@ def updatePageContent(details):
         if "title" in details:
             struct['title'] = details['title']
 
-        if "prev" in details:
-            struct['prev'] = details['prev']
-
-        if "next" in details:
-            struct['next'] = details['next']
+        if "headerImage" in details:
+            struct['headerImage'] = details['headerImage']
 
         __structure.commit()
 
 def getResources():
     return { 
-        k: { 'name': k, 'description': v['description'], 'source': v['source'] if 'source' in v else 'none' }
+        k: { 'name': k, 'description': v['description'], 'caption': v.get("caption", ""), 'source': v['source'] if 'source' in v else 'none' }
         for k,v in __resources.items()
     }
         
 def getResource(name):
     if name in __resources:
         r = __resources[name]
-        output = { "name": name, "description": r['description']}
+        output = { "name": name, "description": r['description'], "caption": r.get('caption', "")}
 
         if 'content-type' in r:
             output['content-type'] = r['content-type']
@@ -117,14 +113,22 @@ def getResourceBlob(name):
     return {'name': name, 'file': f, 'content-type': t, 'downloadName': n }
 
 def saveResource(newres):
-    input = { 'description': newres['description'], 'content-type': newres['content-type'], 'filename': newres['filename'] }
+    name = newres['name']
+
+    if name in __resources:
+        del newres['name']
+        __resources[name].update(newres)
+        __resources.commit()
+        return
+    
+    input = { 'description': newres['description'], 'content-type': newres['content-type'], 'filename': newres['filename'], 'caption': newres.get('caption', "") }
     if 'source' in newres:
         input['source'] = newres['source']
 
     if 'blob' in newres:
         input['blob'] = newres['blob']
 
-    __resources[newres['name']] = input
+    __resources[name] = input
     __resources.commit()
 
 def getGoalMessage(goal, which):
