@@ -95,7 +95,7 @@ def getResource(name):
 
 def getResourceBlobString(name):
     from base64 import b64encode
-    return b64encode(loadResourceBlob(name)).encode()
+    return b64encode(loadResourceBlob(name)).decode()
 
 
 def saveResource(newres):

@@ -57,6 +57,9 @@ def getResource(name):
     if res is None:
         abort(404)
 
+    if "source" not in res:
+        res['source'] = url_for('content.getResourceFile', name=name)
+    
     return res
 
 @bp.route("/resources/files/<name>")
@@ -70,4 +73,5 @@ def getResourceFile(name):
     if blob is None:
         abort(404)
 
-    return send_file(blob, mimetype=res['content-type'], download_name=res['filename'])
+    from io import BytesIO
+    return send_file(BytesIO(blob), mimetype=res['content-type'], download_name=res['filename'])
