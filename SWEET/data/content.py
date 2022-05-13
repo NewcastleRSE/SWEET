@@ -136,7 +136,7 @@ def saveResource(newres):
 def saveResourceBlob(name, blobstring):
     from base64 import b64decode
     cnt = getContainer(az_content_cntr)
-    blobname = f"/resourceblobs/{name}"
+    blobname = f"resourceblobs/{name}"
     cnt.upload_blob(blobname, b64decode(blobstring), overwrite=True)
 
 def loadResourceBlob(name):
@@ -144,7 +144,7 @@ def loadResourceBlob(name):
         return None
 
     cnt = getContainer(az_content_cntr)
-    return cnt.download_blob(f"/resourceblobs/{name}").readall()
+    return cnt.download_blob(f"resourceblobs/{name}").readall()
 
 def getGoalMessage(goal, which):
     messages = getGoalResponses()
