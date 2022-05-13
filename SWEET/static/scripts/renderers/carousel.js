@@ -46,7 +46,7 @@ export function carouselRenderer(section) {
     return carousel;
 }
 
-export function carouselSlideRender(section) {
+export function carouselSlideRenderer(section) {
     let slide = document.createElement("div");
     slide.classList.add("carousel-item");
     this.render(section.content).then(node => slide.appendChild(node));

@@ -17,9 +17,7 @@ def _login(user):
     session['user'] = token
     __logged_in_users[token] = user
 
-    anchor = "home" #if "skipWelcome" in user and user["skipWelcome"] else "welcome"
-
-    return redirect(url_for("index", _anchor=anchor))
+    return redirect(url_for("index", _anchor="home"))
 
 def _logout(token):
     if token in __logged_in_users:

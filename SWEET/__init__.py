@@ -37,9 +37,4 @@ def create_app():
     def index():
         return render_template("index.html")
 
-    @app.route("/welcome")
-    @login_required
-    def welcome():
-        return render_template("welcome.html")    
-
     return app

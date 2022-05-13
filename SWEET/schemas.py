@@ -58,12 +58,6 @@ def getSideEffectValueMappings():
         3: "Moderately",
         4: "Very",
         5: "Extremely",
-        "mild": 1,
-        "moderate": 3,
-        "severe": 5,
-        "a little": 1,
-        "moderately": 3,
-        "a lot": 5
     }
 
 @bp.route("/sideeffects/<name>")
