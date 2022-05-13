@@ -347,6 +347,9 @@ export function diaryGraphRenderer(section) {
     holder.innerHTML = `
     <h4>My Side Effects</h4>
     <div id="se-graph-title">Here you can see an overview of the severity of side effects you recorded this month</div>
+    <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+        <canvas id="myChart"></canvas>
+    </div>
     <svg id="all-se-trends" viewbox="-1 0 45 20">
         <style>
             text { font-size: 0.75px; }
@@ -392,6 +395,54 @@ export function diaryGraphRenderer(section) {
     `
 
     function updateGeneral(entries, schema) {
+
+        console.log(entries)
+        console.log(schema)
+
+        var now = new Date();
+        var month = new Date().setDate(now.getDate() - 30);
+        var quarter = new Date().setDate(now.getDate() - 90);
+
+        const data = {
+            labels: entries.map(entry => { return entry.date }),
+            datasets: [{
+                label: 'My First Dataset',
+                data: entries.map(entry => { return entry.severity }),
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        };
+
+        const ctx = document.getElementById('myChart');
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: {
+                scales: {
+                    y: {
+                        labelString: 'Severity',
+                        min: 0,
+                        max: 5,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    },
+                    x: {
+                        labelString: 'Date',
+                        type: 'time',
+                        min: month,
+                        max: now,
+                        time: {
+                            displayFormats: {
+                                quarter: 'DD MM'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
         let key = holder.querySelector("#key-gen");
         while(key.firstChild) key.lastChild.remove();
 
