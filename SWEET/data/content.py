@@ -1,5 +1,5 @@
 from .az_persitent import AzurePersitentDict
-from ..secrets import connstr as az_connection, datasource as az_content_cntr, structure, content, resources, goal_messages, profiler_responses
+from ..secrets import connstr as az_connection, datasource as az_content_cntr, structure, content, resources, goal_messages, profiler_responses, email_messages
 
 from . import recursiveUpdate, getContainer
 
@@ -8,6 +8,7 @@ __content = AzurePersitentDict(az_connection, az_content_cntr, content)
 __resources = AzurePersitentDict(az_connection, az_content_cntr, resources)
 __goalMessages = AzurePersitentDict(az_connection, az_content_cntr, goal_messages)
 __profilerResponses = AzurePersitentDict(az_connection, az_content_cntr, profiler_responses)
+__emailMessages = AzurePersitentDict(az_connection, az_content_cntr, email_messages)
 
 # utilities for user-related content:
 def getGoalResponses():
@@ -15,6 +16,9 @@ def getGoalResponses():
 
 def getProfilerResponses():
     return __profilerResponses.copy()
+
+def getEmailMessages():
+    return __emailMessages.copy()
 
 # content and structure
 def getStructure():
