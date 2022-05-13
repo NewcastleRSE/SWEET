@@ -1,22 +1,6 @@
 import { createApp } from "./app.js";
-import * as r from './editors/renderers.js';
-import { homepageMenuRenderer } from './renderers/home_page.js'
-import { profilerModalRenderer, profilerResultRenderer, profilerLauncherRenderer, myPersonalSupportRenderer } from './renderers/profiler.js'
-import { sideEffectModalRenderer, sideEffectFormRenderer } from './renderers/side_effects.js'
-import { diaryCalendarRenderer, diaryGraphRenderer } from "./renderers/diary-page.js";
-import { createModal } from './extensions/modal.js'
-import { createCalendar } from './extensions/calendar.js'
-import { plansAndGoalsRenderer } from './renderers/planandgoal.js'
-import { reminderRenderer } from './renderers/remindersetter.js'
-import { contactFormRenderer, contactListRenderer, contactPageRenderer, contactRenderer } from './renderers/contacts.js'
-import { planRenderer, myPlansRenderer } from './renderers/plan.js'
-import { thoughtsPageRenderer } from './renderers/thoughts.js'
-import { userDetailsPageRenderer } from './renderers/user_details.js'
-import { welcomeFooterRenderer } from './renderers/welcome.js'
-import { goalCheckerRenderer } from './renderers/goalchecker.js'
-import { carouselRenderer, carouselSlideRender } from './renderers/carousel.js'
-import { tiledResourcesRenderer } from './renderers/tiledresources.js'
-import { splashImageRenderer } from './renderers/splashimage.js'
+import { createModal, createCalendar } from "./extensions/extensions.js";
+import { renderers } from './renderers/renderers.js';
 
 
 let SWEET = createApp({
@@ -57,52 +41,14 @@ let SWEET = createApp({
             modal.show();
         }
     },
-    renderers: {
-        markdown: r.markdownRenderer,
-        external: r.embedRenderer,
-        popup: r.popupRenderer,
-        "block-quote": r.blockquoteRenderer,
-        standout: r.alertRenderer,
-        goalsetter: r.goalRenderer,
-        accordion: r.accordionRenderer,
-        menu: r.menuRenderer,
-        "menu-item": r.menuItemRenderer,
-        'homepage-menu': homepageMenuRenderer,
-        sideeffect: sideEffectModalRenderer,
-        sideeffectform: sideEffectFormRenderer,
-        profiler: profilerModalRenderer,
-        "diary-calendar": diaryCalendarRenderer,
-        fillin: r.fillInBoxRenderer,
-        plansandgoals: plansAndGoalsRenderer,
-        reminders: reminderRenderer,
-        diarygraph: diaryGraphRenderer,
-        "described-menu": r.describedMenuRenderer,
-        "described-menu-item": r.describedMenuItemRenderer,
-        "user-details-page": userDetailsPageRenderer,
-        "contact": contactRenderer,
-        "contact-form": contactFormRenderer,
-        "contact-list": contactListRenderer,
-        "contacts-page": contactPageRenderer,
-        "plan": planRenderer,
-        "my-plans": myPlansRenderer,
-        "thoughts": r.thoughtsRenderer,
-        "thoughts-page": thoughtsPageRenderer,
-        "welcome-footer": welcomeFooterRenderer,
-        "profiler-result": profilerResultRenderer,
-        "profiler-launcher": profilerLauncherRenderer,
-        "my-personal-support": myPersonalSupportRenderer,
-        goalchecker: goalCheckerRenderer,
-        carousel: carouselRenderer,
-        "carousel-slide": carouselSlideRender,
-        splashimage: splashImageRenderer,
-        tiledresources: tiledResourcesRenderer
-    },
+    renderers: renderers,
     load: function (path) {
         let url = `/app/content?path=${encodeURIComponent(path)}`;
         return fetch(url, {
             headers: {
                 'X-SWEET-referrer': this.store.get("prevPath")
-            }
+            },
+            redirect: 'error'
         }).then(response => {
             if (response.ok) {
                 this.store.set("prevPath", path);
@@ -125,6 +71,14 @@ If you followed a link, the application maintainers will be notified automatical
                     ]
                 }
             }
+        },
+        reject => {
+            // failure to fetch is either a network error or a redirect due to no auth token:
+            //   sending the app to the logout url will attempt to logout the user if logged in,
+            //   then automatically redirect to login page.
+            // if the fetch failed due to a network error, the user's browser should notify them 
+            //   of the error while trying to load the login page
+            location.href = '/auth/logout';
         });
     },
     titleHolder: "#page-title",

@@ -1,29 +1,46 @@
 export async function thoughtsRenderer(section) {
     if (section.type != "thoughts") return null;
 
+    if (!section.path) section.path = this.path;
+
     let holder = document.createElement("section");
-    holder.classList.add("thought");
-    holder.$path = section.path;
+    holder.classList.add("thoughts-box", "so-alert");
 
-    let schema = await fetch(`/app/schemas/thoughts?path=${encodeURIComponent(section.path)}`).then(response => response.json());
+    let thoughts = section.thoughts || await fetch(`/myapp/mythoughts?path=${encodeURIComponent(section.path)}`).then(response => response.json());
 
+    holder.insertAdjacentHTML("afterbegin", "<header><span>Critical, negative thoughts</span><span>&nbsp;</span><span>Supportive, neutral thoughts</span></header>")
 
+    holder.insertAdjacentHTML("beforeend", "<footer><button type='button' id='add-thought' class='btn btn-primary'>Add more thoughts</button><button type='button' id='save-thoughts' class='btn btn-primary' disabled>Save</button></footer>")
     
-    let [negfillin, posfillin] = await Promise.allSettled([this.render({ type: "fillin", boxsize: "large", path: section.path, name: schema.negfillin}), this.render({ type: "fillin", boxsize: "large", path: section.path, name: schema.posfillin})]).then(ps => ps.map(p => p.value))
-    
-    if (negfillin.querySelector("textarea").value || posfillin.querySelector("textarea").value) {
-        // at least one part of thoughts is filled in so we'll render it:
-        holder.insertAdjacentHTML("beforeend", `<h4>${schema.title}</h4>
-        <label>${schema.neglabel}</label>`)
-        holder.appendChild(negfillin);
-        holder.insertAdjacentHTML("beforeend", `<label>${schema.poslabel}</label>`)
-        holder.appendChild(posfillin);
-    } else {
-        // if there's nothing in either box we'll return a 1-button menu to link to this thoughts page:
-        await this.render({
-            type: "menu",
-            content: [{ type: "menu-item", title: schema.title, link: schema.path } ]
-        }).then(node => holder.appendChild(node));
+    let rowtemplate = "<input type='text' name='negative'><span>&#10148</span><input type='text' name='positive'>"
+
+    const addrow = () => {
+        let form = document.createElement("form");
+        form.innerHTML = rowtemplate;
+        holder.querySelector("footer").insertAdjacentElement("beforebegin", form);
+    }
+    holder.addEventListener("change", () => holder.querySelector("#save-thoughts").removeAttribute("disabled"))
+
+    holder.querySelector("#add-thought").addEventListener("click", addrow);
+    holder.querySelector("#save-thoughts").addEventListener("click", e => {
+        let allthoughts = Array.from(holder.querySelectorAll("form")).filter(f => f.elements['negative'].value && f.elements['positive'].value).map(f => { return { negative: f.elements['negative'].value, positive: f.elements['positive'].value}; });
+        this.post("/myapp/mythoughts/", { path: section.path, details: allthoughts});
+        e.target.setAttribute("disabled", "");
+        this.showPopupMessage("Great! Information you added to My Thoughts Activity has been saved.");
+    })
+
+    if (thoughts) {
+        holder.hasThoughts = true;
+        thoughts.forEach(t => {
+            addrow();
+            let form = holder.querySelector("form:last-of-type");
+            form.elements['negative'].value = t.negative;
+            form.elements['positive'].value = t.positive;
+        })
+    }
+
+    while (holder.querySelectorAll("form").length < 3) {
+        addrow();
     }
 
     return holder;
@@ -73,4 +90,3 @@ export function thoughtsPageRenderer(section) {
 
     return holder;
 }
-
