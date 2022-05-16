@@ -241,7 +241,7 @@ a.navbar-brand img {
 
 a.navbar-brand:hover, a.navbar-brand:focus {
     border-bottom: 5px solid var(--SWEET-purple);
-    margin-bottom: -10px;
+    margin-bottom: -8px;
     -webkit-transition: width .5s ease;
     -moz-transition: width .5s ease;
     -o-transition: width .5s ease;
