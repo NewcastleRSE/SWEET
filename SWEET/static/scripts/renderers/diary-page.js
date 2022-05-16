@@ -69,8 +69,6 @@ export function diaryCalendarRenderer(section) {
                             // we have found the appropriate day
                             // we have cleared the contents earlier, so we can just add stuff with gay abandon.
 
-                            console.log(se)
-
                             let i = diaryitem();
                             i.classList.add("side-effect");
                             i.querySelector("i").classList.add(`side-effect-${se.type}`)
@@ -164,6 +162,11 @@ export function diaryCalendarRenderer(section) {
                     <h5 class="card-title">Add or update side effect(s)</h5>
                 </div>
             </a>
+            <a class="d-block card shadow mt-3" id="day-modal-add-drug">
+                <div class="card-body">
+                    <h5 class="card-title">Add or update drug change</h5>
+                </div>
+            </a>
             <a class="d-block card shadow mt-3" id="day-modal-add-note">
                 <div class="card-body">
                     <h5 class="card-title">Add or update notes</h5>
@@ -249,6 +252,85 @@ export function diaryCalendarRenderer(section) {
                         }
 
                         this.post("/myapp/notes/delete/", note);
+                        clickBack();
+                    })
+                }
+
+                if (e.target.matches("#day-modal-add-drug, #day-modal-add-drug *")) {
+                    modal.size = "lg";
+                    // set up adding note functionality
+
+                    // first, capture the current state of the day modal (this ensures we don't revert an adherence click since the modal was last opened)
+                    daytemplate = modal.body.innerHTML;
+
+                    function reset() {
+                        modal.body.innerHTML = `
+                            <h5>Change in drug taken</h5>
+                            <form id="modal-update-note-form">
+                            <input type="hidden" name="takendate"><input type="hidden" name="takentime">
+                            <input type="hidden" name="date" value="${d.dataset.thisdate}">
+                            <input type="text" name="drug" placeholder="Drug name">
+                            </form>
+                        `
+
+                        let btnreset = modal.footer.querySelector("input[type='reset']")
+                        if (btnreset) btnreset.remove();
+                    }
+
+                    reset()
+
+                    let form = modal.body.querySelector("form");
+                    let olddrug = await fetch(`/myapp/mydiary/drugs?date=${d.dataset.thisdate}`).then(response => response.json()).then(drugs => drugs.drugs)
+
+                    console.log(olddrug)
+
+                    if ("taken" in olddrug) {
+                        form.elements["takendate"].value = olddrug.taken.date;
+                        form.elements["takentime"].value = olddrug.taken.time;
+                        form.elements["drug"].value = olddrug.drug;
+                        modal.footer.insertAdjacentHTML("beforeend", ` <input type="reset" form="${form.getAttribute("id")}" value="Delete Drug" class="btn btn-secondary">`)
+                    }
+
+                    modal.footer.querySelector("#se-close").textContent = "Back";
+                    modal.footer.querySelector("#se-close").classList.remove("btn-primary");
+                    modal.footer.querySelector("#se-close").classList.add("btn-secondary");
+
+                    modal.footer.insertAdjacentHTML("beforeend", ` 
+                        <input type="submit" form="${form.getAttribute("id")}" value="Save Changes" class="btn btn-primary">
+                    `)
+
+
+                    form.addEventListener("submit", e => {
+                        e.preventDefault();
+                        let form = e.target
+                        let now = new Date()
+
+                        let drug = {
+                            date: form.elements['date'].value,
+                            drug: form.elements['drug'].value
+                        }
+
+                        if (form.elements['takendate'].value) {
+                            drug.taken = { date: form.elements["takendate"].value, time: form.elements["takentime"].value }
+                            drug.updated = { date: this.calendarDate(now), time: `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`}
+                        } else {
+                            drug.taken = { date: this.calendarDate(now), time: `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`}
+                        }
+                        
+                        this.post("/myapp/drugs/", drug);
+                        clickBack();
+                    })
+
+                    form.addEventListener("reset", () => {
+                        let drug = {
+                            date: form.elements['date'].value,
+                            taken: {
+                                date: form.elements['takendate'].value,
+                                time: form.elements['takentime'].value
+                            }
+                        }
+
+                        this.post("/myapp/drugs/delete/", drug);
                         clickBack();
                     })
                 }
