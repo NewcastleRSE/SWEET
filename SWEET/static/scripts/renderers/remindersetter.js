@@ -4,6 +4,8 @@ export function reminderRenderer(section) {
     fetch("/myapp/myreminders").then(response => response.json())
     .then(reminders => {
 
+        let currentState = reminders
+
         holder.innerHTML = `
             <form id="diary-reminders">
             <fieldset><p><input type="checkbox" class="" name="daily" id="daily" ${reminders.daily.reminder? "checked": ""}><label class="h5" for="daily" >I would like a daily reminder to take my hormone therapy</label></p>
@@ -21,6 +23,9 @@ export function reminderRenderer(section) {
         holder.querySelector("form").addEventListener("submit", e => {
             e.preventDefault();
             let form = e.currentTarget;
+            let dailyModifier = "";
+            let monthlyModifier = "";
+            let message;
 
             let reminders = {
                 'daily': {
@@ -38,8 +43,60 @@ export function reminderRenderer(section) {
                 }
             }
 
-            this.post("/myapp/myreminders/", reminders).then(() => e.submitter.setAttribute("disabled", ""));
-            this.showPopupMessage("Great! You've set a new reminder.");
+            // New daily reminder
+            if((!currentState.daily.reminder && form.elements['daily'].checked)) {
+                dailyModifier = "created a"
+            }
+            // Updated daily reminder
+            else if (currentState.daily.reminder && form.elements['daily'].checked) {
+                if(JSON.stringify(currentState.daily) !== JSON.stringify(reminders.daily)){
+                    // Objects are different so there are changes
+                    dailyModifier = "updated your"
+                }
+            }
+            // Deleted daily reminder
+            else if (currentState.daily.reminder && !form.elements['daily'].checked) {
+                dailyModifier = "deleted your"
+            }
+            else {
+                console.error("Invalid reminder state change")
+            }
+
+            // New monthly reminder
+            if((!currentState.monthly.reminder && form.elements['monthly'].checked)) {
+                monthlyModifier = "created a"
+            }
+            // Updated monthly reminder
+            else if (currentState.monthly.reminder && form.elements['monthly'].checked) {
+                if(JSON.stringify(currentState.monthly) !== JSON.stringify(reminders.monthly)){
+                    // Objects are different so there are changes
+                    monthlyModifier = "updated your"
+                }
+            }
+            // Deletes monthly reminder
+            else if (currentState.monthly.reminder && !form.elements['monthly'].checked) {
+                monthlyModifier = "deleted your"
+            }
+            else {
+                console.error("Invalid reminder state change")
+            }
+
+            // Build popup message
+            if(dailyModifier && monthlyModifier) {
+                message = `Great! You've ${dailyModifier} daily reminder and ${monthlyModifier} monthly reminder.`
+            }
+            else if(dailyModifier && !monthlyModifier) {
+                message = `Great! You've ${dailyModifier} daily reminder.`
+            }
+            else if(!dailyModifier && monthlyModifier) {
+                message = `Great! You've ${monthlyModifier} monthly reminder.`
+            }
+
+            this.post("/myapp/myreminders/", reminders).then(() => {
+                currentState = reminders;
+                e.submitter.setAttribute("disabled", "")
+            });
+            this.showPopupMessage(message);
         })
 
         holder.querySelector("input[name='daily']").addEventListener("change", e => {
