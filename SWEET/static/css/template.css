@@ -566,6 +566,15 @@ ul li a:focus {
     background: rgba(0, 0, 0, 0.5)
 }
 
+.chart-controls .btn.btn-light{
+    background-color: var(--SWEET-grey);
+    border-color: var(--SWEET-grey);
+}
+
+.chart-controls .btn.btn-primary {
+    margin: 0
+}
+
 @media screen and (max-width: 825px) {
 
     ul.navbar-nav li.nav-item a.nav-link, ul.quick-links li a {

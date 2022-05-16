@@ -346,81 +346,78 @@ export function diaryGraphRenderer(section) {
 
     holder.innerHTML = `
     <h4>My Side Effects</h4>
-    <div id="se-graph-title">Here you can see an overview of the severity of side effects you recorded this month</div>
-    <div class="chart-container" style="position: relative; height:40vh; width:80vw">
-        <canvas id="myChart"></canvas>
+    <div id="se-graph-title">Here you can see an overview of the severity of side effects you recorded</div>
+    <div class="chart-controls">
+        <button class="btn btn-light btn-sm" id="resetZoom">Reset</button>
+        <div class="btn-group">
+            <button class="btn btn-light btn-sm" id="zoomFortnight">14 Days</button>
+            <button class="btn btn-primary btn-sm" id="zoomMonth">30 Days</button>
+            <button class="btn btn-light btn-sm" id="zoomQuarter">90 Days</button>
+            <button class="btn btn-light btn-sm" id="zoomAll">All</button>
+        </div>
     </div>
-    <svg id="all-se-trends" viewbox="-1 0 45 20">
-        <style>
-            text { font-size: 0.75px; }
-            line, polyline, path { stroke-width: 0.1px;}
-            .hf { color: #633188; }
-            .arth { color: #3535ee; }
-            .ftg { color: #196b1d; }
-            .mood { color: var(--SWEET-grey); }
-            .sleep { color: var(--SWEET-lilac); }
-            .ns { color: #f1dc1f; }
-            .other { color: turquoise; }
-        </style>
-        <g id="axis-y-gen">
-            <text x="-1" y="1">Extremely</text>
-            <text x="-1" y="16">Not at all</text>
-            <line x1="3" y1="0" x2="3" y2="16" stroke-width="0.1" stroke="black" />
-        </g>
-        <g id="axis-x-gen" transform="translate(3,16)">
-            <line x1="0" y1="0" x2="31" y2="0" stroke-width="0.1" stroke="black" />
-            <text x="10" y="2.5">Days of the Month</text>
-        </g>
-        <g id="key-gen" transform="translate(35,0)">
-        </g>
-        <g id="plot-gen" transform="translate(3,0)"></g>
-    </svg>
-    <div id="se-graph-title">Here you can select a side effect to see more details: <select></select></div>
-    <svg id="one-se-trend" viewbox="-1 0 45 20">
-        <g id="axis-y-ind">
-            <text x="-1" y="1" font-size="0.75">Extremely</text>
-            <text x="-1" y="16"  font-size="0.75">Not at all</text>
-            <line x1="3" y1="0" x2="3" y2="16" stroke-width="0.1" stroke="black" />
-        </g>
-        <g id="axis-x-ind" transform="translate(3,16)">
-            <line x1="0" y1="0" x2="31" y2="0" stroke-width="0.1" stroke="black" />
-            <text x="10" y="2.5">Days of the Month</text>
-        </g>
-        <g id="key-ind" transform="translate(35,0)">
-            <text x="0" y="1">Severity</text><line x1="4.5" x2="5.5" y1="0.75" y2="0.75" stroke-width="0.1" stroke="red" />
-            <text x="0" y="2">Impact</text><line x1="4.5" x2="5.5" y1="1.75" y2="1.75" stroke-width="0.1" style="stroke: var(--SWEET-gold);" />
-        </g>
-        <g id="plot-ind" transform="translate(3,0)"></g>
-    </svg>
+    <div class="chart-container" style="position: relative;">
+        <canvas id="se-trends"></canvas>
+    </div>
     `
 
-    function updateGeneral(entries, schema) {
-
-        console.log(entries)
-        console.log(schema)
-
+    function updateChart(entries, schema) {
         var now = new Date();
+        var start = entries.map(entry => { return entry.date })[0];
+        var fortnight = new Date().setDate(now.getDate() - 14);
         var month = new Date().setDate(now.getDate() - 30);
         var quarter = new Date().setDate(now.getDate() - 90);
+        var selectedZoom = "zoomMonth";
+
+        var colours = {
+            HotFlushes: '#008E9B',
+            JointPain: '#0081CF',
+            Fatigue: '#845EC2',
+            MoodChanges: '#D65DB1',
+            NightSweats: '#FF6F91',
+            SleepProblems: '#FF9671',
+            OtherSideeffects: '#FFC75F'
+        }
+        var datasets = []
+
+        var categories = [...new Set(entries.map(entry => { return entry.description }))]
+
+        categories.forEach(category => {
+
+            var dates = entries.filter((entry) => entry.description === category).map(entry => { return entry.date });
+            var values = entries.filter((entry) => entry.description === category).map(entry => { return entry.severity })
+
+            var data = [];
+
+            dates.forEach((date, index) => {
+                data.push({ x: date, y: values[index] })
+            })
+
+            datasets.push({
+                label: category,
+                data: data,
+                fill: false,
+                borderColor: colours[category.replace(/ /g,'')],
+                tension: 0.1
+            })
+        })
 
         const data = {
             labels: entries.map(entry => { return entry.date }),
-            datasets: [{
-                label: 'My First Dataset',
-                data: entries.map(entry => { return entry.severity }),
-                fill: false,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1
-            }]
+            datasets: datasets
         };
 
-        const ctx = document.getElementById('myChart');
-        const myChart = new Chart(ctx, {
+        const ctx = document.getElementById('se-trends');
+        const seChart = new Chart(ctx, {
             type: 'line',
             data: data,
             options: {
                 scales: {
                     y: {
+                        title: {
+                            display: true,
+                            text: 'Severity'
+                        },
                         labelString: 'Severity',
                         min: 0,
                         max: 5,
@@ -439,152 +436,83 @@ export function diaryGraphRenderer(section) {
                             }
                         }
                     }
+                },
+                plugins: {
+                    zoom: {
+                        pan: {
+                            enabled: true,
+                            mode: 'x',
+                            modifierKey: 'shift'
+                        },
+                        limits: {
+                            x: {
+                                max: now.valueOf()
+                            }
+                        },
+                        zoom: {
+
+                        }
+                    }
                 }
             }
         });
 
-        let key = holder.querySelector("#key-gen");
-        while(key.firstChild) key.lastChild.remove();
+        document.addEventListener("click", function(e){
+            if(e.target){
+                switch(e.target.id) {
+                    case 'resetZoom':
+                        seChart.options.scales.x.min = month
+                        seChart.update()
+                        seChart.resetZoom()
 
-        schema.types.forEach((i, x) => {
-            let t = document.createElementNS("http://www.w3.org/2000/svg","text");
-            t.setAttribute("x", "0");
-            t.setAttribute("y", x+1)
-            t.textContent = i.description;
-            key.appendChild(t);
-            let l = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            l.setAttribute("x1", "8");
-            l.setAttribute("x2", "7");
-            l.setAttribute("y1", `${x}.75`);
-            l.setAttribute("y2", `${x}.75`);
-            l.setAttribute("class", i.name);
-            l.setAttribute("stroke", "currentColor")
-            key.appendChild(l);
-        })
-
-        entries.forEach(e => {
-            if (e.severity == "mild") e.severity = 1;
-            if (e.severity == "moderate") e.severity = 3;
-            if (e.severity == "severe") e.severity = 5;
-        })
-
-        let plot = holder.querySelector("#plot-gen");
-        while (plot.firstChild) plot.lastChild.remove();
-
-        schema.types.map(t => t.name).forEach(name => {
-            let d = entries
-                .filter(e => e.type == name)
-                .sort((a,b) => a.date < b.date? -1: a.date > b.date? 1: 0)
-                .map((e, i) => `${parseInt(e.date.substr(8,2)) - 1},${16-(parseFloat(e.severity) * 3)}`)
-                .join(" ");
-            
-            let p = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-            p.setAttribute("class", name);
-            p.setAttribute("points", d);
-            p.setAttribute("marker-start", "url(#point)");
-            p.setAttribute("marker-mid", "url(#point)");
-            p.setAttribute("marker-end", "url(#point)");
-            p.setAttribute("stroke", "currentColor");
-            p.setAttribute("fill", "none");
-            plot.appendChild(p);
-
-            entries
-                .filter(e => e.type == name)
-                .sort((a,b) => a.date < b.date? -1: a.date > b.date? 1: 0)
-                .forEach(e => {
-                    let c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                    c.setAttribute("class", name);
-                    c.setAttribute("cx", parseInt(e.date.substr(8,2)) - 1);
-                    c.setAttribute("cy", 16-(parseFloat(e.severity) * 3));
-                    c.setAttribute("r", "0.2");
-                    c.setAttribute("fill", "currentColor");
-
-                    plot.appendChild(c);
-                })
-        })
+                        document.getElementById(selectedZoom).classList.remove('btn-primary');
+                        document.getElementById(selectedZoom).classList.add('btn-light');
+                        selectedZoom = e.target.id
+                        document.getElementById('zoomMonth').classList.remove('btn-light');
+                        document.getElementById('zoomMonth').classList.add('btn-primary');
+                        break;
+                    case 'zoomFortnight':
+                        seChart.options.scales.x.min = fortnight
+                        seChart.update();
+                        document.getElementById(selectedZoom).classList.remove('btn-primary');
+                        document.getElementById(selectedZoom).classList.add('btn-light');
+                        selectedZoom = e.target.id
+                        e.target.classList.remove('btn-light');
+                        e.target.classList.add('btn-primary');
+                        break;
+                    case 'zoomMonth':
+                        seChart.options.scales.x.min = month
+                        seChart.update();
+                        document.getElementById(selectedZoom).classList.remove('btn-primary');
+                        document.getElementById(selectedZoom).classList.add('btn-light');
+                        selectedZoom = e.target.id
+                        e.target.classList.remove('btn-light');
+                        e.target.classList.add('btn-primary');
+                        break;
+                    case 'zoomQuarter':
+                        seChart.options.scales.x.min = quarter
+                        seChart.update();
+                        document.getElementById(selectedZoom).classList.remove('btn-primary');
+                        document.getElementById(selectedZoom).classList.add('btn-light');
+                        selectedZoom = e.target.id
+                        e.target.classList.remove('btn-light');
+                        e.target.classList.add('btn-primary');
+                        break;
+                    case 'zoomAll':
+                        seChart.options.scales.x.min = start
+                        seChart.update();
+                        document.getElementById(selectedZoom).classList.remove('btn-primary');
+                        document.getElementById(selectedZoom).classList.add('btn-light');
+                        selectedZoom = e.target.id
+                        e.target.classList.remove('btn-light');
+                        e.target.classList.add('btn-primary');
+                        break;
+                    default:
+                        e.preventDefault
+                }
+            }
+        });
     }
-
-    function updateSpecific(entries) {
-        entries.forEach(e => {
-            if (e.severity == "mild") e.severity = 1;
-            if (e.severity == "moderate") e.severity = 3;
-            if (e.severity == "severe") e.severity = 5;
-            if (e.impact == "a little") e.impact = 1;
-            if (e.impact == "moderately") e.impact = 3;
-            if (e.impact == "a lot") e.impact = 5;
-        })
-
-        let plot = holder.querySelector("#plot-ind");
-        while (plot.firstChild) plot.lastChild.remove();
-
-        let spoints = entries
-            .sort((a,b) => a.date < b.date? -1: a.date > b.date? 1: 0)
-            .map((e, i) => `${parseInt(e.date.substr(8,2)) - 1},${16-(parseFloat(e.severity) * 3)}`)
-            .join(" ");
-
-        let ipoints = entries
-            .sort((a,b) => a.date < b.date? -1: a.date > b.date? 1: 0)
-            .map((e, i) => `${parseInt(e.date.substr(8,2)) - 1},${16-(parseFloat(e.impact) * 3)}`)
-            .join(" ");
-
-        let sp = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-        sp.setAttribute("points", spoints);
-        sp.setAttribute("marker-start", "url(#point)");
-        sp.setAttribute("marker-mid", "url(#point)");
-        sp.setAttribute("marker-end", "url(#point)");
-        sp.setAttribute("stroke", "red");
-        sp.setAttribute("fill", "none");
-        plot.appendChild(sp);
-
-        let ip = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-        ip.setAttribute("points", ipoints);
-        ip.setAttribute("marker-start", "url(#point)");
-        ip.setAttribute("marker-mid", "url(#point)");
-        ip.setAttribute("marker-end", "url(#point)");
-        ip.setAttribute("style", "stroke: var(--SWEET-gold);");
-        ip.setAttribute("fill", "none");
-        plot.appendChild(ip);
-
-        entries
-            .sort((a,b) => a.date < b.date? -1: a.date > b.date? 1: 0)
-            .forEach(e => {
-                let c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                c.setAttribute("cx", parseInt(e.date.substr(8,2)) - 1);
-                c.setAttribute("cy", 16-(parseFloat(e.severity) * 3));
-                c.setAttribute("r", "0.2");
-                c.setAttribute("fill", "red");
-
-                plot.appendChild(c);
-
-                let ic = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                ic.setAttribute("cx", parseInt(e.date.substr(8,2)) - 1);
-                ic.setAttribute("cy", 16-(parseFloat(e.impact) * 3));
-                ic.setAttribute("r", "0.2");
-                ic.setAttribute("style", "fill: var(--SWEET-gold)");
-
-                plot.appendChild(ic);
-            })
-
-    }
-
-    fetch("/app/schemas/sideeffects").then(response => response.json())
-    .then(schema => {
-        schema.types.forEach(t => {
-            holder.querySelector("select").insertAdjacentHTML("beforeend", `
-            <option value="${t.name}">${t.description}</option>`)
-        })
-    })
-    
-    holder.querySelector("select").addEventListener("change", e => {
-        let basedate = this.contentHolder.querySelector("#cal-caption").dataset.basemonth;
-        fetch(`/myapp/mydiary?period=${basedate}`).then(response => response.json())
-        .then(diary => {
-            let entries = [].concat(...Object.keys(diary).map(d => "sideeffects" in diary[d]? diary[d].sideeffects.filter(se => se.type == e.target.value).map(se => Object.assign(se, { date: d}) ): []) );
-
-            updateSpecific(entries);
-        })
-
-    })
 
     this.addEventListener("calendar:update", c => {
         let basedate = c.querySelector("#cal-caption").dataset.basemonth;
@@ -607,15 +535,16 @@ export function diaryGraphRenderer(section) {
         }
 
         Promise.allSettled([
-            fetch(`/myapp/mydiary?period=${basedate}`).then(response => response.json()),
+            fetch(`/myapp/mydiary`).then(response => response.json()),
             fetch("/app/schemas/sideeffects").then(response => response.json())
         ]).then(([diary,schema]) => {
 
             diary = diary.value;
             let se = [].concat(...Object.keys(diary).map(d => "sideeffects" in diary[d]? diary[d].sideeffects.map(se => Object.assign(se, { date: d}) ): []) );
-            updateGeneral(se, schema.value);
-            let spec = holder.querySelector("select").value;
-            updateSpecific(se.filter(i => i.type == spec));
+            // updateGeneral(se, schema.value);
+            // let spec = holder.querySelector("select").value;
+            // updateSpecific(se.filter(i => i.type == spec));
+            updateChart(se, schema.value)
         })
 
     })
