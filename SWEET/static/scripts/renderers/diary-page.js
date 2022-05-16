@@ -533,20 +533,19 @@ export function diaryGraphRenderer(section) {
                 g.appendChild(t);
             })
         }
+    })
 
-        Promise.allSettled([
-            fetch(`/myapp/mydiary`).then(response => response.json()),
-            fetch("/app/schemas/sideeffects").then(response => response.json())
-        ]).then(([diary,schema]) => {
+    Promise.allSettled([
+        fetch(`/myapp/mydiary`).then(response => response.json()),
+        fetch("/app/schemas/sideeffects").then(response => response.json())
+    ]).then(([diary,schema]) => {
 
-            diary = diary.value;
-            let se = [].concat(...Object.keys(diary).map(d => "sideeffects" in diary[d]? diary[d].sideeffects.map(se => Object.assign(se, { date: d}) ): []) );
-            // updateGeneral(se, schema.value);
-            // let spec = holder.querySelector("select").value;
-            // updateSpecific(se.filter(i => i.type == spec));
-            updateChart(se, schema.value)
-        })
-
+        diary = diary.value;
+        let se = [].concat(...Object.keys(diary).map(d => "sideeffects" in diary[d]? diary[d].sideeffects.map(se => Object.assign(se, { date: d}) ): []) );
+        // updateGeneral(se, schema.value);
+        // let spec = holder.querySelector("select").value;
+        // updateSpecific(se.filter(i => i.type == spec));
+        updateChart(se, schema.value)
     })
 
     return holder;
