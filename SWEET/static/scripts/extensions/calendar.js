@@ -56,8 +56,15 @@ export function createCalendar(selectedDate=new Date()) {
     cal.setAttribute("role", "grid")
     cal.setAttribute("aria-labelledby", "calendar-caption")
 
+    let prevMonth = new Date()
+    prevMonth.setMonth(selectedDate.getMonth()-1)
+    let nextMonth = new Date()
+    nextMonth.setMonth(selectedDate.getMonth()+1)
+
     let caption = cal.appendChild(document.createElement("caption"));
-    caption.innerHTML = `<section><span class="prev">&lt;</span> <span id="cal-caption" data-basemonth="${calendarutils.attributise(selectedDate).substr(0,7)}">${calendarutils.monthnames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}</span><span class="next">&gt;</span></section>`;
+    caption.innerHTML = `<section><span class="prev">${calendarutils.monthnames[prevMonth.getMonth()]} ${prevMonth.getFullYear()}</span>
+    <span id="cal-caption" data-basemonth="${calendarutils.attributise(selectedDate).substr(0,7)}">${calendarutils.monthnames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}</span>
+    <span class="next">${calendarutils.monthnames[nextMonth.getMonth()]} ${nextMonth.getFullYear()}</span></section>`;
     caption.setAttribute("id", "calendar-caption")
 
     let tbody = cal.appendChild(document.createElement("tbody"));

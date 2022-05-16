@@ -566,6 +566,11 @@ ul li a:focus {
     background: rgba(0, 0, 0, 0.5)
 }
 
+#calendar-caption .prev, #calendar-caption .next {
+    font-size: 0.75em;
+    padding-top: 10px;
+}
+
 .chart-controls .btn.btn-light{
     background-color: var(--SWEET-grey);
     border-color: var(--SWEET-grey);
