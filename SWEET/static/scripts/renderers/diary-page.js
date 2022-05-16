@@ -350,10 +350,10 @@ export function diaryGraphRenderer(section) {
     <div class="chart-controls">
         <button class="btn btn-light btn-sm" id="resetZoom">Reset</button>
         <div class="btn-group">
-            <button class="btn btn-light btn-sm" id="zoomFortnight">14 Days</button>
-            <button class="btn btn-primary btn-sm" id="zoomMonth">30 Days</button>
+            <button class="btn btn-light btn-sm" id="zoomWeek">7 Days</button>
+            <button class="btn btn-primary btn-sm" id="zoomFortnight">14 Days</button>
+            <button class="btn btn-light btn-sm" id="zoomMonth">30 Days</button>
             <button class="btn btn-light btn-sm" id="zoomQuarter">90 Days</button>
-            <button class="btn btn-light btn-sm" id="zoomAll">All</button>
         </div>
     </div>
     <div class="chart-container" style="position: relative;">
@@ -363,11 +363,11 @@ export function diaryGraphRenderer(section) {
 
     function updateChart(entries, schema) {
         var now = new Date();
-        var start = entries.map(entry => { return entry.date })[0];
+        var week = new Date().setDate(now.getDate() - 7);
         var fortnight = new Date().setDate(now.getDate() - 14);
         var month = new Date().setDate(now.getDate() - 30);
         var quarter = new Date().setDate(now.getDate() - 90);
-        var selectedZoom = "zoomMonth";
+        var selectedZoom = "zoomFortnight";
 
         var colours = {
             HotFlushes: '#008E9B',
@@ -428,7 +428,7 @@ export function diaryGraphRenderer(section) {
                     x: {
                         labelString: 'Date',
                         type: 'time',
-                        min: month,
+                        min: fortnight,
                         max: now,
                         time: {
                             displayFormats: {
@@ -461,15 +461,24 @@ export function diaryGraphRenderer(section) {
             if(e.target){
                 switch(e.target.id) {
                     case 'resetZoom':
-                        seChart.options.scales.x.min = month
+                        seChart.options.scales.x.min = fortnight
                         seChart.update()
                         seChart.resetZoom()
 
                         document.getElementById(selectedZoom).classList.remove('btn-primary');
                         document.getElementById(selectedZoom).classList.add('btn-light');
                         selectedZoom = e.target.id
-                        document.getElementById('zoomMonth').classList.remove('btn-light');
-                        document.getElementById('zoomMonth').classList.add('btn-primary');
+                        document.getElementById('zoomFortnight').classList.remove('btn-light');
+                        document.getElementById('zoomFortnight').classList.add('btn-primary');
+                        break;
+                    case 'zoomWeek':
+                        seChart.options.scales.x.min = week
+                        seChart.update();
+                        document.getElementById(selectedZoom).classList.remove('btn-primary');
+                        document.getElementById(selectedZoom).classList.add('btn-light');
+                        selectedZoom = e.target.id
+                        e.target.classList.remove('btn-light');
+                        e.target.classList.add('btn-primary');
                         break;
                     case 'zoomFortnight':
                         seChart.options.scales.x.min = fortnight
@@ -491,15 +500,6 @@ export function diaryGraphRenderer(section) {
                         break;
                     case 'zoomQuarter':
                         seChart.options.scales.x.min = quarter
-                        seChart.update();
-                        document.getElementById(selectedZoom).classList.remove('btn-primary');
-                        document.getElementById(selectedZoom).classList.add('btn-light');
-                        selectedZoom = e.target.id
-                        e.target.classList.remove('btn-light');
-                        e.target.classList.add('btn-primary');
-                        break;
-                    case 'zoomAll':
-                        seChart.options.scales.x.min = start
                         seChart.update();
                         document.getElementById(selectedZoom).classList.remove('btn-primary');
                         document.getElementById(selectedZoom).classList.add('btn-light');
