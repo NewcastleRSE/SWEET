@@ -46,7 +46,7 @@ def resources():
     all = getResources()
     for name in all:
         if 'source' not in all[name]:
-            all[name]['source'] = url_for('getResourceFile', name=name)
+            all[name]['source'] = url_for('content.getResourceFile', name=name)
 
     return all
 
