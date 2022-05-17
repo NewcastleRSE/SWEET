@@ -446,7 +446,7 @@ export function diaryGraphRenderer(section) {
     </div>
     `
 
-    function updateChart(entries, schema) {
+    function updateChart(entries, drugs, schema) {
         var now = new Date();
         var week = new Date().setDate(now.getDate() - 7);
         var fortnight = new Date().setDate(now.getDate() - 14);
@@ -463,7 +463,8 @@ export function diaryGraphRenderer(section) {
             SleepProblems: '#FF9671',
             OtherSideeffects: '#FFC75F'
         }
-        var datasets = []
+        var datasets = [],
+            drugChanges = {};
 
         var categories = [...new Set(entries.map(entry => { return entry.description }))]
 
@@ -491,6 +492,16 @@ export function diaryGraphRenderer(section) {
             labels: entries.map(entry => { return entry.date }),
             datasets: datasets
         };
+
+        drugs.forEach((drug, index) => {
+            drugChanges['drug' + index] = {
+                type: 'line',
+                xMin: new Date(drug.date).valueOf(),
+                xMax: new Date(drug.date).valueOf(),
+                borderColor: 'rgb(255, 99, 132)',
+                borderWidth: 2,
+              }
+        })
 
         const ctx = document.getElementById('se-trends');
         const seChart = new Chart(ctx, {
@@ -537,6 +548,9 @@ export function diaryGraphRenderer(section) {
                         zoom: {
 
                         }
+                    },
+                    annotation: {
+                        annotations: drugChanges
                     }
                 }
             }
@@ -627,10 +641,11 @@ export function diaryGraphRenderer(section) {
 
         diary = diary.value;
         let se = [].concat(...Object.keys(diary).map(d => "sideeffects" in diary[d]? diary[d].sideeffects.map(se => Object.assign(se, { date: d}) ): []) );
+        let drugs = [].concat(...Object.keys(diary).map(d => "drugs" in diary[d]? diary[d].drugs : []));
         // updateGeneral(se, schema.value);
         // let spec = holder.querySelector("select").value;
         // updateSpecific(se.filter(i => i.type == spec));
-        updateChart(se, schema.value)
+        updateChart(se, drugs, schema.value)
     })
 
     return holder;
