@@ -5,10 +5,15 @@
             
             const previewer = SWEETPreviewer();
             previewer.loader = () => {
+
+                // TEMP workaround - why could prev/next be null?
+                var prev = window.opener.document.querySelector("input[name='page-prev']");
+                var next = window.opener.document.querySelector("input[name='page-next']");
+
                 return Promise.resolve({
                     title: window.opener.document.querySelector("input[name='page-title']").value,
-                    prev: window.opener.document.querySelector("input[name='page-prev']").value,
-                    next: window.opener.document.querySelector("input[name='page-next']").value,
+                    prev: prev ? prev.value : null,
+                    next: next ? next.value : null,
                     content: window.opener.document.querySelector("#page-content").jsonvalue
                 })
             }
