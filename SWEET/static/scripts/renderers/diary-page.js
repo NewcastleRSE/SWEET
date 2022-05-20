@@ -432,6 +432,7 @@ export function diaryGraphRenderer(section) {
     holder.innerHTML = `
     <h4>My Side Effects</h4>
     <div id="se-graph-title">Here you can see an overview of the severity of side effects you recorded</div>
+    <small class="instructions">You can alter the time period shown with the zoom controls, move backward and forward through time using <code>shift+click</code> to drag the chart, and select which side effects to show by clicking on each legend label.</small>
     <div class="chart-controls">
         <button class="btn btn-light btn-sm" id="resetZoom">Reset</button>
         <div class="btn-group">
@@ -484,6 +485,7 @@ export function diaryGraphRenderer(section) {
                 data: data,
                 fill: false,
                 borderColor: colours[category.replace(/ /g,'')],
+                backgroundColor: colours[category.replace(/ /g,'')],
                 tension: 0.1
             })
         })
@@ -534,6 +536,12 @@ export function diaryGraphRenderer(section) {
                     }
                 },
                 plugins: {
+                    legend: {
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
                     tooltip: {
                         callbacks: {
                             title: (tooltip) => {
