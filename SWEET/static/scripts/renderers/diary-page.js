@@ -534,6 +534,13 @@ export function diaryGraphRenderer(section) {
                     }
                 },
                 plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: (tooltip) => {
+                                return tooltip[0].label.split(',')[0]
+                            }
+                        }
+                    },
                     zoom: {
                         pan: {
                             enabled: true,
