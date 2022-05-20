@@ -344,6 +344,58 @@ def getLatestProfiler(user):
     
     return latest
 
+def addDrug(user, drug):
+    ### also updates drugs!!
+    id = user["userID"]
+
+    diary = UserData(id).diary()
+
+    if drug["date"] not in diary:
+        diary[drug["date"]] = {}
+
+    if "drugs" not in diary[drug["date"]]:
+        diary[drug["date"]]["drugs"] = drug
+        log(user, "add", new=drug.copy())
+    else:
+        ex = diary[drug["date"]]["drugs"].copy()
+        diary[drug["date"]]["drugs"].update(drug)
+        log(user, "update", old=ex, new=diary[drug["date"]]["drugs"].copy())
+    
+    diary.commit()
+
+def getDrugs(user, drugdate=None):
+    id = user["userID"]
+    diary = UserData(id).diary()
+
+    if drugdate is None:
+        return [diary[d]["drugs"] for d in diary.keys()]
+    else:
+        if drugdate not in diary or "drugs" not in diary[drugdate]:
+            return {}
+        
+        drugs = diary[drugdate]["drugs"]
+
+        return drugs
+
+def deleteDrug(user, drug):
+    id = user["userID"]
+
+    diary = UserData(id).diary()
+    drugdate = drug["date"]
+
+    if drugdate not in diary:
+        return False
+
+    old=diary[drugdate].pop("drugs", None)
+
+    if old is None:
+        return False
+    else:
+        log(user, "delete", old=old)
+        diary.commit()
+
+    return True
+
 def addNote(user, note):
     ### also updates notes!!
     id = user["userID"]

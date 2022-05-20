@@ -75,6 +75,7 @@ export function diaryCalendarRenderer(section) {
                             let section = i.querySelector("section")
                             section.innerHTML = `
                             <h4>${se.description? se.description:se.type}</h4>
+                            ${ se.description === "Hot Flushes" ? `<p class="se-frequency"><label>Frequency:</label> ${se.frequency}</p>`: ""}
                             <p><span class="severity"><label>Severity: </label><span class="bar"><label style="width: ${se.severity}em"></label></span></span><br />
                             <span class="impact"><label>Impact: </label><span class="bar"><label style="width: ${se.impact}em"></label></span></p>
                             ${ se.notes? `<p class="se-notes"><label>Notes:</label><div>${se.notes}</p>`: ""}`
@@ -159,6 +160,11 @@ export function diaryCalendarRenderer(section) {
             <a class="d-block card shadow mt-3" id="day-modal-add-se">
                 <div class="card-body">
                     <h5 class="card-title">Add or update side effect(s)</h5>
+                </div>
+            </a>
+            <a class="d-block card shadow mt-3" id="day-modal-add-drug">
+                <div class="card-body">
+                    <h5 class="card-title">Add or update drug change</h5>
                 </div>
             </a>
             <a class="d-block card shadow mt-3" id="day-modal-add-note">
@@ -246,6 +252,85 @@ export function diaryCalendarRenderer(section) {
                         }
 
                         this.post("/myapp/notes/delete/", note);
+                        clickBack();
+                    })
+                }
+
+                if (e.target.matches("#day-modal-add-drug, #day-modal-add-drug *")) {
+                    modal.size = "lg";
+                    // set up adding note functionality
+
+                    // first, capture the current state of the day modal (this ensures we don't revert an adherence click since the modal was last opened)
+                    daytemplate = modal.body.innerHTML;
+
+                    function reset() {
+                        modal.body.innerHTML = `
+                            <h5>Change in drug taken</h5>
+                            <form id="modal-update-note-form">
+                            <input type="hidden" name="takendate"><input type="hidden" name="takentime">
+                            <input type="hidden" name="date" value="${d.dataset.thisdate}">
+                            <input type="text" name="drug" placeholder="Drug name">
+                            </form>
+                        `
+
+                        let btnreset = modal.footer.querySelector("input[type='reset']")
+                        if (btnreset) btnreset.remove();
+                    }
+
+                    reset()
+
+                    let form = modal.body.querySelector("form");
+                    let olddrug = await fetch(`/myapp/mydiary/drugs?date=${d.dataset.thisdate}`).then(response => response.json()).then(drugs => drugs.drugs)
+
+                    console.log(olddrug)
+
+                    if ("taken" in olddrug) {
+                        form.elements["takendate"].value = olddrug.taken.date;
+                        form.elements["takentime"].value = olddrug.taken.time;
+                        form.elements["drug"].value = olddrug.drug;
+                        modal.footer.insertAdjacentHTML("beforeend", ` <input type="reset" form="${form.getAttribute("id")}" value="Delete Drug" class="btn btn-secondary">`)
+                    }
+
+                    modal.footer.querySelector("#se-close").textContent = "Back";
+                    modal.footer.querySelector("#se-close").classList.remove("btn-primary");
+                    modal.footer.querySelector("#se-close").classList.add("btn-secondary");
+
+                    modal.footer.insertAdjacentHTML("beforeend", ` 
+                        <input type="submit" form="${form.getAttribute("id")}" value="Save Changes" class="btn btn-primary">
+                    `)
+
+
+                    form.addEventListener("submit", e => {
+                        e.preventDefault();
+                        let form = e.target
+                        let now = new Date()
+
+                        let drug = {
+                            date: form.elements['date'].value,
+                            drug: form.elements['drug'].value
+                        }
+
+                        if (form.elements['takendate'].value) {
+                            drug.taken = { date: form.elements["takendate"].value, time: form.elements["takentime"].value }
+                            drug.updated = { date: this.calendarDate(now), time: `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`}
+                        } else {
+                            drug.taken = { date: this.calendarDate(now), time: `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`}
+                        }
+                        
+                        this.post("/myapp/drugs/", drug);
+                        clickBack();
+                    })
+
+                    form.addEventListener("reset", () => {
+                        let drug = {
+                            date: form.elements['date'].value,
+                            taken: {
+                                date: form.elements['takendate'].value,
+                                time: form.elements['takentime'].value
+                            }
+                        }
+
+                        this.post("/myapp/drugs/delete/", drug);
                         clickBack();
                     })
                 }
@@ -346,194 +431,202 @@ export function diaryGraphRenderer(section) {
 
     holder.innerHTML = `
     <h4>My Side Effects</h4>
-    <div id="se-graph-title">Here you can see an overview of the severity of side effects you recorded this month</div>
-    <svg id="all-se-trends" viewbox="-1 0 45 20">
-        <style>
-            text { font-size: 0.75px; }
-            line, polyline, path { stroke-width: 0.1px;}
-            .hf { color: #633188; }
-            .arth { color: #3535ee; }
-            .ftg { color: #196b1d; }
-            .mood { color: var(--SWEET-grey); }
-            .sleep { color: var(--SWEET-lilac); }
-            .ns { color: #f1dc1f; }
-            .other { color: turquoise; }
-        </style>
-        <g id="axis-y-gen">
-            <text x="-1" y="1">Extremely</text>
-            <text x="-1" y="16">Not at all</text>
-            <line x1="3" y1="0" x2="3" y2="16" stroke-width="0.1" stroke="black" />
-        </g>
-        <g id="axis-x-gen" transform="translate(3,16)">
-            <line x1="0" y1="0" x2="31" y2="0" stroke-width="0.1" stroke="black" />
-            <text x="10" y="2.5">Days of the Month</text>
-        </g>
-        <g id="key-gen" transform="translate(35,0)">
-        </g>
-        <g id="plot-gen" transform="translate(3,0)"></g>
-    </svg>
-    <div id="se-graph-title">Here you can select a side effect to see more details: <select></select></div>
-    <svg id="one-se-trend" viewbox="-1 0 45 20">
-        <g id="axis-y-ind">
-            <text x="-1" y="1" font-size="0.75">Extremely</text>
-            <text x="-1" y="16"  font-size="0.75">Not at all</text>
-            <line x1="3" y1="0" x2="3" y2="16" stroke-width="0.1" stroke="black" />
-        </g>
-        <g id="axis-x-ind" transform="translate(3,16)">
-            <line x1="0" y1="0" x2="31" y2="0" stroke-width="0.1" stroke="black" />
-            <text x="10" y="2.5">Days of the Month</text>
-        </g>
-        <g id="key-ind" transform="translate(35,0)">
-            <text x="0" y="1">Severity</text><line x1="4.5" x2="5.5" y1="0.75" y2="0.75" stroke-width="0.1" stroke="red" />
-            <text x="0" y="2">Impact</text><line x1="4.5" x2="5.5" y1="1.75" y2="1.75" stroke-width="0.1" style="stroke: var(--SWEET-gold);" />
-        </g>
-        <g id="plot-ind" transform="translate(3,0)"></g>
-    </svg>
+    <div id="se-graph-title">Here you can see an overview of the severity of side effects you recorded</div>
+    <small class="instructions">You can alter the time period shown with the zoom controls, move backward and forward through time using <code>shift+click</code> to drag the chart, and select which side effects to show by clicking on each legend label.</small>
+    <div class="chart-controls">
+        <button class="btn btn-light btn-sm" id="resetZoom">Reset</button>
+        <div class="btn-group">
+            <button class="btn btn-light btn-sm" id="zoomWeek">7 Days</button>
+            <button class="btn btn-primary btn-sm" id="zoomFortnight">14 Days</button>
+            <button class="btn btn-light btn-sm" id="zoomMonth">30 Days</button>
+            <button class="btn btn-light btn-sm" id="zoomQuarter">90 Days</button>
+        </div>
+    </div>
+    <div class="chart-container" style="position: relative;">
+        <canvas id="se-trends"></canvas>
+    </div>
     `
 
-    function updateGeneral(entries, schema) {
-        let key = holder.querySelector("#key-gen");
-        while(key.firstChild) key.lastChild.remove();
+    function updateChart(entries, drugs, schema) {
+        var now = new Date();
+        var week = new Date().setDate(now.getDate() - 7);
+        var fortnight = new Date().setDate(now.getDate() - 14);
+        var month = new Date().setDate(now.getDate() - 30);
+        var quarter = new Date().setDate(now.getDate() - 90);
+        var selectedZoom = "zoomFortnight";
 
-        schema.types.forEach((i, x) => {
-            let t = document.createElementNS("http://www.w3.org/2000/svg","text");
-            t.setAttribute("x", "0");
-            t.setAttribute("y", x+1)
-            t.textContent = i.description;
-            key.appendChild(t);
-            let l = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            l.setAttribute("x1", "8");
-            l.setAttribute("x2", "7");
-            l.setAttribute("y1", `${x}.75`);
-            l.setAttribute("y2", `${x}.75`);
-            l.setAttribute("class", i.name);
-            l.setAttribute("stroke", "currentColor")
-            key.appendChild(l);
-        })
+        var colours = {
+            HotFlushes: '#008E9B',
+            JointPain: '#0081CF',
+            Fatigue: '#845EC2',
+            MoodChanges: '#D65DB1',
+            NightSweats: '#FF6F91',
+            SleepProblems: '#FF9671',
+            OtherSideeffects: '#FFC75F'
+        }
+        var datasets = [],
+            drugChanges = {};
 
-        entries.forEach(e => {
-            if (e.severity == "mild") e.severity = 1;
-            if (e.severity == "moderate") e.severity = 3;
-            if (e.severity == "severe") e.severity = 5;
-        })
+        var categories = [...new Set(entries.map(entry => { return entry.description }))]
 
-        let plot = holder.querySelector("#plot-gen");
-        while (plot.firstChild) plot.lastChild.remove();
+        categories.forEach(category => {
 
-        schema.types.map(t => t.name).forEach(name => {
-            let d = entries
-                .filter(e => e.type == name)
-                .sort((a,b) => a.date < b.date? -1: a.date > b.date? 1: 0)
-                .map((e, i) => `${parseInt(e.date.substr(8,2)) - 1},${16-(parseFloat(e.severity) * 3)}`)
-                .join(" ");
-            
-            let p = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-            p.setAttribute("class", name);
-            p.setAttribute("points", d);
-            p.setAttribute("marker-start", "url(#point)");
-            p.setAttribute("marker-mid", "url(#point)");
-            p.setAttribute("marker-end", "url(#point)");
-            p.setAttribute("stroke", "currentColor");
-            p.setAttribute("fill", "none");
-            plot.appendChild(p);
+            var dates = entries.filter((entry) => entry.description === category).map(entry => { return entry.date });
+            var values = entries.filter((entry) => entry.description === category).map(entry => { return entry.severity })
 
-            entries
-                .filter(e => e.type == name)
-                .sort((a,b) => a.date < b.date? -1: a.date > b.date? 1: 0)
-                .forEach(e => {
-                    let c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                    c.setAttribute("class", name);
-                    c.setAttribute("cx", parseInt(e.date.substr(8,2)) - 1);
-                    c.setAttribute("cy", 16-(parseFloat(e.severity) * 3));
-                    c.setAttribute("r", "0.2");
-                    c.setAttribute("fill", "currentColor");
+            var data = [];
 
-                    plot.appendChild(c);
-                })
-        })
-    }
-
-    function updateSpecific(entries) {
-        entries.forEach(e => {
-            if (e.severity == "mild") e.severity = 1;
-            if (e.severity == "moderate") e.severity = 3;
-            if (e.severity == "severe") e.severity = 5;
-            if (e.impact == "a little") e.impact = 1;
-            if (e.impact == "moderately") e.impact = 3;
-            if (e.impact == "a lot") e.impact = 5;
-        })
-
-        let plot = holder.querySelector("#plot-ind");
-        while (plot.firstChild) plot.lastChild.remove();
-
-        let spoints = entries
-            .sort((a,b) => a.date < b.date? -1: a.date > b.date? 1: 0)
-            .map((e, i) => `${parseInt(e.date.substr(8,2)) - 1},${16-(parseFloat(e.severity) * 3)}`)
-            .join(" ");
-
-        let ipoints = entries
-            .sort((a,b) => a.date < b.date? -1: a.date > b.date? 1: 0)
-            .map((e, i) => `${parseInt(e.date.substr(8,2)) - 1},${16-(parseFloat(e.impact) * 3)}`)
-            .join(" ");
-
-        let sp = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-        sp.setAttribute("points", spoints);
-        sp.setAttribute("marker-start", "url(#point)");
-        sp.setAttribute("marker-mid", "url(#point)");
-        sp.setAttribute("marker-end", "url(#point)");
-        sp.setAttribute("stroke", "red");
-        sp.setAttribute("fill", "none");
-        plot.appendChild(sp);
-
-        let ip = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-        ip.setAttribute("points", ipoints);
-        ip.setAttribute("marker-start", "url(#point)");
-        ip.setAttribute("marker-mid", "url(#point)");
-        ip.setAttribute("marker-end", "url(#point)");
-        ip.setAttribute("style", "stroke: var(--SWEET-gold);");
-        ip.setAttribute("fill", "none");
-        plot.appendChild(ip);
-
-        entries
-            .sort((a,b) => a.date < b.date? -1: a.date > b.date? 1: 0)
-            .forEach(e => {
-                let c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                c.setAttribute("cx", parseInt(e.date.substr(8,2)) - 1);
-                c.setAttribute("cy", 16-(parseFloat(e.severity) * 3));
-                c.setAttribute("r", "0.2");
-                c.setAttribute("fill", "red");
-
-                plot.appendChild(c);
-
-                let ic = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                ic.setAttribute("cx", parseInt(e.date.substr(8,2)) - 1);
-                ic.setAttribute("cy", 16-(parseFloat(e.impact) * 3));
-                ic.setAttribute("r", "0.2");
-                ic.setAttribute("style", "fill: var(--SWEET-gold)");
-
-                plot.appendChild(ic);
+            dates.forEach((date, index) => {
+                data.push({ x: date, y: values[index] })
             })
 
+            datasets.push({
+                label: category,
+                data: data,
+                fill: false,
+                borderColor: colours[category.replace(/ /g,'')],
+                backgroundColor: colours[category.replace(/ /g,'')],
+                tension: 0.1
+            })
+        })
+
+        const data = {
+            labels: entries.map(entry => { return entry.date }),
+            datasets: datasets
+        };
+
+        drugs.forEach((drug, index) => {
+            drugChanges['drug' + index] = {
+                type: 'line',
+                xMin: new Date(drug.date).valueOf(),
+                xMax: new Date(drug.date).valueOf(),
+                borderColor: 'rgb(255, 99, 132)',
+                borderWidth: 2,
+              }
+        })
+
+        const ctx = document.getElementById('se-trends');
+        const seChart = new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: {
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Severity'
+                        },
+                        labelString: 'Severity',
+                        min: 0,
+                        max: 5,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    },
+                    x: {
+                        labelString: 'Date',
+                        type: 'time',
+                        min: fortnight,
+                        max: now,
+                        time: {
+                            displayFormats: {
+                                quarter: 'DD MM'
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: (tooltip) => {
+                                return tooltip[0].label.split(',')[0]
+                            }
+                        }
+                    },
+                    zoom: {
+                        pan: {
+                            enabled: true,
+                            mode: 'x',
+                            modifierKey: 'shift'
+                        },
+                        limits: {
+                            x: {
+                                max: now.valueOf()
+                            }
+                        },
+                        zoom: {
+
+                        }
+                    },
+                    annotation: {
+                        annotations: drugChanges
+                    }
+                }
+            }
+        });
+
+        document.addEventListener("click", function(e){
+            if(e.target){
+                switch(e.target.id) {
+                    case 'resetZoom':
+                        seChart.options.scales.x.min = fortnight
+                        seChart.update()
+                        seChart.resetZoom()
+
+                        document.getElementById(selectedZoom).classList.remove('btn-primary');
+                        document.getElementById(selectedZoom).classList.add('btn-light');
+                        selectedZoom = e.target.id
+                        document.getElementById('zoomFortnight').classList.remove('btn-light');
+                        document.getElementById('zoomFortnight').classList.add('btn-primary');
+                        break;
+                    case 'zoomWeek':
+                        seChart.options.scales.x.min = week
+                        seChart.update();
+                        document.getElementById(selectedZoom).classList.remove('btn-primary');
+                        document.getElementById(selectedZoom).classList.add('btn-light');
+                        selectedZoom = e.target.id
+                        e.target.classList.remove('btn-light');
+                        e.target.classList.add('btn-primary');
+                        break;
+                    case 'zoomFortnight':
+                        seChart.options.scales.x.min = fortnight
+                        seChart.update();
+                        document.getElementById(selectedZoom).classList.remove('btn-primary');
+                        document.getElementById(selectedZoom).classList.add('btn-light');
+                        selectedZoom = e.target.id
+                        e.target.classList.remove('btn-light');
+                        e.target.classList.add('btn-primary');
+                        break;
+                    case 'zoomMonth':
+                        seChart.options.scales.x.min = month
+                        seChart.update();
+                        document.getElementById(selectedZoom).classList.remove('btn-primary');
+                        document.getElementById(selectedZoom).classList.add('btn-light');
+                        selectedZoom = e.target.id
+                        e.target.classList.remove('btn-light');
+                        e.target.classList.add('btn-primary');
+                        break;
+                    case 'zoomQuarter':
+                        seChart.options.scales.x.min = quarter
+                        seChart.update();
+                        document.getElementById(selectedZoom).classList.remove('btn-primary');
+                        document.getElementById(selectedZoom).classList.add('btn-light');
+                        selectedZoom = e.target.id
+                        e.target.classList.remove('btn-light');
+                        e.target.classList.add('btn-primary');
+                        break;
+                    default:
+                        e.preventDefault
+                }
+            }
+        });
     }
-
-    fetch("/app/schemas/sideeffects").then(response => response.json())
-    .then(schema => {
-        schema.types.forEach(t => {
-            holder.querySelector("select").insertAdjacentHTML("beforeend", `
-            <option value="${t.name}">${t.description}</option>`)
-        })
-    })
-    
-    holder.querySelector("select").addEventListener("change", e => {
-        let basedate = this.contentHolder.querySelector("#cal-caption").dataset.basemonth;
-        fetch(`/myapp/mydiary?period=${basedate}`).then(response => response.json())
-        .then(diary => {
-            let entries = [].concat(...Object.keys(diary).map(d => "sideeffects" in diary[d]? diary[d].sideeffects.filter(se => se.type == e.target.value).map(se => Object.assign(se, { date: d}) ): []) );
-
-            updateSpecific(entries);
-        })
-
-    })
 
     this.addEventListener("calendar:update", c => {
         let basedate = c.querySelector("#cal-caption").dataset.basemonth;
@@ -554,19 +647,20 @@ export function diaryGraphRenderer(section) {
                 g.appendChild(t);
             })
         }
+    })
 
-        Promise.allSettled([
-            fetch(`/myapp/mydiary?period=${basedate}`).then(response => response.json()),
-            fetch("/app/schemas/sideeffects").then(response => response.json())
-        ]).then(([diary,schema]) => {
+    Promise.allSettled([
+        fetch(`/myapp/mydiary`).then(response => response.json()),
+        fetch("/app/schemas/sideeffects").then(response => response.json())
+    ]).then(([diary,schema]) => {
 
-            diary = diary.value;
-            let se = [].concat(...Object.keys(diary).map(d => "sideeffects" in diary[d]? diary[d].sideeffects.map(se => Object.assign(se, { date: d}) ): []) );
-            updateGeneral(se, schema.value);
-            let spec = holder.querySelector("select").value;
-            updateSpecific(se.filter(i => i.type == spec));
-        })
-
+        diary = diary.value;
+        let se = [].concat(...Object.keys(diary).map(d => "sideeffects" in diary[d]? diary[d].sideeffects.map(se => Object.assign(se, { date: d}) ): []) );
+        let drugs = [].concat(...Object.keys(diary).map(d => "drugs" in diary[d]? diary[d].drugs : []));
+        // updateGeneral(se, schema.value);
+        // let spec = holder.querySelector("select").value;
+        // updateSpecific(se.filter(i => i.type == spec));
+        updateChart(se, drugs, schema.value)
     })
 
     return holder;
