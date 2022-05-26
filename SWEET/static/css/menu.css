@@ -53,6 +53,7 @@
 
 .nav-described .row p {
     margin: 0.25em auto;
+    padding-left: 25px;
 }
 
 .nav-described .row:hover {
