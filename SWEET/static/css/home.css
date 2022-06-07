@@ -2,9 +2,18 @@
     justify-content: space-around;
 }
 
+
 .card-title {
     padding-top: 5em;
     text-align: center;
+}
+.hmpg-sects .card.text-center, .hmpg-acts .card.text-center{
+    font-size: medium;
+}
+
+.hmpg-sects .card-title{
+    padding: 0em;
+    padding-top: 2em;
 }
 
 .hmpg-acts .card-title {
@@ -16,7 +25,7 @@
 }
 
 .hmpg-acts .card-title {
-    color: var(--SWEET-charcoal);
+    color: black;
     font-weight: bolder;
 }
 
@@ -36,16 +45,23 @@
 
 .flex-shrink-0 , .hmpg-acts .card-body, .hmpg-acts a.card {
     background-color: #f7f7f7;
+    
 }
 
 .hmpg-acts .card.text-center {
     border: none;
 }
 
+ .btn-primary {
+    margin-top: 0em;
+    margin-bottom: 0em;
+}
 .hmpg-acts .btn-primary {
     color: black;
     background-color: var(--SWEET-gold);
     border-color: var(--SWEET-gold);
+    margin-top: 0em;
+    margin-bottom: 0em;
 }
 
 .hmpg-acts .btn-primary:hover {
@@ -58,16 +74,16 @@
 img.card-icon {
     display: block;
     position: absolute;
-    width: 6em;
-    padding-top: 0.5em;
+    width: 4em;
+    padding-top: 0;
     top: -1px;
-    left: 33%;
+    left: 40%;
 }
 
 .hmpg-acts img.card-icon {
     width: 5em;
-    top: 4em;
-    left: 0.5em;
+    top: 6em;
+    left: 0em;
     opacity: 40%;
 }
 
