@@ -56,11 +56,17 @@ button.edit+button.cancel {
     display: inline-block;
     overflow: hidden;
     overflow-wrap: break-word;
-    min-width: 400px;
-    max-width: 400px;
     box-sizing: border-box;
     box-shadow: 0px 8px 12px 0px #acacac;
+    text-align: left;
+}
 
+/*add contacts fixed size on larger devices*/
+@media (min-width: 480px) {
+    .contact {
+        min-width: 400px;
+        max-width: 400px;
+    }
 }
 
 section.contact {
@@ -77,6 +83,7 @@ section.contact {
 
 .contact-list {
     margin-bottom: 2em;
+    text-align: center;
 }
 
 /*.contact button.edit, .contact button.delete {}
