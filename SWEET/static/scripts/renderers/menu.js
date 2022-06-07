@@ -1,6 +1,6 @@
 export function menuRenderer(section) {
     const holder = document.createElement("div");
-    holder.setAttribute("class", "row row-cols-xl-3 row-cols-2 row-cols-sm-1 g-3 mt-3 nav-normal");
+    holder.setAttribute("class", "row row-cols-xl-1 row-cols-1 row-cols-sm-1 g-3 mt-3 nav-normal");
 
     section.content.forEach(item => {
         if (item.type != "menu-item") throw `DataError: expected type "menu-item", received type "${item.type}"`;
