@@ -529,6 +529,7 @@ export function diaryGraphRenderer(section) {
                         min: fortnight,
                         max: now,
                         time: {
+                            unit: 'day',
                             displayFormats: {
                                 quarter: 'DD MM'
                             }
