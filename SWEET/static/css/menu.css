@@ -69,3 +69,9 @@
 .nav-described .card-title {
     padding-top: 0;
 }
+@media screen and (max-width: 825px) {
+    
+:is(.nav-normal) .card {
+    padding-top: 1.5rem;
+}
+}
