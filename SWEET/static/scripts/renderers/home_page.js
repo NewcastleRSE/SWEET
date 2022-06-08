@@ -9,7 +9,7 @@ export function homepageMenuRenderer(section) {
             <div class="card-body">
                 <h5 class="card-title"></h5>
                 <p class="card-text"></p>
-                <p class="btn btn-primary">Read More</p>
+                <p class="btn btn-primary">Find Out More -> </p>
             </div>
         </a>`
 

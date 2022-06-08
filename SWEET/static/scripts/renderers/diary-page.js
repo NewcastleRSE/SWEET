@@ -430,9 +430,10 @@ export function diaryGraphRenderer(section) {
     holder.setAttribute("id", "diary-page-graphs");
 
     holder.innerHTML = `
-    <h4>My Side Effects</h4>
-    <div id="se-graph-title">Here you can see an overview of the severity of side effects you recorded</div>
-    <small class="instructions">You can alter the time period shown with the zoom controls, move backward and forward through time using <code>shift+click</code> to drag the chart, and select which side effects to show by clicking on each legend label.</small>
+    <h4>My Side-effects</h4>
+    <div id="se-graph-title">Here you can see an overview of the frequency and severity of side-effects you recorded.</div>
+    <small class="instructions">You can select the time period to display your side-effects by clicking on the buttons below. For example, to see side-effects you have recorded in the past 14 days click '14 Days'.
+    <br /><br />This graph shows you all the side-effects you have entered, but you can also choose to just look at just one side-effect on its own. By clicking on the side-effects you DO NOT want to view in the graph key, they will appear with a line through which will remove them from the graph.</small>
     <div class="chart-controls">
         <button class="btn btn-light btn-sm" id="resetZoom">Reset</button>
         <div class="btn-group">
@@ -520,7 +521,10 @@ export function diaryGraphRenderer(section) {
                         min: 0,
                         max: 5,
                         ticks: {
-                            stepSize: 1
+                            stepSize: 1,
+                            font: {
+                                size: 14
+                            }
                         }
                     },
                     x: {
@@ -529,8 +533,14 @@ export function diaryGraphRenderer(section) {
                         min: fortnight,
                         max: now,
                         time: {
+                            unit: 'day',
                             displayFormats: {
                                 quarter: 'DD MM'
+                            }
+                        },
+                        ticks: {
+                            font: {
+                                size: 14
                             }
                         }
                     }
@@ -539,7 +549,10 @@ export function diaryGraphRenderer(section) {
                     legend: {
                         labels: {
                             usePointStyle: true,
-                            pointStyle: 'circle'
+                            pointStyle: 'circle',
+                            font: {
+                                size: 14
+                            }
                         }
                     },
                     tooltip: {
