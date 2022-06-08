@@ -100,7 +100,28 @@ export function diaryCalendarRenderer(section) {
                     adhday.appendChild(i);
                 }
 
-                if (diary[d].notes  && diary[d].notes.taken) {
+                if (diary[d].drugs) {
+                    // note structure:
+                    // -- yellow notes icon in the bottom-right of box
+                    // -- section contains every note for the current day.
+                    
+                    if (adhday) {
+                        let drugs = diary[d].drugs
+
+                        let existing = diaryitem();
+                        existing.classList.add(`notes`)
+                        existing.querySelector("i").classList.add("bi-usb-c-fill")
+                            
+                        adhday.appendChild(existing);
+
+                        this.render({type: "markdown", encoding: "raw", text: drugs.drug })
+                        .then(node => {
+                            existing.querySelector("section").innerHTML = `<h4>Drug</h4><p id="notes-data" data-taken="${drugs.taken.date}T${drugs.taken.time}">${node.innerHTML}</p>`
+                        })
+                    }      
+                }
+
+                if (diary[d].notes && diary[d].notes.taken) {
                     // note structure:
                     // -- yellow notes icon in the bottom-right of box
                     // -- section contains every note for the current day.
@@ -164,7 +185,7 @@ export function diaryCalendarRenderer(section) {
             </a>
             <a class="d-block card shadow mt-3" id="day-modal-add-drug">
                 <div class="card-body">
-                    <h5 class="card-title">Add or update drug change</h5>
+                    <h5 class="card-title">Add or update pill change</h5>
                 </div>
             </a>
             <a class="d-block card shadow mt-3" id="day-modal-add-note">
@@ -266,10 +287,11 @@ export function diaryCalendarRenderer(section) {
                     function reset() {
                         modal.body.innerHTML = `
                             <h5>Change in drug taken</h5>
+                            <p>Here you can record that you've changed the type or brand of hormone therapy pills.</p>
                             <form id="modal-update-note-form">
                             <input type="hidden" name="takendate"><input type="hidden" name="takentime">
                             <input type="hidden" name="date" value="${d.dataset.thisdate}">
-                            <input type="text" name="drug" placeholder="Drug name">
+                            <input type="text" name="drug" placeholder="New pills name">
                             </form>
                         `
 
