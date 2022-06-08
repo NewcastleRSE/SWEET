@@ -574,6 +574,26 @@ ul li a:focus {
     background: rgba(0, 0, 0, 0.5)
 }
 
+#calendar-caption .prev, #calendar-caption .next {
+    font-size: 0.65em;
+    padding-top: 10px;
+    cursor: pointer;
+}
+
+.chart-controls .btn {
+    margin-bottom: 20px;
+}
+
+.chart-controls .btn.btn-light{
+    background-color: var(--SWEET-grey);
+    border-color: var(--SWEET-grey);
+}
+
+.chart-controls .btn.btn-primary {
+    margin-top: 0px;
+    margin-bottom: 20px
+}
+
 @media screen and (max-width: 825px) {
 
     ul.navbar-nav li.nav-item a.nav-link, ul.quick-links li a {

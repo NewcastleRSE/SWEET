@@ -130,7 +130,6 @@ ul.quick-links li a:hover {
 @media screen and (min-width: 200px) and (max-width: 967px) {
     .btn {
         font-size: 0.8rem;
-        margin-bottom: 30px;
     }
 }
 

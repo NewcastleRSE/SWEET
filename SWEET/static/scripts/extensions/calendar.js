@@ -56,8 +56,15 @@ export function createCalendar(selectedDate=new Date()) {
     cal.setAttribute("role", "grid")
     cal.setAttribute("aria-labelledby", "calendar-caption")
 
+    let prevMonth = new Date()
+    prevMonth.setMonth(selectedDate.getMonth()-1)
+    let nextMonth = new Date()
+    nextMonth.setMonth(selectedDate.getMonth()+1)
+
     let caption = cal.appendChild(document.createElement("caption"));
-    caption.innerHTML = `<section><span class="prev">&lt;</span> <span id="cal-caption" data-basemonth="${calendarutils.attributise(selectedDate).substr(0,7)}">${calendarutils.monthnames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}</span><span class="next">&gt;</span></section>`;
+    caption.innerHTML = `<section><span id="cal-prev" class="prev">${calendarutils.monthnames[prevMonth.getMonth()]} ${prevMonth.getFullYear()}</span>
+    <span id="cal-caption" data-basemonth="${calendarutils.attributise(selectedDate).substr(0,7)}">${calendarutils.monthnames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}</span>
+    <span id="cal-next" class="next">${calendarutils.monthnames[nextMonth.getMonth()]} ${nextMonth.getFullYear()}</span></section>`;
     caption.setAttribute("id", "calendar-caption")
 
     let tbody = cal.appendChild(document.createElement("tbody"));
@@ -90,11 +97,11 @@ export function createCalendar(selectedDate=new Date()) {
                 src = src.parentElement;
             }
 
-            if (src.hasAttribute("id")) {
-                // must be the month header, as prev & next don't get assigned ID
-                // replace calendar body with months display
-                // <awaiting implementation of new month selector below> populateMonths(c.querySelector("tbody"));
-            } else {
+            // if (src.hasAttribute("id")) {
+            //     // must be the month header, as prev & next don't get assigned ID
+            //     // replace calendar body with months display
+            //     // <awaiting implementation of new month selector below> populateMonths(c.querySelector("tbody"));
+            // } else {
                 let dir = src.classList.contains("prev")? -1: src.classList.contains("next")? 1: 0;
                 
                 // no id, no prev/next class, someone's been messing with the code!
@@ -105,11 +112,19 @@ export function createCalendar(selectedDate=new Date()) {
                 basedate.setMonth(basedate.getMonth() + dir);
                 populateDays(cal.querySelector("tbody"), basedate);
 
+                let prevMonth = new Date()
+                prevMonth.setMonth(basedate.getMonth()-1)
+                let nextMonth = new Date()
+                nextMonth.setMonth(basedate.getMonth()+1)
+
                 cal.querySelector("#cal-caption").textContent = `${calendarutils.monthnames[basedate.getMonth()]} ${basedate.getFullYear()}`;
                 cal.querySelector("#cal-caption").dataset.basemonth = calendarutils.attributise(basedate).substr(0,7);
 
+                cal.querySelector("#cal-prev").textContent = `${calendarutils.monthnames[prevMonth.getMonth()]} ${prevMonth.getFullYear()}`;
+                cal.querySelector("#cal-next").textContent = `${calendarutils.monthnames[nextMonth.getMonth()]} ${nextMonth.getFullYear()}`;
+
                 cal.dispatchEvent(new CustomEvent("redraw"));
-            }
+            //}
         }
     })
 

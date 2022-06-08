@@ -2,7 +2,7 @@
 <html>
     <head>
         <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
-        <script src="{{ url_for('static', filename='scripts/lz-string.js') }}"></script>
+        <script src="{{ url_for('static', filename='scripts/libraries/lz-string.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
         <style>
@@ -372,8 +372,6 @@
                 let type = document.querySelector("#add-resource input[name='media-type']")
                 let name = document.querySelector("#add-resource input[name='name']")
                 let blob = document.querySelector("#add-resource input[name='blob']")
-                let useblob = document.querySelector("#add-resource input[name='useblob']")
-                useblob.value = "false";
 
                 let f = this.files[0]
                 name.value = f.name.substr(0, f.name.lastIndexOf("."))
@@ -417,7 +415,6 @@
                 }
 
                 if (f.size >= (1024*512)) {
-                    useblob.value = "true";
                     preview.setAttribute("data", "data:text/html;base64,PGgxPlByZXZpZXcgTm90IEF2YWlsYWJsZTwvaDE+PGgzPkZpbGUgdG9vIGxhcmdlPC9oMz4=")
                 }
                 
@@ -432,13 +429,8 @@
                     description: this.elements['description'].value,
                     caption: this.elements['caption'].value,
                     'content-type': this.elements['media-type'].value,
-                    filename: this.elements['file'].files[0].name
-                }
-
-                if (this.elements['useblob'].value == "true") {
-                    resource.blob = this.elements['blob'].value;
-                } else {
-                    resource.source = this.querySelector("#add-resource-preview").data;
+                    filename: this.elements['file'].files[0].name,
+                    blob: this.elements['blob'].value
                 }
 
                 fetch("/admin/resources/", {

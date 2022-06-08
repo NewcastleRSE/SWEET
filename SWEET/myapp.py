@@ -7,11 +7,11 @@ from .data.users import updateUser, validateUser
 from .data.userdata import (
     checkActiveGoal, getGoals, updateGoals, getSideEffects as getUserSideEffects, recordSideEffect, recordProfiler, 
     getDiary as getUserDiary, getPrintDiary,
-    addNote, getNotes, recordAdherence, saveFillin as saveUserFillin, getFillin as getUserFillin,
+    addDrug, getDrugs, addNote, getNotes, recordAdherence, saveFillin as saveUserFillin, getFillin as getUserFillin,
     getReminders, setReminders, 
     getContacts, addContact, deleteContact, updateContact,
     getAllProfilerResults, getLatestProfiler,
-    getPlan, savePlan, deleteNote, deleteSideEffect, getThoughts, saveThoughts
+    getPlan, savePlan, deleteDrug, deleteNote, deleteSideEffect, getThoughts, saveThoughts
 )
 
 from .auth import login, login_required
@@ -133,6 +133,31 @@ def profilerResponses():
 @login_required
 def latestProfilerResult():
     return getLatestProfiler(g.user)
+
+@bp.route("/mydiary/drugs")
+@login_required
+def get_drugs():
+    drugdate = request.args.get("date")
+    return {"drugs": getDrugs(g.user, drugdate=drugdate) }
+
+@bp.route("/drugs/", methods=["POST"])
+@login_required
+def add_drugs():
+    if request.is_json:
+        drug = request.json
+        addDrug(g.user, drug)
+        return {"status": "OK", "message": "Drug added"}
+
+    return {"status": "error", "message": "Update request sent without json"}, 400
+
+@bp.route("/drugs/delete/", methods=["POST"])
+@login_required
+def delete_drug():
+    if request.is_json:
+        drug = request.json
+        deleteDrug(g.user, drug)
+
+        return { "status": "OK", "message": "Drug deleted" }
 
 @bp.route("/mydiary/notes")
 @login_required

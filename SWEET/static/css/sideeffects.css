@@ -142,5 +142,9 @@ input[type='number'] {
 
 #se-graph-title {
     font-size: 1.2em;
-    padding: 10px 0 40px 0;
+}
+
+small.instructions {
+    padding: 20px 0;
+    display: block;
 }

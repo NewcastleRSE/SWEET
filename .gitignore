@@ -2,6 +2,9 @@
 secrets.py
 secrets_*.py
 
+# data management & wrangling
+dm/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
