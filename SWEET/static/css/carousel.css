@@ -4,6 +4,13 @@
     overflow: hidden;
 }
 
+.carousel-inner {
+    width: 80%;
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 img.splash {
     width: 100%;
     object-fit: contain;
@@ -53,6 +60,7 @@ img.splash {
 
     .carousel-indicators {
         margin-bottom: 0;
+        position: relative;
     }
 
 }
