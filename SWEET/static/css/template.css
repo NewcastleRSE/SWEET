@@ -110,6 +110,10 @@ a.card.submenu:visited {
     box-shadow: none !important;
 }
 
+.form-check-input  {
+    height: 1.5em;
+    width: 1.5em;
+}
 /*
 a.card h5 {
     margin-right: 130px;
@@ -250,7 +254,7 @@ a.navbar-brand img {
 
 a.navbar-brand:hover, a.navbar-brand:focus {
     border-bottom: 5px solid var(--SWEET-purple);
-    margin-bottom: -10px;
+    margin-bottom: -8px;
     -webkit-transition: width .5s ease;
     -moz-transition: width .5s ease;
     -o-transition: width .5s ease;
@@ -315,9 +319,13 @@ footer div.container span a:hover {
 }
 */
 
-.card {
+.card{
     border: none;
-    border-radius: 3em;
+}
+.hmpg-sects .card {
+    border-top: solid 2px var(--SWEET-lilac);
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    border-radius: 1em;
 }
 
 .card-title {
@@ -612,7 +620,10 @@ ul li a:focus {
         transform: translate(-50%, -50%);
 
     }
-    
+  .form-check-input  {
+        height: 2em;
+        width: 2em;
+    }
 
     ul li:last-child a::after {
         display: none;
