@@ -81,6 +81,11 @@ section.contact {
     margin-left: 3rem;
 }
 
+/*contact boxes*/
+.my-1 {
+    height: 3em;
+}
+
 .contact-list {
     margin-bottom: 2em;
     text-align: center;
@@ -91,4 +96,5 @@ section.contact {
 
 .password-field {
     float: right;
+    height: 2em;
 }
