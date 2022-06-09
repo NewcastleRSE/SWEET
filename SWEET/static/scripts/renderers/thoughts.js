@@ -12,7 +12,7 @@ export async function thoughtsRenderer(section) {
 
     holder.insertAdjacentHTML("beforeend", "<footer><button type='button' id='add-thought' class='btn btn-primary'>Add more thoughts</button><button type='button' id='save-thoughts' class='btn btn-primary' disabled>Save</button></footer>")
     
-    let rowtemplate = "<input type='text' name='negative'><span>&#10148</span><input type='text' name='positive'>"
+    let rowtemplate = "<textarea type='text' name='negative' ></textarea><span>&#10148</span><textarea type='text' name='positive' ></textarea>"
 
     const addrow = () => {
         let form = document.createElement("form");
@@ -39,7 +39,7 @@ export async function thoughtsRenderer(section) {
         })
     }
 
-    while (holder.querySelectorAll("form").length < 3) {
+    while (holder.querySelectorAll("form").length < 1) {
         addrow();
     }
 
