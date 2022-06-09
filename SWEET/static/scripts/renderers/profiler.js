@@ -23,8 +23,9 @@ export function profilerModalRenderer(section) {
             //section.modal.title.textContent = "Profiler";
             section.modal.body.innerHTML = `<p>Hi there, in the My Personal Support section you can access help and support which has been tailored to meet your needs. In order to provide this personalised support, we'd like to ask you some questions to see how you are getting on with your hormone therapy. Answering these questions will allow us to guide you to relevant sections of the HT&amp;Me website that you may find helpful.</p>
             <p>Are you happy to answer these questions?</p>`;
-            section.modal.footer.innerHTML = `<button type="button" id="prof-yes" class="btn btn-primary">Yes</button>
-            <button type="button" id="prof-later" class="btn btn-secondary">Complete Later</button>
+            section.modal.footer.innerHTML = `<button type="button" id="prof-later" class="btn btn-secondary">Complete Later</button>
+            <button type="button" id="prof-yes" class="btn btn-primary">Yes</button>
+            
             ${ section.reminderDate? `<select id="prof-no" class="btn btn-primary">
                 <option>No...</option>
                 <option value="no-concerns">I don't have any concerns</option>
@@ -216,8 +217,8 @@ export function profilerModalRenderer(section) {
                 if (!answers.C) {
                     section.modal.body.querySelector("#C-concerns").remove();
                 }
-                
-                section.modal.body.insertAdjacentHTML("beforeend", `<button type="submit" id="prof-p2-submit" class="btn btn-primary" form="prof-p2">Submit reponses</button>`)
+
+                section.modal.footer.insertAdjacentHTML("beforeend", `<button type="submit" id="prof-p2-submit" class="btn btn-primary" form="prof-p2">Submit reponses</button>`)
                 section.modal.footer.querySelector("#prof-p1-submit").remove();
 
                 section.modal.body.querySelector("form").addEventListener("submit", e => {

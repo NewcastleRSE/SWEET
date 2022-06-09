@@ -7,6 +7,17 @@
     height: 100% !important;
 }
 
+.model-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#prof-p1-cancel {
+    position: absolute;
+    left: 1em;
+}
+
 .modal-content {
     border-radius : 1rem;
     border: 3px solid rgba(0,0,0,.2);
