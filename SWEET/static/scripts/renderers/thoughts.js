@@ -18,8 +18,12 @@ export async function thoughtsRenderer(section) {
         let form = document.createElement("form");
         form.innerHTML = rowtemplate;
         let deleteBtn = document.createElement("button");
-        deleteBtn.innerHTML = 'X';
+        let icon = '<i class="bi bi-trash"></i>'
+        deleteBtn.insertAdjacentHTML('beforeend', icon);
         deleteBtn.id='delete-thought';
+        deleteBtn.classList.add('btn');
+        deleteBtn.classList.add('btn-primary');
+
        // form.insertAdjacentHTML("beforeend", "<button type='button' id='delete-thought' className='btn btn-primary'>X</button>");
         form.appendChild(deleteBtn);
         deleteBtn.addEventListener("click", e => {
