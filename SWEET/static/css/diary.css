@@ -220,8 +220,15 @@ fieldset {
     background-color: var(--SWEET-pale-grey);
     color: var(--SWEET-purple);
     padding: 0.1em;
-    margin: 0.1em 0em;
+    margin: 0.3em 0em;
+    height: 2.5em;
 }
+
+#diary-reminders input[type='time'] {
+    height: 2.5em;
+}
+
+
 
 #diary-reminders input[type='submit'] {
     position: relative; right: 0;
@@ -272,4 +279,9 @@ fieldset {
         display: none;
     }
     
+}
+
+/*limit textarea to modal width*/
+#modal-update-note-form textarea {
+   width: 100%;
 }

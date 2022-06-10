@@ -3,8 +3,21 @@
     width: 95vw;
 }
 
+
+
 .modal-fs > .modal-content {
     height: 100% !important;
+}
+
+.model-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#prof-p1-cancel {
+    position: absolute;
+    left: 1em;
 }
 
 .modal-content {

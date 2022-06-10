@@ -12,16 +12,41 @@ export async function thoughtsRenderer(section) {
 
     holder.insertAdjacentHTML("beforeend", "<footer><button type='button' id='add-thought' class='btn btn-primary'>Add more thoughts</button><button type='button' id='save-thoughts' class='btn btn-primary' disabled>Save</button></footer>")
     
-    let rowtemplate = "<input type='text' name='negative'><span>&#10148</span><input type='text' name='positive'>"
+    let rowtemplate = "<textarea type='text' name='negative' ></textarea><span>&#10148</span><textarea type='text' name='positive' ></textarea>"
 
     const addrow = () => {
         let form = document.createElement("form");
         form.innerHTML = rowtemplate;
+        let deleteBtn = document.createElement("button");
+        let icon = '<i class="bi bi-trash"></i>'
+        deleteBtn.insertAdjacentHTML('beforeend', icon);
+        deleteBtn.id='delete-thought';
+        deleteBtn.classList.add('btn');
+        deleteBtn.classList.add('btn-primary');
+
+       // form.insertAdjacentHTML("beforeend", "<button type='button' id='delete-thought' className='btn btn-primary'>X</button>");
+        form.appendChild(deleteBtn);
+        deleteBtn.addEventListener("click", e => {
+           // remove current row
+            let toRemove = deleteBtn.parentNode;
+            toRemove.remove();
+            // save current thoughts (i.e. without deleted thought)
+            let allthoughts = Array.from(holder.querySelectorAll("form")).filter(f => f.elements['negative'].value && f.elements['positive'].value).map(f => { return { negative: f.elements['negative'].value, positive: f.elements['positive'].value}; });
+            this.post("/myapp/mythoughts/", { path: section.path, details: allthoughts});
+            e.target.setAttribute("disabled", "");
+            // if these leave no rows, add blank one
+            if (holder.querySelectorAll("form").length < 1) {
+                addrow();
+            }
+        });
         holder.querySelector("footer").insertAdjacentElement("beforebegin", form);
     }
+
+
     holder.addEventListener("change", () => holder.querySelector("#save-thoughts").removeAttribute("disabled"))
 
     holder.querySelector("#add-thought").addEventListener("click", addrow);
+
     holder.querySelector("#save-thoughts").addEventListener("click", e => {
         let allthoughts = Array.from(holder.querySelectorAll("form")).filter(f => f.elements['negative'].value && f.elements['positive'].value).map(f => { return { negative: f.elements['negative'].value, positive: f.elements['positive'].value}; });
         this.post("/myapp/mythoughts/", { path: section.path, details: allthoughts});
@@ -39,7 +64,7 @@ export async function thoughtsRenderer(section) {
         })
     }
 
-    while (holder.querySelectorAll("form").length < 3) {
+    while (holder.querySelectorAll("form").length < 1) {
         addrow();
     }
 
@@ -69,6 +94,7 @@ export function thoughtsPageRenderer(section) {
         }))
         .then(holderPromises => holderPromises.map(p => p.value))
         .then(holders => {
+            console.log(holders);
             if (holders.filter(h => h.hasThoughts).length == 0) {
                 // we have no thoughts in the app; create a single menu to link to thought pages:
                 this.render({

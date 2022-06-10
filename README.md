@@ -54,12 +54,23 @@ After cloning the repository into a new directory (e.g. ~/sweet/), make a virtua
 (venv) [user@system sweet]$ pip install -r requirements.txt
 ```
 
+
 Running SWEET locally for development purposes is the same as running any other flask app. Once you've installed the app as above and set the variables in `secrets.py`, set the `FLASK_APP` environment variable to 'SWEET', optionally set the `FLASK_ENV` environment variable, then execute `flask run`. e.g. (on linux)
 
 ```bash
 (venv) [user@system sweet]$ export FLASK_APP=SWEET
 (venv) [user@system sweet]$ export FLASK_ENV=development
 (venv) [user@system sweet]$ flask run
+```
+
+On Windows using powershell:
+```bash
+> python3 -m venv venv
+> ./venv/scripts/activate
+> pip install -r requirements.txt
+> $env:FLASK_APP='SWEET'
+> $env:FLASK_ENV='development'
+> flask run
 ```
 
 This will start the app locally (usually at 127.0.0.1:5000) for development purposes.

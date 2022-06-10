@@ -23,8 +23,9 @@ export function profilerModalRenderer(section) {
             //section.modal.title.textContent = "Profiler";
             section.modal.body.innerHTML = `<p>Hi there, in the My Personal Support section you can access help and support which has been tailored to meet your needs. In order to provide this personalised support, we'd like to ask you some questions to see how you are getting on with your hormone therapy. Answering these questions will allow us to guide you to relevant sections of the HT&amp;Me website that you may find helpful.</p>
             <p>Are you happy to answer these questions?</p>`;
-            section.modal.footer.innerHTML = `<button type="button" id="prof-yes" class="btn btn-primary">Yes</button>
-            <button type="button" id="prof-later" class="btn btn-secondary">Complete Later</button>
+            section.modal.footer.innerHTML = `<button type="button" id="prof-later" class="btn btn-secondary">Complete Later</button>
+            <button type="button" id="prof-yes" class="btn btn-primary">Yes</button>
+            
             ${ section.reminderDate? `<select id="prof-no" class="btn btn-primary">
                 <option>No...</option>
                 <option value="no-concerns">I don't have any concerns</option>
@@ -207,6 +208,7 @@ export function profilerModalRenderer(section) {
                     </table>
                 </form>`
 
+
                 if (!answers.P) {
                     section.modal.body.querySelector("#P-concerns").remove();
                 }
@@ -216,9 +218,26 @@ export function profilerModalRenderer(section) {
                 if (!answers.C) {
                     section.modal.body.querySelector("#C-concerns").remove();
                 }
-                
-                section.modal.body.insertAdjacentHTML("beforeend", `<button type="submit" id="prof-p2-submit" class="btn btn-primary" form="prof-p2">Submit reponses</button>`)
+
+                section.modal.footer.insertAdjacentHTML("beforeend", `<button type="submit" id="prof-p2-submit" class="btn btn-primary" form="prof-p2">Submit reponses</button>`)
                 section.modal.footer.querySelector("#prof-p1-submit").remove();
+                // temporarily hide cancel and submit buttons until user has viewed full list
+                section.modal.footer.querySelector("#prof-p1-cancel").style.visibility = 'hidden';
+                section.modal.footer.querySelector("#prof-p2-submit").style.visibility = 'hidden';
+
+
+                // add scroll event listener to identify when user has scrolled to bottom of modal
+                section.modal.body.addEventListener('scroll', e => {
+                    const tableRows = document.getElementsByTagName('tr');
+                    const finalRow = tableRows[tableRows.length-1];
+
+                    // display both cancel and submit buttons once visible
+                    if (isElementVisible(finalRow)) {
+                        section.modal.footer.querySelector("#prof-p1-cancel").style.visibility = 'visible';
+                        section.modal.footer.querySelector("#prof-p2-submit").style.visibility = 'visible';
+                    }
+
+                })
 
                 section.modal.body.querySelector("form").addEventListener("submit", e => {
                     e.preventDefault(); e.stopPropagation();
@@ -286,6 +305,27 @@ export function profilerModalRenderer(section) {
 
     // call the appropriate renderer:
     renderers[page].call(this, section);
+}
+
+function isElementVisible(el) {
+    console.log(typeof el);
+    var rect     = el.getBoundingClientRect(),
+        vWidth   = window.innerWidth || document.documentElement.clientWidth,
+        vHeight  = window.innerHeight || document.documentElement.clientHeight,
+        efp      = function (x, y) { return document.elementFromPoint(x, y) };
+
+    // Return false if it's not in the viewport
+    if (rect.right < 0 || rect.bottom < 0
+        || rect.left > vWidth || rect.top > vHeight)
+        return false;
+
+    // Return true if any of its four corners are visible
+    return (
+        el.contains(efp(rect.left,  rect.top))
+        ||  el.contains(efp(rect.right, rect.top))
+        ||  el.contains(efp(rect.right, rect.bottom))
+        ||  el.contains(efp(rect.left,  rect.bottom))
+    );
 }
 
 export function profilerResultRenderer(section) {
