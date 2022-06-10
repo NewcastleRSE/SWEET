@@ -479,13 +479,13 @@ export function diaryGraphRenderer(section) {
         var selectedZoom = "zoomFortnight";
 
         var colours = {
-            HotFlushes: '#008E9B',
-            JointPain: '#0081CF',
-            Fatigue: '#845EC2',
-            MoodChanges: '#D65DB1',
-            NightSweats: '#FF6F91',
-            SleepProblems: '#FF9671',
-            OtherSideeffects: '#FFC75F'
+            HotFlushes: '#633188',
+            JointPain: '#3535ee',
+            Fatigue: '#196b1d',
+            MoodChanges: '#b3b3b2',
+            NightSweats: '#f1dc1f',
+            SleepProblems: '#a08db0',
+            OtherSideeffects: '#40e0d0'
         }
         var datasets = [],
             drugChanges = {};
