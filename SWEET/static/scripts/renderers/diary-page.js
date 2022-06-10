@@ -518,6 +518,8 @@ export function diaryGraphRenderer(section) {
             datasets: datasets
         };
 
+        console.log(drugs)
+
         drugs.forEach((drug, index) => {
             drugChanges['drug' + index] = {
                 type: 'line',
@@ -525,6 +527,10 @@ export function diaryGraphRenderer(section) {
                 xMax: new Date(drug.date).valueOf(),
                 borderColor: 'rgb(255, 99, 132)',
                 borderWidth: 2,
+                label: {
+                    content: drug.drug,
+                    enabled: true
+                }
               }
         })
 
