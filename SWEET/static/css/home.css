@@ -151,3 +151,19 @@ ul.quick-links li a:hover {
         float: none;
     }
 }
+
+/*print css*/
+@media print {
+    header {
+        display: none;
+    }
+    footer {
+        display: none;
+    }
+    .header-buttons {
+        display: none;
+    }
+    .footer-buttons {
+        display: none;
+    }
+}
