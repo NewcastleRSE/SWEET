@@ -72,14 +72,14 @@ If you followed a link, the application maintainers will be notified automatical
                 }
             }
         },
-        reject => {
-            // failure to fetch is either a network error or a redirect due to no auth token:
-            //   sending the app to the logout url will attempt to logout the user if logged in,
-            //   then automatically redirect to login page.
-            // if the fetch failed due to a network error, the user's browser should notify them 
-            //   of the error while trying to load the login page
-            location.href = '/auth/logout';
-        });
+            reject => {
+                // failure to fetch is either a network error or a redirect due to no auth token:
+                //   sending the app to the logout url will attempt to logout the user if logged in,
+                //   then automatically redirect to login page.
+                // if the fetch failed due to a network error, the user's browser should notify them 
+                //   of the error while trying to load the login page
+                location.href = '/auth/logout';
+            });
     },
     titleHolder: "#page-title",
     contentHolder: "#main-container",
@@ -124,7 +124,7 @@ SWEET.addEventListener("prerender", function (page) {
             else strct = strct.pages.filter(p => p.slug == slug)[0]
         }
 
-        b.textContent = strct.title || "HT & Me";
+        b.textContent = strct.title || "HT&Me";
     });
 });
 
@@ -242,7 +242,7 @@ document.querySelector("#btn-print > a").addEventListener("click", e => {
 
     e.preventDefault(); e.stopPropagation();
 
-    switch(SWEET.path) {
+    switch (SWEET.path) {
         case "#home/diary":
             open(`/myapp/mydiary/print?period=${e.currentTarget.dataset.period}`);
             break;
