@@ -93,6 +93,15 @@ a.card {
     background-size: 120px;
 }
 
+@media screen and (max-width: 825px) {
+    a.card.submenu .card-title {
+        margin-top: 2em;
+        font-size: 1em;
+    }
+}
+
+
+
 a.card.submenu:visited {
     background-color: #ffffff;
 }
@@ -314,9 +323,8 @@ footer div.container span a:hover {
     border: none;
 }
 .hmpg-sects .card {
-    border-top: solid 2px var(--SWEET-lilac);
+    border-top: solid 2px var(--SWEET-purple);
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-    border-radius: 1em;
 }
 
 .card-title {
