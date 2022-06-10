@@ -17,11 +17,32 @@ export async function thoughtsRenderer(section) {
     const addrow = () => {
         let form = document.createElement("form");
         form.innerHTML = rowtemplate;
+        let deleteBtn = document.createElement("button");
+        deleteBtn.innerHTML = 'X';
+        deleteBtn.id='delete-thought';
+       // form.insertAdjacentHTML("beforeend", "<button type='button' id='delete-thought' className='btn btn-primary'>X</button>");
+        form.appendChild(deleteBtn);
+        deleteBtn.addEventListener("click", e => {
+           // remove current row
+            let toRemove = deleteBtn.parentNode;
+            toRemove.remove();
+            // save current thoughts (i.e. without deleted thought)
+            let allthoughts = Array.from(holder.querySelectorAll("form")).filter(f => f.elements['negative'].value && f.elements['positive'].value).map(f => { return { negative: f.elements['negative'].value, positive: f.elements['positive'].value}; });
+            this.post("/myapp/mythoughts/", { path: section.path, details: allthoughts});
+            e.target.setAttribute("disabled", "");
+            // if these leave no rows, add blank one
+            if (holder.querySelectorAll("form").length < 1) {
+                addrow();
+            }
+        });
         holder.querySelector("footer").insertAdjacentElement("beforebegin", form);
     }
+
+
     holder.addEventListener("change", () => holder.querySelector("#save-thoughts").removeAttribute("disabled"))
 
     holder.querySelector("#add-thought").addEventListener("click", addrow);
+
     holder.querySelector("#save-thoughts").addEventListener("click", e => {
         let allthoughts = Array.from(holder.querySelectorAll("form")).filter(f => f.elements['negative'].value && f.elements['positive'].value).map(f => { return { negative: f.elements['negative'].value, positive: f.elements['positive'].value}; });
         this.post("/myapp/mythoughts/", { path: section.path, details: allthoughts});
@@ -69,6 +90,7 @@ export function thoughtsPageRenderer(section) {
         }))
         .then(holderPromises => holderPromises.map(p => p.value))
         .then(holders => {
+            console.log(holders);
             if (holders.filter(h => h.hasThoughts).length == 0) {
                 // we have no thoughts in the app; create a single menu to link to thought pages:
                 this.render({
