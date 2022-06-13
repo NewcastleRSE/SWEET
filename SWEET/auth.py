@@ -50,7 +50,7 @@ def register():
         uid = request.form['regCode']
         firstname = request.form['firstName']
         lastname = request.form['lastName']
-        fname = firstName + lastName
+        fname = firstname + " " + lastname
         email = request.form['email']
         mobile = request.form['mobile']
         role = 'staff' if uid[:2] == "RT" else 'user'
