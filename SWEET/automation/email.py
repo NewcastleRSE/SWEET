@@ -35,12 +35,6 @@ def _send_message(to, template="welcome", **kwargs):
 
     _send(msg)
 
-def create_name(user):
-    if user['lastName'] and len(user['lastName']) > 0:
-        return f"{user['firstName']} {user['lastName']}"
-    else:
-        return f"{user['firstName']}"
-
 def send_welcome(user):
     fullname = f"{user['firstName']} {user['lastName']}"
     _send_message(f"{fullname} <{user['email']}>", "welcome", fullname=fullname)
@@ -69,5 +63,5 @@ def send_profiler_due(user):
     _send_message(f"{fullname} <{user['email']}>", "profiler_reminder", fullname=fullname, hostname=hostname)
 
 def send_goal_reminder(detail):
-    fullname = create_name
+    fullname = f"{user['firstName']} {user['lastName']}"
     _send_message(f"{fullname} <{detail['email']}>", "goal_reminder", fullname=fullname, hostname=hostname, shorttype=detail['shortType'], longtype=detail['longType'])
