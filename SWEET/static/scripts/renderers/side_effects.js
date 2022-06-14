@@ -20,9 +20,21 @@ export function sideEffectFormRenderer(section) {
         //     `
 
         form.innerHTML = `
-            <section id="form-se-types" class="mx-3">
-                <p>What side effects would you like to add?</p>
-            </section>
+            
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="form-se-types" role="tabpanel">
+                    <section id="form-se-types" class="mx-3">
+                        <p>What side effects would you like to add?</p>
+                    </section>
+                </div>
+                <div class="tab-pane fade" id="form-se-type-hf" role="tabpanel">...</div>
+                <div class="tab-pane fade" id="form-se-type-arth" role="tabpanel">...</div>
+                <div class="tab-pane fade" id="form-se-type-ftg" role="tabpanel">...</div>
+                <div class="tab-pane fade" id="form-se-type-mood" role="tabpanel">...</div>
+                <div class="tab-pane fade" id="form-se-type-ns" role="tabpanel">...</div>
+                <div class="tab-pane fade" id="form-se-type-sleep" role="tabpanel">...</div>
+                <div class="tab-pane fade" id="form-se-type-other" role="tabpanel">...</div>
+            </div>
         `
 
         //form.querySelector("#form-se-type-input").insertAdjacentHTML('beforeend', schema.types.map(t => `<option value="${t.name}">${t.description}</option>`).join(""));
@@ -37,6 +49,16 @@ export function sideEffectFormRenderer(section) {
                 </div>`
             ).join("")
         );
+
+        const seTypes = form.querySelector('#form-se-types')
+        let selected = [];
+
+        seTypes.addEventListener('change', event => {
+            if (event.target.type === 'checkbox') {
+                const checked = form.querySelectorAll('input[type="checkbox"]:checked')
+                selected = Array.from(checked).map(x => x.id)
+            }
+        })
         
         form.querySelector("#form-se-type-input").addEventListener("change", async e => {
             let type = e.target.value;

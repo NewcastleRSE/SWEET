@@ -367,6 +367,7 @@ export function diaryCalendarRenderer(section) {
                         modal.size = "lg";
 
                         while (modal.body.firstChild) modal.body.removeChild(modal.body.lastChild);
+
                         modal.body.appendChild(form);
                         modal.footer.insertAdjacentHTML('beforeend',` <input id="se-next" type="button" value="Next" class="btn btn-primary">`)
                         modal.footer.insertAdjacentHTML('beforeend',` <input hidden type="submit" form="${form.getAttribute("id")}" value="Save details" class="btn btn-primary">`)
@@ -374,10 +375,28 @@ export function diaryCalendarRenderer(section) {
                         modal.footer.querySelector("#se-close").classList.remove("btn-primary");
                         modal.footer.querySelector("#se-close").classList.add("btn-secondary");
 
+                        // console.log(form)
+                        // const seTypes = form.querySelector('#form-se-types')
+                        // let selected = [];
+
+                        // seTypes.addEventListener('change', event => {
+                        //     if (event.target.type === 'checkbox') {
+                        //         const checked = document.querySelectorAll('input[type="checkbox"]:checked')
+                        //         selected = Array.from(checked).map(x => x.value)
+                        //     }
+                        // })
+
                         form.addEventListener("change", changeEvent => {
                             if (changeEvent.target.tagName == "SELECT" && !(modal.footer.querySelector("input[type='reset']"))) {
                                 modal.footer.querySelector("#se-close").insertAdjacentHTML("afterend", ` <input type="reset" form="${form.getAttribute("id")}" value="Delete details" class="btn btn-secondary">`)
                             }
+                        })
+
+                        modal.footer.querySelector("#se-next").addEventListener("click", async e => {
+                            console.log(selected)
+
+                            
+
                         })
 
                         form.addEventListener("submit", () => {
@@ -517,8 +536,6 @@ export function diaryGraphRenderer(section) {
             labels: entries.map(entry => { return entry.date }),
             datasets: datasets
         };
-
-        console.log(drugs)
 
         drugs.forEach((drug, index) => {
             drugChanges['drug' + index] = {
