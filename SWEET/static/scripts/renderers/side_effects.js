@@ -5,21 +5,39 @@ export function sideEffectFormRenderer(section) {
     fetch(`/app/schemas/sideeffects`)
     .then(response => response.json())
     .then(schema => {
-        form.innerHTML =  `
-            <section>
-            <span id="form-se-type"><label for="type">What side effect do you want to record?</label><select id="form-se-type-input" name="type"><option value="">Choose a side effect...</option></select><input type="hidden" name="description"><br></span>
-            <span id="form-se-date" hidden><label for="date"> Which day do you wish to record for?</label><span id="dateinput"></span><br></span>
-            <span id="form-se-frequency" hidden><label for="frequency">How many <span data-replace="embedtext"></span> did you have?</label><span><input type="number" id="frequency" name="frequency" min="0" max="50"></span><br></span>
-            <span id="form-se-severity" hidden><label for="severity">How bad <span data-switch="embedplural" data-true="were" data-false="was"></span> your <span data-replace="embedtext"></span>?</label>
-            <span id="severityinput"><label class="scale">Not at all</label> <input type="range" min="0" max="5" step="0.1" class="form-range" name="severity"> <label class="scale">Extremely</label></span><br></span>
-            <span id="form-se-impact" hidden><label for="impact">How badly did your <span data-replace="embedtext"></span> impact your daily life?</label>
-            <span id="impactinput"><label class="scale">Not at all</label> <input type="range" min="0" max="5" step="0.1" class="form-range" name="impact"> <label class="scale">Extremely</label></span><br></span>
-            <span id="form-se-notes" hidden><label for="notes">Notes: <span class="sidenote">[e.g. the times of day, triggers, things you tried to help]</span></label><br>
-            <span id="notesinput"><textarea name="notes" id="notes" cols="50" rows="5"></textarea></span></span>
-            </section>
-            `
+        // form.innerHTML =  `
+        //     <section>
+        //     <span id="form-se-type"><label for="type">What side effect do you want to record?</label><select id="form-se-type-input" name="type"><option value="">Choose a side effect...</option></select><input type="hidden" name="description"><br></span>
+        //     <span id="form-se-date" hidden><label for="date"> Which day do you wish to record for?</label><span id="dateinput"></span><br></span>
+        //     <span id="form-se-frequency" hidden><label for="frequency">How many <span data-replace="embedtext"></span> did you have?</label><span><input type="number" id="frequency" name="frequency" min="0" max="50"></span><br></span>
+        //     <span id="form-se-severity" hidden><label for="severity">How bad <span data-switch="embedplural" data-true="were" data-false="was"></span> your <span data-replace="embedtext"></span>?</label>
+        //     <span id="severityinput"><label class="scale">Not at all</label> <input type="range" min="0" max="5" step="0.1" class="form-range" name="severity"> <label class="scale">Extremely</label></span><br></span>
+        //     <span id="form-se-impact" hidden><label for="impact">How badly did your <span data-replace="embedtext"></span> impact your daily life?</label>
+        //     <span id="impactinput"><label class="scale">Not at all</label> <input type="range" min="0" max="5" step="0.1" class="form-range" name="impact"> <label class="scale">Extremely</label></span><br></span>
+        //     <span id="form-se-notes" hidden><label for="notes">Notes: <span class="sidenote">[e.g. the times of day, triggers, things you tried to help]</span></label><br>
+        //     <span id="notesinput"><textarea name="notes" id="notes" cols="50" rows="5"></textarea></span></span>
+        //     </section>
+        //     `
 
-        form.querySelector("#form-se-type-input").insertAdjacentHTML('beforeend', schema.types.map(t => `<option value="${t.name}">${t.description}</option>`).join(""));
+        form.innerHTML = `
+            <section id="form-se-types" class="mx-3">
+                <p>What side effects would you like to add?</p>
+            </section>
+        `
+
+        //form.querySelector("#form-se-type-input").insertAdjacentHTML('beforeend', schema.types.map(t => `<option value="${t.name}">${t.description}</option>`).join(""));
+        
+        form.querySelector("#form-se-types").insertAdjacentHTML('beforeend', 
+            schema.types.map(t => 
+                `<div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="${t.name}">
+                    <label class="form-check-label" for="${t.name}">
+                        ${t.description}
+                    </label>
+                </div>`
+            ).join("")
+        );
+        
         form.querySelector("#form-se-type-input").addEventListener("change", async e => {
             let type = e.target.value;
             let scheme = schema.types.filter(t => t.name == type)[0];
