@@ -368,8 +368,8 @@ export function diaryCalendarRenderer(section) {
 
                         while (modal.body.firstChild) modal.body.removeChild(modal.body.lastChild);
                         modal.body.appendChild(form);
-
-                        modal.footer.insertAdjacentHTML('beforeend',` <input type="submit" form="${form.getAttribute("id")}" value="Save details" class="btn btn-primary">`)
+                        modal.footer.insertAdjacentHTML('beforeend',` <input id="se-next" type="button" value="Next" class="btn btn-primary">`)
+                        modal.footer.insertAdjacentHTML('beforeend',` <input hidden type="submit" form="${form.getAttribute("id")}" value="Save details" class="btn btn-primary">`)
                         modal.footer.querySelector("#se-close").textContent = "Back";
                         modal.footer.querySelector("#se-close").classList.remove("btn-primary");
                         modal.footer.querySelector("#se-close").classList.add("btn-secondary");
