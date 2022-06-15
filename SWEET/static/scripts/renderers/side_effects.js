@@ -46,7 +46,7 @@ export function sideEffectFormRenderer(section) {
         );
 
         form.querySelector("#sideEffectTabs").insertAdjacentHTML('beforeend',
-            schema.types.map(t => 
+            schema.types.map(t =>
                 `<div class="tab-pane fade" id="form-se-type-${t.name}" role="tabpanel">
                     <h4>${t.description}</h4>
                     <input id="${t.name}-description" type="hidden" value="${t.description}" />
@@ -55,16 +55,16 @@ export function sideEffectFormRenderer(section) {
                         <span class="col-6" id="dateinput"></span>
                     </div>
                     <div id="hf-freq-holder" class="row mb-3" hidden>
-                        <label class="col-6" for="${t.name}-frequency" style="line-height:2.2em">How many hot flushes did you have?</label>
+                        <label class="col-6" for="${t.name}-frequency" style="line-height:2.2em">How many ${t.embedtext} did you have?</label>
                         <input type="number" class="col-6 form-control" id="${t.name}-frequency" name="${t.name}-frequency" min="0" max="50">
                     </div>
-                    <p class="mt-3">How bad <span data-switch="embedplural" data-true="were" data-false="was"></span> your <span data-replace="embedtext"></span>?</p>
+                    <p class="mt-3">How bad ${t.embedplural ? 'were' : 'was'} your ${t.embedtext}?</p>
                     <div class="mb-3">
                         <label for="${t.name}-severity" class="float-start">Not at all</label>
                         <label for="${t.name}-severity" class="float-end">Extremely</label>
                         <input type="range" class="form-range" min="0" max="5" step="0.1" class="form-range" id="${t.name}-severity" name="${t.name}-severity">
                     </div>
-                    <p class="mt-3">How badly did your <span data-replace="embedtext"></span> impact your daily life?</p>
+                    <p class="mt-3">How badly did your ${t.embedtext} impact your daily life?</p>
                     <div class="mb-3">
                         <label for="${t.name}-impact" class="float-start">Not at all</label>
                         <label for="${t.name}-impact" class="float-end">Extremely</label>
@@ -98,6 +98,7 @@ export function sideEffectFormRenderer(section) {
             if (event.target.type === 'checkbox') {
                 const checked = form.querySelectorAll('input[type="checkbox"]:checked')
                 selectedSideEffects = Array.from(checked).map(x => x.id)
+                selectedSideEffects.length > 0 ? document.querySelector("#se-next").disabled = false : document.querySelector("#se-next").disabled = true
             }
         })
         
@@ -208,7 +209,9 @@ export function sideEffectFormRenderer(section) {
             date: form.elements['date'].value
         }
 
-        this.post("/myapp/mydiary/sideeffects/delete/", sideeffect);
+        this.post("/myapp/mydiary/sideeffects/delete/", sideeffect).then(res => {
+            console.log(res)
+        });
 
         ["date", "frequency", "severity", "impact", "notes"].forEach(s => {
             form.querySelector(`#form-se-${s}`).setAttribute("hidden", "");
