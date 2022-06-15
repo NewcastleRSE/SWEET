@@ -24,7 +24,10 @@ def transferLegacyResources(oldresfile):
 
         newres["blob"] = blob
 
-        saveResource(newres)
-        count += 1
+        try:
+            saveResource(newres)
+            count += 1
+        except ValueError:
+            pass
 
     print(f"Transferred {count} resources from '{oldresfile}' to new file structure")
