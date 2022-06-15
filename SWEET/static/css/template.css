@@ -661,14 +661,20 @@ ul li a:focus {
         font-size: 0.7em;
     }
 }
-
+/* RESPONSIVE NAVBAR */
 .topnav {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    border-bottom: 5px solid var(--SWEET-grey);
+    margin-bottom: -10px;
+    width: 100%;
+    padding-right: var(--bs-gutter-x,.75rem);
+    padding-left: var(--bs-gutter-x,.75rem);
+    margin-right: auto;
+    margin-left: auto;
 }
 
 /* Hide the link that should open and close the topnav on small screens */
@@ -741,12 +747,12 @@ a.link {
 #navlogout {
     min-width: 5em;
     max-width: 5em;
+    transform: translate(0%, -15%);
 }
 .btn-dark, .btn-dark:focus, .btn-dark:active {
     background-color: var(--SWEET-purple);
     border-radius: 2rem;
     padding: 3px;
-    margin-top: 6px;
     margin-left: 0.5rem;
     font-weight: normal!important;
 }
