@@ -608,16 +608,7 @@ ul li a:focus {
         text-align: center;
     }
 
- a.btn-dark {
-        margin: 0;
-        margin-top: 1rem;
-        position: relative;
-        top: 50%;
-        left: 50%;
-        -ms-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
 
-    }
   .form-check-input  {
         height: 2em;
         width: 2em;
@@ -692,6 +683,22 @@ ul li a:focus {
         float: right;
         display: block;
     }
+    a.btn-dark {
+           margin: 0;
+           margin-top: 1rem;
+           position: relative;
+           top: 50%;
+           left: 50%;
+           -ms-transform: translate(-50%, -50%);
+           transform: translate(-50%, -50%);
+
+       }
+}
+
+@media screen and (min-width: 601px) {
+    #navlogout {
+        transform:translate(0%, -15%);
+    }
 }
 
 /* The "responsive" class is added to the topnav with JavaScript when the user clicks on the icon. This class makes the topnav look good on small screens (display the links vertically instead of horizontally) */
@@ -747,7 +754,7 @@ a.link {
 #navlogout {
     min-width: 5em;
     max-width: 5em;
-    transform: translate(0%, -15%);
+
 }
 .btn-dark, .btn-dark:focus, .btn-dark:active {
     background-color: var(--SWEET-purple);
