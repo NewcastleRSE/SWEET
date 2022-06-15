@@ -252,7 +252,7 @@ a.navbar-brand img {
     margin-top: 5px;
 }
 
-a.navbar-brand:hover, a.navbar-brand:focus {
+a.navbar-brand:hover, a.navbar-brand:focus  {
     border-bottom: 5px solid var(--SWEET-purple);
     margin-bottom: -8px;
     -webkit-transition: width .5s ease;
@@ -261,6 +261,8 @@ a.navbar-brand:hover, a.navbar-brand:focus {
     transition: width .5s;
 
 }
+
+
 
 a.navbar-brand>strong {
     padding: 0 0.25em;
@@ -538,10 +540,6 @@ Target each ID
 Width by ID 
 */
 
-ul li:hover~li:last-child a::after,
-ul li:last-child:hover a::after {
-    background: var(--SWEET-purple)
-}
 
 ul li:last-child a {
     min-width: 5em;

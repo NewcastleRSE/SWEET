@@ -35,12 +35,13 @@
 
   <header>
     <!-- Fixed navbar -->
-    <nav class="topnav" id="mytopnav">
-        <a href="#home"><strong>HT &amp; Me</strong> <img
+    <nav class="topnav navbar-dark bg-dark fixed-top shadow" id="mytopnav">
+        <a class="navbar-brand" href="#home"><strong>HT &amp; Me</strong> <img
             src="{{ url_for('static', filename='images/logo-sweet_.png') }}" alt="logo" height="36"
             class="d-inline-block align-text-top"></a>
         <a  aria-current="page" href="#home"><i
             class="bi bi-house text-white h3"></i></a>
+      {% block navitems %}
 
               <a class="link"  aria-current="page" href="#home">Home</a>
 
@@ -52,9 +53,18 @@
 
 
               <a class="link"  href="#about">About the Team</a>
+      {% if g.user['role'] in ['sysadmin', 'studyadmin', 'editor', 'staff'] %}-->
+
+              <a class="link" href="{{url_for('admin.home')}}" target="_blank">ADMIN</a>
+
+                {% endif %}
+
+              <a class="btn btn-dark" href="{{url_for('auth.logout')}}">Log Out</a>
+
+                  {% endblock %}
 
       <a href="javascript:void(0);" class="icon" onclick="navbarFunction()">
-        <span class="bi bi-list"></span>
+        <span class="bi bi-list" id="hamburger"></span>
       </a>
           </ul>
 
@@ -73,7 +83,7 @@
 <!--        </button>-->
 <!--        <div class="collapse navbar-collapse" id="navbarCollapse">-->
 <!--          <ul class="navbar-nav ms-auto mb-2 mb-md-0">-->
-<!--            {% block navitems %}-->
+<!--            {% block navitems1 %}-->
 <!--            <li class="nav-item">-->
 <!--              <a class="nav-link active" aria-current="page" href="#home">Home</a>-->
 <!--            </li>-->
@@ -203,10 +213,10 @@
       /* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
       function navbarFunction() {
         var x = document.getElementById("mytopnav");
-        if (x.className === "topnav") {
-          x.className += " responsive";
+        if (!x.classList.contains("responsivenav")) {
+          x.classList.add("responsivenav");
         } else {
-          x.className = "topnav";
+          x.classList.remove("responsivenav");
         }
       }
 
@@ -217,6 +227,18 @@
           console.log('close')
           navbarFunction()
         })
+      })
+
+      // if click elsewhere in page, close hamburger menu
+      document.addEventListener('click', function (event) {
+        if (!event.target.matches('.topnav') && !event.target.matches('#hamburger')) {
+          console.log('close navbar');
+          var x = document.getElementById("mytopnav");
+          if (x.classList.contains("responsivenav")) {
+            x.classList.remove("responsivenav");
+          }
+
+        }
       })
 
       // document.addEventListener('click', function (event) {
