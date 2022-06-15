@@ -49,6 +49,11 @@ export function sideEffectFormRenderer(section) {
             schema.types.map(t => 
                 `<div class="tab-pane fade" id="form-se-type-${t.name}" role="tabpanel">
                     <h4>${t.description}</h4>
+                    <input id="${t.name}-description" type="hidden" value="${t.description}" />
+                    <div class="row mb-3" hidden>
+                        <label class="col-6" for="${t.name}-date" style="line-height:2.2em">Which day do you wish to record for?</label>
+                        <span class="col-6" id="dateinput"></span>
+                    </div>
                     <div id="hf-freq-holder" class="row mb-3" hidden>
                         <label class="col-6" for="${t.name}-frequency" style="line-height:2.2em">How many hot flushes did you have?</label>
                         <input type="number" class="col-6 form-control" id="${t.name}-frequency" name="${t.name}-frequency" min="0" max="50">
@@ -63,7 +68,7 @@ export function sideEffectFormRenderer(section) {
                     <div class="mb-3">
                         <label for="${t.name}-impact" class="float-start">Not at all</label>
                         <label for="${t.name}-impact" class="float-end">Extremely</label>
-                        <input type="range" class="form-range" min="0" max="5" step="0.1" class="form-range" id="${t.name}-impact" name="${t.name}-severity">
+                        <input type="range" class="form-range" min="0" max="5" step="0.1" class="form-range" id="${t.name}-impact" name="${t.name}-impact">
                     </div>
                     <div class="mb-3">
                         <label for="${t.name}-notes">Notes: <span class="sidenote">[e.g. the times of day, triggers, things you tried to help]</label>
@@ -182,17 +187,19 @@ export function sideEffectFormRenderer(section) {
     form.addEventListener("submit", e => {
         e.preventDefault(); e.stopPropagation();
 
-        let sideeffect = {
-            type: form.elements['type'].value,
-            description: form.elements['description'].value,
-            date: form.elements['date'].dataset.date,
-            frequency: form.elements['frequency'].value,
-            severity: form.elements['severity'].value,
-            impact: form.elements['impact'].value,
-            notes: form.elements['notes'].value
-        }
+        selectedSideEffects.forEach((se) => {
+            let sideeffect = {
+                type: se,
+                description: form.elements[se + '-description'].value,
+                date: form.elements['date'].dataset.date,
+                frequency: form.elements[se + '-frequency'].value,
+                severity: form.elements[se + '-severity'].value,
+                impact: form.elements[se + '-impact'].value,
+                notes: form.elements[se + '-notes'].value
+            }
 
-        this.post("/myapp/mydiary/sideeffects/",sideeffect)
+            this.post("/myapp/mydiary/sideeffects/", sideeffect)
+        })
     })
 
     form.addEventListener("reset", e => {
