@@ -221,9 +221,16 @@ export function profilerModalRenderer(section) {
 
                 section.modal.footer.insertAdjacentHTML("beforeend", `<button type="submit" id="prof-p2-submit" class="btn btn-primary" form="prof-p2">Submit reponses</button>`)
                 section.modal.footer.querySelector("#prof-p1-submit").remove();
+
                 // temporarily hide cancel and submit buttons until user has viewed full list
-                section.modal.footer.querySelector("#prof-p1-cancel").style.visibility = 'hidden';
-                section.modal.footer.querySelector("#prof-p2-submit").style.visibility = 'hidden';
+                const tableRows = document.getElementsByTagName('tr');
+                const finalRow = tableRows[tableRows.length-1];
+
+                if (!isElementVisible(finalRow)) {
+                    // temporarily hide cancel and submit buttons until user has viewed full list
+                    section.modal.footer.querySelector("#prof-p1-cancel").style.visibility = 'hidden';
+                    section.modal.footer.querySelector("#prof-p2-submit").style.visibility = 'hidden';
+                }
 
 
                 // add scroll event listener to identify when user has scrolled to bottom of modal
@@ -308,7 +315,6 @@ export function profilerModalRenderer(section) {
 }
 
 function isElementVisible(el) {
-    console.log(typeof el);
     var rect     = el.getBoundingClientRect(),
         vWidth   = window.innerWidth || document.documentElement.clientWidth,
         vHeight  = window.innerHeight || document.documentElement.clientHeight,
@@ -456,7 +462,7 @@ export async function myPersonalSupportRenderer(section) {
 
     if (profilers.length) {
         await this.render({ type: "markdown", encoding: "raw", text: "### Your Previous Responses and Suggestions\n\nBelow you will find a list of the results when you have answered these questions before, arranged by date with the most recent first."}).then(node => holder.appendChild(node));
-
+console.log(profilers)
         await this.render({
             type: "accordion",
             content: profilers.map(p => { // fix-up 24/11/2021: async callback for .map was creating array of promises, *NOT* content objects. Logic here does not require async execution anyway!

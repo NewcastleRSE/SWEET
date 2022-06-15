@@ -48,7 +48,9 @@ def login():
 def register():
     if request.method == "POST":
         uid = request.form['regCode']
-        fname = request.form['fullName']
+        firstname = request.form['firstName']
+        lastname = request.form['lastName']
+        fname = firstname + " " + lastname
         email = request.form['email']
         mobile = request.form['mobile']
         role = 'staff' if uid[:2] == "RT" else 'user'
