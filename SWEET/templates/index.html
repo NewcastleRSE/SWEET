@@ -35,44 +35,69 @@
 
   <header>
     <!-- Fixed navbar -->
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top shadow">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#home"><strong>HT &amp; Me</strong> <img
+    <nav class="topnav" id="mytopnav">
+        <a href="#home"><strong>HT &amp; Me</strong> <img
             src="{{ url_for('static', filename='images/logo-sweet_.png') }}" alt="logo" height="36"
             class="d-inline-block align-text-top"></a>
-        <a class="nav-link d-block d-md-none" aria-current="page" href="#home"><i
+        <a  aria-current="page" href="#home"><i
             class="bi bi-house text-white h3"></i></a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
-          aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="bi bi-list"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-          <ul class="navbar-nav ms-auto mb-2 mb-md-0">
-            {% block navitems %}
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#home">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#my-account">My Account</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#my-contacts">My Contacts</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#about">About the Team</a>
-            </li>
-            {% if g.user['role'] in ['sysadmin', 'studyadmin', 'editor', 'staff'] %}
-            <li class="nav-item">
-              <a class="nav-link" href="{{url_for('admin.home')}}" target="_blank">ADMIN</a>
-            </li>
-            {% endif %}
-            <li class="nav-item">
-              <a class="btn btn-dark" href="{{url_for('auth.logout')}}">Log Out</a>
-            </li>
-            {% endblock %}
+
+              <a class="link"  aria-current="page" href="#home">Home</a>
+
+
+              <a class="link"  href="#my-account">My Account</a>
+
+
+              <a class="link" href="#my-contacts">My Contacts</a>
+
+
+              <a class="link"  href="#about">About the Team</a>
+
+      <a href="javascript:void(0);" class="icon" onclick="navbarFunction()">
+        <span class="bi bi-list"></span>
+      </a>
           </ul>
-        </div>
+
     </nav>
+
+<!--    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top shadow">-->
+<!--      <div class="container-fluid">-->
+<!--        <a class="navbar-brand" href="#home"><strong>HT &amp; Me</strong> <img-->
+<!--                src="{{ url_for('static', filename='images/logo-sweet_.png') }}" alt="logo" height="36"-->
+<!--                class="d-inline-block align-text-top"></a>-->
+<!--        <a class="nav-link d-block d-md-none" aria-current="page" href="#home"><i-->
+<!--                class="bi bi-house text-white h3"></i></a>-->
+<!--        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"-->
+<!--                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">-->
+<!--          <span class="bi bi-list"></span>-->
+<!--        </button>-->
+<!--        <div class="collapse navbar-collapse" id="navbarCollapse">-->
+<!--          <ul class="navbar-nav ms-auto mb-2 mb-md-0">-->
+<!--            {% block navitems %}-->
+<!--            <li class="nav-item">-->
+<!--              <a class="nav-link active" aria-current="page" href="#home">Home</a>-->
+<!--            </li>-->
+<!--            <li class="nav-item">-->
+<!--              <a class="nav-link" href="#my-account">My Account</a>-->
+<!--            </li>-->
+<!--            <li class="nav-item">-->
+<!--              <a class="nav-link" href="#my-contacts">My Contacts</a>-->
+<!--            </li>-->
+<!--            <li class="nav-item">-->
+<!--              <a class="nav-link" href="#about">About the Team</a>-->
+<!--            </li>-->
+<!--            {% if g.user['role'] in ['sysadmin', 'studyadmin', 'editor', 'staff'] %}-->
+<!--            <li class="nav-item">-->
+<!--              <a class="nav-link" href="{{url_for('admin.home')}}" target="_blank">ADMIN</a>-->
+<!--            </li>-->
+<!--            {% endif %}-->
+<!--            <li class="nav-item">-->
+<!--              <a class="btn btn-dark" href="{{url_for('auth.logout')}}">Log Out</a>-->
+<!--            </li>-->
+<!--            {% endblock %}-->
+<!--          </ul>-->
+<!--        </div>-->
+<!--    </nav>-->
   </header>
 
   <div class="bg-image">
@@ -137,7 +162,7 @@
         <span><a href="#">USER GUIDE</a></span><span><a href="#">Privacy Notice</a></span><span>... logos ...</span>
       </div>
       <!-- Toast -->
-      <div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
+      <div class="position-fixed top-0 p-3" style="z-index: 11">
         <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
           <div class="toast-header">
             <img src="..." class="rounded me-2" alt="...">
@@ -174,12 +199,32 @@
       } 
     </script>
     <script>
-      document.addEventListener('click', function (event) {
-        // If the clicked element doesn't have the right selector, bail
-        if (!event.target.matches('#navbarCollapse .nav-link')) return;
-        var bsCollapse = new bootstrap.Collapse(document.getElementById('navbarCollapse'))
-        bsCollapse.toggle()
-      }, false);
+
+      /* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
+      function navbarFunction() {
+        var x = document.getElementById("mytopnav");
+        if (x.className === "topnav") {
+          x.className += " responsive";
+        } else {
+          x.className = "topnav";
+        }
+      }
+
+      // After navigation collapse hamburger menu
+     const navLinks = document.querySelectorAll('.link');
+      navLinks.forEach((l) => {
+        l.addEventListener('click', () => {
+          console.log('close')
+          navbarFunction()
+        })
+      })
+
+      // document.addEventListener('click', function (event) {
+      //   // If the clicked element doesn't have the right selector, bail
+      //   if (!event.target.matches('#navbarCollapse .nav-link')) return;
+      //   var bsCollapse = new bootstrap.Collapse(document.getElementById('navbarCollapse'))
+      //   bsCollapse.toggle()
+      // }, false);
     </script>
     <script src="{{ url_for('static', filename='scripts/libraries/lz-string.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/customfont.js') }}"></script>
