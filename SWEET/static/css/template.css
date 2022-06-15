@@ -662,6 +662,14 @@ ul li a:focus {
     }
 }
 
+.topnav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
 
 /* Hide the link that should open and close the topnav on small screens */
 .topnav .icon {
@@ -682,7 +690,7 @@ ul li a:focus {
 
 /* The "responsive" class is added to the topnav with JavaScript when the user clicks on the icon. This class makes the topnav look good on small screens (display the links vertically instead of horizontally) */
 @media screen and (max-width: 600px) {
-    .topnav.responsivenav {position: relative;}
+    .topnav.responsivenav {display: block;}
     .topnav.responsivenav a.icon {
         position: absolute;
         right: 0;
@@ -697,6 +705,7 @@ ul li a:focus {
 
 .topnav a {
     text-decoration: none;
+    font-weight: bold;
 }
 
 @media screen and (max-width: 825px) {
@@ -739,4 +748,9 @@ a.link {
     padding: 3px;
     margin-top: 6px;
     margin-left: 0.5rem;
+    font-weight: normal!important;
 }
+
+
+
+

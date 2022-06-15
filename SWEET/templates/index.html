@@ -39,36 +39,41 @@
         <a class="navbar-brand " href="#home"><strong>HT &amp; Me</strong> <img
             src="{{ url_for('static', filename='images/logo-sweet_.png') }}" alt="logo" height="36"
             class="d-inline-block align-text-top"></a>
+<div id="topnavlinks">
+
+
         <a  aria-current="page" href="#home"><i
-            class="bi bi-house text-white h3"></i></a>
-      {% block navitems %}
+                class="bi bi-house text-white h3"></i></a>
+        {% block navitems %}
 
-  <a class="link"  aria-current="page" href="#home">Home</a>
-
-
-  <a class="link"  href="#my-account">My Account</a>
+        <a class="link"  aria-current="page" href="#home">Home</a>
 
 
-  <a class="link" href="#my-contacts">My Contacts</a>
+        <a class="link"  href="#my-account">My Account</a>
 
 
-  <a class="link"  href="#about">About the Team</a>
-  {% if g.user['role'] in ['sysadmin', 'studyadmin', 'editor', 'staff'] %}-->
-
-  <a class="link" href="{{url_for('admin.home')}}" target="_blank">ADMIN</a>
-
-  {% endif %}
-
-  <a class="btn btn-dark" id="navlogout" href="{{url_for('auth.logout')}}">Log Out</a>
-
-  {% endblock %}
+        <a class="link" href="#my-contacts">My Contacts</a>
 
 
+        <a class="link"  href="#about">About the Team</a>
+        {% if g.user['role'] in ['sysadmin', 'studyadmin', 'editor', 'staff'] %}-->
 
-      <a href="javascript:void(0);" class="icon" onclick="navbarFunction()">
-        <span class="bi bi-list" id="hamburger"></span>
-      </a>
+        <a class="link" href="{{url_for('admin.home')}}" target="_blank">ADMIN</a>
 
+        {% endif %}
+
+        <a class="btn btn-dark" id="navlogout" href="{{url_for('auth.logout')}}">Log Out</a>
+
+        {% endblock %}
+
+
+
+        <a href="javascript:void(0);" class="icon" onclick="navbarFunction()">
+          <span class="bi bi-list" id="hamburger"></span>
+        </a>
+
+
+</div>
 
     </nav>
 
