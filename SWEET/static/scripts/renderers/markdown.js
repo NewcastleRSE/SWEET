@@ -31,7 +31,7 @@ export function markdownRenderer(section) {
             if (resource['content-type'] === undefined || resource['content-type'].startsWith("image")) {
                 img.setAttribute("src", resource.source);
                 img.setAttribute("alt", resource.description);
-                img.setAttribute("title", resourse.caption);
+                img.setAttribute("title", resource.caption);
 
                 if (position) img.classList.add(...position.split(";"));
             } else if (resource['content-type'].startsWith("video")) {

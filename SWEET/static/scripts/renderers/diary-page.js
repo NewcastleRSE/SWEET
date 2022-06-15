@@ -100,7 +100,28 @@ export function diaryCalendarRenderer(section) {
                     adhday.appendChild(i);
                 }
 
-                if (diary[d].notes  && diary[d].notes.taken) {
+                if (diary[d].drugs) {
+                    // note structure:
+                    // -- yellow notes icon in the bottom-right of box
+                    // -- section contains every note for the current day.
+                    
+                    if (adhday) {
+                        let drugs = diary[d].drugs
+
+                        let existing = diaryitem();
+                        existing.classList.add(`notes`)
+                        existing.querySelector("i").classList.add("bi-usb-c-fill")
+                            
+                        adhday.appendChild(existing);
+
+                        this.render({type: "markdown", encoding: "raw", text: drugs.drug })
+                        .then(node => {
+                            existing.querySelector("section").innerHTML = `<h4>Drug</h4><p id="notes-data" data-taken="${drugs.taken.date}T${drugs.taken.time}">${node.innerHTML}</p>`
+                        })
+                    }      
+                }
+
+                if (diary[d].notes && diary[d].notes.taken) {
                     // note structure:
                     // -- yellow notes icon in the bottom-right of box
                     // -- section contains every note for the current day.
@@ -164,7 +185,7 @@ export function diaryCalendarRenderer(section) {
             </a>
             <a class="d-block card shadow mt-3" id="day-modal-add-drug">
                 <div class="card-body">
-                    <h5 class="card-title">Add or update drug change</h5>
+                    <h5 class="card-title">Add or update pill change</h5>
                 </div>
             </a>
             <a class="d-block card shadow mt-3" id="day-modal-add-note">
@@ -266,10 +287,11 @@ export function diaryCalendarRenderer(section) {
                     function reset() {
                         modal.body.innerHTML = `
                             <h5>Change in drug taken</h5>
+                            <p>Here you can record that you've changed the type or brand of hormone therapy pills.</p>
                             <form id="modal-update-note-form">
                             <input type="hidden" name="takendate"><input type="hidden" name="takentime">
                             <input type="hidden" name="date" value="${d.dataset.thisdate}">
-                            <input type="text" name="drug" placeholder="Drug name">
+                            <input type="text" name="drug" placeholder="New pills name">
                             </form>
                         `
 
@@ -345,17 +367,44 @@ export function diaryCalendarRenderer(section) {
                         modal.size = "lg";
 
                         while (modal.body.firstChild) modal.body.removeChild(modal.body.lastChild);
-                        modal.body.appendChild(form);
 
-                        modal.footer.insertAdjacentHTML('beforeend',` <input type="submit" form="${form.getAttribute("id")}" value="Save details" class="btn btn-primary">`)
+                        modal.body.appendChild(form);
+                        modal.footer.insertAdjacentHTML('beforeend',` <input id="se-next" type="button" value="Next" class="btn btn-primary" disabled>`)
+                        modal.footer.insertAdjacentHTML('beforeend',` <input hidden type="submit" form="${form.getAttribute("id")}" value="Save details" class="btn btn-primary">`)
                         modal.footer.querySelector("#se-close").textContent = "Back";
                         modal.footer.querySelector("#se-close").classList.remove("btn-primary");
                         modal.footer.querySelector("#se-close").classList.add("btn-secondary");
 
-                        form.addEventListener("change", changeEvent => {
-                            if (changeEvent.target.tagName == "SELECT" && !(modal.footer.querySelector("input[type='reset']"))) {
-                                modal.footer.querySelector("#se-close").insertAdjacentHTML("afterend", ` <input type="reset" form="${form.getAttribute("id")}" value="Delete details" class="btn btn-secondary">`)
+                        // form.addEventListener("change", changeEvent => {
+                        //     if (changeEvent.target.tagName == "SELECT" && !(modal.footer.querySelector("input[type='reset']"))) {
+                        //         modal.footer.querySelector("#se-close").insertAdjacentHTML("afterend", ` <input type="reset" form="${form.getAttribute("id")}" value="Delete details" class="btn btn-secondary">`)
+                        //     }
+                        // })
+
+                        let selectedSideEffects = []
+
+                        modal.footer.querySelector("#se-next").addEventListener("click", async e => {
+                            let activeTab = form.querySelector("#sideEffectTabs .active")
+  
+                            if(activeTab.id === "form-se-types") {
+                                const checked = form.querySelectorAll('input[type="checkbox"]:checked')
+                                selectedSideEffects = Array.from(checked).map(x => x.id)
                             }
+
+                            let targetPane = selectedSideEffects.shift();
+
+                            if(targetPane === "hf") {
+                                form.querySelector('#hf-freq-holder').hidden = false
+                            }
+
+                            activeTab.classList.remove("show", "active")
+                            form.querySelector("#form-se-type-" + targetPane).classList.add("show", "active")
+
+                            if(selectedSideEffects.length === 0) {
+                                modal.footer.querySelector('input[type="submit"]').hidden = false
+                                modal.footer.querySelector('#se-next').hidden = true
+                            }
+                            
                         })
 
                         form.addEventListener("submit", () => {
@@ -457,13 +506,13 @@ export function diaryGraphRenderer(section) {
         var selectedZoom = "zoomFortnight";
 
         var colours = {
-            HotFlushes: '#008E9B',
-            JointPain: '#0081CF',
-            Fatigue: '#845EC2',
-            MoodChanges: '#D65DB1',
-            NightSweats: '#FF6F91',
-            SleepProblems: '#FF9671',
-            OtherSideeffects: '#FFC75F'
+            HotFlushes: '#633188',
+            JointPain: '#3535ee',
+            Fatigue: '#196b1d',
+            MoodChanges: '#b3b3b2',
+            NightSweats: '#f1dc1f',
+            SleepProblems: '#a08db0',
+            OtherSideeffects: '#40e0d0'
         }
         var datasets = [],
             drugChanges = {};
@@ -503,6 +552,10 @@ export function diaryGraphRenderer(section) {
                 xMax: new Date(drug.date).valueOf(),
                 borderColor: 'rgb(255, 99, 132)',
                 borderWidth: 2,
+                label: {
+                    content: drug.drug,
+                    enabled: true
+                }
               }
         })
 

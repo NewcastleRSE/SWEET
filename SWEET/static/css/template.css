@@ -113,7 +113,21 @@ a.card.submenu:visited {
 .form-check-input  {
     height: 1.5em;
     width: 1.5em;
+    margin-left: -2em;
 }
+
+.form-check {
+    min-height: 2em;
+}
+
+.form-check .form-check-input  {
+    margin-left: -2em;
+}
+
+.form-check .form-check-label  {
+    line-height: 2em;
+}
+
 /*
 a.card h5 {
     margin-right: 130px;
@@ -325,9 +339,8 @@ footer div.container span a:hover {
     border: none;
 }
 .hmpg-sects .card {
-    border-top: solid 2px var(--SWEET-lilac);
+    border-top: solid 2px var(--SWEET-purple);
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-    border-radius: 1em;
 }
 
 .card-title {
