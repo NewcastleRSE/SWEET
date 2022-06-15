@@ -266,7 +266,7 @@ a.navbar-brand img {
     margin-top: 5px;
 }
 
-a.navbar-brand:hover, a.navbar-brand:focus {
+a.navbar-brand:hover, a.navbar-brand:focus  {
     border-bottom: 5px solid var(--SWEET-purple);
     margin-bottom: -8px;
     -webkit-transition: width .5s ease;
@@ -275,6 +275,8 @@ a.navbar-brand:hover, a.navbar-brand:focus {
     transition: width .5s;
 
 }
+
+
 
 a.navbar-brand>strong {
     padding: 0 0.25em;
@@ -551,10 +553,6 @@ Target each ID
 Width by ID 
 */
 
-ul li:hover~li:last-child a::after,
-ul li:last-child:hover a::after {
-    background: var(--SWEET-purple)
-}
 
 ul li:last-child a {
     min-width: 5em;
@@ -623,16 +621,7 @@ ul li a:focus {
         text-align: center;
     }
 
- a.btn-dark {
-        margin: 0;
-        margin-top: 1rem;
-        position: relative;
-        top: 50%;
-        left: 50%;
-        -ms-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
 
-    }
   .form-check-input  {
         height: 2em;
         width: 2em;
@@ -676,3 +665,123 @@ ul li a:focus {
         font-size: 0.7em;
     }
 }
+/* RESPONSIVE NAVBAR */
+.topnav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.5rem;
+    border-bottom: 5px solid var(--SWEET-grey);
+    margin-bottom: -10px;
+    width: 100%;
+    padding-right: var(--bs-gutter-x,.75rem);
+    padding-left: var(--bs-gutter-x,.75rem);
+    margin-right: auto;
+    margin-left: auto;
+}
+
+/* Hide the link that should open and close the topnav on small screens */
+.topnav .icon {
+    display: none;
+}
+
+
+
+
+/* Smaller screens-hide all links, except for the first one ("Home"). Show the link that contains should open and close the topnav (.icon) */
+@media screen and (max-width: 825px) {
+    .topnav a:not(:first-child) {display: none;}
+    .topnav a.icon {
+        float: right;
+        display: block;
+    }
+    a.btn-dark {
+           margin: 0;
+           margin-top: 1rem;
+           position: relative;
+           top: 50%;
+           left: 50%;
+           -ms-transform: translate(-50%, -50%);
+           transform: translate(-50%, -50%);
+
+       }
+}
+
+@media screen and (min-width: 826px) {
+    #navlogout {
+        transform:translate(0%, -15%);
+    }
+}
+@media screen and (max-width: 1024px) {
+    .topnav a.link {
+        font-size: 0.9em;
+    }
+}
+
+/* The "responsive" class is added to the topnav with JavaScript when the user clicks on the icon. This class makes the topnav look good on small screens (display the links vertically instead of horizontally) */
+@media screen and (max-width: 825px) {
+    .topnav.responsivenav {display: block;}
+    .topnav.responsivenav a.icon {
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+    .topnav.responsivenav a {
+        float: none;
+        display: block;
+
+    }
+}
+
+.topnav a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+
+@media screen and (max-width: 825px) {
+    .topnav a.link {
+        font-size: 0.8em;
+        text-align: center;
+    }
+}
+
+
+.link:hover, nav.navbar-dark .navbar-nav .nav-link:hover, .navbar-dark .navbar-brand:hover {
+    color: var(--SWEET-dark-grey);
+}
+
+a.link:focus, a.link:hover {
+    border-bottom: 5px solid var(--SWEET-purple);
+    margin-bottom: -10px;
+}
+
+.topnav a.link.active, .navbar-brand, .topnav a.link {
+    color: var(--SWEET-dark-grey);
+}
+
+a.link {
+    padding: 0.5rem 1rem;
+    color: #0d6efd;
+    text-decoration: none;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+}
+
+
+#navlogout {
+    min-width: 5em;
+    max-width: 5em;
+
+}
+.btn-dark, .btn-dark:focus, .btn-dark:active {
+    background-color: var(--SWEET-purple);
+    border-radius: 2rem;
+    padding: 3px;
+    margin-left: 0.5rem;
+    font-weight: normal!important;
+}
+
+
+
+
