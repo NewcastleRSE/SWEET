@@ -196,6 +196,7 @@ export function diaryCalendarRenderer(section) {
             `;
             let dayfooter = "<button id='se-close' class='btn btn-primary'>Close</button>"
             const clickBack = () => modal.footer.querySelector("#se-close").dispatchEvent(new MouseEvent("click"));
+            const clickNext = () => modal.footer.querySelector("#se-next").dispatchEvent(new MouseEvent("click"));
 
             modal.title.textContent = new Date(d.dataset.thisdate).toDateString();
             modal.body.innerHTML = daytemplate;
@@ -375,28 +376,36 @@ export function diaryCalendarRenderer(section) {
                         modal.footer.querySelector("#se-close").classList.remove("btn-primary");
                         modal.footer.querySelector("#se-close").classList.add("btn-secondary");
 
-                        // console.log(form)
-                        // const seTypes = form.querySelector('#form-se-types')
-                        // let selected = [];
-
-                        // seTypes.addEventListener('change', event => {
-                        //     if (event.target.type === 'checkbox') {
-                        //         const checked = document.querySelectorAll('input[type="checkbox"]:checked')
-                        //         selected = Array.from(checked).map(x => x.value)
+                        // form.addEventListener("change", changeEvent => {
+                        //     if (changeEvent.target.tagName == "SELECT" && !(modal.footer.querySelector("input[type='reset']"))) {
+                        //         modal.footer.querySelector("#se-close").insertAdjacentHTML("afterend", ` <input type="reset" form="${form.getAttribute("id")}" value="Delete details" class="btn btn-secondary">`)
                         //     }
                         // })
 
-                        form.addEventListener("change", changeEvent => {
-                            if (changeEvent.target.tagName == "SELECT" && !(modal.footer.querySelector("input[type='reset']"))) {
-                                modal.footer.querySelector("#se-close").insertAdjacentHTML("afterend", ` <input type="reset" form="${form.getAttribute("id")}" value="Delete details" class="btn btn-secondary">`)
-                            }
-                        })
+                        let selectedSideEffects = []
 
                         modal.footer.querySelector("#se-next").addEventListener("click", async e => {
-                            console.log(selected)
+                            let activeTab = form.querySelector("#sideEffectTabs .active")
+  
+                            if(activeTab.id === "form-se-types") {
+                                const checked = form.querySelectorAll('input[type="checkbox"]:checked')
+                                selectedSideEffects = Array.from(checked).map(x => x.id)
+                            }
 
+                            let targetPane = selectedSideEffects.shift();
+
+                            if(targetPane === "hf") {
+                                form.querySelector('#hf-freq-holder').hidden = false
+                            }
+
+                            activeTab.classList.remove("show", "active")
+                            form.querySelector("#form-se-type-" + targetPane).classList.add("show", "active")
+
+                            if(selectedSideEffects.length === 0) {
+                                modal.footer.querySelector('input[type="submit"]').hidden = false
+                                modal.footer.querySelector('#se-next').hidden = true
+                            }
                             
-
                         })
 
                         form.addEventListener("submit", () => {

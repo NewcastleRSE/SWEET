@@ -1,3 +1,5 @@
+let selectedSideEffects = []
+
 export function sideEffectFormRenderer(section) {
 
     let form = document.createElement("form")
@@ -21,19 +23,12 @@ export function sideEffectFormRenderer(section) {
 
         form.innerHTML = `
             
-            <div class="tab-content" id="myTabContent">
+            <div class="tab-content" id="sideEffectTabs">
                 <div class="tab-pane fade show active" id="form-se-types" role="tabpanel">
                     <section id="form-se-types" class="mx-3">
                         <p>What side effects would you like to add?</p>
                     </section>
                 </div>
-                <div class="tab-pane fade" id="form-se-type-hf" role="tabpanel">...</div>
-                <div class="tab-pane fade" id="form-se-type-arth" role="tabpanel">...</div>
-                <div class="tab-pane fade" id="form-se-type-ftg" role="tabpanel">...</div>
-                <div class="tab-pane fade" id="form-se-type-mood" role="tabpanel">...</div>
-                <div class="tab-pane fade" id="form-se-type-ns" role="tabpanel">...</div>
-                <div class="tab-pane fade" id="form-se-type-sleep" role="tabpanel">...</div>
-                <div class="tab-pane fade" id="form-se-type-other" role="tabpanel">...</div>
             </div>
         `
 
@@ -50,50 +45,91 @@ export function sideEffectFormRenderer(section) {
             ).join("")
         );
 
+        form.querySelector("#sideEffectTabs").insertAdjacentHTML('beforeend',
+            schema.types.map(t => 
+                `<div class="tab-pane fade" id="form-se-type-${t.name}" role="tabpanel">
+                    <h4>${t.description}</h4>
+                    <div id="hf-freq-holder" class="row mb-3" hidden>
+                        <label class="col-6" for="${t.name}-frequency" style="line-height:2.2em">How many hot flushes did you have?</label>
+                        <input type="number" class="col-6 form-control" id="${t.name}-frequency" name="${t.name}-frequency" min="0" max="50">
+                    </div>
+                    <p class="mt-3">How bad <span data-switch="embedplural" data-true="were" data-false="was"></span> your <span data-replace="embedtext"></span>?</p>
+                    <div class="mb-3">
+                        <label for="${t.name}-severity" class="float-start">Not at all</label>
+                        <label for="${t.name}-severity" class="float-end">Extremely</label>
+                        <input type="range" class="form-range" min="0" max="5" step="0.1" class="form-range" id="${t.name}-severity" name="${t.name}-severity">
+                    </div>
+                    <p class="mt-3">How badly did your <span data-replace="embedtext"></span> impact your daily life?</p>
+                    <div class="mb-3">
+                        <label for="${t.name}-impact" class="float-start">Not at all</label>
+                        <label for="${t.name}-impact" class="float-end">Extremely</label>
+                        <input type="range" class="form-range" min="0" max="5" step="0.1" class="form-range" id="${t.name}-impact" name="${t.name}-severity">
+                    </div>
+                    <div class="mb-3">
+                        <label for="${t.name}-notes">Notes: <span class="sidenote">[e.g. the times of day, triggers, things you tried to help]</label>
+                        <textarea class="form-control" name="${t.name}-notes" id="${t.name}-notes" rows="5"></textarea>
+                    </div>
+                </div>`
+            ).join("")
+        );
+
+        /*
+
+           // <span id="form-se-${t.name}-frequency">
+                    // <label for="frequency">How many ${t.description} did you have?</label>
+                    // <span><input type="number" id="frequency" name="frequency" min="0" max="50"></span><br></span>
+                    // <span id="form-se-${t.name}-severity"><label for="severity">How bad <span data-switch="embedplural" data-true="were" data-false="was"></span> your <span data-replace="embedtext"></span>?</label>
+                    // <span id="${t.name}-severityinput"><label class="scale">Not at all</label> <input type="range" min="0" max="5" step="0.1" class="form-range" name="severity"> <label class="scale">Extremely</label></span><br></span>
+                    // <span id="form-se-${t.name}-impact"><label for="impact">How badly did your <span data-replace="embedtext"></span> impact your daily life?</label>
+                    // <span id="${t.name}-impactinput"><label class="scale">Not at all</label>
+                    <input type="range" min="0" max="5" step="0.1" class="form-range" name="impact"> <label class="scale">Extremely</label></span><br></span>
+                    // <span id="form-se-${t.name}-notes"><label for="notes">Notes: <span class="sidenote">[e.g. the times of day, triggers, things you tried to help]</span></label><br>
+                    // <span id="${t.name}-notesinput"><textarea class="form-control" name="notes" id="notes" rows="5"></textarea></span></span>
+        */
+
         const seTypes = form.querySelector('#form-se-types')
-        let selected = [];
 
         seTypes.addEventListener('change', event => {
             if (event.target.type === 'checkbox') {
                 const checked = form.querySelectorAll('input[type="checkbox"]:checked')
-                selected = Array.from(checked).map(x => x.id)
+                selectedSideEffects = Array.from(checked).map(x => x.id)
             }
         })
         
-        form.querySelector("#form-se-type-input").addEventListener("change", async e => {
-            let type = e.target.value;
-            let scheme = schema.types.filter(t => t.name == type)[0];
+        // form.querySelector("#form-se-type-input").addEventListener("change", async e => {
+        //     let type = e.target.value;
+        //     let scheme = schema.types.filter(t => t.name == type)[0];
             
-            if (!scheme) return;
+        //     if (!scheme) return;
 
-            form.querySelector("input[name='description']").value = scheme.description;
-            form.querySelectorAll("span[data-replace]").forEach(s => s.textContent = scheme[s.dataset.replace]);
-            form.querySelectorAll("span[data-switch]").forEach(s => s.textContent = scheme[s.dataset.switch]? s.dataset.true: s.dataset.false);
+        //     form.querySelector("input[name='description']").value = scheme.description;
+        //     form.querySelectorAll("span[data-replace]").forEach(s => s.textContent = scheme[s.dataset.replace]);
+        //     form.querySelectorAll("span[data-switch]").forEach(s => s.textContent = scheme[s.dataset.switch]? s.dataset.true: s.dataset.false);
 
-            ["frequency", "severity", "impact", "notes"].forEach(s => {
-                let q = form.querySelector(`#form-se-${s}`);
+        //     ["frequency", "severity", "impact", "notes"].forEach(s => {
+        //         let q = form.querySelector(`#form-se-${s}`);
 
-                if (scheme.questions.includes(s)) {
-                    q.removeAttribute("hidden")
-                } else {
-                    q.setAttribute("hidden", "")
-                }
-            })
+        //         if (scheme.questions.includes(s)) {
+        //             q.removeAttribute("hidden")
+        //         } else {
+        //             q.setAttribute("hidden", "")
+        //         }
+        //     })
 
-            if (section.date) {
-                let existing = await fetch(`/myapp/mydiary/sideeffects?date=${section.date}&type=${type}`).then(response => response.status == 204? null: response.json())
-                if (existing) {
-                    if (existing.severity == "mild") existing.severity = 1;
-                    if (existing.severity == "moderate") existing.severity = 3;
-                    if (existing.severity == "severe") existing.severity = 5;
-                    if (existing.impact == "a little") existing.impact = 1;
-                    if (existing.impact == "moderately") existing.impact = 3;
-                    if (existing.impact == "a lot") existing.impact = 5;
+        //     if (section.date) {
+        //         let existing = await fetch(`/myapp/mydiary/sideeffects?date=${section.date}&type=${type}`).then(response => response.status == 204? null: response.json())
+        //         if (existing) {
+        //             if (existing.severity == "mild") existing.severity = 1;
+        //             if (existing.severity == "moderate") existing.severity = 3;
+        //             if (existing.severity == "severe") existing.severity = 5;
+        //             if (existing.impact == "a little") existing.impact = 1;
+        //             if (existing.impact == "moderately") existing.impact = 3;
+        //             if (existing.impact == "a lot") existing.impact = 5;
 
-                    scheme.questions.forEach(q => form.elements[q].value = existing[q]);
-                }
-            }
-        })
+        //             scheme.questions.forEach(q => form.elements[q].value = existing[q]);
+        //         }
+        //     }
+        // })
 
         if (section.date) {
             form.querySelector("#dateinput").innerHTML = `<input type="hidden" name="date" value="${section.date}" data-date="${section.date}" />`;
@@ -190,6 +226,11 @@ export function sideEffectModalRenderer() {
         holder.footer.innerHTML = `<button type="button" id="se-form-cancel">Cancel</button><button type="button" id="se-form-next">Next</button><input hidden type="submit" form="${form.getAttribute("id")}" value="Save details">`
         holder.footer.querySelector("#se-close").addEventListener("click", e => {
             holder.hide(true);
+        })
+
+        form.querySelector("#se-next").addEventListener("click", async e => {
+            console.log(e)
+            console.log(selectedSideEffects)
         })
     })
 
