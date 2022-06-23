@@ -408,15 +408,8 @@ export function diaryCalendarRenderer(section) {
                         })
 
                         form.addEventListener("submit", () => {
-                            modal.footer.querySelector("input[type='reset']").remove();
-                            clickBack();
-                        })
-
-                        form.addEventListener("reset", re => {
-                            modal.footer.querySelector("input[type='reset']").remove();
-                            clickBack();
-                        })
-                
+                            modal.hide()
+                        })                
                     })
                     
                 }

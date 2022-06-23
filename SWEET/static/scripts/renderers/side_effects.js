@@ -27,6 +27,7 @@ export function sideEffectFormRenderer(section) {
                 <div class="tab-pane fade show active" id="form-se-types" role="tabpanel">
                     <section id="form-se-types" class="mx-3">
                         <p>What side effects would you like to add?</p>
+                        <div id="se-checkboxes"></div>
                     </section>
                 </div>
             </div>
@@ -36,7 +37,7 @@ export function sideEffectFormRenderer(section) {
 
         if (section.date) {
             fetch(`/myapp/mydiary/sideeffects?date=${section.date}`).then(response => response.status == 204 ? null : response.json()).then(existingSE => {
-                if (existingSE.sideeffects) {
+                if (existingSE && existingSE.sideeffects) {
 
                     existing = {}
                     existingSE.sideeffects.forEach(se => {
@@ -54,7 +55,7 @@ export function sideEffectFormRenderer(section) {
                     if (existing.impact == "a lot") existing.impact = 5;
                 }
 
-                form.querySelector("#form-se-types").insertAdjacentHTML('beforeend', 
+                form.querySelector("#se-checkboxes").insertAdjacentHTML('beforeend', 
                     schema.types.map(t => {
                         return `<div class="form-check">
                             <input class="form-check-input" type="checkbox" id="${t.name}" ${selectedSideEffects.includes(t.name) ? "checked" : ""}>
@@ -76,23 +77,23 @@ export function sideEffectFormRenderer(section) {
                             </div>
                             <div id="hf-freq-holder" class="row mb-3" hidden>
                                 <label class="col-6" for="${t.name}-frequency" style="line-height:2.2em">How many ${t.embedtext} did you have?</label>
-                                <input type="number" class="col-6 form-control" id="${t.name}-frequency" name="${t.name}-frequency" min="0" max="50" value="${existing[t.name] ? existing[t.name].frequency : ''}">
+                                <input type="number" class="col-6 form-control" id="${t.name}-frequency" name="${t.name}-frequency" min="0" max="50" value="${existing && existing[t.name] ? existing[t.name].frequency : ''}">
                             </div>
                             <p class="mt-3">How bad ${t.embedplural ? 'were' : 'was'} your ${t.embedtext}?</p>
                             <div class="mb-3">
                                 <label for="${t.name}-severity" class="float-start">Not at all</label>
                                 <label for="${t.name}-severity" class="float-end">Extremely</label>
-                                <input type="range" class="form-range" min="0" max="5" step="0.1" class="form-range" id="${t.name}-severity" name="${t.name}-severity" value="${existing[t.name] ? existing[t.name].severity : ''}">
+                                <input type="range" class="form-range" min="0" max="5" step="0.1" class="form-range" id="${t.name}-severity" name="${t.name}-severity" value="${existing && existing[t.name] ? existing[t.name].severity : ''}">
                             </div>
                             <p class="mt-3">How badly did your ${t.embedtext} impact your daily life?</p>
                             <div class="mb-3">
                                 <label for="${t.name}-impact" class="float-start">Not at all</label>
                                 <label for="${t.name}-impact" class="float-end">Extremely</label>
-                                <input type="range" class="form-range" min="0" max="5" step="0.1" class="form-range" id="${t.name}-impact" name="${t.name}-impact" value="${existing[t.name] ? existing[t.name].impact : ''}">
+                                <input type="range" class="form-range" min="0" max="5" step="0.1" class="form-range" id="${t.name}-impact" name="${t.name}-impact" value="${existing && existing[t.name] ? existing[t.name].impact : ''}">
                             </div>
                             <div class="mb-3">
                                 <label for="${t.name}-notes">Notes: <span class="sidenote">[e.g. the times of day, triggers, things you tried to help]</label>
-                                <textarea class="form-control" name="${t.name}-notes" id="${t.name}-notes" rows="5">${existing[t.name] ? existing[t.name].notes : ''}</textarea>
+                                <textarea class="form-control" name="${t.name}-notes" id="${t.name}-notes" rows="5">${existing && existing[t.name] ? existing[t.name].notes : ''}</textarea>
                             </div>
                         </div>`
                     ).join("")
@@ -161,9 +162,9 @@ export function sideEffectFormRenderer(section) {
         //     }
         // })
 
-        if (section.date) {
-            form.querySelector("#dateinput").innerHTML = `<input type="hidden" name="date" value="${section.date}" data-date="${section.date}" />`;
-        } else {
+        // if (section.date) {
+        //     form.querySelector("#dateinput").innerHTML = `<input type="hidden" name="date" value="${section.date}" data-date="${section.date}" />`;
+        // } else {
             /*
             form.querySelector("#dateinput").append(...(() => {
                 let d = document.createElement("input");
@@ -207,7 +208,7 @@ export function sideEffectFormRenderer(section) {
             })())
             form.querySelector("#form-se-date").removeAttribute("hidden")
             */
-        }
+       // }
     
     })
 
@@ -218,7 +219,7 @@ export function sideEffectFormRenderer(section) {
             let sideeffect = {
                 type: se,
                 description: form.elements[se + '-description'].value,
-                date: form.elements['date'].dataset.date,
+                date: section.date,
                 frequency: form.elements[se + '-frequency'].value,
                 severity: form.elements[se + '-severity'].value,
                 impact: form.elements[se + '-impact'].value,
