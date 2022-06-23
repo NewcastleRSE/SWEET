@@ -408,9 +408,10 @@ export function diaryCalendarRenderer(section) {
                         })
 
                         form.addEventListener("submit", () => {
-                            this.dispatchEvent("calendar:update", c)
+                            location.reload();
+                            //c.dispatchEvent(new CustomEvent("redraw"));
                             // diaryGraphRenderer()
-                            modal.hide()
+                            // modal.hide()
                         })                
                     })
                     
