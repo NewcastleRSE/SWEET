@@ -215,6 +215,8 @@ export function sideEffectFormRenderer(section) {
     form.addEventListener("submit", e => {
         e.preventDefault(); e.stopPropagation();
 
+        const payload = []
+
         selectedSideEffects.forEach((se) => {
             let sideeffect = {
                 type: se,
@@ -226,8 +228,10 @@ export function sideEffectFormRenderer(section) {
                 notes: form.elements[se + '-notes'].value
             }
 
-            this.post("/myapp/mydiary/sideeffects/", sideeffect)
+            payload.push(sideeffect)
         })
+
+        this.post("/myapp/mydiary/sideeffects/", payload)
     })
 
     form.addEventListener("reset", e => {

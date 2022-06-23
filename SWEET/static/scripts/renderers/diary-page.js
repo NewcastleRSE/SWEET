@@ -408,6 +408,8 @@ export function diaryCalendarRenderer(section) {
                         })
 
                         form.addEventListener("submit", () => {
+                            this.dispatchEvent("calendar:update", c)
+                            // diaryGraphRenderer()
                             modal.hide()
                         })                
                     })
