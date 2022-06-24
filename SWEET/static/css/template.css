@@ -691,6 +691,9 @@ ul li a:focus {
 
 /* Smaller screens-hide all links, except for the first one ("Home"). Show the link that contains should open and close the topnav (.icon) */
 @media screen and (max-width: 825px) {
+    i.bi-house {
+        display: none;
+    }
     .topnav a:not(:first-child) {display: none;}
     .topnav a.icon {
         float: right;
