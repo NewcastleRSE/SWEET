@@ -7,19 +7,6 @@ export function sideEffectFormRenderer(section) {
     fetch(`/app/schemas/sideeffects`)
     .then(response => response.json())
     .then(schema => {
-        // form.innerHTML =  `
-        //     <section>
-        //     <span id="form-se-type"><label for="type">What side effect do you want to record?</label><select id="form-se-type-input" name="type"><option value="">Choose a side effect...</option></select><input type="hidden" name="description"><br></span>
-        //     <span id="form-se-date" hidden><label for="date"> Which day do you wish to record for?</label><span id="dateinput"></span><br></span>
-        //     <span id="form-se-frequency" hidden><label for="frequency">How many <span data-replace="embedtext"></span> did you have?</label><span><input type="number" id="frequency" name="frequency" min="0" max="50"></span><br></span>
-        //     <span id="form-se-severity" hidden><label for="severity">How bad <span data-switch="embedplural" data-true="were" data-false="was"></span> your <span data-replace="embedtext"></span>?</label>
-        //     <span id="severityinput"><label class="scale">Not at all</label> <input type="range" min="0" max="5" step="0.1" class="form-range" name="severity"> <label class="scale">Extremely</label></span><br></span>
-        //     <span id="form-se-impact" hidden><label for="impact">How badly did your <span data-replace="embedtext"></span> impact your daily life?</label>
-        //     <span id="impactinput"><label class="scale">Not at all</label> <input type="range" min="0" max="5" step="0.1" class="form-range" name="impact"> <label class="scale">Extremely</label></span><br></span>
-        //     <span id="form-se-notes" hidden><label for="notes">Notes: <span class="sidenote">[e.g. the times of day, triggers, things you tried to help]</span></label><br>
-        //     <span id="notesinput"><textarea name="notes" id="notes" cols="50" rows="5"></textarea></span></span>
-        //     </section>
-        //     `
 
         form.innerHTML = `
             
@@ -98,142 +85,71 @@ export function sideEffectFormRenderer(section) {
                         </div>`
                     ).join("")
                 );
-            })
-        }
 
-        
+                const seTypes = form.querySelector('#form-se-types')
 
-        /*
+                seTypes.addEventListener('change', event => {
+                    if (event.target.type === 'checkbox') {
+                        console.log(existingSE.sideeffects)
+                        const checked = form.querySelectorAll('input[type="checkbox"]:checked')
+                        selectedSideEffects = Array.from(checked).map(x => x.id)
+                        selectedSideEffects.length > 0 ? document.querySelector("#se-next").disabled = false : document.querySelector("#se-next").disabled = true
 
-           // <span id="form-se-${t.name}-frequency">
-                    // <label for="frequency">How many ${t.description} did you have?</label>
-                    // <span><input type="number" id="frequency" name="frequency" min="0" max="50"></span><br></span>
-                    // <span id="form-se-${t.name}-severity"><label for="severity">How bad <span data-switch="embedplural" data-true="were" data-false="was"></span> your <span data-replace="embedtext"></span>?</label>
-                    // <span id="${t.name}-severityinput"><label class="scale">Not at all</label> <input type="range" min="0" max="5" step="0.1" class="form-range" name="severity"> <label class="scale">Extremely</label></span><br></span>
-                    // <span id="form-se-${t.name}-impact"><label for="impact">How badly did your <span data-replace="embedtext"></span> impact your daily life?</label>
-                    // <span id="${t.name}-impactinput"><label class="scale">Not at all</label>
-                    <input type="range" min="0" max="5" step="0.1" class="form-range" name="impact"> <label class="scale">Extremely</label></span><br></span>
-                    // <span id="form-se-${t.name}-notes"><label for="notes">Notes: <span class="sidenote">[e.g. the times of day, triggers, things you tried to help]</span></label><br>
-                    // <span id="${t.name}-notesinput"><textarea class="form-control" name="notes" id="notes" rows="5"></textarea></span></span>
-        */
+                        console.log(selectedSideEffects.length + ":" + existingSE.sideeffects.length)
 
-        const seTypes = form.querySelector('#form-se-types')
-
-        seTypes.addEventListener('change', event => {
-            if (event.target.type === 'checkbox') {
-                const checked = form.querySelectorAll('input[type="checkbox"]:checked')
-                selectedSideEffects = Array.from(checked).map(x => x.id)
-                selectedSideEffects.length > 0 ? document.querySelector("#se-next").disabled = false : document.querySelector("#se-next").disabled = true
-            }
-        })
-        
-        // form.querySelector("#form-se-type-input").addEventListener("change", async e => {
-        //     let type = e.target.value;
-        //     let scheme = schema.types.filter(t => t.name == type)[0];
-            
-        //     if (!scheme) return;
-
-        //     form.querySelector("input[name='description']").value = scheme.description;
-        //     form.querySelectorAll("span[data-replace]").forEach(s => s.textContent = scheme[s.dataset.replace]);
-        //     form.querySelectorAll("span[data-switch]").forEach(s => s.textContent = scheme[s.dataset.switch]? s.dataset.true: s.dataset.false);
-
-        //     ["frequency", "severity", "impact", "notes"].forEach(s => {
-        //         let q = form.querySelector(`#form-se-${s}`);
-
-        //         if (scheme.questions.includes(s)) {
-        //             q.removeAttribute("hidden")
-        //         } else {
-        //             q.setAttribute("hidden", "")
-        //         }
-        //     })
-
-        //     if (section.date) {
-        //         let existing = await fetch(`/myapp/mydiary/sideeffects?date=${section.date}&type=${type}`).then(response => response.status == 204? null: response.json())
-        //         if (existing) {
-        //             if (existing.severity == "mild") existing.severity = 1;
-        //             if (existing.severity == "moderate") existing.severity = 3;
-        //             if (existing.severity == "severe") existing.severity = 5;
-        //             if (existing.impact == "a little") existing.impact = 1;
-        //             if (existing.impact == "moderately") existing.impact = 3;
-        //             if (existing.impact == "a lot") existing.impact = 5;
-
-        //             scheme.questions.forEach(q => form.elements[q].value = existing[q]);
-        //         }
-        //     }
-        // })
-
-        // if (section.date) {
-        //     form.querySelector("#dateinput").innerHTML = `<input type="hidden" name="date" value="${section.date}" data-date="${section.date}" />`;
-        // } else {
-            /*
-            form.querySelector("#dateinput").append(...(() => {
-                let d = document.createElement("input");
-                d.setAttribute("type", "text");
-                d.setAttribute("readonly", "");
-                d.classList.add("datetext");
-                d.setAttribute("name", "date")
-
-                let c = this.createCalendar();
-
-                c.addEventListener("redraw", e => {
-                    c.querySelectorAll("td").forEach(td => {
-                        td.textContent = td.dataset.thisdate.substring(8)
-                        if (td.dataset.thisdate.substring(0,7) != c.querySelector("#cal-caption").dataset.basedate.substring(0,7)) {
-                            td.classList.add("faded");
+                        if(selectedSideEffects.length === 0 && existingSE.sideeffects.length > 0) {
+                            document.querySelector('#se-submit').hidden = false
+                            document.querySelector('#se-next').hidden = true
                         }
-                    })
-                })
-
-                c.dispatchEvent(new CustomEvent("redraw"));
-
-                c.addEventListener("click", e => {
-
-                    src = e.target;
-                    
-                    if (src.matches("tbody *")) {
-                        e.preventDefault(); e.stopPropagation();
-
-                        c.querySelectorAll(".selected").forEach(e => e.classList.remove("selected"))
-                        
-                        while (src.tagName != "TD") src= src.parentElement;
-                        src.classList.add("selected");
-
-                        d.dataset.date = src.dataset.thisdate;
-                        d.value = new Date(src.dataset.thisdate).toLocaleDateString();
-                        d.blur();
+                        else if(selectedSideEffects.length > 0) {
+                            document.querySelector('#se-submit').hidden = true
+                            document.querySelector('#se-next').hidden = false
+                        }
                     }
                 })
 
-                return [d,c];
-            })())
-            form.querySelector("#form-se-date").removeAttribute("hidden")
-            */
-       // }
+                form.addEventListener("submit", e => {
+                    e.preventDefault(); e.stopPropagation();
+            
+                    const payload = []
+            
+                    selectedSideEffects.forEach((se) => {
+                        let sideeffect = {
+                            type: se,
+                            description: form.elements[se + '-description'].value,
+                            date: section.date,
+                            frequency: form.elements[se + '-frequency'].value,
+                            severity: form.elements[se + '-severity'].value,
+                            impact: form.elements[se + '-impact'].value,
+                            notes: form.elements[se + '-notes'].value
+                        }
+            
+                        payload.push(sideeffect)
+                    })
+            
+                    let deletions = existingSE.sideeffects.map(se => se.type).filter(x => !selectedSideEffects.includes(x));
+            
+                    let deleteQueries = []
+
+                    deletions.forEach(se => {
+                        deleteQueries.push(this.post("/myapp/mydiary/sideeffects/delete/", {
+                            type: se,
+                            date: section.date
+                        }))
+                    })
+
+                    // Handle deletions first and then updates/additions
+                    Promise.all(deleteQueries).then((values) => {
+                        this.post("/myapp/mydiary/sideeffects/", payload)
+                      });
+
+                })
+
+            })
+        }
+    })
+
     
-    })
-
-    form.addEventListener("submit", e => {
-        e.preventDefault(); e.stopPropagation();
-
-        const payload = []
-
-        selectedSideEffects.forEach((se) => {
-            let sideeffect = {
-                type: se,
-                description: form.elements[se + '-description'].value,
-                date: section.date,
-                frequency: form.elements[se + '-frequency'].value,
-                severity: form.elements[se + '-severity'].value,
-                impact: form.elements[se + '-impact'].value,
-                notes: form.elements[se + '-notes'].value
-            }
-
-            payload.push(sideeffect)
-        })
-
-        this.post("/myapp/mydiary/sideeffects/", payload)
-    })
-
     form.addEventListener("reset", e => {
         let sideeffect = {
             type: form.elements['type'].value,
