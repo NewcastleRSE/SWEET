@@ -32,6 +32,16 @@ The application expects user data and app content to be stored in separate blob 
 
 User details are encrypted using `crytography.fernet.Fernet`
 
+### Data backup
+Azure Backup provides backup for website and user content. Data is retained for 30 days and can be restored to an earlier state within this time period. Geo-redundant storage is used meaning data is replicated in a secondary geographical region allowing for regional outages. 
+
+Although backup data is stored in the storage account, a Backup vault is required for configuration. To manage all vaults, use Backup center. 
+
+When restoring blobs any changes to blobs since the chosen backup point will be overwritten. To restore, you will need to go to the Backup Center within the storage account you want to restore, for example for [staging](https://portal.azure.com/#view/Microsoft_Azure_DataProtection/BackupCenterMenuBlade/~/backupInstances) and follow the Azure instructions [here](https://docs.microsoft.com/en-us/azure/backup/blob-restore).
+
+Note that if a container is deleted from the storage account it cannot be restored so delete individual blobs were possible. 
+
+
 ### secrets.py
 SWEET extracts sensitive data (i.e. application keys, Azure conncetion details etc.) from a file called `secrets.py` which is not tracked in the repository; you should create your own `secrets.py` under the SWEET directory in the repository. A sample `secrets.sample.py` is included to document the variables that need to be set.
 
