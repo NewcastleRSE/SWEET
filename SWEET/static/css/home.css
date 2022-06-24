@@ -49,10 +49,12 @@
     border: none;
 }
 
- .btn-primary {
-    margin-top: 0em;
-    margin-bottom: 0em;
-}
+/* .btn-primary {*/
+/*    margin-top: 0.2em;*/
+/*    margin-bottom: 0em;*/
+/*}*/
+
+
 .hmpg-acts .btn-primary {
     color: black;
     background-color: var(--SWEET-gold);
@@ -148,6 +150,14 @@ ul.quick-links li a:hover {
         float: none;
     }
 }
+
+/*!*On phones, add margin-top to buttons as they are stacked rather than in a row*!*/
+/*@media screen and (max-width: 480px) {*/
+/*    .header-buttons .btn-primary {*/
+/*        margin-top: 0.3rem;*/
+/*    }*/
+/*}*/
+
 
 /*print css*/
 @media print {

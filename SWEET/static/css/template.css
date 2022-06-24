@@ -162,8 +162,8 @@ span a {
     color: #fff;
     background-color: var(--SWEET-purple);
     border-color: var(--SWEET-purple);
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
 }
 
 .btn-primary:hover {
