@@ -112,8 +112,19 @@ export async function thoughtsRenderer(section) {
             addrow();
             let form = holder.querySelector("form:last-of-type");
             form.elements['negative'].value = t.negative;
+
+            // form.elements['negative'].style.height = 25+  form.elements['negative'].scrollHeight +'px';
             form.elements['positive'].value = t.positive;
         })
+
+        // const formsCollection = document.getElementsByTagName('form');
+        // console.log(formsCollection[0])
+        // console.log(formsCollection.length)
+        // for(let item of formsCollection)
+        // {
+        //     console.log('f')
+        //     console.log(item);
+        // }
     }
 
     while (holder.querySelectorAll("form").length < 1) {
@@ -147,7 +158,6 @@ export function thoughtsPageRenderer(section) {
         }))
         .then(holderPromises => holderPromises.map(p => p.value))
         .then(holders => {
-            console.log(holders);
             if (holders.filter(h => h.hasThoughts).length == 0) {
                 // we have no thoughts in the app; create a single menu to link to thought pages:
                 this.render({
