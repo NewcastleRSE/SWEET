@@ -452,7 +452,7 @@ export async function myPersonalSupportRenderer(section) {
     
     if (renderDetails) {
         await this.render(latest.concernDetails).then(node => holder.appendChild(node));
-        await this.render({ type: "markdown", encoding: "raw", text: "We’ll check in again in a few months. In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within the Me &amp; HT website. Alternatively you can speak to your breast cancer team or your GP.\n\n"}).then(node => holder.appendChild(node))
+        await this.render({ type: "markdown", encoding: "raw", text: "We’ll check in again in a few months. In the meantime, if you have any concerns or difficulties, you can find lots of useful information and helpful tips within the HT&amp;Me website. Alternatively you can speak to your breast cancer team or your GP.\n\n"}).then(node => holder.appendChild(node))
     }
     
     let newdets = { type: "profiler-launcher" };

@@ -247,9 +247,9 @@ document.querySelector("#btn-print > a").addEventListener("click", e => {
     e.preventDefault(); e.stopPropagation();
 
     switch (SWEET.path) {
-        case "#home/diary":
-            open(`/myapp/mydiary/print?period=${e.currentTarget.dataset.period}`);
-            break;
+        // case "#home/diary":
+        //     open(`/myapp/mydiary/print?period=${e.currentTarget.dataset.period}`);
+        //     break;
         default:
             window.print();
             //window.alert("Here you will be able to download .pdf versions of some pages.");

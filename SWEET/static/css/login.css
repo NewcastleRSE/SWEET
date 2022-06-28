@@ -13,7 +13,7 @@
     width: 100%;
     text-align: center;
     padding-bottom: 0.5em;
-    color:  var(--SWEET-purple);
+    color: var(--SWEET-purple);
 }
 
 .login-form > form {

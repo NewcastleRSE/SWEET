@@ -228,26 +228,29 @@ def getSideEffects(user=None, sedate=None, type=None):
         else:
             return next((se for se in diary[sedate]["sideeffects"] if se['type'] == type), None)
 
-def recordSideEffect(user, sideeffect):
+# Side effect can be array to support adding multiple in one go
+def recordSideEffect(user, sideeffects):
     id = user['userID']
 
     diary = UserData(id).diary()
 
-    if sideeffect["date"] not in diary:
-        diary[sideeffect["date"]] = { "sideeffects": [] }
+    for sideeffect in sideeffects:
 
-    if "sideeffects" not in diary[sideeffect["date"]]:
-        diary[sideeffect["date"]]["sideeffects"] = []
+        if sideeffect["date"] not in diary:
+            diary[sideeffect["date"]] = { "sideeffects": [] }
 
-    existing = next((s for s in diary[sideeffect["date"]]["sideeffects"] if s["type"] == sideeffect["type"]), None)
+        if "sideeffects" not in diary[sideeffect["date"]]:
+            diary[sideeffect["date"]]["sideeffects"] = []
 
-    if existing:
-        ex = existing.copy()
-        existing.update(sideeffect)
-        log(user, "update", old=ex, new=existing.copy())
-    else:
-        diary[sideeffect["date"]]["sideeffects"].append(sideeffect)
-        log(user, "add", new=sideeffect.copy())
+        existing = next((s for s in diary[sideeffect["date"]]["sideeffects"] if s["type"] == sideeffect["type"]), None)
+
+        if existing:
+            ex = existing.copy()
+            existing.update(sideeffect)
+            log(user, "update", old=ex, new=existing.copy())
+        else:
+            diary[sideeffect["date"]]["sideeffects"].append(sideeffect)
+            log(user, "add", new=sideeffect.copy())
 
     diary.commit()
 

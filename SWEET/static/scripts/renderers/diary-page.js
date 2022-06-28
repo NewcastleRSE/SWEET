@@ -209,7 +209,7 @@ export function diaryCalendarRenderer(section) {
 
                     function reset() {
                         modal.body.innerHTML = `
-                            <h5>General notes about the day <span class="sidenote">[use this to record anything else]</span></h5>
+                            <h5>General notes about the day</h5>
                             <form id="modal-update-note-form">
                             <input type="hidden" name="takendate"><input type="hidden" name="takentime">
                             <input type="hidden" name="date" value="${d.dataset.thisdate}">
@@ -370,7 +370,7 @@ export function diaryCalendarRenderer(section) {
 
                         modal.body.appendChild(form);
                         modal.footer.insertAdjacentHTML('beforeend',` <input id="se-next" type="button" value="Next" class="btn btn-primary" disabled>`)
-                        modal.footer.insertAdjacentHTML('beforeend',` <input hidden type="submit" form="${form.getAttribute("id")}" value="Save details" class="btn btn-primary">`)
+                        modal.footer.insertAdjacentHTML('beforeend',` <input hidden type="submit" id="se-submit" form="${form.getAttribute("id")}" value="Save details" class="btn btn-primary">`)
                         modal.footer.querySelector("#se-close").textContent = "Back";
                         modal.footer.querySelector("#se-close").classList.remove("btn-primary");
                         modal.footer.querySelector("#se-close").classList.add("btn-secondary");
@@ -408,15 +408,11 @@ export function diaryCalendarRenderer(section) {
                         })
 
                         form.addEventListener("submit", () => {
-                            modal.footer.querySelector("input[type='reset']").remove();
-                            clickBack();
-                        })
-
-                        form.addEventListener("reset", re => {
-                            modal.footer.querySelector("input[type='reset']").remove();
-                            clickBack();
-                        })
-                
+                            location.reload();
+                            //c.dispatchEvent(new CustomEvent("redraw"));
+                            // diaryGraphRenderer()
+                            // modal.hide()
+                        })                
                     })
                     
                 }
