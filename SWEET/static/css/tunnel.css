@@ -28,9 +28,13 @@ div.tunnel {
 }
 
 #tunnel-container > footer {
-    text-align: right;
+    display: flex;
+    max-width: inherit;
+    justify-content: space-between;
 }
 
 #tunnel-pagecount {
-    display: inline-block; min-width: 10em; text-align: center;
+    display: inline-block;
+    padding: 0.2em;
+    text-align: center;
 }
