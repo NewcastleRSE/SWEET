@@ -8,15 +8,67 @@ export async function thoughtsRenderer(section) {
 
     let thoughts = section.thoughts || await fetch(`/myapp/mythoughts?path=${encodeURIComponent(section.path)}`).then(response => response.json());
 
-    holder.insertAdjacentHTML("afterbegin", "<header><span>Critical, negative thoughts</span><span>&nbsp;</span><span>Supportive, neutral thoughts</span></header>")
+    // holder.insertAdjacentHTML("afterbegin", "<header><span>Critical, negative thoughts</span><span>&nbsp;</span><span>Supportive, neutral thoughts</span></header>")
 
     holder.insertAdjacentHTML("beforeend", "<footer><button type='button' id='add-thought' class='btn btn-primary'>Add more thoughts</button><button type='button' id='save-thoughts' class='btn btn-primary' disabled>Save</button></footer>")
-    
-    let rowtemplate = "<textarea type='text' name='negative' ></textarea><span>&#10148</span><textarea type='text' name='positive' ></textarea>"
+
+
 
     const addrow = () => {
+        // Negative section
+        let negTextArea = document.createElement('textarea');
+        negTextArea.name = 'negative';
+        negTextArea.id = 'negative';
+
+        negTextArea.addEventListener('input', el => {
+            if (el.target.scrollHeight > 80) {
+                el.target.style.height = "5px";
+                el.target.style.height = (15 + el.target.scrollHeight)+"px";
+            }
+        });
+
+        let formGroupNeg = document.createElement('div');
+        formGroupNeg.classList.add('form-group');
+
+        let labelNeg = document.createElement('label');
+        labelNeg.for = 'negative';
+        labelNeg.innerText = 'Critical, negative thoughts'
+         // let labelNeg = "<label for='negative'>Critical, negative thoughts</label>";
+          formGroupNeg.insertAdjacentElement('beforeend', labelNeg);
+         formGroupNeg.insertAdjacentElement('beforeend', negTextArea);
+
+         // Positive section
+        let posTextArea = document.createElement('textarea');
+        posTextArea.name = 'positive';
+        posTextArea.id = 'positive';
+
+        posTextArea.addEventListener('input', el => {
+            if (el.target.scrollHeight > 80) {
+                el.target.style.height = "5px";
+                el.target.style.height = (15 + el.target.scrollHeight)+"px";
+            }
+        });
+
+        let formGroupPos = document.createElement('div');
+        formGroupPos.classList.add('form-group');
+
+        let labelPos = document.createElement('label');
+        labelPos.for = 'positive';
+        labelPos.innerText = 'Supportive, neutral thoughts'
+        formGroupPos.insertAdjacentElement('beforeend', labelPos);
+        formGroupPos.insertAdjacentElement('beforeend', posTextArea);
+
+        // arrow
+        let arrow = document.createElement('span');
+        arrow.innerHTML = '&#10148';
+
+        // build form
         let form = document.createElement("form");
-        form.innerHTML = rowtemplate;
+        form.insertAdjacentElement('beforeend', formGroupNeg);
+        form.insertAdjacentElement('beforeend', arrow);
+        form.insertAdjacentElement('beforeend', formGroupPos);
+
+
         let deleteBtn = document.createElement("button");
         let icon = '<i class="bi bi-trash"></i>'
         deleteBtn.insertAdjacentHTML('beforeend', icon);
@@ -70,6 +122,7 @@ export async function thoughtsRenderer(section) {
 
     return holder;
 }
+
 
 export function thoughtsPageRenderer(section) {
     if (section.type != "thoughts-page") return null;

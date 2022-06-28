@@ -53,17 +53,24 @@
 .thoughts-box form {
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     align-content: center;
     justify-content: space-between;
     align-items: center;
 }
 
+.thoughts-box .form-group {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 2;
+}
+
 .thoughts-box form textarea {
-    flex-basis: 47%;
     min-width: 0;
     padding: 0.5em;
     margin: 0.5em;
+    overflow: hidden;
+
 }
 
 
