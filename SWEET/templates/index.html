@@ -110,14 +110,14 @@
     </main>
 
     <footer class="footer mt-auto py-3 footer-dark">
-        <ul class="quick-links">
+        <!-- <ul class="quick-links">
             <li><a href="https://breastcancernow.org/information-support/support-you/email-our-nurses" target="_blank">Ask
                 a
                 Nurse &nbsp; <i class="bi bi-chat-left-quote"></i></a></li>
             <li><a
                     href="https://forum.breastcancernow.org/?_ga=2.173266467.1075776305.1622643174-918319471.1619612063&_gac=1.28114638.1620658026.Cj0KCQjws-OEBhCkARIsAPhOkIadNEUBKMKZ_5fTMY6vhAhJ2lih_e5GnDoxYueDR6sj8LhkovRGs20aAqxUEALw_wcB"
                     target="_blank">Patient Forum &nbsp; <i class="bi bi-chat-dots"></i></a></li>
-        </ul>
+        </ul> -->
         <div class="container" hidden>
             <span><a href="#">USER GUIDE</a></span><span><a href="#">Privacy Notice</a></span><span>... logos ...</span>
         </div>
@@ -174,7 +174,6 @@
         const navLinks = document.querySelectorAll('.link');
         navLinks.forEach((l) => {
             l.addEventListener('click', () => {
-                console.log('close')
                 navbarFunction()
             })
         })
@@ -182,7 +181,6 @@
         // if click elsewhere in page, close hamburger menu
         document.addEventListener('click', function (event) {
             if (!event.target.matches('.topnav') && !event.target.matches('#hamburger')) {
-                console.log('close navbar');
                 var x = document.getElementById("mytopnav");
                 if (x.classList.contains("responsivenav")) {
                     x.classList.remove("responsivenav");

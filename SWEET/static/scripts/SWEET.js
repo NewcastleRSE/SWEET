@@ -148,7 +148,11 @@ document.querySelector("#main-container").addEventListener("click", e => {
     <section id="tunnel-container" class="container">
         <header><h3 id="tunnel-title" class="mb-3"></h3> <button type="button" class="btn-close" id="tunnel-close" aria-label="Close"></button></header>
         <section id="tunnel-main"></section>
-        <footer><button class="btn-secondary" id="tunnel-prev" disabled>Previous</button> <span id="tunnel-pagecount"></span> <button class="btn-primary" id="tunnel-next">Next</button></footer>
+        <footer >
+<button class="btn-secondary" id="tunnel-prev" disabled>Previous</button> 
+<span id="tunnel-pagecount"></span> 
+<button class="btn-primary" id="tunnel-next">Next</button>
+</footer>
     </section>
     `;
 
@@ -243,9 +247,9 @@ document.querySelector("#btn-print > a").addEventListener("click", e => {
     e.preventDefault(); e.stopPropagation();
 
     switch (SWEET.path) {
-        case "#home/diary":
-            open(`/myapp/mydiary/print?period=${e.currentTarget.dataset.period}`);
-            break;
+        // case "#home/diary":
+        //     open(`/myapp/mydiary/print?period=${e.currentTarget.dataset.period}`);
+        //     break;
         default:
             window.print();
             //window.alert("Here you will be able to download .pdf versions of some pages.");

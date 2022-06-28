@@ -686,7 +686,9 @@ ul li a:focus {
     display: none;
 }
 
-
+.bi-house::before {
+    color: var(--SWEET-purple);
+}
 
 
 /* Smaller screens-hide all links, except for the first one ("Home"). Show the link that contains should open and close the topnav (.icon) */
@@ -709,6 +711,9 @@ ul li a:focus {
            transform: translate(-50%, -50%);
 
        }
+    .bi-house {
+        display: none;
+    }
 }
 
 @media screen and (min-width: 826px) {

@@ -45,6 +45,12 @@
     }
 }
 
+@media (max-width: 500px) {
+    /*.thoughts-box form textarea {*/
+    /*    max-width: 260px;*/
+    /*}*/
+}
+
 
 .thoughts-box header {
     justify-content: space-around;
@@ -53,18 +59,32 @@
 .thoughts-box form {
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     align-content: center;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 2em;
+}
+
+.thoughts-box .form-group {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 2;
 }
 
 .thoughts-box form textarea {
-    flex-basis: 47%;
     min-width: 0;
     padding: 0.5em;
     margin: 0.5em;
+    overflow: hidden;
+
 }
+
+.thoughts-box form span {
+    width: 48px;
+}
+
+
 
 
 
