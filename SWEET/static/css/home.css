@@ -149,6 +149,10 @@ ul.quick-links li a:hover {
     }
 }
 
+.header-buttons a {
+    margin-top: 0.2rem
+}
+
 /*print css*/
 @media print {
     header {
