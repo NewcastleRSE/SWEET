@@ -45,6 +45,12 @@
     }
 }
 
+@media (max-width: 500px) {
+    /*.thoughts-box form textarea {*/
+    /*    max-width: 260px;*/
+    /*}*/
+}
+
 
 .thoughts-box header {
     justify-content: space-around;
@@ -57,6 +63,7 @@
     align-content: center;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 2em;
 }
 
 .thoughts-box .form-group {
@@ -72,6 +79,12 @@
     overflow: hidden;
 
 }
+
+.thoughts-box form span {
+    width: 48px;
+}
+
+
 
 
 
