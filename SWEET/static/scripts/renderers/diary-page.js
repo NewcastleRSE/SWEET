@@ -209,7 +209,7 @@ export function diaryCalendarRenderer(section) {
 
                     function reset() {
                         modal.body.innerHTML = `
-                            <h5>General notes about the day <span class="sidenote">[use this to record anything else]</span></h5>
+                            <h5>General notes about the day</h5>
                             <form id="modal-update-note-form">
                             <input type="hidden" name="takendate"><input type="hidden" name="takentime">
                             <input type="hidden" name="date" value="${d.dataset.thisdate}">

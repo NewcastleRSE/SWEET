@@ -174,7 +174,6 @@
         const navLinks = document.querySelectorAll('.link');
         navLinks.forEach((l) => {
             l.addEventListener('click', () => {
-                console.log('close')
                 navbarFunction()
             })
         })
@@ -182,7 +181,6 @@
         // if click elsewhere in page, close hamburger menu
         document.addEventListener('click', function (event) {
             if (!event.target.matches('.topnav') && !event.target.matches('#hamburger')) {
-                console.log('close navbar');
                 var x = document.getElementById("mytopnav");
                 if (x.classList.contains("responsivenav")) {
                     x.classList.remove("responsivenav");
