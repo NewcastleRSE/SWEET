@@ -39,9 +39,11 @@
         <a class="navbar-brand " href="#home"><strong>HT &amp; Me</strong> <img
                 src="{{ url_for('static', filename='images/logo-sweet_.png') }}" alt="logo" height="36"
                 class="d-inline-block align-text-top"></a>
+        <a aria-current="page"  class="bi bi-house h3 " id="homeSmall" href="#home"><i
+            style="color: #633188"></i></a>
         <div id="topnavlinks">
-            <a aria-current="page"  href="#home"><i
-                    class="bi bi-house h3" style="color: #633188"></i></a>
+            <a aria-current="page" id="homeLarge"  class="bi bi-house h3 " href="#home"><i
+                    style="color: #633188"></i></a>
             {% block navitems %}
             <a class="link" aria-current="page" href="#home">Home</a>
             <a class="link" href="#my-account">My Account</a>

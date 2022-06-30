@@ -691,10 +691,9 @@ ul li a:focus {
 
 /* Smaller screens-hide all links, except for the first one ("Home"). Show the link that contains should open and close the topnav (.icon) */
 @media screen and (max-width: 825px) {
-    i.bi-house {
-        display: none;
-    }
-    .topnav a:not(:first-child) {display: none;}
+
+    .topnav .link {display: none;}
+    .topnav .btn {display: none;}
     .topnav a.icon {
         float: right;
         display: block;
@@ -710,7 +709,7 @@ ul li a:focus {
 
        }
     .bi-house {
-        display: none;
+
     }
 }
 
@@ -725,15 +724,28 @@ ul li a:focus {
     }
 }
 
+#homeSmall {
+    display: none;
+}
+
 /* The "responsive" class is added to the topnav with JavaScript when the user clicks on the icon. This class makes the topnav look good on small screens (display the links vertically instead of horizontally) */
 @media screen and (max-width: 825px) {
-    .topnav.responsivenav {display: block;}
-    .topnav.responsivenav a.icon {
-        position: absolute;
-        right: 0;
-        top: 0;
+    #homeLarge {
+        display: none;
     }
-    .topnav.responsivenav a {
+    #homeSmall {
+        display: inline;
+    }
+    .topnav.responsivenav {display: block;}
+    .topnav {
+        display: block;
+    }
+    .topnav #topnavlinks a.icon {
+        position: absolute;
+        right: 1em;
+        top: 1em;
+    }
+    .topnav.responsivenav #topnavlinks a:not(:first-child) {
         float: none;
         display: block;
 
