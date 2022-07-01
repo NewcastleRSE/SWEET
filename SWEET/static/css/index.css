@@ -616,6 +616,10 @@ input[type='number'] {
     max-width: 3em;
 }
 
+.text-purple {
+    color: var(--SWEET-purple)!important;
+}
+
 /*
 @media screen and (min-width: 1400px) {
     #main-container nav > a {
