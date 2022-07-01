@@ -39,9 +39,11 @@
         <a class="navbar-brand " href="#home"><strong>HT &amp; Me</strong> <img
                 src="{{ url_for('static', filename='images/logo-sweet_.png') }}" alt="logo" height="36"
                 class="d-inline-block align-text-top"></a>
+        <a aria-current="page"  class="bi bi-house h3 " id="homeSmall" href="#home"><i
+            style="color: #633188"></i></a>
         <div id="topnavlinks">
-            <a aria-current="page" href="#home"><i
-                    class="bi bi-house text-white h3"></i></a>
+            <a aria-current="page" id="homeLarge"  class="bi bi-house h3 " href="#home"><i
+                    style="color: #633188"></i></a>
             {% block navitems %}
             <a class="link" aria-current="page" href="#home">Home</a>
             <a class="link" href="#my-account">My Account</a>
@@ -84,8 +86,8 @@
                 <div id="header-container" class="container">
                     <div class="row">
                         <div class="col-12 mt-3 y-3 header-buttons">
-                            <a href="javascript:history.go(-1)" class="btn btn-primary">Back</a> <a href="#home"
-                                                                                                    class="btn btn-primary btn-up">Home</a>
+                            <a href="javascript:history.go(-1)" class="btn btn-primary">Back</a>
+                            <a href="#home" class="btn btn-primary btn-up">Home</a>
                             <span id="btn-print"><a href="#" class="btn btn-primary">Print &nbsp; <i
                                     class="bi bi-printer"></i></a></span>
                         </div>
