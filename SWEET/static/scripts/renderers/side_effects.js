@@ -90,14 +90,14 @@ export function sideEffectFormRenderer(section) {
 
                 seTypes.addEventListener('change', event => {
                     if (event.target.type === 'checkbox') {
-                        console.log(existingSE.sideeffects)
+
+                        let existingSideEffects = existingSE ? existingSE.sideeffects : []
+
                         const checked = form.querySelectorAll('input[type="checkbox"]:checked')
                         selectedSideEffects = Array.from(checked).map(x => x.id)
                         selectedSideEffects.length > 0 ? document.querySelector("#se-next").disabled = false : document.querySelector("#se-next").disabled = true
 
-                        console.log(selectedSideEffects.length + ":" + existingSE.sideeffects.length)
-
-                        if(selectedSideEffects.length === 0 && existingSE.sideeffects.length > 0) {
+                        if(selectedSideEffects.length === 0 && existingSideEffects.length > 0) {
                             document.querySelector('#se-submit').hidden = false
                             document.querySelector('#se-next').hidden = true
                         }
@@ -127,7 +127,9 @@ export function sideEffectFormRenderer(section) {
                         payload.push(sideeffect)
                     })
             
-                    let deletions = existingSE.sideeffects.map(se => se.type).filter(x => !selectedSideEffects.includes(x));
+                    let existingSideEffects = existingSE ? existingSE.sideeffects : []
+
+                    let deletions = existingSideEffects.map(se => se.type).filter(x => !selectedSideEffects.includes(x));
             
                     let deleteQueries = []
 
