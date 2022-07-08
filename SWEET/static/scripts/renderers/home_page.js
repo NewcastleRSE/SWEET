@@ -1,21 +1,21 @@
 export function homepageMenuRenderer(section) {
     if (section.type != "homepage-menu") return null;
-
     function createItem() {
         let holder = document.createElement("div");
         holder.setAttribute("class", "d-block col");
         holder.innerHTML = `
-        <a class="d-block card shadow h-100" href="">
+        <div class="card text-center">
+        <a class="d-block card" href="">
             <div class="card-body">
                 <h5 class="card-title"></h5>
                 <p class="card-text"></p>
+                <p class="btn btn-primary">Find Out More -> </p>
             </div>
         </a>`
 
         holder.$link = holder.querySelector("a");
         holder.$title = holder.querySelector(".card-title");
         holder.$subtitle = holder.querySelector(".card-text");
-
         return holder;
     }
 
@@ -30,6 +30,7 @@ export function homepageMenuRenderer(section) {
     menu.$sections = menu.querySelector(".hmpg-sects");
     menu.$actions = menu.querySelector(".hmpg-acts");
 
+
     section.mainitems.forEach(i => {
         let item = createItem();
         item.$title.textContent = i.title;
@@ -40,12 +41,12 @@ export function homepageMenuRenderer(section) {
         if (i.icon && i.icon != "none") {
 
             fetch(`/app/resources/${i.icon}`)
-            .then(response => response.json())
-            .then(resource => {
-                let img = item.$link.appendChild(document.createElement("img"))
-                img.src = resource.source;
-                img.classList.add("card-icon");
-            })
+                .then(response => response.json())
+                .then(resource => {
+                    let img = item.$link.appendChild(document.createElement("img"))
+                    img.src = resource.source;
+                    img.classList.add("card-icon");
+                })
         }
 
         menu.$sections.appendChild(item);
@@ -61,12 +62,12 @@ export function homepageMenuRenderer(section) {
         if (i.icon && i.icon != "none") {
 
             fetch(`/app/resources/${i.icon}`)
-            .then(response => response.json())
-            .then(resource => {
-                let img = item.$link.appendChild(document.createElement("img"))
-                img.src = resource.source;
-                img.classList.add("card-icon");
-            })
+                .then(response => response.json())
+                .then(resource => {
+                    let img = item.$link.appendChild(document.createElement("img"))
+                    img.src = resource.source;
+                    img.classList.add("card-icon");
+                })
         }
 
         menu.$actions.appendChild(item);
@@ -81,26 +82,26 @@ export function homepageMenuRenderer(section) {
         //profiler.$link.classList.add("pb-5");
 
         fetch(`/app/resources/${section.profiler.icon}`)
-        .then(response => response.json())
-        .then(resource => {
-            let img = profiler.$link.appendChild(document.createElement("img"))
-            img.src = resource.source;
-            img.classList.add("card-icon");
-        })
+            .then(response => response.json())
+            .then(resource => {
+                let img = profiler.$link.appendChild(document.createElement("img"))
+                img.src = resource.source;
+                img.classList.add("card-icon");
+            })
     }
 
     profiler.$link.addEventListener("click", e => {
         e.preventDefault();
         fetch("/myapp/profiler/responses").then(response => response.json())
-        .then(output => {
-            if (output.profilers.length) {
-                this.path = profiler.$link.getAttribute("href");
-            } else {
-                let latestp = this.store.get("latestProfiler");
-                latestp.type = "profiler";
-                this.render(latestp);
-            }
-        })
+            .then(output => {
+                if (output.profilers.length) {
+                    this.path = profiler.$link.getAttribute("href");
+                } else {
+                    let latestp = this.store.get("latestProfiler");
+                    latestp.type = "profiler";
+                    this.render(latestp);
+                }
+            })
     })
 
     menu.$actions.insertBefore(profiler, menu.$actions.firstChild);
@@ -111,7 +112,7 @@ export function homepageMenuRenderer(section) {
 
     if (
         (latestp.result == "postponed" && latestp.reminderDate <= today) ||
-        (!('result' in latestp) && latestp.dueDate <= today) 
+        (!('result' in latestp) && latestp.dueDate <= today)
     ) {
         latestp.type = "profiler";
         this.render(latestp);

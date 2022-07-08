@@ -99,20 +99,6 @@ export class PopupEditor extends HTMLElement {
 
 }
 
-export function popupRenderer(section) {
-
-    let modal = this.createModal();
-    modal.size = section.size;
-    modal.id = `popup-${section.name}`
-
-    modal.title.textContent = section.title? section.title: "";
-    section.content.forEach(s => this.render(s).then(node => modal.body.appendChild(node)));
-    modal.footer.innerHTML = "<button type='button' class='btn btn-primary'>Close</button>";
-    modal.footer.querySelector("button").addEventListener("click", () => modal.hide());
-
-    return modal.__node;
-}
-
 export class PopupTriggerEditor extends HTMLElement {
     static get contentType() { return "popup-trigger"; }
     static get tagName() { return "popup-trigger-editor"; }
@@ -162,18 +148,4 @@ export class PopupTriggerEditor extends HTMLElement {
     }
 
     get isContainer() { return false; }
-}
-
-
-export function popupTriggerRenderer(section) {
-    let trigger = document.createElement("a");
-    trigger.classList.add("popup-trigger");
-    trigger.textContent = section.linktext;
-
-    trigger.addEventListener("click", function(e) {
-        e.preventDefault(); e.stopPropagation();
-        bootstrap.Modal.getInstance(document.querySelector(`#popup-${section.name}`)).show()
-    })
-
-    return trigger;
 }

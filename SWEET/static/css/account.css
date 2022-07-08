@@ -1,21 +1,31 @@
 #my-personal-details .col {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
-#my-personal-details .col > div {
+
+#my-personal-details .col>div {
     margin: 0.25em;
     margin-bottom: 1em;
 }
 
-#my-personal-details .col > div > label {
+#my-personal-details .col>div>label {
     min-width: 8em;
 }
 
-#my-personal-details .col > div > :is(span, input)[id] {
+#my-personal-details .col>div> :is(span, input)[id] {
     width: 12em;
 }
 
-#my-personal-details .col > div > span.buttons {
+#my-personal-details .col>div>span.buttons {
     float: right;
+}
+
+#my-personal-details h4 {
+    color: var(--SWEET-purple);
+}
+
+#my-personal-details .btn-primary {
+    border-radius: 2rem;
+    text-align: center;
 }
 
 :is(#my-personal-details, .contact) button.edit::before {
@@ -35,18 +45,56 @@
     content: "\1f5d9"
 }
 
-button.edit + button.cancel {
+button.edit+button.cancel {
     display: none;
 }
 
-.contact  h5, .contact .contact-body {
+.contact {
+    padding: 1rem;
+    border-radius: 1rem;
+    background-color: white;
+    display: inline-block;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+    box-shadow: 0px 8px 12px 0px #acacac;
+    text-align: left;
+}
+
+/*add contacts fixed size on larger devices*/
+@media (min-width: 480px) {
+    .contact {
+        min-width: 400px;
+        max-width: 400px;
+    }
+}
+
+section.contact {
+    margin: 0.5rem;
+}
+
+.contact h5 {
+    color: var(--SWEET-purple);
+}
+
+.contact h5, .contact .contact-body {
     margin-left: 3rem;
+}
+
+/*contact boxes*/
+.my-1 {
+    height: 3em;
 }
 
 .contact-list {
     margin-bottom: 2em;
+    text-align: center;
 }
+
+/*.contact button.edit, .contact button.delete {}
+*/
 
 .password-field {
     float: right;
+    height: 2em;
 }

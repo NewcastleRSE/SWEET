@@ -17,9 +17,7 @@ def _login(user):
     session['user'] = token
     __logged_in_users[token] = user
 
-    anchor = "home" #if "skipWelcome" in user and user["skipWelcome"] else "welcome"
-
-    return redirect(url_for("index", _anchor=anchor))
+    return redirect(url_for("index", _anchor="home"))
 
 def _logout(token):
     if token in __logged_in_users:
@@ -50,7 +48,9 @@ def login():
 def register():
     if request.method == "POST":
         uid = request.form['regCode']
-        fname = request.form['fullName']
+        firstname = request.form['firstName']
+        lastname = request.form['lastName']
+        fname = firstname + " " + lastname
         email = request.form['email']
         mobile = request.form['mobile']
         role = 'staff' if uid[:2] == "RT" else 'user'

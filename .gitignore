@@ -95,6 +95,7 @@ celerybeat-schedule
 .venv
 env/
 venv/
+venv64/
 ENV/
 env.bak/
 venv.bak/
@@ -126,3 +127,6 @@ dmypy.json
 .terraform**
 *.tfstate
 *.tfstate.backup
+
+# IDE
+.idea

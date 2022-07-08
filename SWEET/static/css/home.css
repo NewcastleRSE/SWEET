@@ -1,35 +1,90 @@
 .row.homemenu {
     justify-content: space-around;
-    margin-top: -2em;
+}
+.hmpg-acts .card {
+    border-top: solid 3px var(--SWEET-gold);
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+.card-title {
+    padding-top: 5em;
+    text-align: center;
+}
+/* .hmpg-sects .card.text-center, .hmpg-acts .card.text-center{
+    font-size: medium;
+} */
+
+.hmpg-sects .card-title{
+    padding: 0em;
+    padding-top: 2em;
+}
+
+.hmpg-acts .card-title {
+    padding: 0;
 }
 
 .hmpg-acts {
     align-content: stretch;
 }
 
+.hmpg-acts .card-title {
+    color: black;
+    font-weight: bolder;
+}
+
 .hmpg-sects a.card, .hmpg-acts a.card {
     overflow: hidden;
+    text-align: center;
     min-height: 7em;
 }
 
 .hmpg-acts a.card {
-    border-bottom-color: var(--SWEET-gold);
     min-height: 4.5em;
 }
+
+.card:hover {
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+}
+
+.hmpg-acts .card.text-center {
+    border: none;
+}
+
+/* .btn-primary {*/
+/*    margin-top: 0.2em;*/
+/*    margin-bottom: 0em;*/
+/*}*/
+
+
+
+.hmpg-acts .btn-primary {
+    color: black;
+    background-color: var(--SWEET-gold);
+    border-color: var(--SWEET-gold);
+    margin-top: 0em;
+    margin-bottom: 0em;
+}
+
+.hmpg-acts .btn-primary:hover {
+    color: black;
+    background-color: var(--SWEET-light-gold);
+    border-color: var(--SWEET-light-gold);
+}
+
 
 img.card-icon {
     display: block;
     position: absolute;
-    width: 7.5em;
-    object-fit: contain;
-    bottom: -0.5em;
-    right: 0.25em;
-    opacity: 0.25;
+    width: 4em;
+    padding-top: 0;
+    top: -1px;
+    left: 40%;
 }
 
 .hmpg-acts img.card-icon {
     width: 5em;
-    bottom: 0;
+    top: 6em;
+    left: 0em;
+    opacity: 40%;
 }
 
 main.home :is(header, footer) {
@@ -52,7 +107,6 @@ ul.quick-links li {
 }
 
 ul.quick-links li a {
-    display: block;
     color: white;
     text-align: center;
     padding: 0 16px;
@@ -65,7 +119,7 @@ ul.quick-links li a:hover {
 }
 
 .custom-font-buttons {
-    display:none;
+    display: none;
 }
 
 #header-container {
@@ -76,15 +130,15 @@ ul.quick-links li a:hover {
 @media screen and (min-width: 200px) and (max-width: 967px) {
     .btn {
         font-size: 0.8rem;
-        margin-bottom: 30px;
     }
 }
 
 @media screen and (min-width: 200px) and (max-width: 500px) {
     .custom-font-buttons {
-        display: block; 
+        display: block;
         float: right;
     }
+
     .custom-font-buttons span {
         float: left;
         color: rgb(105, 102, 102);
@@ -95,5 +149,35 @@ ul.quick-links li a:hover {
 
     #btn-print {
         float: none;
+    }
+}
+
+
+.header-buttons a {
+    margin-top: 0.2rem
+}
+
+/*!*On phones, add margin-top to buttons as they are stacked rather than in a row*!*/
+/*@media screen and (max-width: 480px) {*/
+/*    .header-buttons .btn-primary {*/
+/*        margin-top: 0.3rem;*/
+/*    }*/
+/*}*/
+
+
+
+/*print css*/
+@media print {
+    header {
+        display: none;
+    }
+    footer {
+        display: none;
+    }
+    .header-buttons {
+        display: none;
+    }
+    .footer-buttons {
+        display: none;
     }
 }

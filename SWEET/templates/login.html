@@ -59,11 +59,15 @@
                 <h4>Register</h4>
                 <div class="mb-3">
                   <label>Registration Code</label>
-                  <input type="text" class="form-control" placeholder=" provided by the SWEET team" title="The registration code you were given by the SWEET team" name="regCode" required>
+                  <input type="text" class="form-control" placeholder=" provided by the HT&Me team" title="The registration code you were given by the SWEET team" name="regCode" required>
                 </div>
                 <div class="mb-3">
-                  <label>Full Name</label>
-                  <input type="text" class="form-control" placeholder="Full Name" name="fullName" minlength="2" maxlength="100" required>
+                  <label>First Name</label>
+                  <input type="text" class="form-control" placeholder="First Name" name="firstName" minlength="2" maxlength="100" required>
+                </div>
+                <div class="mb-3">
+                  <label>Last Name</label>
+                  <input type="text" class="form-control" placeholder="Last Name" name="lastName" minlength="2" maxlength="100" required>
                 </div>
                 <div class="mb-3">
                    <label>Email Address</label>
@@ -119,7 +123,7 @@
             e.target.submit();
             return;
           } else if (response.status == 404) {
-            message.innerHTML = "This resgitration code is invalid or has already been used; please contact your study adminstrator to obtain another one.";
+            message.innerHTML = "This registration code is invalid or has already been used; please contact your study adminstrator to obtain another one.";
             return;
           } else {
             message.innerHTML = "An error occurred while checking your registration code; please contact the service adminstrator for assistance.";

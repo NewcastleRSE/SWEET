@@ -62,7 +62,8 @@ export class AccordionEditor extends HTMLElement {
         this.$.itemtemplate = `
         <legend>Accordion Item</legend>
         <button class="move-up"></button><button class="move-down"></button><button class="delete"></button>
-        <p><label>Title</label><input type="text" name="title" /></p>
+        <p><label>Title</label><input type="text" name="title" /><br>
+        <label>Icon</label><input type="text" name="icon" /></p>
         <content-editor></content-editor>
         `
         const add = this.$.add = root.appendChild(document.createElement("button"));
@@ -123,6 +124,7 @@ export class AccordionEditor extends HTMLElement {
             output.content.push({
                 type: "accordion-item",
                 header: i.querySelector("input[name='title']").value,
+                icon: i.querySelector("input[name='icon']").value,
                 content: i.querySelector("content-editor").jsonvalue
             })
         })
@@ -136,6 +138,7 @@ export class AccordionEditor extends HTMLElement {
         content.content.forEach(i => {
             let item = this._item;
             item.querySelector("input[name='title']").value = i.header;
+            item.querySelector("input[name='icon']").value = i.icon;
             item.querySelector("content-editor").load(i.content);
             this.$.add.insertAdjacentElement('beforebegin', item)
         })
@@ -144,61 +147,3 @@ export class AccordionEditor extends HTMLElement {
     get isContainer() { return true; }
 }
 
-export function accordionRenderer(section) {
-    
-    const randomID =  Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
-
-    const accordion = document.createElement("div");
-    accordion.setAttribute("class","accordion mt-4 mb-5");
-    accordion.setAttribute("id", "accordion-" + randomID)
-
-    let index = 0;
-
-    section.content.forEach(item => {
-        switch (item.type) {
-            default:
-                throw `DataError: expected type "accordion-item", received type "${item.type}"`;
-                break;
-            case "accordion-item":
-                const holder = document.createElement("div");
-                holder.classList.add("accordion-item", "mb-2");
-
-                const header = document.createElement("h2");
-                header.setAttribute("id", "header-" + index);
-                header.setAttribute("class", "accordion-header");
-
-                const headerButton = document.createElement("button");
-                headerButton.setAttribute("class", "accordion-button collapsed");
-                headerButton.setAttribute("type", "button");
-                headerButton.setAttribute("data-bs-toggle", "collapse");
-                headerButton.setAttribute("data-bs-target", "#collapse-" + randomID + "-" + index);
-                headerButton.setAttribute("aria-controls", "collapse-" + index);
-                headerButton.innerText = item.header;
-
-                header.appendChild(headerButton);
-
-                const collapse = document.createElement("div");
-                collapse.setAttribute("id", "collapse-" + randomID + "-" + index);
-                collapse.setAttribute("class", "accordion-collapse collapse");
-                collapse.setAttribute("aria-labelledby", "header-" + index);
-                collapse.setAttribute("data-bs-parent", "#accordion-" + randomID);
-
-                const body = document.createElement("div");
-                body.setAttribute("class", "accordion-body");
-
-                this.render({ type: "container", content: item.content}).then(node => body.appendChild(node));
-
-                collapse.appendChild(body);
-                holder.appendChild(header);
-                holder.appendChild(collapse);
-                accordion.appendChild(holder);
-
-                break;
-        }
-
-        index++;
-    })
-
-    return accordion;
-
-}

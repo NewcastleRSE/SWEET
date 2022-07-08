@@ -1,33 +1,139 @@
 export async function thoughtsRenderer(section) {
     if (section.type != "thoughts") return null;
 
+    if (!section.path) section.path = this.path;
+
     let holder = document.createElement("section");
-    holder.classList.add("thought");
-    holder.$path = section.path;
+    holder.classList.add("thoughts-box", "so-alert");
 
-    let schema = await fetch(`/app/schemas/thoughts?path=${encodeURIComponent(section.path)}`).then(response => response.json());
+    let thoughts = section.thoughts || await fetch(`/myapp/mythoughts?path=${encodeURIComponent(section.path)}`).then(response => response.json());
+
+    // holder.insertAdjacentHTML("afterbegin", "<header><span>Critical, negative thoughts</span><span>&nbsp;</span><span>Supportive, neutral thoughts</span></header>")
+
+    holder.insertAdjacentHTML("beforeend", "<footer><button type='button' id='add-thought' class='btn btn-primary'>Add more thoughts</button><button type='button' id='save-thoughts' class='btn btn-primary' disabled>Save</button></footer>")
 
 
-    
-    let [negfillin, posfillin] = await Promise.allSettled([this.render({ type: "fillin", boxsize: "large", path: section.path, name: schema.negfillin}), this.render({ type: "fillin", boxsize: "large", path: section.path, name: schema.posfillin})]).then(ps => ps.map(p => p.value))
-    
-    if (negfillin.querySelector("textarea").value || posfillin.querySelector("textarea").value) {
-        // at least one part of thoughts is filled in so we'll render it:
-        holder.insertAdjacentHTML("beforeend", `<h4>${schema.title}</h4>
-        <label>${schema.neglabel}</label>`)
-        holder.appendChild(negfillin);
-        holder.insertAdjacentHTML("beforeend", `<label>${schema.poslabel}</label>`)
-        holder.appendChild(posfillin);
-    } else {
-        // if there's nothing in either box we'll return a 1-button menu to link to this thoughts page:
-        await this.render({
-            type: "menu",
-            content: [{ type: "menu-item", title: schema.title, link: schema.path } ]
-        }).then(node => holder.appendChild(node));
+
+    const addrow = () => {
+        // Negative section
+        let negTextArea = document.createElement('textarea');
+        negTextArea.name = 'negative';
+        negTextArea.id = 'negative';
+
+        negTextArea.addEventListener('input', el => {
+            if (el.target.scrollHeight > 80) {
+                el.target.style.height = "5px";
+                el.target.style.height = (15 + el.target.scrollHeight)+"px";
+            }
+        });
+
+        let formGroupNeg = document.createElement('div');
+        formGroupNeg.classList.add('form-group');
+
+        let labelNeg = document.createElement('label');
+        labelNeg.for = 'negative';
+        labelNeg.innerText = 'Critical, negative thoughts'
+         // let labelNeg = "<label for='negative'>Critical, negative thoughts</label>";
+          formGroupNeg.insertAdjacentElement('beforeend', labelNeg);
+         formGroupNeg.insertAdjacentElement('beforeend', negTextArea);
+
+         // Positive section
+        let posTextArea = document.createElement('textarea');
+        posTextArea.name = 'positive';
+        posTextArea.id = 'positive';
+
+        posTextArea.addEventListener('input', el => {
+            if (el.target.scrollHeight > 80) {
+                el.target.style.height = "5px";
+                el.target.style.height = (15 + el.target.scrollHeight)+"px";
+            }
+        });
+
+        let formGroupPos = document.createElement('div');
+        formGroupPos.classList.add('form-group');
+
+        let labelPos = document.createElement('label');
+        labelPos.for = 'positive';
+        labelPos.innerText = 'Supportive, neutral thoughts'
+        formGroupPos.insertAdjacentElement('beforeend', labelPos);
+        formGroupPos.insertAdjacentElement('beforeend', posTextArea);
+
+        // arrow
+        let arrow = document.createElement('span');
+        arrow.innerHTML = '&#10148';
+
+        // build form
+        let form = document.createElement("form");
+        form.insertAdjacentElement('beforeend', formGroupNeg);
+        form.insertAdjacentElement('beforeend', arrow);
+        form.insertAdjacentElement('beforeend', formGroupPos);
+
+
+        let deleteBtn = document.createElement("button");
+        let icon = '<i class="bi bi-trash"></i>'
+        deleteBtn.insertAdjacentHTML('beforeend', icon);
+        deleteBtn.id='delete-thought';
+        deleteBtn.classList.add('btn');
+        deleteBtn.classList.add('btn-primary');
+
+       // form.insertAdjacentHTML("beforeend", "<button type='button' id='delete-thought' className='btn btn-primary'>X</button>");
+        form.appendChild(deleteBtn);
+        deleteBtn.addEventListener("click", e => {
+           // remove current row
+            let toRemove = deleteBtn.parentNode;
+            toRemove.remove();
+            // save current thoughts (i.e. without deleted thought)
+            let allthoughts = Array.from(holder.querySelectorAll("form")).filter(f => f.elements['negative'].value && f.elements['positive'].value).map(f => { return { negative: f.elements['negative'].value, positive: f.elements['positive'].value}; });
+            this.post("/myapp/mythoughts/", { path: section.path, details: allthoughts});
+            e.target.setAttribute("disabled", "");
+            // if these leave no rows, add blank one
+            if (holder.querySelectorAll("form").length < 1) {
+                addrow();
+            }
+        });
+        holder.querySelector("footer").insertAdjacentElement("beforebegin", form);
+    }
+
+
+    holder.addEventListener("change", () => holder.querySelector("#save-thoughts").removeAttribute("disabled"))
+
+    holder.querySelector("#add-thought").addEventListener("click", addrow);
+
+    holder.querySelector("#save-thoughts").addEventListener("click", e => {
+        let allthoughts = Array.from(holder.querySelectorAll("form")).filter(f => f.elements['negative'].value && f.elements['positive'].value).map(f => { return { negative: f.elements['negative'].value, positive: f.elements['positive'].value}; });
+        this.post("/myapp/mythoughts/", { path: section.path, details: allthoughts});
+        e.target.setAttribute("disabled", "");
+        this.showPopupMessage("Great! Information you added to My Thoughts Activity has been saved.");
+    })
+
+    if (thoughts) {
+        holder.hasThoughts = true;
+        thoughts.forEach(t => {
+            addrow();
+            let form = holder.querySelector("form:last-of-type");
+            form.elements['negative'].value = t.negative;
+
+            // form.elements['negative'].style.height = 25+  form.elements['negative'].scrollHeight +'px';
+            form.elements['positive'].value = t.positive;
+        })
+
+        // const formsCollection = document.getElementsByTagName('form');
+        // console.log(formsCollection[0])
+        // console.log(formsCollection.length)
+        // for(let item of formsCollection)
+        // {
+        //     console.log('f')
+        //     console.log(item);
+        // }
+    }
+
+    while (holder.querySelectorAll("form").length < 1) {
+        addrow();
     }
 
     return holder;
 }
+
 
 export function thoughtsPageRenderer(section) {
     if (section.type != "thoughts-page") return null;
@@ -73,4 +179,3 @@ export function thoughtsPageRenderer(section) {
 
     return holder;
 }
-

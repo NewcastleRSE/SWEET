@@ -25,7 +25,32 @@
 
 .thoughts-box {
     padding: 1em 2em;
+    text-align: center;
 }
+
+.thoughts-box header span {
+    font-weight: bold;
+}
+
+/* on smaller devices give more room for form in thoughts box by alternating surrounding elements*/
+@media (max-width: 768px) {
+    .thoughts-box {
+        padding: 1em 0.5em;
+    }
+    .thoughts-box header span {
+        font-weight: normal;
+    }
+    .h3, h3 {
+        font-size: calc(1.3rem + .3vw);
+    }
+}
+
+@media (max-width: 500px) {
+    /*.thoughts-box form textarea {*/
+    /*    max-width: 260px;*/
+    /*}*/
+}
+
 
 .thoughts-box header {
     justify-content: space-around;
@@ -34,17 +59,32 @@
 .thoughts-box form {
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     align-content: center;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 2em;
 }
 
-.thoughts-box form input[type='text'] {
-    flex-basis: 42%;
+.thoughts-box .form-group {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 2;
+}
+
+.thoughts-box form textarea {
     min-width: 0;
+    padding: 0.5em;
+    margin: 0.5em;
+    overflow: hidden;
+
 }
 
-.thoughts-box header span {
-    font-weight: bold;
+.thoughts-box form span {
+    width: 48px;
 }
+
+
+
+
+

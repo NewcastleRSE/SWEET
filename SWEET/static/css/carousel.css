@@ -1,0 +1,66 @@
+.carousel {
+    width: 100%;
+    aspect-ratio: 16/7;
+    overflow: hidden;
+}
+
+.carousel-inner {
+    width: 80%;
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+img.splash {
+    width: 100%;
+    object-fit: contain;
+}
+
+.tiles-row {
+    aspect-ratio: 16/6;
+    align-content: center;
+}
+
+.tile-img {
+    max-height: 7em;
+    display: block;
+    margin: 2em auto;
+}
+
+.tile-caption {
+    display: block;
+    text-align: center;
+}
+
+.carousel-indicators {
+    margin-bottom: 2rem;
+}
+
+.carousel-indicators,
+.carousel-control-next-icon,
+.carousel-control-prev-icon {
+    background-color: #0003;
+    border-radius: 0.5em;
+}
+
+.carousel-indicators button {
+    height: 0.5em !important;
+    width: 0.5em !important;
+    border-radius: 50%;
+}
+
+.carousel-dark .carousel-indicators {
+    background-color: #fff3;
+}
+
+@media screen and (max-width: 825px) {
+    .carousel {
+        overflow: visible;
+    }
+
+    .carousel-indicators {
+        margin-bottom: 0;
+        position: relative;
+    }
+
+}

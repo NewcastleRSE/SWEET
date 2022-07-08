@@ -1,13 +1,13 @@
 from flask import Blueprint, request, render_template
 from .auth import role_required
 from .data.content import updateStructure as updateAppStructure, updatePageContent, saveResource
-from .data.users import getAllUsers, createUser
+from .data.users import getAllUsers, createUser, getUser, updateUser
 from .data.userdata import resetAll
 from .automation.scheduling import running, start, stop, status
 
 bp = Blueprint("admin", __name__, url_prefix="/admin")
-admin_required = role_required(roles=["editor", "sysadmin"])
-staff_required = role_required(roles=["staff", "editor", "sysadmin"])
+admin_required = role_required(roles=["editor", "studyadmin", "sysadmin"])
+staff_required = role_required(roles=["staff", "editor", "studyadmin", "sysadmin"])
 
 @bp.route("/home")
 @staff_required
@@ -71,7 +71,9 @@ def addResource():
     else:
         return { "status": "error", "message": "Update request sent without json data"}, 400
 
-
+###
+### user management
+###
 @bp.route("/data/createuser/", methods=["POST"])
 @admin_required
 def addUser():
@@ -93,6 +95,26 @@ def addUser():
 def getAllUserDetails():
     return { "users": getAllUsers() }
 
+@bp.get("/data/users/<userID>")
+@staff_required
+def getUserDetails(userID):
+    return getUser(userID)
+
+@bp.post("/data/users/<userID>")
+@staff_required
+def updateUserDetails(userID):
+    if request.is_json:
+        details = request.json
+
+        result, message = updateUser(userID, **details)
+
+        if result:
+            return { 'status': 'OK', 'message': 'Update complete'}
+        else:
+            return { 'status': 'error', 'message': message }, 400
+
+    return { "status": "error", "message": "Update request sent without json data"}, 400
+
 @bp.route("/data/reset", methods=["POST"])
 @staff_required
 def resetUserData():
@@ -104,8 +126,10 @@ def resetUserData():
     else:
         return { "status": "error", "message": "Update request sent without json data"}, 400
 
-
+###
 # scheduling
+###
+
 @bp.route("/sched/status")
 @admin_required
 def getScheduleStatus():
