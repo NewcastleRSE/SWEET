@@ -11,13 +11,13 @@ let downBtn = document.getElementById("sizeDown");
 downBtn.addEventListener("click", function() { sizeDown(); });
 
 function sizeUp() {
-   document.body.style.fontSize='1.2rem';
+   document.body.setAttribute('style', 'font-size: 1.4em !important');
 }
 
 function sizeNormal() {
-    document.body.style.fontSize='1rem';
+    document.body.setAttribute('style', 'font-size: 1em !important');
 }
 
 function sizeDown() {
-    document.body.style.fontSize='0.8rem';
+    document.body.setAttribute('style', 'font-size: 0.6em !important');
 }

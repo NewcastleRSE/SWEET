@@ -224,7 +224,11 @@ def getSideEffects(user=None, sedate=None, type=None):
         if sedate not in diary:
             return None
         if type is None:
-            return { "sideeffects": [se for se in diary[sedate]["sideeffects"]] }
+            print([se for se in diary[sedate]])
+            if hasattr([se for se in diary[sedate]], 'sideeffects'):
+                return { "sideeffects": [se for se in diary[sedate]["sideeffects"]] }
+            else:
+                return { "sideeffects": [] }
         else:
             return next((se for se in diary[sedate]["sideeffects"] if se['type'] == type), None)
 
