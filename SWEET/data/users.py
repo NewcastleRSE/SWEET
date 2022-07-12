@@ -193,6 +193,10 @@ def validateResetToken(userID, token):
 def getAllUsers():
     return [getUser(user) for user in __userstore.keys() if user != admin_user]
 
+def countAllUsers():
+    users = [getUser(user) for user in __userstore.keys()]
+    return len(users)
+
 def checkRegistrationCode(code):
     return code in __regcodes
 

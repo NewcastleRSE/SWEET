@@ -1,5 +1,5 @@
 from .sms import send_daily_reminder, send_monthly_reminder
-from .email import email_daily_reminder, email_monthly_reminder, send_profiler_reminder, send_goal_reminder
+from .email import email_daily_reminder, email_monthly_reminder, send_profiler_reminder, send_goal_reminder, send_10day_email, send_21dayop1_email, send_21dayop3_email, send_21dayop2_email
 from datetime import datetime
 import time
 
@@ -61,7 +61,11 @@ def dailyschedule(today):
                 'monthly': email_monthly_reminder,
                 'profiler-reminder': send_profiler_reminder,
                 'profiler-due': send_profiler_reminder,
-                'goal-reminder': send_goal_reminder
+                'goal-reminder': send_goal_reminder,
+                'tendays': send_10day_email,
+                'op121days': send_21dayop1_email,
+                'op221days': send_21dayop2_email,
+                'op321days': send_21dayop3_email,
              }[item['type']]
 
             #set up appropriate arguments

@@ -1,4 +1,4 @@
-from .users import updateUser, getAllUsers
+from .users import updateUser, getAllUsers, countAllUsers
 from .az_persitent import AzurePersitentDict, AzurePersistentList
 from ..secrets import connstr as az_connection, usersource, userdatastore
 from . import getContainer
@@ -22,7 +22,7 @@ class UserData():
             # create user data files:
             udstore.upload_blob(f"{self.pathbase}_init", date.today().isoformat())
 
-            for fname in ["diary", "plans", "fillins", "thoughts", "meta"]:
+            for fname in ["diary", "plans", "fillins", "thoughts"]:
                 udstore.upload_blob(f"{self.pathbase}{fname}", json.dumps({}))
 
             for fname in ["goals", "contacts", "profilers"]:
@@ -30,6 +30,8 @@ class UserData():
 
             udstore.upload_blob(f"{self.pathbase}reminders", json.dumps({ 'daily': {'reminder': False}, 'monthly': {'reminder': False}}))
 
+            optionNumber = allocateNext21DayOption()
+            udstore.upload_blob(f"{self.pathbase}meta", json.dumps({ '21dayoption': optionNumber}))
         except ResourceExistsError:
             # user data has previously been created
             pass
@@ -69,6 +71,16 @@ class UserData():
 
         updateUser(self.user, tunnelsComplete=[])
 
+# get user number and allocate based on assigning user sin turn to option 1, 2 and 3
+def allocateNext21DayOption():
+    userNumber = countAllUsers()
+    if userNumber % 3 == 0:
+        return 3
+    elif userNumber % 2 == 0:
+        return 2
+    else:
+        return 1
+
 def log(user, action, old=None, new=None):
     logvisit(user, request.user_agent.string, action=action, old=old, new=new)
 
@@ -83,6 +95,24 @@ def getGoals(user=None):
         "current": [g for g in goals if g['status'] == "active"],
         "complete": [g for g in goals if g['status'] == "complete"]
     }
+
+def get21DayOptionNumber(user=None):
+    if user is None:
+        return None
+    meta = UserData(user["userID"]).metadata()
+
+    if meta['21dayoption']:
+        return meta['21dayoption']
+    else:
+
+        # as a back up if user registered before 21 day option introduced, return option 1
+        return 1
+
+def getinitDate(user=None):
+    if user is None:
+        return None
+    init = UserData(user["userID"]).__init__()
+    return init
 
 def updateGoals(user, goal):
     id = user['userID']
@@ -700,7 +730,28 @@ def get_schedule(day):
                 schedule.append({'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'profiler-reminder', 'method': 'email', 'to': user['email']})
         elif "dueDate" in p and p["dueDate"] == day.isoformat():
                 schedule.append({'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'profiler-due', 'method': 'email', 'to': user['email']})
-    
+
+
+        # 10 day and 21 day reminder
+        init_date = getinitDate(user)
+        today = date.today().isoformat()
+        days_since_joining = today - init_date
+        if days_since_joining == 10:
+            sched = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'tendays'}
+            schedule.append(sched)
+        elif days_since_joining == 21:
+            option = get21DayOptionNumber(user)
+            if option == 1:
+                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'op121days'}
+                schedule.append(sched21)
+            elif option == 2:
+                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'op221days'}
+                schedule.append(sched21)
+            else:
+                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'op321days'}
+                schedule.append(sched21)
+
+
         gs = [g for g in ud.goals() if g['reviewDate'] == day.isoformat()]
 
         if len(gs):
