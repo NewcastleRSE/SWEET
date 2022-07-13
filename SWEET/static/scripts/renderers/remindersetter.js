@@ -19,6 +19,16 @@ export function reminderRenderer(section) {
             <input type="submit" value="Update Reminders" class="btn btn-primary" disabled>
             </form>
         `
+        // grow 'to' boxes to fit content if there is anything saved
+        if (reminders.monthly.to) {
+            let value = this.store.get("currentUser")[reminders.monthly.method=="sms" ? "mobile":"email"];
+            holder.querySelector(`[name='monthly-to']`).setAttribute('size', value.length)
+        }
+        if (reminders.daily.to) {
+            let value = this.store.get("currentUser")[reminders.daily.method=="sms" ? "mobile":"email"];
+            holder.querySelector(`[name='daily-to']`).setAttribute('size', value.length)
+        }
+
 
         holder.querySelector("form").addEventListener("submit", e => {
             e.preventDefault();
