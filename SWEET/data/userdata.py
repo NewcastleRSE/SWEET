@@ -35,7 +35,8 @@ class UserData():
         except ResourceExistsError:
             # user data has previously been created
             pass
-    
+    def init(self):
+        return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}_init")
     def diary(self):
         return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}diary")
     def reminders(self):
@@ -111,7 +112,7 @@ def get21DayOptionNumber(user=None):
 def getinitDate(user=None):
     if user is None:
         return None
-    init = UserData(user["userID"]).__init__()
+    init = UserData(user["userID"]).init()
     return init
 
 def updateGoals(user, goal):
@@ -120,7 +121,7 @@ def updateGoals(user, goal):
     ud = UserData(id)
     goals = ud.goals()
 
-    if goal['status'] == "complete":
+    if goal['status'] == "complete" or goal['status'] == "deleted":
         oldgoal = next(g for g in goals if g['goaltype'] == goal['goaltype'] and g['reviewDate'] == goal['reviewDate'] and g['detail'] == goal['detail'])
         if oldgoal is not None:
             goals.remove(oldgoal)

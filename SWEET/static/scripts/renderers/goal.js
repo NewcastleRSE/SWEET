@@ -82,6 +82,29 @@ export function goalRenderer(section) {
                 modal.show();
             })
         } else {
+            let deleteBtn = document.createElement("button");
+            deleteBtn.textContent = 'Delete this goal';
+            deleteBtn.classList.add("btn", "goal-review", "btn", "btn-primary", "mt-4", "mb-3");
+            goalCardContent.appendChild(deleteBtn);
+
+            deleteBtn.addEventListener(('click'), e => {
+                goal.status = "deleted";
+                goal.outcome = "n";
+               
+                this.post("/myapp/mygoals/", goal).then(response => response.json())
+                    .then(outcome => {
+                        let outer = goalCard.parentElement;
+
+                        outer.classList.add("goal", "new")
+                        outer.classList.remove("col")
+                        outer.innerHTML = newgoaltemplate;
+                        outer.addEventListener("click", newgoalhandler);
+
+                    }).catch(e => {
+                    console.log(e);
+                })
+            })
+
             goalCard.classList.add("active");
             // show the review date:
             let reviewdate = goalCardContent.appendChild(document.createElement("h6"));
