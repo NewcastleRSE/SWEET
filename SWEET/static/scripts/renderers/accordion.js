@@ -56,8 +56,20 @@ export function accordionRenderer(section) {
 
                 const body = document.createElement("div");
                 body.setAttribute("class", "accordion-body");
+                body.classList.add("clearfix")
 
-                this.render({ type: "container", content: item.content}).then(node => body.appendChild(node));
+                this.render({ type: "container", content: item.content}).then((node) => {
+                    body.appendChild(node);
+                    let closeButton = document.createElement("button");
+                    closeButton.textContent = 'Close';
+                    closeButton.classList.add("btn", "btn-primary", "float-end");
+                    body.appendChild(closeButton);
+
+                    closeButton.addEventListener(('click'), e => {
+                        collapse.classList.remove('show');
+                        headerButton.classList.add('collapsed');
+                    })
+                })
 
                 collapse.appendChild(body);
                 holder.appendChild(header);
