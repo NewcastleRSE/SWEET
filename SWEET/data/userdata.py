@@ -738,7 +738,7 @@ def get_schedule(day):
         days_since_joining = today - init_date
 
         # TODO will eventually be 10 but use 2 or 3 for testing
-        if (days_since_joining == 2) or (days_since_joining == 3):
+        if (days_since_joining == 4) or (days_since_joining == 5) or (days_since_joining == 6):
             sched = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'tendays'}
             schedule.append(sched)
         elif days_since_joining == 21:
