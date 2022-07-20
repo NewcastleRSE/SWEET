@@ -1,5 +1,5 @@
 from .users import updateUser, getAllUsers, countAllUsers
-from .az_persitent import AzurePersitentDict, AzurePersistentList
+from .az_persitent import AzurePersitentDict, AzurePersistentList, AzurePersistentString
 from ..secrets import connstr as az_connection, usersource, userdatastore
 from . import getContainer
 from .content import getProfilerResponses, getGoalMessage
@@ -36,7 +36,7 @@ class UserData():
             # user data has previously been created
             pass
     def init(self):
-        return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}_init")
+        return AzurePersistentString(az_connection, usersource, f"{self.pathbase}_init")
     def diary(self):
         return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}diary")
     def reminders(self):
