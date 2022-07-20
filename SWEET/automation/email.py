@@ -63,5 +63,5 @@ def send_profiler_due(user):
     _send_message(f"{fullname} <{user['email']}>", "profiler_reminder", fullname=fullname, hostname=hostname)
 
 def send_goal_reminder(detail):
-    fullname = f"{user['firstName']} {user['lastName']}"
+    fullname = f"{detail['firstName']} {detail['lastName']}"
     _send_message(f"{fullname} <{detail['email']}>", "goal_reminder", fullname=fullname, hostname=hostname, shorttype=detail['shortType'], longtype=detail['longType'])
