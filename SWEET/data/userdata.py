@@ -1,5 +1,5 @@
 from .users import updateUser, getAllUsers, countAllUsers
-from .az_persitent import AzurePersitentDict, AzurePersistentList
+from .az_persitent import AzurePersitentDict, AzurePersistentList, AzurePersistentString
 from ..secrets import connstr as az_connection, usersource, userdatastore
 from . import getContainer
 from .content import getProfilerResponses, getGoalMessage
@@ -36,7 +36,7 @@ class UserData():
             # user data has previously been created
             pass
     def init(self):
-        return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}_init")
+        return AzurePersistentString(az_connection, usersource, f"{self.pathbase}_init")
     def diary(self):
         return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}diary")
     def reminders(self):
@@ -739,7 +739,7 @@ def get_schedule(day):
         days_since_joining = today - init_date
 
         # TODO will eventually be 10 but use 2 or 3 for testing
-        if (days_since_joining == 4) or (days_since_joining == 5) or (days_since_joining == 6):
+        if (days_since_joining == 8) or (days_since_joining == 9) or (days_since_joining == 10):
             sched = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'tendays'}
             schedule.append(sched)
         elif days_since_joining == 21:
