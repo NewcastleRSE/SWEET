@@ -44,4 +44,4 @@ class AzurePersistentString(str):
     def reload(self):
         self.clear()
         if self.client.exists():
-            self.extend(self.client.download_blob().readall().decode('utf-8'))
+            self.extend(self.client.download_blob().readall())
