@@ -768,6 +768,10 @@ ul li a:focus {
         font-size: 0.8em;
         text-align: center;
     }
+
+    .bg-image {
+        background-size: contain !important;
+    }
 }
 
 
