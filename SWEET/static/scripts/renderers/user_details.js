@@ -61,13 +61,22 @@ export function userDetailsPageRenderer(section) {
         modal.title.textContent = "Change Password";
         modal.body.innerHTML = `
         <form id="change-pass-form">
-            <label for="oldpass" class="p-2 lbl-small">Current Password:</label> <input type="password" class="password-field" name="oldpass" id="oldpass" size="15" minlength="5" required><br>
-            <label for="password" class="p-2 lbl-small">New Password:</label> <input type="password" class="password-field" name="password" id="password" size="15" minlength="5"  required><br>
-            <label for="confpass" class="p-2 lbl-small">Confirm New Password:</label> <input type="password" class="password-field" name="confpass" id="confpass" size="15" minlength="5" required>
+            <div class="mb-3">
+                <label for="currentPassword" class="form-label">Current Password</label>
+                <input type="text" class="form-control" name="currentPassword" id="currentPassword" placeholder="Current Password" required>
+            </div>
+            <div class="mb-3">
+                <label for="newPassword" class="form-label">New Password</label>
+                <input type="text" class="form-control" name="newPassword" id="newPassword" placeholder="New Password" required>
+            </div>
+            <div class="mb-3">
+                <label for="newPasswordConfirmation" class="form-label">New Password Confirmation</label>
+                <input type="text" class="form-control" name="newPasswordConfirmation" id="newPasswordConfirmation" placeholder="New Password Confirmation" required>
+            </div>
             <div id="errors"></div>
         </form>
         `
-        modal.footer.innerHTML = `<button type="button" id="form-cancel">Cancel</button><input type="submit" form="change-pass-form" value="Save details">`
+        modal.footer.innerHTML = `<button type="button" id="form-cancel" class="btn">Cancel</button><input type="submit" form="change-pass-form" class="btn btn-primary" value="Save">`
 
         modal.footer.querySelector("#form-cancel").addEventListener("click", () => modal.hide());
 
@@ -75,13 +84,13 @@ export function userDetailsPageRenderer(section) {
             e.preventDefault(); e.stopPropagation();
 
             let form = e.target;
-            if (form.elements["password"].value != form.elements["confpass"].value) {
+            if (form.elements["password"].value != form.elements["newPasswordConfirmation"].value) {
                 form.querySelector("#errors").innerHTML = `<p>The new password and password confirmation do not match. Please retype them and try again.</p>`;
                 return false;
             } else {
                 let user = Object.assign({}, this.store.get("currentUser"));
-                user.oldpass = form.elements["oldpass"].value;
-                user.password = form.elements["password"].value;
+                user.currentPassword = form.elements["currentPassword"].value;
+                user.newPassword = form.elements["newPassword"].value;
 
                 this.post("/myapp/mydetails/", user).then(response => response.json())
                     .then(output => {
