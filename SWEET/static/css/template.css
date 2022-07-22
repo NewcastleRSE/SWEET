@@ -93,6 +93,11 @@ a.card {
     background-size: 120px;
 }
 
+a.card[href="https://breastcancernow.org/information-support/support-you/email-our-nurses"],
+a.card[href="https://forum.breastcancernow.org/?_ga=2.173266467.1075776305.1622643174-918319471.1619612063&_gac=1.28114638.1620658026.Cj0KCQjws-OEBhCkARIsAPhOkIadNEUBKMKZ_5fTMY6vhAhJ2lih_e5GnDoxYueDR6sj8LhkovRGs20aAqxUEALw_wcB"] {
+    border: solid 5px var(--SWEET-purple)
+}
+
 @media screen and (max-width: 825px) {
     a.card.submenu .card-title {
         margin-top: 2em;
