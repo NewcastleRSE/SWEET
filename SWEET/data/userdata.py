@@ -8,6 +8,8 @@ import json
 from azure.core.exceptions import ResourceExistsError
 from ..schemas import getSideEffectValueMappings
 
+from sentry_sdk import capture_message
+
 from flask import request
 from .users import logvisit
 
@@ -737,9 +739,11 @@ def get_schedule(day):
         init_date = getinit(user)
         today = date.today()
         days_since_joining = today - init_date
+# sentry
+
 
         # TODO will eventually be 10 but use 2 or 3 for testing
-        if (days_since_joining == 10) or (days_since_joining == 11) or (days_since_joining == 12):
+        if (days_since_joining == 10) or (user['lastName'] == 'Court'):
             sched = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'tendays'}
             schedule.append(sched)
         elif days_since_joining == 21:
@@ -754,6 +758,11 @@ def get_schedule(day):
                 sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'op321days'}
                 schedule.append(sched21)
 
+        if user['lastName'] == 'Court':
+            capture_message(init_date)
+            capture_message(days_since_joining)
+            capture_message(today)
+            capture_message(schedule)
 
         gs = [g for g in ud.goals() if g['reviewDate'] == day.isoformat()]
 
