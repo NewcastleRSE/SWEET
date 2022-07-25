@@ -110,13 +110,13 @@ export function homepageMenuRenderer(section) {
     let latestp = this.store.get("latestProfiler")
     let today = this.calendarDate(new Date());
 
-    // if (
-    //     (latestp.result == "postponed" && latestp.reminderDate <= today) ||
-    //     (!('result' in latestp) && latestp.dueDate <= today)
-    // ) {
+    if (
+        (latestp.result == "postponed" && latestp.reminderDate <= today) ||
+        (!('result' in latestp) && latestp.dueDate <= today)
+    ) {
         latestp.type = "profiler";
         this.render(latestp);
-   // }
+    }
 
     return menu;
 }
