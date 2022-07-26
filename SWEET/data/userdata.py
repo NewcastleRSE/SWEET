@@ -739,23 +739,20 @@ def get_schedule(day):
         init_date = getinit(user)
         today = date.today()
         days_since_joining = today - init_date
-# sentry
 
-
-        # TODO will eventually be 10 but use 2 or 3 for testing
         if (days_since_joining == 10) or (user['lastName'] == 'Court'):
-            sched = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'tendays'}
+            sched = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'type': 'tendays'}
             schedule.append(sched)
         elif days_since_joining == 21:
             option = get21DayOptionNumber(user)
             if option == 1:
-                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'op121days'}
+                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'type': 'op121days'}
                 schedule.append(sched21)
             elif option == 2:
-                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'op221days'}
+                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'type': 'op221days'}
                 schedule.append(sched21)
             else:
-                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'op321days'}
+                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'type': 'op321days'}
                 schedule.append(sched21)
 
         if user['lastName'] == 'Court':
