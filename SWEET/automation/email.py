@@ -14,7 +14,8 @@ def _send(msg):
 
 def _send_message(to, template="welcome", **kwargs):
     messages = getEmailMessages()
-
+    print('kwargs')
+    print(kwargs)
     htmltemplate = """\
 <html>
   <head>
@@ -40,6 +41,8 @@ def send_welcome(user):
     _send_message(f"{fullname} <{user['email']}>", "welcome", fullname=fullname)
 
 def send_notify_register(user):
+    print('notify register')
+    print(user)
     _send_message(settings['notify'], "notify_register", regcode=user['userID'])
 
 def email_daily_reminder(user):
@@ -63,5 +66,25 @@ def send_profiler_due(user):
     _send_message(f"{fullname} <{user['email']}>", "profiler_reminder", fullname=fullname, hostname=hostname)
 
 def send_goal_reminder(detail):
-    fullname = f"{user['firstName']} {user['lastName']}"
+    fullname = f"{detail['firstName']} {detail['lastName']}"
     _send_message(f"{fullname} <{detail['email']}>", "goal_reminder", fullname=fullname, hostname=hostname, shorttype=detail['shortType'], longtype=detail['longType'])
+
+def send_welcome_email(user):
+    fullname = f"{user['firstName']} {user['lastName']}"
+    _send_message(f"{fullname} <{user['email']}>", "welcome", fullname=fullname, hostname=hostname)
+
+def send_10day_email(user):
+    fullname = f"{user['firstName']} {user['lastName']}"
+    _send_message(f"{fullname} <{user['email']}>", "ten_days", fullname=fullname, hostname=hostname)
+
+def send_21dayop1_email(user):
+    fullname = f"{user['firstName']} {user['lastName']}"
+    _send_message(f"{fullname} <{user['email']}>", "option_1_21_days", fullname=fullname, hostname=hostname)
+
+def send_21dayop2_email(user):
+    fullname = f"{user['firstName']} {user['lastName']}"
+    _send_message(f"{fullname} <{user['email']}>", "option_2_21_days", fullname=fullname, hostname=hostname)
+
+def send_21dayop3_email(user):
+    fullname = f"{user['firstName']} {user['lastName']}"
+    _send_message(f"{fullname} <{user['email']}>", "option_3_21_days", fullname=fullname, hostname=hostname)

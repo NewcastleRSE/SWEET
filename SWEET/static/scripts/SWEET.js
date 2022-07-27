@@ -156,6 +156,9 @@ document.querySelector("#main-container").addEventListener("click", e => {
     </section>
     `;
 
+    // disable scrolling on background
+    document.getElementsByTagName('body')[0].classList.add('popup-open');
+
     // intercept internal links in tunnel and display in modal:
     tunnel.addEventListener("click", e => {
         let src = e.target;
@@ -234,6 +237,8 @@ document.querySelector("#main-container").addEventListener("click", e => {
     })
 
     closebutton.addEventListener("click", e => {
+        // enable scrolling on background
+        document.getElementsByTagName('body')[0].classList.remove('popup-open');
         tunnel.remove();
     })
 
