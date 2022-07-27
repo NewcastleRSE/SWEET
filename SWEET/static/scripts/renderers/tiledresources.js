@@ -7,7 +7,6 @@ export function tiledResourcesRenderer(section) {
     Promise.allSettled(section.resources.map(r => fetch(`/app/resources/${r}`).then(response => response.json())))
     .then(results => {
         results.filter(r => r.status == "fulfilled").map(r => r.value).forEach(resource => {
-            console.log("processing resource file:", resource)
             if (resource['content-type'] === undefined || resource['content-type'].startsWith("image")) {
                 let tile = document.createElement("div");
                 tile.classList.add("col", "resource-tile");
