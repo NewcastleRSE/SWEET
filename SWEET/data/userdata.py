@@ -741,18 +741,18 @@ def get_schedule(day):
         days_since_joining = today - init_date
 
         if (days_since_joining == 10) or (user['lastName'] == 'Court'):
-            sched = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'type': 'tendays'}
+            sched = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'tendays'}
             schedule.append(sched)
         elif days_since_joining == 21:
             option = get21DayOptionNumber(user)
             if option == 1:
-                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'type': 'op121days'}
+                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op121days'}
                 schedule.append(sched21)
             elif option == 2:
-                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'type': 'op221days'}
+                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op221days'}
                 schedule.append(sched21)
             else:
-                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'type': 'op321days'}
+                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op321days'}
                 schedule.append(sched21)
 
         if user['lastName'] == 'Court':
