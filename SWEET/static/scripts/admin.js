@@ -53,7 +53,7 @@ const renderers = {
               post("/admin/data/reset", { UserID: src.dataset.userID}).then(response => {
                 if (response.ok) alert("User data successfully reset")
                 else {
-                  console.log(reponse); alert("An error occurred, check the console for full details");
+                  console.log(response); alert("An error occurred, check the console for full details");
                 }
               })
             }
@@ -122,7 +122,16 @@ const renderers = {
               })
             }
           } else if (e.target.matches("button.delete, button.delete *")) {
-
+            let user = getUserId();
+            if (user && confirm("Delete this user and all entered data?")) {
+    
+              post("/admin/data/reset", { UserID: src.dataset.userID}).then(response => {
+                if (response.ok) alert("User data successfully deleted")
+                else {
+                  console.log(response); alert("An error occurred, check the console for full details");
+                }
+              })
+            }
           } else {
             alert("This action is not currently implemented.")
           }
