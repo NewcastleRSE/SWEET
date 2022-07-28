@@ -28,7 +28,7 @@ const renderers = {
           users.forEach(u => {
             let tr = document.createElement("tr");
             tr.dataset.userID = u.userID
-            tr.innerHTML = `<th>${u.firstName} ${u.lastName}</th><td>${u.email}</td><td><button class="edit">Edit</button><button class="reset">Reset Data</button><button class="Delete">Delete</button></td>`
+            tr.innerHTML = `<th>${u.firstName} ${u.lastName}</th><td>${u.email}</td><td><button class="edit">Edit</button><button class="reset">Reset Data</button><button class="delete">Delete</button></td>`
             table.appendChild(tr)
           })
         })
@@ -100,13 +100,12 @@ const renderers = {
                 modal.body.querySelector("form").addEventListener("submit", e => {
                   e.preventDefault();
     
-                  let updets =  {}
+                  let updates =  {}
                   new FormData(e.target).forEach((value, name) => {
-                    updets[name] = value;
+                    updates[name] = value;
                   })
     
-                  console.log(updets);
-                  post(`/admin/data/users/${user.userID}`, updets).then(response => response.json())
+                  post(`/admin/data/users/${user.userID}`, updates).then(response => response.json())
                   .then(result => {
                     // handle the result
     
@@ -122,6 +121,8 @@ const renderers = {
                 modal.show();
               })
             }
+          } else if (e.target.matches("button.delete, button.delete *")) {
+
           } else {
             alert("This action is not currently implemented.")
           }
