@@ -157,6 +157,11 @@ ul.quick-links li a:hover {
     margin-top: 0.2rem
 }
 
+body.popup-open {
+    overflow: hidden;
+}
+
+
 /*!*On phones, add margin-top to buttons as they are stacked rather than in a row*!*/
 /*@media screen and (max-width: 480px) {*/
 /*    .header-buttons .btn-primary {*/
