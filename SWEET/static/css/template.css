@@ -224,7 +224,7 @@ nav.navbar-dark .bi.bi-list {
 }
 
 /*
-nav-link bt- 
+nav-link bt-
 padding: 3px;
 margin-top: 9px;
 margin-left: 0.5rem;
@@ -552,8 +552,8 @@ ul li:nth-child(4):hover~li:last-child a {
 }
 
 /*
-Target each ID 
-Width by ID 
+Target each ID
+Width by ID
 */
 
 
@@ -585,9 +585,9 @@ ul li a:focus {
     height: 300px;
     width: 100%;
     margin-top: 60px;
+    background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
     background-attachment: fixed;
 }
 
@@ -625,7 +625,7 @@ ul li a:focus {
     }
 
 
-  .form-check-input  {
+    .form-check-input  {
         height: 2em;
         width: 2em;
     }
@@ -704,15 +704,15 @@ ul li a:focus {
         display: block;
     }
     a.btn-dark {
-           margin: 0;
-           margin-top: 1rem;
-           position: relative;
-           top: 50%;
-           left: 50%;
-           -ms-transform: translate(-50%, -50%);
-           transform: translate(-50%, -50%);
+        margin: 0;
+        margin-top: 1rem;
+        position: relative;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
 
-       }
+    }
     .bi-house {
 
     }
@@ -770,7 +770,7 @@ ul li a:focus {
     }
 
     .bg-image {
-        background-size: contain !important;
+        background-attachment: unset;
     }
 }
 
