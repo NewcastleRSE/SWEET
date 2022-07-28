@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template
 from .auth import role_required
 from .data.content import updateStructure as updateAppStructure, updatePageContent, saveResource
-from .data.users import getAllUsers, createUser, getUser, updateUser
+from .data.users import getAllUsers, createUser, getUser, updateUser, deleteUser
 from .data.userdata import resetAll
 from .automation.scheduling import running, start, stop, status
 
@@ -125,6 +125,11 @@ def resetUserData():
         return { "status": "OK"}
     else:
         return { "status": "error", "message": "Update request sent without json data"}, 400
+
+@bp.route("/data/users/<userID>", methods=["DELETE"])
+@staff_required
+def deleteUser(userID):
+    return deleteUser(userID)
 
 ###
 # scheduling
