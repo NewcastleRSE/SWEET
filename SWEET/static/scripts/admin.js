@@ -125,7 +125,7 @@ const renderers = {
             let user = getUserId();
             if (user && confirm("Delete this user and all entered data?")) {
     
-              post("/admin/data/reset", { UserID: src.dataset.userID}).then(response => {
+              delete(`/admin/data/users/${user.userID}`).then(response => {
                 if (response.ok) alert("User data successfully deleted")
                 else {
                   console.log(response); alert("An error occurred, check the console for full details");
