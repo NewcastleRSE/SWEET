@@ -46,6 +46,10 @@ export function accordionRenderer(section) {
                 }
                 headerButton.insertAdjacentText("beforeend", item.header);
 
+                headerButton.addEventListener(('click'), e => {
+                    e.target.scrollIntoView()
+                })
+
                 header.appendChild(headerButton);
 
                 const collapse = document.createElement("div");
