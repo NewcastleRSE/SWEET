@@ -149,7 +149,7 @@ document.querySelector("#main-container").addEventListener("click", e => {
         <header><h3 id="tunnel-title" class="mb-3"></h3> <button type="button" class="btn-close" id="tunnel-close" aria-label="Close"></button></header>
         <section id="tunnel-main"></section>
         <footer >
-<button class="btn-secondary" id="tunnel-prev" disabled>Previous</button> 
+<button class="btn-primary" id="tunnel-prev" disabled>Back</button> 
 <span id="tunnel-pagecount"></span> 
 <button class="btn-primary" id="tunnel-next">Next</button>
 </footer>
