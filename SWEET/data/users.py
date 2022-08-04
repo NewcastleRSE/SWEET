@@ -158,6 +158,17 @@ def updateUser(userID, **kwargs):
     __userstore.commit()
         
     return True, ""
+
+def deleteUser(userID):
+    userID = confirmUserID(userID)
+
+    # check user exists
+    if userID is None:
+        return None
+
+    # delete user and commit
+    del __userstore[userID]
+    __userstore.commit()
     
 def unsetPassword(userID, token):
     userID = confirmUserID(userID)

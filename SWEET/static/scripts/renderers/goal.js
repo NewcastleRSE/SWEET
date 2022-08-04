@@ -197,7 +197,7 @@ export function goalRenderer(section) {
                         <section>
                         <p>Well done!</p>
                         <p>You've set a new goal for the next week.</p>
-                        <p>You can always see your goals by clicking <strong>My Goals</strong> on the ${section.goaltype == "activity"? "Being Active": "Healthy Eating"} homepage.</p>
+                        <p>You can always see your goals by clicking <strong>My Goals</strong> on the ${section.goaltype == "activity"? "Being Active": "Healthy Eating"} homepage or go to the My Goals and Plans page on HT&Me homepage.</p>
                         <p>In one week, you can come back to get personal feedback on your goal.</p>
                         <p>It's a good idea to stick up a reminder somewhere in your house.</p>
                         <p>Your goal is: <strong>${goal.detail}</strong><br>

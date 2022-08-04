@@ -1,4 +1,5 @@
 from ..secrets import firetext
+from ..data.users import logvisit
 import requests
 from datetime import date
 
@@ -23,11 +24,12 @@ def _send(to, msg, **kwargs):
 
 def send_daily_reminder(user, send_time):
     msg = f"Hi {user['firstName']}, remember your hormone therapy today."
+    logvisit(user, "scheduler_sms", "send_daily_reminder")
     return _send(user['mobile'], msg, schedule=f"{date.today().isoformat()} {send_time}")
-
 
 def send_monthly_reminder(user, send_time):
     msg = f"Hi {user['firstName']}, this is a reminder to order your next hormone therapy prescription."
+    logvisit(user, "scheduler_sms", "send_monthly_reminder")
     return _send(user['mobile'], msg, schedule=f"{date.today().isoformat()} {send_time}")
 
 
