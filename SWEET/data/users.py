@@ -1,3 +1,4 @@
+from requests import delete
 from .az_persitent import AzurePersistentList, AzurePersitentDict
 from . import encryptUser, decryptUser
 from ..secrets import connstr as az_connection, usersource, usertable, userlist, userlog, registration_list, admin_user
@@ -48,9 +49,12 @@ def getUser(userID):
     if "lastName" not in user:
         dirty = True
         user["lastName"] = user["fullName"][user["fullName"].rfind(" ") + 1:]
-    if "deleted" not in user:
+    if "deactivated" not in user:
         dirty = True
-        user["deleted"] = False
+        user["deactivated"] = False
+    if "deleted" in user:
+        dirty = True
+        del user["deleted"]
 
     if dirty:
         __userstore[userID] = encryptUser(user)
@@ -66,7 +70,7 @@ def getUser(userID):
     userout["userID"] = userID
     del userout["password"]
 
-    if user['deleted'] is True:
+    if user['deactivated'] is True:
         return None
 
     return userout
@@ -86,7 +90,7 @@ def validateUser(userID, password):
     if password != user['password']:
         return False, None
 
-    if "deleted" in user and user['deleted'] is True:
+    if "deactivated" in user and user['deactivated'] is True:
         return False, None
 
     return True, getUser(userID)
@@ -167,19 +171,6 @@ def updateUser(userID, **kwargs):
     __userstore.commit()
         
     return True, ""
-
-def deleteUser(userID):
-    userID = confirmUserID(userID)
-
-    # check user exists
-    if userID is None:
-        return None
-    
-    # mark user as deleted and commit
-    user = decryptUser(__userstore[userID])
-    user['deleted'] = True
-    __userstore[userID] = encryptUser(user)
-    __userstore.commit()
     
 def unsetPassword(userID, token):
     userID = confirmUserID(userID)
@@ -213,7 +204,7 @@ def validateResetToken(userID, token):
     return False
 
 def getAllUsers():
-    return [getUser(user) for user in __userstore.keys() if user != admin_user]
+    return list(filter(None, [getUser(user) for user in __userstore.keys() if user != admin_user]))
 
 def countAllUsers():
     users = [getUser(user) for user in __userstore.keys()]
