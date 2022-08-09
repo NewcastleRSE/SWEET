@@ -80,6 +80,9 @@ def validateUser(userID, password):
     if password != user['password']:
         return False, None
 
+    if "deleted" in user and user['deleted'] is True:
+        return False, None
+
     return True, getUser(userID)
 
 
