@@ -26,9 +26,10 @@ const renderers = {
         fetch("/admin/data/allusers").then(response => response.json()).then(data => data.users)
         .then(users => {
           users.forEach(u => {
+            console.log(users)
             let tr = document.createElement("tr");
             tr.dataset.userID = u.userID
-            tr.innerHTML = `<th>${u.firstName} ${u.lastName}</th><td>${u.email}</td><td><button class="edit">Edit</button><button class="reset">Reset Data</button><button class="delete">Delete</button></td>`
+            tr.innerHTML = `<th>${u.firstName} ${u.lastName}</th><td>${u.email}</td><td><button class="edit">Edit</button><button class="reset">Reset Data</button><button class="delete">Deactivate</button></td>`
             table.appendChild(tr)
           })
         })
@@ -122,11 +123,11 @@ const renderers = {
               })
             }
           } else if (e.target.matches("button.delete, button.delete *")) {
-            let user = getUserId();
-            if (user && confirm("Delete this user and all entered data?")) {
+            let userid = getUserId();
+            if (userid && confirm("Deactivate this user?")) {
     
-              delete(`/admin/data/users/${user.userID}`).then(response => {
-                if (response.ok) alert("User data successfully deleted")
+              post(`/admin/data/users/${userid}`, { deactivated: true }).then(response => {
+                if (response.ok) alert("User successfully deactivated")
                 else {
                   console.log(response); alert("An error occurred, check the console for full details");
                 }
