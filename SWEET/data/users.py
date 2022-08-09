@@ -165,9 +165,11 @@ def deleteUser(userID):
     # check user exists
     if userID is None:
         return None
-
-    # delete user and commit
-    del __userstore[userID]
+    
+    # mark user as deleted and commit
+    user = decryptUser(__userstore[userID])
+    user['deleted'] = True
+    __userstore[userID] = encryptUser(user)
     __userstore.commit()
     
 def unsetPassword(userID, token):
