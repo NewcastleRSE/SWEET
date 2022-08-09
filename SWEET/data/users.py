@@ -48,6 +48,9 @@ def getUser(userID):
     if "lastName" not in user:
         dirty = True
         user["lastName"] = user["fullName"][user["fullName"].rfind(" ") + 1:]
+    if "deleted" not in user:
+        dirty = True
+        user["deleted"] = False
 
     if dirty:
         __userstore[userID] = encryptUser(user)
@@ -62,6 +65,9 @@ def getUser(userID):
     userout.update(user)
     userout["userID"] = userID
     del userout["password"]
+
+    if user['deleted'] is True:
+        return None
 
     return userout
 
@@ -78,6 +84,9 @@ def validateUser(userID, password):
         return False, None
 
     if password != user['password']:
+        return False, None
+
+    if "deleted" in user and user['deleted'] is True:
         return False, None
 
     return True, getUser(userID)
@@ -165,9 +174,11 @@ def deleteUser(userID):
     # check user exists
     if userID is None:
         return None
-
-    # delete user and commit
-    del __userstore[userID]
+    
+    # mark user as deleted and commit
+    user = decryptUser(__userstore[userID])
+    user['deleted'] = True
+    __userstore[userID] = encryptUser(user)
     __userstore.commit()
     
 def unsetPassword(userID, token):
