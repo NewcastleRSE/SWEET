@@ -48,6 +48,9 @@ def getUser(userID):
     if "lastName" not in user:
         dirty = True
         user["lastName"] = user["fullName"][user["fullName"].rfind(" ") + 1:]
+    if "deleted" not in user:
+        dirty = True
+        user["deleted"] = False
 
     if dirty:
         __userstore[userID] = encryptUser(user)
@@ -62,6 +65,9 @@ def getUser(userID):
     userout.update(user)
     userout["userID"] = userID
     del userout["password"]
+
+    if user['deleted'] is True:
+        return None
 
     return userout
 
