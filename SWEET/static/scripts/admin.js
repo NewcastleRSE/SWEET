@@ -11,7 +11,9 @@ const post = function(url, data) {
 }
 
 const renderers = {
-    home: function() {},
+    home: function() {
+      return document.createElement("section");
+    },
     users: function() {
         var holder = document.createElement("section");
         holder.innerHTML = `
@@ -361,6 +363,7 @@ const renderers = {
 window.addEventListener("DOMContentLoaded", e => {
     let main = document.getElementById("main_content");
     let page = location.pathname.substring(location.pathname.lastIndexOf("/")+1);
-
-    main.appendChild(renderers[page]());
+    
+    renderers[page]()
+    //main.appendChild(renderers[page]());
 })

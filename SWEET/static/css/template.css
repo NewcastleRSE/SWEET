@@ -260,6 +260,18 @@ footer.footer-dark {
     background-color: var(--SWEET-purple) !important;
 }
 
+footer.footer-dark img.logo {
+    height: 50px;
+    width: auto;
+}
+
+@media screen and (max-width: 576px) {
+    footer.footer-dark img.logo {
+        height: auto;
+        width: 75vw;
+    }
+}
+
 a.navbar-brand {
     font-size: 32px;
     padding: 0;
