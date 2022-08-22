@@ -1,5 +1,6 @@
 import sentry_sdk
 from flask import Flask, render_template
+from datetime import datetime
 from werkzeug.user_agent import UserAgent
 from sentry_sdk.integrations.flask import FlaskIntegration
 from . import data, secrets
@@ -38,6 +39,6 @@ def create_app():
     @app.route("/")
     @login_required
     def index():
-        return render_template("index.html")
+        return render_template("index.html", copyrightYear = str(datetime.now().year))
 
     return app
