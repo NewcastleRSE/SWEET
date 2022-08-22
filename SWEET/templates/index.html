@@ -120,8 +120,29 @@
                     href="https://forum.breastcancernow.org/?_ga=2.173266467.1075776305.1622643174-918319471.1619612063&_gac=1.28114638.1620658026.Cj0KCQjws-OEBhCkARIsAPhOkIadNEUBKMKZ_5fTMY6vhAhJ2lih_e5GnDoxYueDR6sj8LhkovRGs20aAqxUEALw_wcB"
                     target="_blank">Patient Forum &nbsp; <i class="bi bi-chat-dots"></i></a></li>
         </ul> -->
-        <div class="container" hidden>
-            <span><a href="#">USER GUIDE</a></span><span><a href="#">Privacy Notice</a></span><span>... logos ...</span>
+        <div class="container">
+            <div class="row">
+                <div class="footer-menu col-sm-3 col-12">
+                    <ul class="list-unstyled">
+                        <li class="border-bottom border-white text-white py-2">
+                           Menu
+                        </li>
+                        <li class="py-2">
+                            <a href="#" class="text-white">User Guide</a>
+                        </li>
+                        <li class="py-2">
+                            <a href="#" class="text-white">Privacy Notice</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer-logos col d-flex flex-row justify-content-around flex-wrap">
+                    <img class="logo m-3" src="{{ url_for('static', filename='/images/logo-ncl.png') }}" alt="Newcastle University" />
+                    <img class="logo m-3" src="{{ url_for('static', filename='/images/logo-brookes.png') }}" alt="Oxford Brookes University" />
+                    <img class="logo m-3" src="{{ url_for('static', filename='/images/logo-ucl.png') }}" alt="UCL" />
+                    <img class="logo m-3" src="{{ url_for('static', filename='/images/logo-nihr.png') }}" alt="NIHR" />
+                    <img class="logo m-3" src="{{ url_for('static', filename='/images/logo-nuth.png') }}" alt="NUTH" />
+                </div>
+            </div>
         </div>
         <!-- Toast -->
         <div class="position-fixed top-0 p-3" style="z-index: 11">
