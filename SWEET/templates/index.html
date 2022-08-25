@@ -131,6 +131,9 @@
                             <a href="#" class="text-white">User Guide</a>
                         </li>
                         <li class="py-2">
+                            <a href="#" class="text-white">Glossary</a>
+                        </li>
+                        <li class="py-2">
                             <a href="#" class="text-white">Privacy Notice</a>
                         </li>
                         <li class="py-2">
@@ -181,6 +184,7 @@
                 // of transactions for performance monitoring.
                 // We recommend adjusting this value in production
                 tracesSampleRate: 1.0,
+                environment: window.location.hostname === "htandme.co.uk" ? 'Production' : 'Staging'
             });
         }
     </script>
