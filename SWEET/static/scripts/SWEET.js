@@ -276,20 +276,6 @@ document.querySelector("#footerGlossary").addEventListener('click', function (e)
         })
 })
 
-document.querySelector("#footerPrivacyNotice").addEventListener('click', function (e) {
-    e.preventDefault(); e.stopPropagation();
-
-    let modal = SWEET.createModal(true);
-    modal.size = "xl";
-    fetch(`/app/content?path=${encodeURIComponent('#glossary')}`).then(response => response.json())
-        .then(page => {
-            modal.title.textContent = page.title;
-            page.content.forEach(c => SWEET.render(c).then(node => modal.body.appendChild(node)));
-            modal.footer.innerHTML = `<button type="button" class="btn-primary" data-bs-dismiss="modal" aria-label="Close">Close</button>`;
-            modal.show();
-        })
-})
-
 // pre-load cached app data, then start app.
 Promise.allSettled([
     // user profile retrieval, validation, update and storage:
