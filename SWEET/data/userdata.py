@@ -740,7 +740,7 @@ def get_schedule(day):
         today = date.today()
         days_since_joining = today - init_date
 
-        if (days_since_joining == 10) or (user['lastName'] == 'Court'):
+        if (days_since_joining == 10):
             sched = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'type': 'tendays'}
             schedule.append(sched)
         elif days_since_joining == 21:
@@ -755,11 +755,7 @@ def get_schedule(day):
                 sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'type': 'op321days'}
                 schedule.append(sched21)
 
-        if user['lastName'] == 'Court':
-            capture_message(init_date)
-            capture_message(days_since_joining)
-            capture_message(today)
-            capture_message(schedule)
+    
 
         gs = [g for g in ud.goals() if g['reviewDate'] == day.isoformat()]
 
