@@ -93,6 +93,11 @@ a.card {
     background-size: 120px;
 }
 
+a.card[href="https://breastcancernow.org/information-support/support-you/email-our-nurses"],
+a.card[href="https://forum.breastcancernow.org/?_ga=2.173266467.1075776305.1622643174-918319471.1619612063&_gac=1.28114638.1620658026.Cj0KCQjws-OEBhCkARIsAPhOkIadNEUBKMKZ_5fTMY6vhAhJ2lih_e5GnDoxYueDR6sj8LhkovRGs20aAqxUEALw_wcB"] {
+    border: solid 5px var(--SWEET-purple)
+}
+
 @media screen and (max-width: 825px) {
     a.card.submenu .card-title {
         margin-top: 2em;
@@ -219,7 +224,7 @@ nav.navbar-dark .bi.bi-list {
 }
 
 /*
-nav-link bt- 
+nav-link bt-
 padding: 3px;
 margin-top: 9px;
 margin-left: 0.5rem;
@@ -253,6 +258,18 @@ a.nav-link.btn-dark {
 
 footer.footer-dark {
     background-color: var(--SWEET-purple) !important;
+}
+
+footer.footer-dark img.logo {
+    height: 50px;
+    width: auto;
+}
+
+@media screen and (max-width: 576px) {
+    footer.footer-dark img.logo {
+        height: auto;
+        width: 75vw;
+    }
 }
 
 a.navbar-brand {
@@ -547,8 +564,8 @@ ul li:nth-child(4):hover~li:last-child a {
 }
 
 /*
-Target each ID 
-Width by ID 
+Target each ID
+Width by ID
 */
 
 
@@ -580,9 +597,9 @@ ul li a:focus {
     height: 300px;
     width: 100%;
     margin-top: 60px;
+    background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
     background-attachment: fixed;
 }
 
@@ -620,7 +637,7 @@ ul li a:focus {
     }
 
 
-  .form-check-input  {
+    .form-check-input  {
         height: 2em;
         width: 2em;
     }
@@ -699,15 +716,15 @@ ul li a:focus {
         display: block;
     }
     a.btn-dark {
-           margin: 0;
-           margin-top: 1rem;
-           position: relative;
-           top: 50%;
-           left: 50%;
-           -ms-transform: translate(-50%, -50%);
-           transform: translate(-50%, -50%);
+        margin: 0;
+        margin-top: 1rem;
+        position: relative;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
 
-       }
+    }
     .bi-house {
 
     }
@@ -762,6 +779,10 @@ ul li a:focus {
     .topnav a.link {
         font-size: 0.8em;
         text-align: center;
+    }
+
+    .bg-image {
+        background-attachment: unset;
     }
 }
 

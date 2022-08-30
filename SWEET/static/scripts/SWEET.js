@@ -149,7 +149,7 @@ document.querySelector("#main-container").addEventListener("click", e => {
         <header><h3 id="tunnel-title" class="mb-3"></h3> <button type="button" class="btn-close" id="tunnel-close" aria-label="Close"></button></header>
         <section id="tunnel-main"></section>
         <footer >
-<button class="btn-secondary" id="tunnel-prev" disabled>Previous</button> 
+<button class="btn-primary" id="tunnel-prev" disabled>Back</button> 
 <span id="tunnel-pagecount"></span> 
 <button class="btn-primary" id="tunnel-next">Next</button>
 </footer>
@@ -260,6 +260,20 @@ document.querySelector("#btn-print > a").addEventListener("click", e => {
             //window.alert("Here you will be able to download .pdf versions of some pages.");
             break;
     }
+})
+
+document.querySelector("#footerGlossary").addEventListener('click', function (e) {
+    e.preventDefault(); e.stopPropagation();
+
+    let modal = SWEET.createModal(true);
+    modal.size = "xl";
+    fetch(`/app/content?path=${encodeURIComponent('#glossary')}`).then(response => response.json())
+        .then(page => {
+            modal.title.textContent = page.title;
+            page.content.forEach(c => SWEET.render(c).then(node => modal.body.appendChild(node)));
+            modal.footer.innerHTML = `<button type="button" class="btn-primary" data-bs-dismiss="modal" aria-label="Close">Close</button>`;
+            modal.show();
+        })
 })
 
 // pre-load cached app data, then start app.

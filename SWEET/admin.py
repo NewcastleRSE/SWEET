@@ -93,7 +93,8 @@ def addUser():
 @bp.route("/data/allusers")
 @staff_required
 def getAllUserDetails():
-    return { "users": getAllUsers() }
+    includeDeactivated = request.args.get('deactivated', default = False, type = bool)
+    return { "users": getAllUsers(includeDeactivated) }
 
 @bp.get("/data/users/<userID>")
 @staff_required
