@@ -741,7 +741,7 @@ def get_schedule(day):
         days_since_joining = today - init_date
 
         if (days_since_joining == 10):
-            sched = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'type': 'tendays'}
+            sched = {'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'tendays'}
             schedule.append(sched)
         elif days_since_joining == 21:
             option = get21DayOptionNumber(user)
