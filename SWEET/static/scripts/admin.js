@@ -25,13 +25,19 @@ const renderers = {
         `
         var table = holder.querySelector("#user-list")
     
-        fetch("/admin/data/allusers").then(response => response.json()).then(data => data.users)
+        fetch("/admin/data/allusers?deactivated=true").then(response => response.json()).then(data => data.users)
         .then(users => {
           users.forEach(u => {
-            console.log(users)
             let tr = document.createElement("tr");
             tr.dataset.userID = u.userID
-            tr.innerHTML = `<th>${u.firstName} ${u.lastName}</th><td>${u.email}</td><td><button class="edit">Edit</button><button class="reset">Reset Data</button><button class="delete">Deactivate</button></td>`
+
+            if(u.deactivated) {
+              tr.innerHTML = `<th><del>${u.firstName} ${u.lastName}</del></th><td><del>${u.email}</del></td><td></td><td></td><td></td>`
+            }
+            else {
+              tr.innerHTML = `<th>${u.firstName} ${u.lastName}</th><td>${u.email}</td><td><button class="edit">Edit</button><button class="reset">Reset Data</button><button class="delete">Deactivate</button></td>`
+            }            
+
             table.appendChild(tr)
           })
         })

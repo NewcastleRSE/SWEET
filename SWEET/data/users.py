@@ -31,8 +31,10 @@ def confirmUserID(id):
 
     return id
 
-def getUser(userID):
+def getUser(userID, includeDeactivated=False):
     userID = confirmUserID(userID)
+
+    print()
 
     if userID is None:
         return None
@@ -70,7 +72,7 @@ def getUser(userID):
     userout["userID"] = userID
     del userout["password"]
 
-    if user['deactivated'] is True:
+    if not includeDeactivated and user['deactivated'] is True:
         return None
 
     return userout
@@ -203,8 +205,8 @@ def validateResetToken(userID, token):
 
     return False
 
-def getAllUsers():
-    return list(filter(None, [getUser(user) for user in __userstore.keys() if user != admin_user]))
+def getAllUsers(includeDeactivated):
+    return list(filter(None, [getUser(user, includeDeactivated) for user in __userstore.keys() if user != admin_user]))
 
 def countAllUsers():
     users = [getUser(user) for user in __userstore.keys()]
