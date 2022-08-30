@@ -1,3 +1,4 @@
+from requests import delete
 from .az_persitent import AzurePersistentList, AzurePersitentDict
 from . import encryptUser, decryptUser
 from ..secrets import connstr as az_connection, usersource, usertable, userlist, userlog, registration_list, admin_user
@@ -30,8 +31,10 @@ def confirmUserID(id):
 
     return id
 
-def getUser(userID):
+def getUser(userID, includeDeactivated=False):
     userID = confirmUserID(userID)
+
+    print()
 
     if userID is None:
         return None
@@ -48,6 +51,12 @@ def getUser(userID):
     if "lastName" not in user:
         dirty = True
         user["lastName"] = user["fullName"][user["fullName"].rfind(" ") + 1:]
+    if "deactivated" not in user:
+        dirty = True
+        user["deactivated"] = False
+    if "deleted" in user:
+        dirty = True
+        del user["deleted"]
 
     if dirty:
         __userstore[userID] = encryptUser(user)
@@ -62,6 +71,9 @@ def getUser(userID):
     userout.update(user)
     userout["userID"] = userID
     del userout["password"]
+
+    if not includeDeactivated and user['deactivated'] is True:
+        return None
 
     return userout
 
@@ -78,6 +90,9 @@ def validateUser(userID, password):
         return False, None
 
     if password != user['password']:
+        return False, None
+
+    if "deactivated" in user and user['deactivated'] is True:
         return False, None
 
     return True, getUser(userID)
@@ -190,8 +205,8 @@ def validateResetToken(userID, token):
 
     return False
 
-def getAllUsers():
-    return [getUser(user) for user in __userstore.keys() if user != admin_user]
+def getAllUsers(includeDeactivated):
+    return list(filter(None, [getUser(user, includeDeactivated) for user in __userstore.keys() if user != admin_user]))
 
 def countAllUsers():
     users = [getUser(user) for user in __userstore.keys()]

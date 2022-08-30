@@ -90,7 +90,7 @@ export class PopupEditor extends HTMLElement {
         if (content.type != this.constructor.contentType) return;
 
         this.$.name.value = content.name;
-        this.$.title.value = content.value;
+        this.$.title.value = content.title;
         this.$.size.value = content.size;
         this.$.content.load(content.content);
     }

@@ -1,5 +1,5 @@
 from .users import updateUser, getAllUsers, countAllUsers
-from .az_persitent import AzurePersitentDict, AzurePersistentList, AzurePersistentString
+from .az_persitent import AzurePersitentDict, AzurePersistentList, getInitDate
 from ..secrets import connstr as az_connection, usersource, userdatastore
 from . import getContainer
 from .content import getProfilerResponses, getGoalMessage
@@ -7,6 +7,8 @@ from datetime import date, timedelta, MINYEAR, MAXYEAR
 import json
 from azure.core.exceptions import ResourceExistsError
 from ..schemas import getSideEffectValueMappings
+
+from sentry_sdk import capture_message
 
 from flask import request
 from .users import logvisit
@@ -36,7 +38,7 @@ class UserData():
             # user data has previously been created
             pass
     def init(self):
-        return AzurePersistentString(az_connection, usersource, f"{self.pathbase}_init")
+        return getInitDate(az_connection, usersource, f"{self.pathbase}_init")
     def diary(self):
         return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}diary")
     def reminders(self):
@@ -102,14 +104,14 @@ def get21DayOptionNumber(user=None):
         return None
     meta = UserData(user["userID"]).metadata()
 
-    if meta['21dayoption']:
+    if '21dayoption' in meta.keys():
         return meta['21dayoption']
     else:
 
         # as a back up if user registered before 21 day option introduced, return option 1
         return 1
 
-def getinitDate(user=None):
+def getinit(user=None):
     if user is None:
         return None
     init = UserData(user["userID"]).init()
@@ -734,26 +736,30 @@ def get_schedule(day):
 
 
         # 10 day and 21 day reminder
-        init_date = getinitDate(user)
-        today = date.today().isoformat()
+        init_date = getinit(user)
+        today = date.today()
         days_since_joining = today - init_date
 
-        # TODO will eventually be 10 but use 2 or 3 for testing
-        if (days_since_joining == 8) or (days_since_joining == 9) or (days_since_joining == 10):
-            sched = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'tendays'}
+        if (days_since_joining == 10) or (user['lastName'] == 'Court'):
+            sched = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'tendays'}
             schedule.append(sched)
         elif days_since_joining == 21:
             option = get21DayOptionNumber(user)
             if option == 1:
-                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'op121days'}
+                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op121days'}
                 schedule.append(sched21)
             elif option == 2:
-                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'op221days'}
+                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op221days'}
                 schedule.append(sched21)
             else:
-                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'op321days'}
+                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op321days'}
                 schedule.append(sched21)
 
+        if user['lastName'] == 'Court':
+            capture_message(init_date)
+            capture_message(days_since_joining)
+            capture_message(today)
+            capture_message(schedule)
 
         gs = [g for g in ud.goals() if g['reviewDate'] == day.isoformat()]
 
