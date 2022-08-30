@@ -11,7 +11,9 @@ const post = function(url, data) {
 }
 
 const renderers = {
-    home: function() {},
+    home: function() {
+      return document.createElement("section");
+    },
     users: function() {
         var holder = document.createElement("section");
         holder.innerHTML = `
@@ -23,12 +25,19 @@ const renderers = {
         `
         var table = holder.querySelector("#user-list")
     
-        fetch("/admin/data/allusers").then(response => response.json()).then(data => data.users)
+        fetch("/admin/data/allusers?deactivated=true").then(response => response.json()).then(data => data.users)
         .then(users => {
           users.forEach(u => {
             let tr = document.createElement("tr");
             tr.dataset.userID = u.userID
-            tr.innerHTML = `<th>${u.firstName} ${u.lastName}</th><td>${u.email}</td><td><button class="edit">Edit</button><button class="reset">Reset Data</button><button class="Delete">Delete</button></td>`
+
+            if(u.deactivated) {
+              tr.innerHTML = `<th><del>${u.firstName} ${u.lastName}</del></th><td><del>${u.email}</del></td><td></td><td></td><td></td>`
+            }
+            else {
+              tr.innerHTML = `<th>${u.firstName} ${u.lastName}</th><td>${u.email}</td><td><button class="edit">Edit</button><button class="reset">Reset Data</button><button class="delete">Deactivate</button></td>`
+            }            
+
             table.appendChild(tr)
           })
         })
@@ -53,7 +62,7 @@ const renderers = {
               post("/admin/data/reset", { UserID: src.dataset.userID}).then(response => {
                 if (response.ok) alert("User data successfully reset")
                 else {
-                  console.log(reponse); alert("An error occurred, check the console for full details");
+                  console.log(response); alert("An error occurred, check the console for full details");
                 }
               })
             }
@@ -100,13 +109,12 @@ const renderers = {
                 modal.body.querySelector("form").addEventListener("submit", e => {
                   e.preventDefault();
     
-                  let updets =  {}
+                  let updates =  {}
                   new FormData(e.target).forEach((value, name) => {
-                    updets[name] = value;
+                    updates[name] = value;
                   })
     
-                  console.log(updets);
-                  post(`/admin/data/users/${user.userID}`, updets).then(response => response.json())
+                  post(`/admin/data/users/${user.userID}`, updates).then(response => response.json())
                   .then(result => {
                     // handle the result
     
@@ -120,6 +128,17 @@ const renderers = {
                 })
               
                 modal.show();
+              })
+            }
+          } else if (e.target.matches("button.delete, button.delete *")) {
+            let userid = getUserId();
+            if (userid && confirm("Deactivate this user?")) {
+    
+              post(`/admin/data/users/${userid}`, { deactivated: true }).then(response => {
+                if (response.ok) alert("User successfully deactivated")
+                else {
+                  console.log(response); alert("An error occurred, check the console for full details");
+                }
               })
             }
           } else {
@@ -350,6 +369,7 @@ const renderers = {
 window.addEventListener("DOMContentLoaded", e => {
     let main = document.getElementById("main_content");
     let page = location.pathname.substring(location.pathname.lastIndexOf("/")+1);
-
-    main.appendChild(renderers[page]());
+    
+    renderers[page]()
+    //main.appendChild(renderers[page]());
 })

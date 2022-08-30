@@ -10,24 +10,21 @@
 {% endblock %}
 {% block navitems %}
 {% if g.user['role'] in ['sysadmin', 'studyadmin'] %}
-          <li class="nav-item">
-            <a class="nav-link" href="/admin/scheduling">Scheduling</a>
-          </li>
+
+            <a class="link" href="/admin/scheduling">Scheduling</a>
+
 {% endif %}
 {% if g.user['role'] in ['sysadmin', 'studyadmin', 'editor'] %}
-          <li class="nav-item">
-            <a class="nav-link" href="/admin/edit">Editor</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/admin/resources">Resources</a>
-          </li>
+        
+            <a class="link" href="/admin/edit">Editor</a>
+  
+            <a class="link" href="/admin/resources">Resources</a>
+         
 {% endif %}
-          <li class="nav-item">
-            <a class="nav-link" href="/admin/users">Users</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/admin/home">Admin Home</a>
-          </li>
+            <a class="link" href="/admin/users">Users</a>
+   
+            <a class="link" href="/admin/home">Admin Home</a>
+       
 {% endblock %}
 
 {% block maincontent %}

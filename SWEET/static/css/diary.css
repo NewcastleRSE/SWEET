@@ -216,12 +216,25 @@ fieldset {
     margin-right: 1em;
 }
 
-#diary-reminders input[type='text'], #diary-reminders input[type='date'], #diary-reminders select {
-    background-color: var(--SWEET-pale-grey);
+#diary-reminders input[type='text'], #diary-reminders input[type='date'], #diary-reminders input[type='time'], #diary-reminders select {
+    /* background-color: var(--SWEET-pale-grey);
     color: var(--SWEET-purple);
     padding: 0.1em;
     margin: 0.3em 0em;
-    height: 2.5em;
+    height: 2.5em; */
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0.25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
 
 #diary-reminders input[type='time'] {
@@ -285,3 +298,4 @@ fieldset {
 #modal-update-note-form textarea {
    width: 100%;
 }
+

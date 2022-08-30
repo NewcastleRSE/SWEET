@@ -36,7 +36,7 @@
 <header>
     <!-- Fixed navbar -->
     <nav class="topnav navbar-dark bg-dark fixed-top shadow" id="mytopnav">
-        <a class="navbar-brand " href="#home"><strong style="font-size: 20px !important">HT&amp;Me</strong> <img
+        <a class="navbar-brand " href="#home"><strong style="font-size: 30px !important">HT&amp;Me</strong> <img
                 src="{{ url_for('static', filename='images/logo-sweet_.png') }}" alt="logo" height="36"
                 class="d-inline-block align-text-top"></a>
         <a aria-current="page"  class="bi bi-house h3 " id="homeSmall" href="#home"><i
@@ -48,7 +48,7 @@
             <a class="link" aria-current="page" href="#home">Home</a>
             <a class="link" href="#my-account">My Account</a>
             <a class="link" href="#my-contacts">My Contacts</a>
-            <!-- <a class="link" href="#about">About the Team</a> -->
+            <a class="link" href="#about">About the Team</a>
             {% if g.user['role'] in ['sysadmin', 'studyadmin', 'editor', 'staff'] %}
             <a class="link" href="{{url_for('admin.home')}}" target="_blank">ADMIN</a>
             {% endif %}
@@ -120,14 +120,41 @@
                     href="https://forum.breastcancernow.org/?_ga=2.173266467.1075776305.1622643174-918319471.1619612063&_gac=1.28114638.1620658026.Cj0KCQjws-OEBhCkARIsAPhOkIadNEUBKMKZ_5fTMY6vhAhJ2lih_e5GnDoxYueDR6sj8LhkovRGs20aAqxUEALw_wcB"
                     target="_blank">Patient Forum &nbsp; <i class="bi bi-chat-dots"></i></a></li>
         </ul> -->
-        <div class="container" hidden>
-            <span><a href="#">USER GUIDE</a></span><span><a href="#">Privacy Notice</a></span><span>... logos ...</span>
+        <div class="container">
+            <div class="row">
+                <div class="footer-menu col-sm-3 col-12">
+                    <ul class="list-unstyled">
+                        <li class="border-bottom border-white text-white py-2">
+                           Menu
+                        </li>
+                        <li class="py-2">
+                            <a href="#" id="footerUserGuide" class="text-white">User Guide</a>
+                        </li>
+                        <li class="py-2">
+                            <a href="#" id="footerGlossary" class="text-white">Glossary</a>
+                        </li>
+                        <li class="py-2">
+                            <a href="#privacy" id="footerPrivacyNotice" class="text-white">Privacy Notice</a>
+                        </li>
+                        <li class="py-2">
+                            <small class="text-white">&copy; Newcastle University {{copyrightYear}}</small>
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer-logos col d-flex flex-row justify-content-around flex-wrap">
+                    <img class="logo m-3" src="{{ url_for('static', filename='/images/logo-ncl.png') }}" alt="Newcastle University" />
+                    <img class="logo m-3" src="{{ url_for('static', filename='/images/logo-brookes.png') }}" alt="Oxford Brookes University" />
+                    <img class="logo m-3" src="{{ url_for('static', filename='/images/logo-ucl.png') }}" alt="UCL" />
+                    <img class="logo m-3" src="{{ url_for('static', filename='/images/logo-nihr.png') }}" alt="NIHR" />
+                    <img class="logo m-3" src="{{ url_for('static', filename='/images/logo-nuth.png') }}" alt="NUTH" />
+                </div>
+            </div>
         </div>
         <!-- Toast -->
         <div class="position-fixed top-0 p-3" style="z-index: 11">
             <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="toast-header">
-                    <img src="..." class="rounded me-2" alt="...">
+                    <!-- <img src="..." class="rounded me-2" alt="..."> -->
                     <strong class="me-auto" id="toast-message-type"></strong>
                     <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
@@ -157,6 +184,7 @@
                 // of transactions for performance monitoring.
                 // We recommend adjusting this value in production
                 tracesSampleRate: 1.0,
+                environment: window.location.hostname === "htandme.co.uk" ? 'Production' : 'Staging'
             });
         }
     </script>

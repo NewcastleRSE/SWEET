@@ -9,6 +9,14 @@ export function profilerModalRenderer(section) {
     section.modal.addEventListener("click", e => {
         if (e.target.matches("button.btn-close, button.btn-close *, #prof-p1-cancel")) {
             section.answers = [];
+            // post section back to server
+            const profilerResponse = {
+                dueDate: section.dueDate,
+                result: "postponed",
+                reminderDate: this.calendarDate(((d) => {d.setDate(d.getDate()+3); return d})(new Date())),
+            }
+            
+            this.post(url, profilerResponse).then(response => response.json()).then(profiler => this.store.set("latestProfiler", profiler));
         }
     })
 

@@ -1,10 +1,13 @@
 import sentry_sdk
 from flask import Flask, render_template
+from datetime import datetime
 from werkzeug.user_agent import UserAgent
 from sentry_sdk.integrations.flask import FlaskIntegration
 from . import data, secrets
 from .auth import login_required
 from .automation import scheduling
+from os import environ
+from sentry_sdk import capture_message
 
 def create_app():
 
@@ -15,7 +18,8 @@ def create_app():
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
         # We recommend adjusting this value in production.
-        traces_sample_rate=1.0
+        traces_sample_rate=1.0,
+        environment=environ.get('FLASK_ENV')
     )
 
     app = Flask(__name__)
@@ -35,6 +39,6 @@ def create_app():
     @app.route("/")
     @login_required
     def index():
-        return render_template("index.html")
+        return render_template("index.html", copyrightYear = str(datetime.now().year))
 
     return app

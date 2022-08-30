@@ -82,6 +82,29 @@ export function goalRenderer(section) {
                 modal.show();
             })
         } else {
+            let deleteBtn = document.createElement("button");
+            deleteBtn.textContent = 'Delete this goal';
+            deleteBtn.classList.add("btn", "goal-review", "btn", "btn-primary", "mt-4", "mb-3");
+            goalCardContent.appendChild(deleteBtn);
+
+            deleteBtn.addEventListener(('click'), e => {
+                goal.status = "deleted";
+                goal.outcome = "n";
+               
+                this.post("/myapp/mygoals/", goal).then(response => response.json())
+                    .then(outcome => {
+                        let outer = goalCard.parentElement;
+
+                        outer.classList.add("goal", "new")
+                        outer.classList.remove("col")
+                        outer.innerHTML = newgoaltemplate;
+                        outer.addEventListener("click", newgoalhandler);
+
+                    }).catch(e => {
+                    console.log(e);
+                })
+            })
+
             goalCard.classList.add("active");
             // show the review date:
             let reviewdate = goalCardContent.appendChild(document.createElement("h6"));
@@ -174,7 +197,7 @@ export function goalRenderer(section) {
                         <section>
                         <p>Well done!</p>
                         <p>You've set a new goal for the next week.</p>
-                        <p>You can always see your goals by clicking <strong>My Goals</strong> on the ${section.goaltype == "activity"? "Being Active": "Healthy Eating"} homepage.</p>
+                        <p>You can always see your goals by clicking <strong>My Goals</strong> on the ${section.goaltype == "activity"? "Being Active": "Healthy Eating"} homepage or go to the <strong>My Goals and Plans</strong> page on HT&Me homepage.</p>
                         <p>In one week, you can come back to get personal feedback on your goal.</p>
                         <p>It's a good idea to stick up a reminder somewhere in your house.</p>
                         <p>Your goal is: <strong>${goal.detail}</strong><br>
