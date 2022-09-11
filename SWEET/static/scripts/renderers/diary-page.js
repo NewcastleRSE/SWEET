@@ -398,7 +398,11 @@ export function diaryCalendarRenderer(section) {
                             }
 
                             activeTab.classList.remove("show", "active")
-                            form.querySelector("#form-se-type-" + targetPane).classList.add("show", "active")
+
+                            let nextPane = form.querySelector("#form-se-type-" + targetPane)
+
+                            nextPane.classList.add("show", "active")
+                            nextPane.scrollIntoView()
 
                             if(selectedSideEffects.length === 0) {
                                 modal.footer.querySelector('input[type="submit"]').hidden = false

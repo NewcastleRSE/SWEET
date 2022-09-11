@@ -5,7 +5,7 @@ export function goalRenderer(section) {
 
     let newgoaltemplate = `<div class="col"><div class="card goal unset text-center shadow">
             <div class="card-body d-flex justify-content-center">
-                <div class="align-self-center">Set a new goal</div>
+                <div class="align-self-center">Set a new goal for the week</div>
             </div>
         </div></div>`;
 

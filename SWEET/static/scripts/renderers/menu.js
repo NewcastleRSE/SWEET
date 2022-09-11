@@ -17,6 +17,10 @@ export function menuItemRenderer(section) {
     card.setAttribute("class", "d-block card submenu h-100");
     card.setAttribute("href", section.link);
 
+    if(section.title === 'Ask a Nurse' || section.title === 'Patient Forum') {
+        card.setAttribute("target", "_blank")
+    }
+
     const cardBody = document.createElement("div");
     cardBody.setAttribute("class", "card-body");
 
