@@ -96,7 +96,8 @@ def getGoals(user=None):
 
     return {
         "current": [g for g in goals if g['status'] == "active"],
-        "complete": [g for g in goals if g['status'] == "complete"]
+        "complete": [g for g in goals if g['status'] == "complete"],
+        "deleted": [g for g in goals if g['status'] == "deleted"]
     }
 
 def get21DayOptionNumber(user=None):
