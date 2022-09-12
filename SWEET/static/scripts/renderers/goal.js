@@ -245,6 +245,8 @@ export function goalRenderer(section) {
     // dleted and completed goals for summary table
     let completedGoal = (goals) => {
 
+        let responsiveTableDiv = document.createElement("div");
+        responsiveTableDiv.classList.add("table-responsive");
         let completedTable = document.createElement("table");
         completedTable.classList.add("table");
         let completedHeader = document.createElement("thead");
@@ -305,9 +307,10 @@ export function goalRenderer(section) {
         completedHeader.appendChild(completedHRow);
         completedTable.appendChild(completedHeader);
         completedTable.appendChild(completedBody);
+        responsiveTableDiv.appendChild(completedTable);
 
 
-        return completedTable;
+        return responsiveTableDiv;
     }
 
     // get user's active goals
