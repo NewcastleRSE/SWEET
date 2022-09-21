@@ -96,7 +96,8 @@ def getGoals(user=None):
 
     return {
         "current": [g for g in goals if g['status'] == "active"],
-        "complete": [g for g in goals if g['status'] == "complete"]
+        "complete": [g for g in goals if g['status'] == "complete"],
+        "deleted": [g for g in goals if g['status'] == "deleted"]
     }
 
 def get21DayOptionNumber(user=None):
@@ -740,8 +741,8 @@ def get_schedule(day):
         today = date.today()
         days_since_joining = today - init_date
 
-        if (days_since_joining == 10) or (user['lastName'] == 'Court'):
-            sched = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'tendays'}
+        if (days_since_joining == 10):
+            sched = {'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'tendays'}
             schedule.append(sched)
         elif days_since_joining == 21:
             option = get21DayOptionNumber(user)
@@ -755,11 +756,7 @@ def get_schedule(day):
                 sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op321days'}
                 schedule.append(sched21)
 
-        if user['lastName'] == 'Court':
-            capture_message(init_date)
-            capture_message(days_since_joining)
-            capture_message(today)
-            capture_message(schedule)
+    
 
         gs = [g for g in ud.goals() if g['reviewDate'] == day.isoformat()]
 
@@ -788,3 +785,4 @@ def get_schedule(day):
 
 
     return schedule
+
