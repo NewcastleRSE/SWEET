@@ -31,7 +31,8 @@ def getUserGoals(goaltype):
     goals = getGoals(g.user)
     return {
         "current": [goal for goal in goals['current'] if goal['goaltype'] == goaltype],
-        "complete": [goal for goal in goals['complete'] if goal['goaltype'] == goaltype]
+        "complete": [goal for goal in goals['complete'] if goal['goaltype'] == goaltype],
+        "deleted": [goal for goal in goals['deleted'] if goal['goaltype'] == goaltype]
     }
 
 @bp.route("/mygoals/", methods=["POST"])

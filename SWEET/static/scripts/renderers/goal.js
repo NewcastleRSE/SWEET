@@ -1,11 +1,17 @@
 export function goalRenderer(section) {
     let holder = document.createElement("section");
-    holder.setAttribute("class", "row row-cols-1 row-cols-md-3 g-3 mt-3 my-4")
+    let cardSection = document.createElement("div");
+    cardSection.setAttribute("class", "row row-cols-1 row-cols-md-3 g-3 mt-3 my-4")
+    cardSection.id = "goalsCardSection";
+
+    let tableSection = document.createElement("div");
+    tableSection.id = "goalsTableSection";
+
     let isodate = function(d) { return d.toISOString().substr(0,10) }
 
     let newgoaltemplate = `<div class="col"><div class="card goal unset text-center shadow">
             <div class="card-body d-flex justify-content-center">
-                <div class="align-self-center">Set a new goal for the week</div>
+                <div class="align-self-center">Set a new goal</div>
             </div>
         </div></div>`;
 
@@ -236,6 +242,77 @@ export function goalRenderer(section) {
         })
     }
 
+    // dleted and completed goals for summary table
+    let completedGoal = (goals) => {
+
+        let responsiveTableDiv = document.createElement("div");
+        responsiveTableDiv.classList.add("table-responsive");
+        let completedTable = document.createElement("table");
+        completedTable.classList.add("table");
+        let completedHeader = document.createElement("thead");
+        let completedHRow = document.createElement("tr");
+
+        // create header row for each activity type
+        let headerList = ['Activity','Days', 'Review date', 'Status', 'Outcome'];
+        if (section.goaltype === 'activity') {
+            // activity goal type also has a number of minutes
+            headerList = ['Activity', 'Days' , 'Minutes' ,'Review date', 'Status', 'Outcome'];
+        }
+
+        // create header row
+        headerList.forEach((item) => {
+            let completedCol = document.createElement("th");
+            completedCol.attributes.scope = "col";
+            completedCol.innerText = item;
+            completedHRow.appendChild(completedCol);
+        });
+
+        //table body
+        let completedBody = document.createElement("tbody");
+
+        // convert shorthand from storage into readable form
+        let outcomeLookup = {
+            "y": "complete",
+            "n": "not complete",
+            "p": "partially complete"
+        }
+
+        // add row for each goal
+        goals.forEach((g) => {
+            let tr = document.createElement("tr");
+            let activity = document.createElement("td");
+            activity.innerText = g.detail;
+            let often = document.createElement("td");
+            often.innerText = g.days;
+            let review = document.createElement("td");
+            review.innerText = g.reviewDate;
+            let status = document.createElement("td");
+            status.innerText = g.status;
+            let outcome = document.createElement("td");
+            outcome.innerText = outcomeLookup[g.outcome];
+
+            // special header for activity goals
+            if (section.goaltype === 'activity') {
+                let minutes = document.createElement("td");
+                minutes.innerText = g.minutes;
+                tr.append(activity, often, minutes, review, status, outcome);
+            } else {
+                tr.append(activity, often, review, status, outcome);
+            }
+
+            completedBody.appendChild(tr);
+        });
+
+
+        completedHeader.appendChild(completedHRow);
+        completedTable.appendChild(completedHeader);
+        completedTable.appendChild(completedBody);
+        responsiveTableDiv.appendChild(completedTable);
+
+
+        return responsiveTableDiv;
+    }
+
     // get user's active goals
     fetch(`/myapp/mygoals/${section.goaltype}`)
     .then(response => response.json())
@@ -251,17 +328,34 @@ export function goalRenderer(section) {
 
             outer.appendChild(fillGoal(goal));
 
-            holder.appendChild(outer);
+           cardSection.appendChild(outer);
         })
         
-        while (holder.children.length < 3) {
+        while (cardSection.children.length < 3) {
             // render a blank goal that can be completed
-            let outer = holder.appendChild(document.createElement("div"));
+            let outer = cardSection.appendChild(document.createElement("div"));
             outer.classList.add("goal", "new");
             outer.innerHTML = newgoaltemplate;
             outer.addEventListener("click", newgoalhandler);
-        } 
+        }
+
+        // create table of deleted and completed goals
+        if (goals.complete.length > 0 || goals.deleted.length > 0) {
+            let notCurrentGoals = goals.complete.concat(goals.deleted)
+
+            let orderedGoals = notCurrentGoals.sort((a,b) => {
+                if (b.reviewDate < a.reviewDate) return 1;
+                return -1;
+            });
+
+
+            tableSection.appendChild(completedGoal(orderedGoals));
+        }
+
     })
+
+    holder.appendChild(cardSection);
+    holder.appendChild(tableSection);
 
     return holder;
 }
