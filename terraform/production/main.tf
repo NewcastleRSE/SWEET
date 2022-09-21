@@ -55,7 +55,7 @@ resource "azurerm_app_service" "as" {
 
   site_config {                                                            
     linux_fx_version = "PYTHON|3.8"  
-    app_command_line  = "gunicorn --bind=0.0.0.0 --timeout 600 \"SWEET:create_app()\""                                       
+    app_command_line  = "gunicorn --bind=0.0.0.0 --timeout 600 SWEET:app"                                       
   }
 
   tags = {
