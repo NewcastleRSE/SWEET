@@ -251,14 +251,52 @@ document.querySelector("#btn-print > a").addEventListener("click", e => {
 
     e.preventDefault(); e.stopPropagation();
 
-    switch (SWEET.path) {
-        // case "#home/diary":
-        //     open(`/myapp/mydiary/print?period=${e.currentTarget.dataset.period}`);
-        //     break;
-        default:
-            window.print();
-            //window.alert("Here you will be able to download .pdf versions of some pages.");
-            break;
+    console.log(SWEET.path)
+
+    if(SWEET.path.includes('healthy-living/being-active')) {
+        window.open('static/guides/HLHM-being-active.pdf', '_blank').focus()
+    }
+    else if(SWEET.path.includes('healthy-living/emotional-impact')) {
+        window.open('static/guides/HLHM-dealing-with-the-emotional-impact-of-cancer.pdf', '_blank').focus()
+    }
+    else if(SWEET.path.includes('healthy-living/healthy-eating')) {
+        window.open('static/guides/HLHM-healthy-eating.pdf', '_blank').focus()
+    }
+    else if(SWEET.path.includes('healthy-living/smoking')) {
+        window.open('static/guides/HLHM-smoking.pdf', '_blank').focus()
+    }
+    else if(SWEET.path.includes('dealing-se/fatigue')) {
+        window.open('static/guides/SE-fatigue.pdf', '_blank').focus()
+    }
+    else if(SWEET.path.includes('dealing-se/hot-flushes')) {
+        window.open('static/guides/SE-hot-flushes.pdf', '_blank').focus()
+    }
+    else if(SWEET.path.includes('dealing-se/joint')) {
+        window.open('static/guides/SE-joint-aches.pdf', '_blank').focus()
+    }
+    else if(SWEET.path.includes('dealing-se/mood')) {
+        window.open('static/guides/SE-mood-changes.pdf', '_blank').focus()
+    }
+    else if(SWEET.path.includes('dealing-se/other')) {
+        window.open('static/guides/SE-other-side-effects.pdf', '_blank').focus()
+    }
+    else if(SWEET.path.includes('dealing-se/sex-problems')) {
+        window.open('static/guides/SE-sexual-concerns.pdf', '_blank').focus()
+    }
+    else if(SWEET.path.includes('dealing-se/sleep')) {
+        window.open('static/guides/SE-sleep-problems.pdf', '_blank').focus()
+    }
+    else if(SWEET.path.includes('dealing-se/dryness')) {
+        window.open('static/guides/SE-vaginal-dryness-and-pain.pdf', '_blank').focus()
+    }
+    else if(SWEET.path.includes('dealing-se/weight')) {
+        window.open('static/guides/SE-weight-changes.pdf', '_blank').focus()
+    }
+    else if(SWEET.path.includes('/taking-ht')) {
+        window.open('static/guides/taking-hormone-therapy.pdf', '_blank').focus()
+    }
+    else {
+        window.print()
     }
 })
 

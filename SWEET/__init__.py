@@ -42,3 +42,5 @@ def create_app():
         return render_template("index.html", copyrightYear = str(datetime.now().year))
 
     return app
+
+app = create_app()
