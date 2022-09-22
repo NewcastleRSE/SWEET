@@ -348,7 +348,9 @@ export function goalRenderer(section) {
                 return -1;
             });
 
-
+            let title = document.createElement('h5');
+            title.innerText = 'My previous goals';
+            tableSection.appendChild(title);
             tableSection.appendChild(completedGoal(orderedGoals));
         }
 
