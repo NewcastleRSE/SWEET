@@ -129,7 +129,7 @@ export function goalRenderer(section) {
 
             let goal = {};
 
-            modal.title.textContent = "Set New Goal";
+            modal.title.textContent = "Set a new goal for the week";
 
             let form = modal.body.appendChild(document.createElement("form"));
             form.setAttribute("id", "goal-setup-form");
