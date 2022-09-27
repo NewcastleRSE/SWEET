@@ -90,6 +90,13 @@ SWEET.addEventListener("prerender", function (page) {
     document.querySelector("main").classList.remove(...document.querySelector("main").classList.values())
     document.querySelector("main").classList.add("flex-shrink-0", this.path.replace("#", "").replaceAll("/", "_"));
 
+    if(window.location.hash !== '#home/dealing-se' && window.location.hash !== '#home/healthy-living' ) {
+        document.getElementById("btn-print").classList.remove('d-none')
+    }
+    else {
+        document.getElementById("btn-print").classList.add('d-none')
+    }
+
     if (page.headerImage) {
         fetch(`/app/resources/${page.headerImage}`).then(response => response.json())
             .then(resource => {
@@ -272,7 +279,7 @@ document.querySelector("#btn-print > a").addEventListener("click", e => {
         window.open('static/guides/SE-hot-flushes.pdf', '_blank').focus()
     }
     else if(SWEET.path.includes('dealing-se/joint')) {
-        window.open('static/guides/SE-joint-aches.pdf', '_blank').focus()
+        window.open('static/guides/SE-joint-aches-and-pains.pdf', '_blank').focus()
     }
     else if(SWEET.path.includes('dealing-se/mood')) {
         window.open('static/guides/SE-mood-changes.pdf', '_blank').focus()
@@ -294,6 +301,9 @@ document.querySelector("#btn-print > a").addEventListener("click", e => {
     }
     else if(SWEET.path.includes('/taking-ht')) {
         window.open('static/guides/taking-hormone-therapy.pdf', '_blank').focus()
+    }
+    else if(SWEET.path.includes('/help-and-support')) {
+        window.open('static/guides/help-and-support.pdf', '_blank').focus()
     }
     else {
         window.print()
