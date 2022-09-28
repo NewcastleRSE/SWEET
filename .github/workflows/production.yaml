@@ -2,11 +2,7 @@ name: Production
 
 on:
   release:
-    branches:
-      - main
-    type: [created]
-    tags:
-      - 'v*'
+    types: [published]
 
 env:
   AZURE_WEBAPP_NAME: sweetappproduction # set this to your application's name

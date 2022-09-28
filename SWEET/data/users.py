@@ -13,7 +13,6 @@ __regcodes = AzurePersistentList(az_connection, usersource, registration_list)
 
 def logvisit(user, agent, **kwargs):
     ua = Parse(agent)
-
     entry = {
         "user": user["userID"],
         "platform": f"{ua['os']['family']} {ua['os']['major']}.{ua['os']['minor']}",
