@@ -258,7 +258,7 @@ document.querySelector("#btn-print > a").addEventListener("click", e => {
 
     e.preventDefault(); e.stopPropagation();
 
-    console.log(SWEET.path)
+    SWEET.post("/myapp/log-interaction", { action: 'PRINT', path: SWEET.path })
 
     if(SWEET.path.includes('healthy-living/being-active')) {
         window.open('static/guides/HLHM-being-active.pdf', '_blank').focus()
