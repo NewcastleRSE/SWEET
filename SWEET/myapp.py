@@ -2,7 +2,7 @@ from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, jsonify
 )
 
-from .data.users import updateUser, validateUser
+from .data.users import updateUser, validateUser, logvisit
 
 from .data.userdata import (
     checkActiveGoal, getGoals, updateGoals, getSideEffects as getUserSideEffects, recordSideEffect, recordProfiler, 
@@ -19,6 +19,8 @@ from .auth import login, login_required
 from urllib.parse import unquote
 
 bp = Blueprint('myapp', __name__, url_prefix='/myapp')
+
+
 
 @bp.route("/mygoals")
 @login_required
@@ -341,4 +343,11 @@ def post_thoughts():
         return {"status": "OK", "message": "Thoughts Updated"}
 
     return {"status": "error", "message": "Update request sent witout json"}, 400
+
+@bp.route("/log-interaction", methods = ["POST"])
+@login_required
+def log_interaction():
+    interaction = request.json
+    logvisit(g.user, request.user_agent.string, action=interaction['action'], page=interaction['path'], referrer=request.headers.get("X-SWEET-referrer"), status="200")
+    return '', 201
 

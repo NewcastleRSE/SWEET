@@ -33,8 +33,6 @@ def confirmUserID(id):
 def getUser(userID, includeDeactivated=False):
     userID = confirmUserID(userID)
 
-    print()
-
     if userID is None:
         return None
 
