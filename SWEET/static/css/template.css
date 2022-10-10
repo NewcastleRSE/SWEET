@@ -446,7 +446,7 @@ button.accordion-button:not(.collapsed)::after {
     box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
 }
 
-.markdown :is(img, video) {
+.markdown img, .markdown video {
     display: block;
     width: 100%;
     object-fit: contain;
