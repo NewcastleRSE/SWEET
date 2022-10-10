@@ -51,7 +51,8 @@ export function menuItemRenderer(section) {
             .then(response => response.json())
             .then(resource => {
                 icon.setAttribute("src", resource.source);
-                card.style.backgroundImage = "url('" + resource.source + "')"; ;
+                card.style.backgroundImage = "url('" + resource.source + "')";
+                card.style.backgroundPosition = "center 1rem";
             })
     }
     
