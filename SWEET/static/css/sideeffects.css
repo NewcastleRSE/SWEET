@@ -88,8 +88,8 @@ span.sidenote > strong {
 label:hover span.sidenote {
     display: inline;
 }
-
-:is(#severityinput, #impactinput) input[type="radio"] + label {
+#impactinput input[type="radio"] + label,
+#severityinput input[type="radio"] + label {
     display: inline-block;
     line-height: 1.25em;
     border: 2px solid #633188;
@@ -101,18 +101,20 @@ label:hover span.sidenote {
     cursor: pointer;
 }
 
-:is(#severityinput, #impactinput, #notesinput) {
+#severityinput, #impactinput, #notesinput {
     display: flex;
     text-align: center;
 }
 
-:is(#severityinput, #impactinput) label {
+#severityinput label,
+#impactinput label {
     font-weight: bold;
     padding: 0.1em 1em;
     white-space: nowrap;
 }
 
-:is(#severityinput, #impactinput) input[type="radio"]:checked + label {
+#severityinput input[type="radio"]:checked + label,
+#impactinput input[type="radio"]:checked + label {
     background-color: #633188;
     color: #e3e3e0;
 }
