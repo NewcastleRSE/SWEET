@@ -65,7 +65,8 @@ main footer {
     height: inherit;
 }
 
-main :is(header, footer) a.hidden {
+main header a.hidden,
+main footer a.hidden {
     visibility: hidden;
 }
 
@@ -446,7 +447,7 @@ button.accordion-button:not(.collapsed)::after {
     box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
 }
 
-.markdown :is(img, video) {
+.markdown img, .markdown video {
     display: block;
     width: 100%;
     object-fit: contain;
@@ -467,27 +468,33 @@ button.accordion-button:not(.collapsed)::after {
     float: right;
 }
 
-.markdown :is(img, video).xs {
+.markdown img.xs,
+.markdown video.xs {
     max-width: 96px;
 }
 
-.markdown :is(img, video).sm {
+.markdown img.sm,
+.markdown video.sm {
     max-width: 192px;
 }
 
-.markdown :is(img, video).md {
+.markdown img.md,
+.markdown video.md {
     max-width: 384px;
 }
 
-.markdown :is(img, video).lg {
+.markdown img.lg,
+.markdown video.lg {
     max-width: 640px;
 }
 
-.markdown :is(img, video).xl {
+.markdown img.xl,
+.markdown video.xl {
     max-width: 768px;
 }
 
-.markdown :is(img, video).xxl {
+.markdown img.xxl,
+.markdown video.xxl {
     max-width: 1024px;
 }
 

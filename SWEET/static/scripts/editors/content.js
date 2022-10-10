@@ -79,7 +79,7 @@ export class ContentEditor extends HTMLElement {
                 background-color: rgba(0,0,0,0.5);
             }
 
-            .uneditable :is(h1, h2, h3, h4, h5) {
+            .uneditable h1, .uneditable h2, .uneditable h3, .uneditable h4, .uneditable h5 {
                 color: white;
             }
         </style>

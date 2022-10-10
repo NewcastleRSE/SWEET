@@ -19,7 +19,12 @@ div.tunnel {
 #tunnel-container > header {
     display: flex;
 }
-#tunnel-container > header > :is(h1, h2, h3, h4, h5, h6) {
+#tunnel-container > header > h1,
+#tunnel-container > header > h2,
+#tunnel-container > header > h3,
+#tunnel-container > header > h4,
+#tunnel-container > header > h5,
+#tunnel-container > header > h6 {
     width: 100%;
     text-align: center;
 }
