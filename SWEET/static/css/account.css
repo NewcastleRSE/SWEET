@@ -11,7 +11,8 @@
     min-width: 8em;
 }
 
-#my-personal-details .col>div> :is(span, input)[id] {
+#my-personal-details .col>div> span[id],
+#my-personal-details .col>div> input[id] {
     width: 12em;
 }
 
@@ -28,20 +29,24 @@
     text-align: center;
 }
 
-:is(#my-personal-details, .contact) button.edit::before {
+#my-personal-details button.edit::before,
+.contact button.edit::before  {
     content: "\270D"
 }
 
-:is(#my-personal-details, .contact) button.save::before {
+#my-personal-details button.save::before,
+.contact button.save::before {
     content: "\1f4be"
 }
 
-:is(#my-personal-details, .contact) button.delete::before {
+#my-personal-details button.delete::before,
+.contact button.delete::before {
     content: "\1f5d1";
     font-size: 166%;
 }
 
-:is(#my-personal-details, .contact) button.cancel::before {
+#my-personal-details button.cancel::before,
+.contact button.cancel::before {
     content: "\1f5d9"
 }
 

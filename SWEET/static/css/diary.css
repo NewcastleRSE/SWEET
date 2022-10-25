@@ -74,7 +74,8 @@ table.calendar td div.events > div {
     justify-content: flex-end;
 }
 
-table.calendar td:is(.disabled,.future) div.events {
+table.calendar td.disabled div.events,
+table.calendar td.future div.events {
     background-color: white;
     overflow: hidden;
 }
@@ -152,10 +153,12 @@ table.calendar div.events div.diary-item:hover section {
     overflow: auto;
 }
 
-table.calendar div.events div.diary-item :is(.severity, .impact) > label {
+table.calendar div.events div.diary-item .severity > label,
+table.calendar div.events div.diary-item .impact > label {
     min-width: 4.5em;
 }
-table.calendar div.events div.diary-item :is(.severity, .impact) span.bar {
+table.calendar div.events div.diary-item .severity span.bar,
+table.calendar div.events div.diary-item .impact span.bar {
     display: inline-block;
     height: 1em;
     width: 5em;

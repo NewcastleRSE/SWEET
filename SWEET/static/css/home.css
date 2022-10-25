@@ -28,7 +28,7 @@
 
 .hmpg-acts .card-title {
     color: black;
-    font-weight: bolder;
+    font-weight: 700;
 }
 
 .hmpg-sects a.card, .hmpg-acts a.card {
@@ -87,11 +87,13 @@ img.card-icon {
     opacity: 40%;
 }
 
-main.home :is(header, footer) {
+main.home header,
+main.home footer {
     display: none;
 }
 
-main.welcome :is(.header-buttons, .footer-buttons) {
+main.welcome .header-buttons,
+main.welcome .footer-buttons {
     display: none;
 }
 

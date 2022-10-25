@@ -19,6 +19,16 @@ export function menuItemRenderer(section) {
 
     if(section.title === 'Ask a Nurse' || section.title === 'Patient Forum') {
         card.setAttribute("target", "_blank")
+
+        card.addEventListener('click', () => {
+            fetch("/myapp/log-interaction", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ action: section.title, path: window.location.hash })
+            })
+        })
     }
 
     const cardBody = document.createElement("div");
@@ -41,7 +51,8 @@ export function menuItemRenderer(section) {
             .then(response => response.json())
             .then(resource => {
                 icon.setAttribute("src", resource.source);
-                card.style.backgroundImage = "url('" + resource.source + "')"; ;
+                card.style.backgroundImage = "url('" + resource.source + "')";
+                card.style.backgroundPosition = "center 1rem";
             })
     }
     
