@@ -701,7 +701,7 @@ def get_schedule(day):
         return tgdate
 
 
-    for user in getAllUsers():
+    for user in getAllUsers(False):
         ud = UserData(user['userID'])
         ur = ud.reminders()
 
