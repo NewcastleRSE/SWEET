@@ -20,10 +20,8 @@ def _s_to_next_run():
     # if run before 2am, will return > 24 hours.
     # if run just before midnight, will return just over 2 hours.
     # other scheudling logic should account for this naivety
-    # nextrun = datetime.fromordinal(_day()+1).replace(hour=2)
+    nextrun = datetime.fromordinal(_day()+1).replace(hour=2)
 
-    #  for testing make the time sooner
-    nextrun = datetime.fromordinal(_day()).replace(hour=14)
 
     tdtonextrun = nextrun - datetime.now()
     return max(0, tdtonextrun.total_seconds())
@@ -49,9 +47,8 @@ def dailyschedule(today):
         if item['method'] == "sms":
             item['mobile'] = item['to']
             if item['type'] == "daily":
-                # send_daily_reminder(item, item.get('time', "08:00"))
-                #  for testing make time sooner
-                send_daily_reminder(item, item.get('time', "14:10"))
+                send_daily_reminder(item, item.get('time', "08:00"))
+            
             else:
                 send_monthly_reminder(item, item.get('time', '08:00'))
         else:
