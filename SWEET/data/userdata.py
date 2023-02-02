@@ -763,6 +763,7 @@ def get_schedule(day):
         if len(gs):
             if len([g for g in gs if g['goaltype'] == 'activity']):
                 schedule.append({
+                    'userID':user['userID'],
                     'firstName': user['firstName'], 
                     'lastName': user['lastName'], 
                     'type': 'goal-reminder', 
@@ -773,6 +774,7 @@ def get_schedule(day):
                 })
             if len([g for g in gs if g['goaltype'] == 'eating']):
                 schedule.append({
+                    'userID':user['userID'],
                     'firstName': user['firstName'], 
                     'lastName': user['lastName'], 
                     'type': 'goal-reminder', 
