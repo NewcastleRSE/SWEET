@@ -47,16 +47,16 @@ def dailyschedule(today):
         if item['method'] == "sms":
             item['mobile'] = item['to']
             if item['type'] == "daily":
-                send_daily_reminder(item, item.get('time', "08:00"))
+                send_daily_reminder(item, item.get('time', "10:00"))
             
             else:
-                send_monthly_reminder(item, item.get('time', '08:00'))
+                send_monthly_reminder(item, item.get('time', '10:00'))
         else:
             # set up clock time for item:
             if 'time' in item:
                 hr, mn = item['time'].split(":")
             else:
-                hr, mn = "08","00"
+                hr, mn = "10","00"
 
             item_ts = today.replace(hour=int(hr), minute=int(mn)).timestamp()
             item_action = {
