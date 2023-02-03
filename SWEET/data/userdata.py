@@ -708,7 +708,7 @@ def get_schedule(day):
         d, m = ur['daily'], ur['monthly']
 
         if d.get('reminder', False):
-            rd = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'daily'}
+            rd = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'daily'}
             rd.update(d)
             schedule.append(rd)
 
@@ -722,7 +722,7 @@ def get_schedule(day):
             # # they will not be sent immediately and will wait for the appropriate interval
             target = lastrem if day == lastrem and 'lastSent' not in m else fixdate(lastrem.year, lastrem.month + interval, lastrem.day)
             if target <= day:
-                rm = {'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'monthly'}
+                rm = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'monthly'}
                 rm.update(m)
                 schedule.append(rm)
 
@@ -731,9 +731,9 @@ def get_schedule(day):
 
         p = getLatestProfiler(user)
         if "reminderDate" in p and p["reminderDate"] == day.isoformat():
-                schedule.append({'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'profiler-reminder', 'method': 'email', 'to': user['email']})
+                schedule.append({'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'profiler-reminder', 'method': 'email', 'to': user['email']})
         elif "dueDate" in p and p["dueDate"] == day.isoformat():
-                schedule.append({'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'profiler-due', 'method': 'email', 'to': user['email']})
+                schedule.append({'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'profiler-due', 'method': 'email', 'to': user['email']})
 
 
         # 10 day and 21 day reminder
@@ -742,18 +742,18 @@ def get_schedule(day):
         days_since_joining = today - init_date
 
         if (days_since_joining == 10):
-            sched = {'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'tendays'}
+            sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'tendays'}
             schedule.append(sched)
         elif days_since_joining == 21:
             option = get21DayOptionNumber(user)
             if option == 1:
-                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op121days'}
+                sched21 = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op121days'}
                 schedule.append(sched21)
             elif option == 2:
-                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op221days'}
+                sched21 = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op221days'}
                 schedule.append(sched21)
             else:
-                sched21 = {'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op321days'}
+                sched21 = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op321days'}
                 schedule.append(sched21)
 
     
