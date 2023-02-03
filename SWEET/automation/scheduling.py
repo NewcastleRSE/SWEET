@@ -43,15 +43,7 @@ def dailyschedule(today):
         # using firetext, we will send any SMS directly to firetext with a schedule, emails will be added to the daily schedule
         # if no time is specified use 08:00 as per team request
         
-
-        if item['method'] == "sms":
-            item['mobile'] = item['to']
-            if item['type'] == "daily":
-                send_daily_reminder(item, item.get('time', "08:00"))
-            
-            else:
-                send_monthly_reminder(item, item.get('time', '08:00'))
-        else:
+        if item['method'] == "email":
             # set up clock time for item:
             if 'time' in item:
                 hr, mn = item['time'].split(":")
@@ -78,6 +70,13 @@ def dailyschedule(today):
 
             #schedule email:
             s.enterabs(item_ts, 1, item_action, argument=item_args, kwargs=item_kwargs)
+        else:
+            item['mobile'] = item['to']
+            if item['type'] == "daily":
+                send_daily_reminder(item, item.get('time', "08:00"))
+            
+            else:
+                send_monthly_reminder(item, item.get('time', '08:00'))
 
     # thread will exit when scheduler stops, i.e. when all the scheduled items have been run.
     t = Thread(target=s.run, name="daily")
