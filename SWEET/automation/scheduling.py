@@ -21,6 +21,8 @@ def _s_to_next_run():
     # if run just before midnight, will return just over 2 hours.
     # other scheudling logic should account for this naivety
     nextrun = datetime.fromordinal(_day()+1).replace(hour=2)
+
+
     tdtonextrun = nextrun - datetime.now()
     return max(0, tdtonextrun.total_seconds())
 
@@ -41,14 +43,7 @@ def dailyschedule(today):
         # using firetext, we will send any SMS directly to firetext with a schedule, emails will be added to the daily schedule
         # if no time is specified use 08:00 as per team request
         
-
-        if item['method'] == "sms":
-            item['mobile'] = item['to']
-            if item['type'] == "daily":
-                send_daily_reminder(item, item.get('time', "08:00"))
-            else:
-                send_monthly_reminder(item, item.get('time', '08:00'))
-        else:
+        if item['method'] == "email":
             # set up clock time for item:
             if 'time' in item:
                 hr, mn = item['time'].split(":")
@@ -75,6 +70,13 @@ def dailyschedule(today):
 
             #schedule email:
             s.enterabs(item_ts, 1, item_action, argument=item_args, kwargs=item_kwargs)
+        else:
+            item['mobile'] = item['to']
+            if item['type'] == "daily":
+                send_daily_reminder(item, item.get('time', "08:00"))
+            
+            else:
+                send_monthly_reminder(item, item.get('time', '08:00'))
 
     # thread will exit when scheduler stops, i.e. when all the scheduled items have been run.
     t = Thread(target=s.run, name="daily")
@@ -104,6 +106,7 @@ def start():
             # _s_to_next_run always returns the total seconds to 2am *tomorrow*,
             # so we don't need to do any complex calculation, just reschedule the trigger:
             _sched.enter(_s_to_next_run(),1,trigger_daily)
+            
             return
 
         # it's at least 1 day since the last run: 
@@ -113,6 +116,7 @@ def start():
         _running.append(dailyschedule(datetime.today()))
         _lastrun = today_ord
         _sched.enter(_s_to_next_run(),1,trigger_daily)
+        
 
 
     if _lastrun < _day():
@@ -123,6 +127,7 @@ def start():
 
     # schedule a daily trigger for "tomorrow"
     _sched.enter(_s_to_next_run(),1,trigger_daily)
+    
 
     # run the schedule: 
     #   this will keep running until the schedule is empty:
