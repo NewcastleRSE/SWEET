@@ -738,8 +738,7 @@ def get_schedule(day):
 
         # 10 day and 21 day reminder
         init_date = getinit(user)
-        today = date.today()
-        days_since_joining = today - init_date
+        days_since_joining = (date.today() - date.fromisoformat(init_date)).days
 
         if (days_since_joining == 10):
             sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'tendays'}
