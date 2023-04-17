@@ -756,7 +756,10 @@ def get_schedule(day):
                 sched21 = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op321days'}
                 schedule.append(sched21)
 
+    # sentry test to check values of init date and user etc. 
     
+        userInfo = {'user': user, 'today': today, 'days_since_joining': days_since_joining, 'init_date': init_date}
+        capture_message(userInfo)
 
         gs = [g for g in ud.goals() if g['reviewDate'] == day.isoformat()]
 
@@ -784,7 +787,8 @@ def get_schedule(day):
                     'longType': 'eating healthily'
                 })
 
-
+# sentry whole schedule
+    capture_message(schedule)
 
     return schedule
 
