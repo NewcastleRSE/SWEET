@@ -705,6 +705,14 @@ def get_schedule(day):
         ud = UserData(user['userID'])
         ur = ud.reminders()
 
+        # init_date = getinit(user)
+        # datetime_object = date.fromisoformat(init_date)
+        # today = date.today()
+        # days_since_joining = (today - datetime_object).days
+        # print(init_date)
+        # print(days_since_joining)
+
+
         d, m = ur['daily'], ur['monthly']
 
         if d.get('reminder', False):
@@ -737,8 +745,12 @@ def get_schedule(day):
 
 
         # 10 day and 21 day reminder
+        # init_date = getinit(user)
+        # days_since_joining = (date.today() - date.fromisoformat(init_date)).days
+
         init_date = getinit(user)
-        days_since_joining = (date.today() - date.fromisoformat(init_date)).days
+        today = date.today()
+        days_since_joining = (today - init_date).days
 
         if (days_since_joining == 10):
             sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'tendays'}
@@ -756,7 +768,7 @@ def get_schedule(day):
                 schedule.append(sched21)
 
     # sentry test to check values of init date and user etc. 
-    
+        capture_message(days_since_joining)
         userInfo = {'user': user, 'today': today, 'days_since_joining': days_since_joining, 'init_date': init_date}
         capture_message(userInfo)
 
