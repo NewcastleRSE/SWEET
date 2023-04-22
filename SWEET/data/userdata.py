@@ -753,7 +753,7 @@ def get_schedule(day):
         days_since_joining = (today - init_date).days
 
         # sentry test to check values of init date and user etc. 
-        userInfo = {'user': user, 'today': today, 'days_since_joining': days_since_joining, 'init_date': init_date}
+        userInfo = {'user': user, 'today': today.strftime("%m/%d/%Y"), 'days_since_joining': days_since_joining, 'init_date': init_date.strftime("%m/%d/%Y")}
         capture_message(json.dumps(userInfo, indent = 4))
 
         try:
