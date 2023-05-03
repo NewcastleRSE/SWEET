@@ -705,6 +705,14 @@ def get_schedule(day):
         ud = UserData(user['userID'])
         ur = ud.reminders()
 
+        # init_date = getinit(user)
+        # datetime_object = date.fromisoformat(init_date)
+        # today = date.today()
+        # days_since_joining = (today - datetime_object).days
+        # print(init_date)
+        # print(days_since_joining)
+
+
         d, m = ur['daily'], ur['monthly']
 
         if d.get('reminder', False):
@@ -737,26 +745,34 @@ def get_schedule(day):
 
 
         # 10 day and 21 day reminder
+        # init_date = getinit(user)
+        # days_since_joining = (date.today() - date.fromisoformat(init_date)).days
+
         init_date = getinit(user)
         today = date.today()
-        days_since_joining = today - init_date
+        days_since_joining = (today - init_date).days
 
-        if (days_since_joining == 10):
-            sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'tendays'}
-            schedule.append(sched)
-        elif days_since_joining == 21:
-            option = get21DayOptionNumber(user)
-            if option == 1:
-                sched21 = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op121days'}
-                schedule.append(sched21)
-            elif option == 2:
-                sched21 = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op221days'}
-                schedule.append(sched21)
-            else:
-                sched21 = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op321days'}
-                schedule.append(sched21)
+        # sentry test to check values of init date and user etc. 
+        userInfo = {'user': user, 'today': today.strftime("%m/%d/%Y"), 'days_since_joining': days_since_joining, 'init_date': init_date.strftime("%m/%d/%Y")}
+        capture_message(json.dumps(userInfo, indent = 4))
 
-    
+        try:
+            if (days_since_joining == 10):
+                sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'tendays'}
+                schedule.append(sched)
+            elif days_since_joining == 21:
+                option = get21DayOptionNumber(user)
+                if option == 1:
+                    sched21 = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op121days'}
+                    schedule.append(sched21)
+                elif option == 2:
+                    sched21 = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op221days'}
+                    schedule.append(sched21)
+                else:
+                    sched21 = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op321days'}
+                    schedule.append(sched21)
+        except:
+            capture_message('Appending nudge email to schedule failed for user ' + user['userID'] + ' (' + user['email'] + ')')
 
         gs = [g for g in ud.goals() if g['reviewDate'] == day.isoformat()]
 
@@ -784,7 +800,8 @@ def get_schedule(day):
                     'longType': 'eating healthily'
                 })
 
-
+# sentry whole schedule
+    capture_message(json.dumps(schedule, indent = 4))
 
     return schedule
 
