@@ -722,7 +722,13 @@ def get_schedule(day):
 
         if m.get('reminder', False):
             lastrem = date.fromisoformat(m.get('lastSent', m.get('start', date.today().isoformat())))
-            interval = 3 if m.get('frequency', "") == "three" else  1
+
+            # interval can be 1, 2 or 3 monthly
+            interval = 1 
+            if m.get('frequency', "") == "three":
+                interval = 3
+            else:
+                interval = 2 
 
             # if the reminder hasn't been sent before AND day == start (which is held in lastrem)
             # we want to send the reminder on lastrem - i.e. the start date.
