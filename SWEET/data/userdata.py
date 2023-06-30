@@ -758,10 +758,6 @@ def get_schedule(day):
         today = date.today()
         days_since_joining = (today - init_date).days
 
-        # sentry test to check values of init date and user etc. 
-        userInfo = {'user': user, 'today': today.strftime("%m/%d/%Y"), 'days_since_joining': days_since_joining, 'init_date': init_date.strftime("%m/%d/%Y")}
-        capture_message(json.dumps(userInfo, indent = 4))
-
         try:
             if (days_since_joining == 10):
                 sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'tendays'}
@@ -806,8 +802,7 @@ def get_schedule(day):
                     'longType': 'eating healthily'
                 })
 
-# sentry whole schedule
-    capture_message(json.dumps(schedule, indent = 4))
+
 
     return schedule
 
