@@ -323,6 +323,10 @@ export function profilerModalRenderer(section) {
 }
 
 function isElementVisible(el) {
+    
+    // Edge case of element being null, return true
+    if(!el) return true
+
     var rect     = el.getBoundingClientRect(),
         vWidth   = window.innerWidth || document.documentElement.clientWidth,
         vHeight  = window.innerHeight || document.documentElement.clientHeight,
