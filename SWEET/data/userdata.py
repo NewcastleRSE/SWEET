@@ -722,7 +722,13 @@ def get_schedule(day):
 
         if m.get('reminder', False):
             lastrem = date.fromisoformat(m.get('lastSent', m.get('start', date.today().isoformat())))
-            interval = 3 if m.get('frequency', "") == "three" else  1
+
+            # interval can be 1, 2 or 3 monthly
+            interval = 1 
+            if m.get('frequency', "") == "three":
+                interval = 3
+            else:
+                interval = 2 
 
             # if the reminder hasn't been sent before AND day == start (which is held in lastrem)
             # we want to send the reminder on lastrem - i.e. the start date.
@@ -751,10 +757,6 @@ def get_schedule(day):
         init_date = getinit(user)
         today = date.today()
         days_since_joining = (today - init_date).days
-
-        # sentry test to check values of init date and user etc. 
-        userInfo = {'user': user, 'today': today.strftime("%m/%d/%Y"), 'days_since_joining': days_since_joining, 'init_date': init_date.strftime("%m/%d/%Y")}
-        capture_message(json.dumps(userInfo, indent = 4))
 
         try:
             if (days_since_joining == 10):
@@ -800,8 +802,7 @@ def get_schedule(day):
                     'longType': 'eating healthily'
                 })
 
-# sentry whole schedule
-    capture_message(json.dumps(schedule, indent = 4))
+
 
     return schedule
 

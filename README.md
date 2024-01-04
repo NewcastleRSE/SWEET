@@ -41,6 +41,13 @@ When restoring blobs any changes to blobs since the chosen backup point will be 
 
 Note that if a container is deleted from the storage account it cannot be restored so delete individual blobs were possible. 
 
+### Removing a user before they have registered
+If users cancel their first appointment the team will get in touch to ask us to remove an account so that they can create it again. To do this, you will need the registration code the team created to give to the user.
+1. Go to the production storage account in Azure Storage Explorer. Open the `users` blob container. 
+2. Open `user-email-mapping.json`, delete the entry for the registration code you were given (delete email address and code).
+3. Open the directory `userdata` and delete the directory that corresponds to the registration code.
+4. Restart the server   
+
 
 ### secrets.py
 SWEET extracts sensitive data (i.e. application keys, Azure conncetion details etc.) from a file called `secrets.py` which is not tracked in the repository; you should create your own `secrets.py` under the SWEET directory in the repository. A sample `secrets.sample.py` is included to document the variables that need to be set.
