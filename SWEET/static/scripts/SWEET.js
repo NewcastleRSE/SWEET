@@ -91,9 +91,11 @@ SWEET.addEventListener("prerender", function (page) {
     document.querySelector("main").classList.add("flex-shrink-0", this.path.replace("#", "").replaceAll("/", "_"));
 
     if(window.location.hash !== '#home/dealing-se' && window.location.hash !== '#home/healthy-living' ) {
+        document.getElementById("btn-favourite").classList.remove('d-none')
         document.getElementById("btn-print").classList.remove('d-none')
     }
     else {
+        document.getElementById("btn-favourite").classList.add('d-none')
         document.getElementById("btn-print").classList.add('d-none')
     }
 
