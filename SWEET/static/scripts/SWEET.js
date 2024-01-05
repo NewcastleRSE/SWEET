@@ -256,6 +256,13 @@ document.querySelector("#main-container").addEventListener("click", e => {
 
 });
 
+document.querySelector("#btn-favourite > a").addEventListener("click", e => {
+
+    e.preventDefault(); e.stopPropagation();
+
+    SWEET.post("/myapp/favourites/", { title: document.title, path: SWEET.path })
+})
+
 document.querySelector("#btn-print > a").addEventListener("click", e => {
 
     e.preventDefault(); e.stopPropagation();

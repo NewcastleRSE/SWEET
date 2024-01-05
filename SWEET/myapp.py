@@ -304,7 +304,7 @@ def getMyFavourites():
 def addMyFavourite():
     if request.is_json:
         favourite = request.json
-        addFavourite(g.user, contact)
+        addFavourite(g.user, favourite)
         return { "status": "OK", "message": "Favourite Added"}
     
     return {"status": "error", "message": "Add favourite request sent without json"}, 400
@@ -314,7 +314,7 @@ def addMyFavourite():
 def deleteMyFavourite():
     if request.is_json:
         favourite = request.json
-        deleteFavourite(g.user, contact)
+        deleteFavourite(g.user, favourite)
         return {"status": "OK", "message": "Favourite Deleted"}
 
     return {"status": "error", "message": "Delete request sent without json"}, 400
