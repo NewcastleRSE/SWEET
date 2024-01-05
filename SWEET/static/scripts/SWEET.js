@@ -135,6 +135,27 @@ SWEET.addEventListener("prerender", function (page) {
 
         b.textContent = strct.title || "HT&Me";
     });
+
+    /* Set state of favourite button */
+    if (localStorage.getItem('favourites') === null) {
+        localStorage.setItem('favourites', JSON.stringify([]));
+    }
+
+    let favourites = JSON.parse(localStorage.getItem('favourites')).map(f => f.path);
+
+    let label = document.getElementById("btn-favourite-label"),
+        icon = document.getElementById("btn-favourite-icon")
+
+    if (favourites.includes(window.location.hash)) {
+        label.innerText = "Unfavourite";
+        icon.classList.remove('bi-star');
+        icon.classList.add('bi-star-fill');
+    }
+    else {
+        label.innerText = "Favourite";
+        icon.classList.remove('bi-star-fill');
+        icon.classList.add('bi-star');
+    }
 });
 
 // link intercept for tunnelled pages (prevent section home showing until tunnel is complete);
