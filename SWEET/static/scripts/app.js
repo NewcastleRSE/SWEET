@@ -159,7 +159,6 @@ export function createApp(options={}) {
         dispatchEvent.call(this, "preload");
 
         settings.load.call(this, settings.path).then(page => {
-            console.log(settings.path)
             settings.titleHolder.textContent = page.title;
             document.querySelector("title").textContent = page.title? page.title: settings.name;
 
