@@ -47,6 +47,8 @@ class UserData():
         return AzurePersistentList(az_connection, usersource, f"{self.pathbase}goals")
     def contacts(self):
         return AzurePersistentList(az_connection, usersource, f"{self.pathbase}contacts")
+    def favourites(self):
+        return AzurePersistentList(az_connection, usersource, f"{self.pathbase}favourites")
     def plans(self):
         return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}plans")
     def fillins(self):
@@ -593,7 +595,6 @@ def deleteContact(user, contact):
         contacts.commit()
         log(user, "delete", old=contact)
 
-
 def updateContact(user, old, new):
     if user is None:
         return None
@@ -607,6 +608,39 @@ def updateContact(user, old, new):
         contacts.commit()
 
         log(user, "update", old=old, new=new.copy())
+
+def getFavourites(user):
+    if user is None:
+        return None
+    
+    id = user["userID"]
+
+    return UserData(id).favourites().copy()
+
+def addFavourite(user, favourite):
+    if user is None:
+        return None
+    
+    favourites = UserData(user["userID"]).favourites()
+
+    favourites.append(favourite)
+    favourites.commit()
+
+    log(user, "add", new=favourite.copy())
+
+def deleteFavourite(user, favourite):
+
+    if user is None:
+        return None
+    
+    id = user["userID"]
+
+    favourites = UserData(id).favourites()    
+    
+    if favourite in favourites:
+        favourites.remove(favourite)
+        favourites.commit()
+        log(user, "delete", old=favourite)
 
 def getPlan(user, plan):
     if user is None:

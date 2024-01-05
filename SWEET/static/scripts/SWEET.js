@@ -15,6 +15,15 @@ let SWEET = createApp({
                 body: JSON.stringify(data)
             })
         },
+        delete: function (url, data) {
+            return fetch(url, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+        },
         createCalendar: createCalendar,
         calendarDate: function (d) { return `${d.getFullYear()}-${d.getMonth() < 9 ? "0" : ""}${d.getMonth() + 1}-${d.getDate() < 10 ? "0" : ""}${d.getDate()}` },
         showPopupMessage: function (content, title = undefined, buttons = ["Close"]) {
@@ -91,9 +100,11 @@ SWEET.addEventListener("prerender", function (page) {
     document.querySelector("main").classList.add("flex-shrink-0", this.path.replace("#", "").replaceAll("/", "_"));
 
     if(window.location.hash !== '#home/dealing-se' && window.location.hash !== '#home/healthy-living' ) {
+        document.getElementById("btn-favourite").classList.remove('d-none')
         document.getElementById("btn-print").classList.remove('d-none')
     }
     else {
+        document.getElementById("btn-favourite").classList.add('d-none')
         document.getElementById("btn-print").classList.add('d-none')
     }
 
@@ -133,6 +144,27 @@ SWEET.addEventListener("prerender", function (page) {
 
         b.textContent = strct.title || "HT&Me";
     });
+
+    /* Set state of favourite button */
+    if (localStorage.getItem('favourites') === null) {
+        localStorage.setItem('favourites', JSON.stringify([]));
+    }
+
+    let favourites = JSON.parse(localStorage.getItem('favourites')).map(f => f.path);
+
+    let label = document.getElementById("btn-favourite-label"),
+        icon = document.getElementById("btn-favourite-icon")
+
+    if (favourites.includes(window.location.hash)) {
+        label.innerText = "Unfavourite";
+        icon.classList.remove('bi-star');
+        icon.classList.add('bi-star-fill');
+    }
+    else {
+        label.innerText = "Favourite";
+        icon.classList.remove('bi-star-fill');
+        icon.classList.add('bi-star');
+    }
 });
 
 // link intercept for tunnelled pages (prevent section home showing until tunnel is complete);
@@ -187,7 +219,6 @@ document.querySelector("#main-container").addEventListener("click", e => {
                 modal.show();
             })
     })
-
 
     let base = path;
     let route = SWEET.store.get("tunnels")[base];
@@ -253,6 +284,32 @@ document.querySelector("#main-container").addEventListener("click", e => {
     renderInTunnel();
 
 });
+
+document.querySelector("#btn-favourite > a").addEventListener("click", e => {
+
+    e.preventDefault(); e.stopPropagation();
+
+    let label = document.getElementById("btn-favourite-label"),
+        icon = document.getElementById("btn-favourite-icon")
+
+    if(label.innerText === "Favourite") {
+        SWEET.post("/myapp/favourites/", { title: document.title, path: SWEET.path })
+        label.innerText = "Unfavourite";
+        icon.classList.remove('bi-star');
+        icon.classList.add('bi-star-fill');
+    }
+    else {
+        SWEET.delete("/myapp/favourites/", { title: document.title, path: SWEET.path })
+        label.innerText = "Favourite";
+        icon.classList.remove('bi-star-fill');
+        icon.classList.add('bi-star');
+    }
+
+    fetch("/myapp/favourites").then(response => response.json())
+    .then(output => {
+        localStorage.setItem('favourites', JSON.stringify(output.favourites));
+    })
+})
 
 document.querySelector("#btn-print > a").addEventListener("click", e => {
 

@@ -118,5 +118,10 @@ export function homepageMenuRenderer(section) {
         this.render(latestp);
     }
 
+    fetch("/myapp/favourites").then(response => response.json())
+    .then(output => {
+        localStorage.setItem('favourites', JSON.stringify(output.favourites));
+    })
+
     return menu;
 }
