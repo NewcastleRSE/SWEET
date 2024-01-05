@@ -220,7 +220,6 @@ document.querySelector("#main-container").addEventListener("click", e => {
             })
     })
 
-
     let base = path;
     let route = SWEET.store.get("tunnels")[base];
     let currentStop = SWEET.store.get(`tunnel:${base}:stop`) === undefined ? 0 : SWEET.store.get(`tunnel:${base}:stop`);
@@ -290,15 +289,26 @@ document.querySelector("#btn-favourite > a").addEventListener("click", e => {
 
     e.preventDefault(); e.stopPropagation();
 
-    let state = document.getElementById("btn-favourite-label").innerText
-    console.log(state)
+    let label = document.getElementById("btn-favourite-label"),
+        icon = document.getElementById("btn-favourite-icon")
 
-    if(state === "Favourite") {
+    if(label.innerText === "Favourite") {
         SWEET.post("/myapp/favourites/", { title: document.title, path: SWEET.path })
+        label.innerText = "Unfavourite";
+        icon.classList.remove('bi-star');
+        icon.classList.add('bi-star-fill');
     }
     else {
         SWEET.delete("/myapp/favourites/", { title: document.title, path: SWEET.path })
+        label.innerText = "Favourite";
+        icon.classList.remove('bi-star-fill');
+        icon.classList.add('bi-star');
     }
+
+    fetch("/myapp/favourites").then(response => response.json())
+    .then(output => {
+        localStorage.setItem('favourites', JSON.stringify(output.favourites));
+    })
 })
 
 document.querySelector("#btn-print > a").addEventListener("click", e => {
