@@ -4,6 +4,7 @@ import { blockquoteRenderer } from "./blockquote.js";
 import { carouselRenderer, carouselSlideRenderer } from "./carousel.js";
 import { contactRenderer, contactFormRenderer, contactListRenderer, contactPageRenderer } from "./contacts.js";
 import { favouritePageRenderer } from "./favourites.js";
+import { indexListRenderer } from "./indexlist.js";
 import { diaryCalendarRenderer, diaryGraphRenderer } from "./diary-page.js";
 import { embedRenderer } from "./embed.js";
 import { fillInBoxRenderer } from "./fillin.js";
@@ -50,6 +51,7 @@ export const renderers = {
     "contact-list": contactListRenderer,
     "contacts-page": contactPageRenderer,
     "favourites-page": favouritePageRenderer,
+    "index-list": indexListRenderer,
     "plan": planRenderer,
     "my-plans": myPlansRenderer,
     "thoughts": thoughtsRenderer,
