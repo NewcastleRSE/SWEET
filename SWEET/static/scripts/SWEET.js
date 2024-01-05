@@ -15,6 +15,15 @@ let SWEET = createApp({
                 body: JSON.stringify(data)
             })
         },
+        delete: function (url, data) {
+            return fetch(url, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+        },
         createCalendar: createCalendar,
         calendarDate: function (d) { return `${d.getFullYear()}-${d.getMonth() < 9 ? "0" : ""}${d.getMonth() + 1}-${d.getDate() < 10 ? "0" : ""}${d.getDate()}` },
         showPopupMessage: function (content, title = undefined, buttons = ["Close"]) {
@@ -281,7 +290,15 @@ document.querySelector("#btn-favourite > a").addEventListener("click", e => {
 
     e.preventDefault(); e.stopPropagation();
 
-    SWEET.post("/myapp/favourites/", { title: document.title, path: SWEET.path })
+    let state = document.getElementById("btn-favourite-label").innerText
+    console.log(state)
+
+    if(state === "Favourite") {
+        SWEET.post("/myapp/favourites/", { title: document.title, path: SWEET.path })
+    }
+    else {
+        SWEET.delete("/myapp/favourites/", { title: document.title, path: SWEET.path })
+    }
 })
 
 document.querySelector("#btn-print > a").addEventListener("click", e => {
