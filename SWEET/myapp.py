@@ -10,6 +10,7 @@ from .data.userdata import (
     addDrug, getDrugs, addNote, getNotes, recordAdherence, saveFillin as saveUserFillin, getFillin as getUserFillin,
     getReminders, setReminders, 
     getContacts, addContact, deleteContact, updateContact,
+    getFavourites, addFavourite, deleteFavourite,
     getAllProfilerResults, getLatestProfiler,
     getPlan, savePlan, deleteDrug, deleteNote, deleteSideEffect, getThoughts, saveThoughts
 )
@@ -291,7 +292,32 @@ def deleteMyContact():
         deleteContact(g.user, contact)
         return {"status": "OK", "message": "Contact Deleted"}
 
-    return {"status": "error", "message": "Delete request sent witout json"}, 400
+    return {"status": "error", "message": "Delete request sent without json"}, 400
+
+@bp.route("/favourites/")
+@login_required
+def getMyFavourites():
+    return { "favourites": getFavourites(g.user)}
+
+@bp.route("/favourites/", methods=["POST"])
+@login_required
+def addMyFavourite():
+    if request.is_json:
+        favourite = request.json
+        addFavourite(g.user, contact)
+        return { "status": "OK", "message": "Favourite Added"}
+    
+    return {"status": "error", "message": "Add favourite request sent without json"}, 400
+
+@bp.route("/favourites/", methods=["DELETE"])
+@login_required
+def deleteMyFavourite():
+    if request.is_json:
+        favourite = request.json
+        deleteFavourite(g.user, contact)
+        return {"status": "OK", "message": "Favourite Deleted"}
+
+    return {"status": "error", "message": "Delete request sent without json"}, 400
 
 @bp.route("/mycontacts/update/", methods=["POST"])
 @login_required
