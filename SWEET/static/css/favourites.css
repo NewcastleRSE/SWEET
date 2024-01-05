@@ -1,0 +1,8 @@
+.all-favourites h5 a {
+    color: var(--SWEET-purple);
+    text-decoration: none;
+}
+
+.all-favourites h5 a:hover {
+    text-decoration: underline;
+}
