@@ -1,6 +1,7 @@
 from .sms import send_daily_reminder, send_monthly_reminder
 from .email import email_daily_reminder, email_monthly_reminder, send_profiler_reminder, send_goal_reminder, send_10day_email, send_21dayop1_email, send_21dayop3_email, send_21dayop2_email
 from datetime import datetime
+import pytz
 import time
 
 from sched import scheduler
@@ -10,10 +11,10 @@ from . import email, sms
 from ..data.userdata import get_schedule
 
 def _day():
-    return datetime.today().toordinal()
+    return datetime.today(pytz.timezone('Europe/London')).toordinal()
 
 def _time():
-    return datetime.now().timestamp()
+    return datetime.now(pytz.timezone('Europe/London')).timestamp()
 
 def _s_to_next_run():
     # naive implementation assumes that the next run is *tomorrow*, regardless of current time.
@@ -23,7 +24,7 @@ def _s_to_next_run():
     nextrun = datetime.fromordinal(_day()+1).replace(hour=2)
 
 
-    tdtonextrun = nextrun - datetime.now()
+    tdtonextrun = nextrun - datetime.now(pytz.timezone('Europe/London'))
     return max(0, tdtonextrun.total_seconds())
 
 _lastrun = 0
