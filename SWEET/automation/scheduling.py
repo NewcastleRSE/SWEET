@@ -1,7 +1,6 @@
 from .sms import send_daily_reminder, send_monthly_reminder
 from .email import email_daily_reminder, email_monthly_reminder, send_profiler_reminder, send_goal_reminder, send_10day_email, send_21dayop1_email, send_21dayop3_email, send_21dayop2_email
-from datetime import datetime
-import pytz
+from datetime import datetime, timezone
 import time
 
 from sched import scheduler
@@ -11,20 +10,20 @@ from . import email, sms
 from ..data.userdata import get_schedule
 
 def _day():
-    return datetime.today(pytz.timezone('Europe/London')).toordinal()
+    return datetime.today().astimezone().toordinal()
 
 def _time():
-    return datetime.now(pytz.timezone('Europe/London')).timestamp()
+    return datetime.now().astimezone().timestamp()
 
 def _s_to_next_run():
     # naive implementation assumes that the next run is *tomorrow*, regardless of current time.
     # if run before 2am, will return > 24 hours.
     # if run just before midnight, will return just over 2 hours.
     # other scheudling logic should account for this naivety
-    nextrun = datetime.fromordinal(_day()+1).replace(hour=2)
+    nextrun = datetime.fromordinal(_day()+1).astimezone().replace(hour=2)
 
 
-    tdtonextrun = nextrun - datetime.now(pytz.timezone('Europe/London'))
+    tdtonextrun = nextrun - datetime.now().astimezone()
     return max(0, tdtonextrun.total_seconds())
 
 _lastrun = 0
@@ -114,7 +113,7 @@ def start():
         # # create and start a daily schedule
         # # update the last run date.
         # # schedule a trigger event for tomorrow.
-        _running.append(dailyschedule(datetime.today()))
+        _running.append(dailyschedule(datetime.today().astimezone()))
         _lastrun = today_ord
         _sched.enter(_s_to_next_run(),1,trigger_daily)
         
