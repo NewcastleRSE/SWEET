@@ -1,5 +1,5 @@
 from .sms import send_daily_reminder, send_monthly_reminder
-from .email import email_daily_reminder, email_monthly_reminder, send_profiler_reminder, send_goal_reminder, send_10day_email, send_21dayop1_email, send_21dayop3_email, send_21dayop2_email
+from .email import email_daily_reminder, email_monthly_reminder, send_profiler_reminder, send_goal_reminder, send_nudge, send_21dayop1_email, send_21dayop3_email, send_21dayop2_email
 from datetime import datetime, timezone
 import time
 
@@ -50,6 +50,13 @@ def dailyschedule(today):
             else:
                 hr, mn = "08","00"
 
+            itemType = item['type']
+            nudgeType = None
+
+            if(item['type'].split('-')[0] == "nudge"):
+                itemType = "nudge"
+                nudgeType = item['type'].split('-')[1]
+
             item_ts = today.replace(hour=int(hr), minute=int(mn)).timestamp()
             item_action = {
                 'daily': email_daily_reminder,
@@ -57,15 +64,15 @@ def dailyschedule(today):
                 'profiler-reminder': send_profiler_reminder,
                 'profiler-due': send_profiler_reminder,
                 'goal-reminder': send_goal_reminder,
-                'tendays': send_10day_email,
+                'nudge': send_nudge,
                 'op121days': send_21dayop1_email,
                 'op221days': send_21dayop2_email,
                 'op321days': send_21dayop3_email,
-             }[item['type']]
+             }[itemType]
 
             #set up appropriate arguments
             item['email'] = item['to']
-            item_args = (item,)
+            item_args = (item,nudgeType)
             item_kwargs = {} # currently no kwargs for emails.
 
             #schedule email:
