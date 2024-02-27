@@ -4,6 +4,7 @@ from ..secrets import connstr as az_connection, usersource, userdatastore
 from . import getContainer
 from .content import getProfilerResponses, getGoalMessage
 from datetime import date, timedelta, MINYEAR, MAXYEAR
+from dateutil.relativedelta import relativedelta
 import json
 from azure.core.exceptions import ResourceExistsError
 from ..schemas import getSideEffectValueMappings
@@ -784,29 +785,25 @@ def get_schedule(day):
                 schedule.append({'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'profiler-due', 'method': 'email', 'to': user['email']})
 
 
-        # 10 day and 21 day reminder
-        # init_date = getinit(user)
-        # days_since_joining = (date.today() - date.fromisoformat(init_date)).days
-
+        # nudges
         init_date = getinit(user)
         today = date.today()
         days_since_joining = (today - init_date).days
 
+        print(init_date)
+        print(relativedelta(months=1))
+        print(init_date + relativedelta(months=1))
+        print(init_date + relativedelta(months=1) == today)
+
         try:
-            if (days_since_joining == 10):
-                sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'tendays'}
+            if (days_since_joining == 14):
+                sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'nudge-2_week'}
                 schedule.append(sched)
-            elif days_since_joining == 21:
-                option = get21DayOptionNumber(user)
-                if option == 1:
-                    sched21 = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op121days'}
-                    schedule.append(sched21)
-                elif option == 2:
-                    sched21 = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op221days'}
-                    schedule.append(sched21)
-                else:
-                    sched21 = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op321days'}
-                    schedule.append(sched21)
+            else:
+                for i in range(1, 18):
+                    if (init_date + relativedelta(months=i) == today):
+                        sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'nudge-{i}_month'}
+                        schedule.append(sched)
         except:
             capture_message('Appending nudge email to schedule failed for user ' + user['userID'] + ' (' + user['email'] + ')')
 
