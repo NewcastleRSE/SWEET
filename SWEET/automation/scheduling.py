@@ -72,7 +72,12 @@ def dailyschedule(today):
 
             #set up appropriate arguments
             item['email'] = item['to']
-            item_args = (item,nudgeType)
+
+            if itemType == "nudge":
+                item_args = (item,nudgeType)
+            else:
+                item_args = (item,)
+                
             item_kwargs = {} # currently no kwargs for emails.
 
             #schedule email:
