@@ -799,7 +799,7 @@ def get_schedule(day):
                 'oneMonth': init_date + relativedelta(months=1),
                 'isOneMonth': init_date + relativedelta(months=1) == today,
             }
-            capture_message(payload)
+            capture_message(json.dumps(payload))
 
         try:
             if (days_since_joining == 14):
