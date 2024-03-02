@@ -2,9 +2,11 @@ from .sms import send_daily_reminder, send_monthly_reminder
 from .email import email_daily_reminder, email_monthly_reminder, send_profiler_reminder, send_goal_reminder, send_nudge, send_21dayop1_email, send_21dayop3_email, send_21dayop2_email
 from datetime import datetime, timezone
 import time
+import json
 
 from sched import scheduler
 from threading import Thread, Event
+from sentry_sdk import capture_message
 
 from . import email, sms
 from ..data.userdata import get_schedule
@@ -53,6 +55,15 @@ def dailyschedule(today):
             itemType = item['type']
             nudgeType = None
 
+            if(item['to'] == 'mark.turner@ncl.ac.uk'):
+                payload = {
+                    'itemType': item['type'],
+                    'itemTypeSplit': item['type'].split('-'),
+                    'isNudge': item['type'].split('-')[0] == "nudge",
+                    'nudgeType': item['type'].split('-')[1],
+                }
+                capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+
             if(item['type'].split('-')[0] == "nudge"):
                 itemType = "nudge"
                 nudgeType = item['type'].split('-')[1]
@@ -79,6 +90,14 @@ def dailyschedule(today):
                 item_args = (item,)
                 
             item_kwargs = {} # currently no kwargs for emails.
+
+            if(item['to'] == 'mark.turner@ncl.ac.uk'):
+                payload = {
+                    'action': item_action,
+                    'arguments': item_args,
+                    'timestamp': item_ts,
+                }
+                capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
 
             #schedule email:
             s.enterabs(item_ts, 1, item_action, argument=item_args, kwargs=item_kwargs)
