@@ -1,5 +1,5 @@
 from .sms import send_daily_reminder, send_monthly_reminder
-from .email import email_daily_reminder, email_monthly_reminder, send_profiler_reminder, send_goal_reminder, send_nudge, send_21dayop1_email, send_21dayop3_email, send_21dayop2_email
+from .email import email_daily_reminder, email_monthly_reminder, send_profiler_reminder, send_goal_reminder, send_nudge
 from datetime import datetime, timezone
 import time
 import json
@@ -75,10 +75,7 @@ def dailyschedule(today):
                 'profiler-reminder': send_profiler_reminder,
                 'profiler-due': send_profiler_reminder,
                 'goal-reminder': send_goal_reminder,
-                'nudge': send_nudge,
-                'op121days': send_21dayop1_email,
-                'op221days': send_21dayop2_email,
-                'op321days': send_21dayop3_email,
+                'nudge': send_nudge
              }[itemType]
 
             #set up appropriate arguments
