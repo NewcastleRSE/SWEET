@@ -36,8 +36,13 @@ def _send_message(to, template="welcome", **kwargs):
     msg = EmailMessage()
     msg["To"] = to
     msg["From"] = settings["from"]
+
+    subject = messages[template]["subject"].format(**kwargs)
+
+    if hostname == "sweet.ncldata.dev":
+        subject = f"[STAGING] {subject}"
     
-    msg["Subject"] = messages[template]["subject"].format(**kwargs)
+    msg["Subject"] = subject
     msg.set_content(messages[template]["plain"].format(**kwargs))
     msg.add_alternative(htmltemplate.format(body=messages[template]["html"].format(**kwargs)), subtype="html")
 
@@ -95,18 +100,3 @@ def send_nudge(user, type="2_week"):
     fullname = f"{user['firstName']} {user['lastName']}"
     _send_message(f"{fullname} <{user['email']}>", type, fullname=fullname, hostname=hostname)
     logvisit(user, "scheduler_email", action="send_{type}_nudge")
-
-def send_21dayop1_email(user):
-    fullname = f"{user['firstName']} {user['lastName']}"
-    _send_message(f"{fullname} <{user['email']}>", "option_1_21_days", fullname=fullname, hostname=hostname)
-    logvisit(user, "scheduler_email", action="send_21dayop1_email")
-
-def send_21dayop2_email(user):
-    fullname = f"{user['firstName']} {user['lastName']}"
-    _send_message(f"{fullname} <{user['email']}>", "option_2_21_days", fullname=fullname, hostname=hostname)
-    logvisit(user, "scheduler_email", action="send_21dayop2_email")
-
-def send_21dayop3_email(user):
-    fullname = f"{user['firstName']} {user['lastName']}"
-    _send_message(f"{fullname} <{user['email']}>", "option_3_21_days", fullname=fullname, hostname=hostname)
-    logvisit(user, "scheduler_email", action="send_21dayop3_email")
