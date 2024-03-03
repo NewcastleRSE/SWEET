@@ -50,7 +50,7 @@ def _send_message(to, template="welcome", **kwargs):
 
 def send_welcome(user):
     fullname = f"{user['firstName']} {user['lastName']}"
-    _send_message(f"{fullname} <{user['email']}>", "welcome", fullname=fullname)
+    _send_message(f"{fullname} <{user['email']}>", "welcome", fullname=user['firstName'])
     # User doesn't exist yet so can't log visit
     # logvisit(user, "scheduler_email", action="send_welcome")
 
@@ -62,41 +62,41 @@ def send_notify_register(user):
 
 def email_daily_reminder(user):
     fullname = f"{user['firstName']} {user['lastName']}"
-    _send_message(f"{fullname} <{user['email']}>", "daily_reminder", fullname=fullname)
+    _send_message(f"{fullname} <{user['email']}>", "daily_reminder", fullname=user['firstName'])
     logvisit(user, "scheduler_email", action="email_daily_reminder")
 
 def email_monthly_reminder(user):
     fullname = f"{user['firstName']} {user['lastName']}"
-    _send_message(f"{fullname} <{user['email']}>", "monthly_reminder", fullname=fullname)
+    _send_message(f"{fullname} <{user['email']}>", "monthly_reminder", fullname=user['firstName'])
     logvisit(user, "scheduler_email", action="email_monthly_reminder")
 
 def send_password_reset(user, token):
     fullname = f"{user['firstName']} {user['lastName']}"
-    _send_message(f"{fullname} <{user['email']}>", "password_reset", fullname=fullname, token=token, uid=user['userID'], hostname=hostname)
+    _send_message(f"{fullname} <{user['email']}>", "password_reset", fullname=user['firstName'], token=token, uid=user['userID'], hostname=hostname)
     logvisit(user, "scheduler_email", action="send_password_reset")
 
 def send_profiler_reminder(user):
     fullname = f"{user['firstName']} {user['lastName']}"
-    _send_message(f"{fullname} <{user['email']}>", "profiler_reminder", fullname=fullname, hostname=hostname)
+    _send_message(f"{fullname} <{user['email']}>", "profiler_reminder", fullname=user['firstName'], hostname=hostname)
     logvisit(user, "scheduler_email", action="send_profiler_reminder")
 
 def send_profiler_due(user):
     fullname = f"{user['firstName']} {user['lastName']}"
-    _send_message(f"{fullname} <{user['email']}>", "profiler_reminder", fullname=fullname, hostname=hostname)
+    _send_message(f"{fullname} <{user['email']}>", "profiler_reminder", fullname=user['firstName'], hostname=hostname)
     logvisit(user, "scheduler_email", action="send_profiler_due")
 
 def send_goal_reminder(detail):
     fullname = f"{detail['firstName']} {detail['lastName']}"
-    _send_message(f"{fullname} <{detail['email']}>", "goal_reminder", fullname=fullname, hostname=hostname, shorttype=detail['shortType'], longtype=detail['longType'])
+    _send_message(f"{fullname} <{detail['email']}>", "goal_reminder", fullname=detail['firstName'], hostname=hostname, shorttype=detail['shortType'], longtype=detail['longType'])
     logvisit(detail, "scheduler_email", action="send_goal_reminder")
 
 def send_welcome_email(user):
     fullname = f"{user['firstName']} {user['lastName']}"
-    _send_message(f"{fullname} <{user['email']}>", "welcome", fullname=fullname, hostname=hostname)
+    _send_message(f"{fullname} <{user['email']}>", "welcome", fullname=user['firstName'], hostname=hostname)
     # User doesn't exist yet so can't log visit
     # logvisit(user, "scheduler_email", action="send_welcome_email")
 
 def send_nudge(user, type="2_week"):
     fullname = f"{user['firstName']} {user['lastName']}"
-    _send_message(f"{fullname} <{user['email']}>", type, fullname=fullname, hostname=hostname)
+    _send_message(f"{fullname} <{user['email']}>", type, fullname=user['firstName'], hostname=hostname)
     logvisit(user, "scheduler_email", action="send_{type}_nudge")
