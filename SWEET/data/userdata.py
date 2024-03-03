@@ -784,7 +784,6 @@ def get_schedule(day):
         elif "dueDate" in p and p["dueDate"] == day.isoformat():
                 schedule.append({'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'profiler-due', 'method': 'email', 'to': user['email']})
 
-
         # nudges
         init_date = getinit(user)
         today = date.today()
@@ -842,7 +841,4 @@ def get_schedule(day):
                     'longType': 'eating healthily'
                 })
 
-
-
     return schedule
-
