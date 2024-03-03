@@ -156,8 +156,9 @@ span a {
     text-decoration: none;
 }
 
-#btn-print {
+#btn-print, #btn-favourite {
     float: right;
+    margin-left: 5px;
 }
 
 .btn-responsive {

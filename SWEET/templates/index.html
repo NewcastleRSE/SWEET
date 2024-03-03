@@ -27,6 +27,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/tunnel.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/account.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/carousel.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/favourites.css') }}">
     {% block headextensions %}
     {% endblock %}
 </head>
@@ -47,6 +48,7 @@
             {% block navitems %}
             <a class="link" aria-current="page" href="#home">Home</a>
             <a class="link" href="#my-account">My Account</a>
+            <a class="link" href="#my-favourites">My Favourites</a>
             <a class="link" href="#my-contacts">My Contacts</a>
             <a class="link" href="#about">About the Team</a>
             {% if g.user['role'] in ['sysadmin', 'studyadmin', 'editor', 'staff'] %}
@@ -90,6 +92,12 @@
                             <a href="#home" class="btn btn-primary btn-up">Home</a>
                             <span id="btn-print" class="d-none"><a href="#" class="btn btn-primary">Print &nbsp; <i
                                     class="bi bi-printer"></i></a></span>
+                            <span id="btn-favourite" class="d-none">
+                                <a href="#" class="btn btn-primary">
+                                    <span id="btn-favourite-label">Favourite&nbsp;</span>
+                                    <i id="btn-favourite-icon" class="bi bi-star"></i>
+                                </a>
+                            </span>
                         </div>
                         <div class="col">
                         </div>
@@ -132,6 +140,9 @@
                         </li>
                         <li class="py-2">
                             <a href="#" id="footerGlossary" class="text-white">Glossary</a>
+                        </li>
+                        <li class="py-2">
+                            <a href="#index-list" id="footerIndex" class="text-white">Index List</a>
                         </li>
                         <li class="py-2">
                             <a href="#privacy" id="footerPrivacyNotice" class="text-white">Privacy Notice</a>

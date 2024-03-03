@@ -4,6 +4,7 @@ from ..secrets import connstr as az_connection, usersource, userdatastore
 from . import getContainer
 from .content import getProfilerResponses, getGoalMessage
 from datetime import date, timedelta, MINYEAR, MAXYEAR
+from dateutil.relativedelta import relativedelta
 import json
 from azure.core.exceptions import ResourceExistsError
 from ..schemas import getSideEffectValueMappings
@@ -47,6 +48,8 @@ class UserData():
         return AzurePersistentList(az_connection, usersource, f"{self.pathbase}goals")
     def contacts(self):
         return AzurePersistentList(az_connection, usersource, f"{self.pathbase}contacts")
+    def favourites(self):
+        return AzurePersistentList(az_connection, usersource, f"{self.pathbase}favourites")
     def plans(self):
         return AzurePersitentDict(az_connection, usersource, f"{self.pathbase}plans")
     def fillins(self):
@@ -593,7 +596,6 @@ def deleteContact(user, contact):
         contacts.commit()
         log(user, "delete", old=contact)
 
-
 def updateContact(user, old, new):
     if user is None:
         return None
@@ -607,6 +609,39 @@ def updateContact(user, old, new):
         contacts.commit()
 
         log(user, "update", old=old, new=new.copy())
+
+def getFavourites(user):
+    if user is None:
+        return None
+    
+    id = user["userID"]
+
+    return UserData(id).favourites().copy()
+
+def addFavourite(user, favourite):
+    if user is None:
+        return None
+    
+    favourites = UserData(user["userID"]).favourites()
+
+    favourites.append(favourite)
+    favourites.commit()
+
+    log(user, "add", new=favourite.copy())
+
+def deleteFavourite(user, favourite):
+
+    if user is None:
+        return None
+    
+    id = user["userID"]
+
+    favourites = UserData(id).favourites()    
+    
+    if favourite in favourites:
+        favourites.remove(favourite)
+        favourites.commit()
+        log(user, "delete", old=favourite)
 
 def getPlan(user, plan):
     if user is None:
@@ -750,29 +785,36 @@ def get_schedule(day):
                 schedule.append({'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'profiler-due', 'method': 'email', 'to': user['email']})
 
 
-        # 10 day and 21 day reminder
-        # init_date = getinit(user)
-        # days_since_joining = (date.today() - date.fromisoformat(init_date)).days
-
+        # nudges
         init_date = getinit(user)
         today = date.today()
         days_since_joining = (today - init_date).days
 
+        if(user['email'] == 'mark.turner@ncl.ac.uk'):
+            payload = {
+                'userID':user['userID'],
+                'email': user['email'],
+                'initDate': init_date,
+                'today': today,
+                'daysSinceJoining': days_since_joining,
+                'oneMonth': init_date + relativedelta(months=1),
+                'isOneMonth': init_date + relativedelta(months=1) == today,
+            }
+            capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+
         try:
-            if (days_since_joining == 10):
-                sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'tendays'}
+            if (days_since_joining == 14):
+                sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'nudge-2_week'}
                 schedule.append(sched)
-            elif days_since_joining == 21:
-                option = get21DayOptionNumber(user)
-                if option == 1:
-                    sched21 = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op121days'}
-                    schedule.append(sched21)
-                elif option == 2:
-                    sched21 = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op221days'}
-                    schedule.append(sched21)
-                else:
-                    sched21 = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'],'method': 'email', 'to': user['email'], 'type': 'op321days'}
-                    schedule.append(sched21)
+            else:
+                for i in range(1, 18):
+                    if(user['email'] == 'mark.turner@ncl.ac.uk'):
+                        capture_message('month: ' + str(i))
+                    if (init_date + relativedelta(months=i) == today):
+                        sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'nudge-' + str(i) +'_month'}
+                        schedule.append(sched)
+                        if(user['email'] == 'mark.turner@ncl.ac.uk'):
+                            capture_message('added scheduled nudge-{i}_month email')
         except:
             capture_message('Appending nudge email to schedule failed for user ' + user['userID'] + ' (' + user['email'] + ')')
 

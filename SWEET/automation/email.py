@@ -15,14 +15,23 @@ def _send(msg):
 def _send_message(to, template="welcome", **kwargs):
     messages = getEmailMessages()
     htmltemplate = """\
-<html>
-  <head>
-    <style>
+        <html>
+        <head>
+            <style>
 
-    </style>
-  </head>
-  <body>{body}</body>
-</html>"""
+            </style>
+        </head>
+        <body>
+            {body}
+            <p>If you have any problems at all accessing the website please contact htandmesupport@warwick.ac.uk</p>
+            <p>The HT&amp;Me Team</p>
+            <p>
+               -----------------------------------------------------------<br>
+               This is an automatic email. Please DO NOT reply to this email as any reply will not be received.
+            </p>
+        </body>
+        </html>
+    """
 
     msg = EmailMessage()
     msg["To"] = to
@@ -82,10 +91,10 @@ def send_welcome_email(user):
     # User doesn't exist yet so can't log visit
     # logvisit(user, "scheduler_email", action="send_welcome_email")
 
-def send_10day_email(user):
+def send_nudge(user, type="2_week"):
     fullname = f"{user['firstName']} {user['lastName']}"
-    _send_message(f"{fullname} <{user['email']}>", "ten_days", fullname=fullname, hostname=hostname)
-    logvisit(user, "scheduler_email", action="send_10day_email")
+    _send_message(f"{fullname} <{user['email']}>", type, fullname=fullname, hostname=hostname)
+    logvisit(user, "scheduler_email", action="send_{type}_nudge")
 
 def send_21dayop1_email(user):
     fullname = f"{user['firstName']} {user['lastName']}"

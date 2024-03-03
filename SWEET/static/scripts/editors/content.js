@@ -90,7 +90,8 @@ export class ContentEditor extends HTMLElement {
         this.addEventListener("insert", e => {
             e.stopPropagation();
             
-            const src = e.path.filter(e => e.tagName && e.tagName.toLowerCase() == this.$.inserter.toLowerCase())[0]
+            // find the inserter that triggered this event
+            const src = e.composedPath().filter(p => p.tagName && p.tagName.toLowerCase() == this.$.inserter.toLowerCase())[0]
             if (src.value == "") return;
 
             const [holder, inserter] = this.createEditor(src.value);
