@@ -811,7 +811,7 @@ def get_schedule(day):
                     if(user['email'] == 'mark.turner@ncl.ac.uk'):
                         capture_message('month: ' + str(i))
                     if (init_date + relativedelta(months=i) == today):
-                        sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'nudge-' + str(i) +'_month'}
+                        sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'nudge-' + str(i) +'_month', 'time': '18:00'}
                         schedule.append(sched)
                         if(user['email'] == 'mark.turner@ncl.ac.uk'):
                             capture_message('added scheduled nudge-{i}_month email')
