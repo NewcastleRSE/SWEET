@@ -156,8 +156,9 @@ span a {
     text-decoration: none;
 }
 
-#btn-print {
+#btn-print, #btn-favourite {
     float: right;
+    margin-left: 5px;
 }
 
 .btn-responsive {
@@ -634,6 +635,11 @@ ul li a:focus {
 .chart-controls .btn.btn-primary {
     margin-top: 0px;
     margin-bottom: 20px
+}
+
+.all-pages ul li a {
+    font-weight: normal;
+    text-decoration: none;
 }
 
 @media screen and (max-width: 825px) {
