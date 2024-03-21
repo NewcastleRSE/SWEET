@@ -55,14 +55,14 @@ def dailyschedule(today):
             itemType = item['type']
             nudgeType = None
 
-            if(item['to'] == 'mark.turner@ncl.ac.uk'):
-                payload = {
-                    'itemType': item['type'],
-                    'itemTypeSplit': item['type'].split('-'),
-                    'isNudge': item['type'].split('-')[0] == "nudge",
-                    'nudgeType': item['type'].split('-')[1],
-                }
-                capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+            # if(item['to'] == 'mark.turner@ncl.ac.uk'):
+            #     payload = {
+            #         'itemType': item['type'],
+            #         'itemTypeSplit': item['type'].split('-'),
+            #         'isNudge': item['type'].split('-')[0] == "nudge",
+            #         'nudgeType': item['type'].split('-')[1],
+            #     }
+            #     capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
 
             if(item['type'].split('-')[0] == "nudge"):
                 itemType = "nudge"
@@ -88,13 +88,13 @@ def dailyschedule(today):
                 
             item_kwargs = {} # currently no kwargs for emails.
 
-            if(item['to'] == 'mark.turner@ncl.ac.uk'):
-                payload = {
-                    'action': item_action,
-                    'arguments': item_args,
-                    'timestamp': item_ts,
-                }
-                capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+            # if(item['to'] == 'mark.turner@ncl.ac.uk'):
+            #     payload = {
+            #         'action': item_action,
+            #         'arguments': item_args,
+            #         'timestamp': item_ts,
+            #     }
+            #     capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
 
             #schedule email:
             s.enterabs(item_ts, 1, item_action, argument=item_args, kwargs=item_kwargs)
