@@ -28,6 +28,13 @@ export function userDetailsPageRenderer(section) {
                             <strong>IMPORTANT</strong><br />If you change your email address, you will need to make sure that you use the new email address next time you log in, but you do not need to register again. You will get an email to remind you of this.
                         </div>
                     </div>
+                    <div class="mb-3">
+                        <label for="nudgeMethod" class="form-label">Nudge Method</label>
+                        <select type="text" class="form-control" name="nudgeMethod" id="nudgeMethod" required>
+                            <option value="email" ${this.store.get("currentUser").nudgeMethod === "email" ? "selected" : ""}">Email</option>
+                            <option value="sms" ${this.store.get("currentUser").nudgeMethod === "sms" ? "selected" : ""}>SMS</option>
+                        </select>
+                    </div>
                     <div class="my-3">
                         <button type="button" class="btn btn-primary" id="updateDetails">Update</button>
                     </div>
@@ -49,6 +56,7 @@ export function userDetailsPageRenderer(section) {
         user.fullName = holder.querySelector('#firstName').value + " " + holder.querySelector('#lastName').value
         user.email = holder.querySelector('#email').value
         user.mobile = holder.querySelector('#mobile').value
+        user.nudgeMethod = holder.querySelector('#nudgeMethod').value
 
         this.post("/myapp/mydetails/", user).then(response => {
             this.store.set("currentUser", user)
