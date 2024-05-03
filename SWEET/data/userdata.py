@@ -803,12 +803,19 @@ def get_schedule(day):
 
         try:
             if (days_since_joining == 14):
-                sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'nudge-2_week'}
+                if user['nudgeMethod'] == "sms":
+                    sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'sms', 'type': 'nudge-2_week', 'time': '18:00'}
+                else:
+                    sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['mobile'],'method': 'email', 'type': 'nudge-2_week', 'time': '18:00'}
+                
                 schedule.append(sched)
             else:
                 for i in range(1, 18):
                     if (init_date + relativedelta(months=i) == today):
-                        sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'email', 'type': 'nudge-' + str(i) +'_month', 'time': '18:00'}
+                        if user['nudgeMethod'] == "sms":
+                            sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'sms', 'type': 'nudge-' + str(i) +'_month', 'time': '18:00'}
+                        else:
+                            sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['mobile'],'method': 'email', 'type': 'nudge-' + str(i) +'_month', 'time': '18:00'}
                         schedule.append(sched)
                         if(user['email'] == 'mark.turner@ncl.ac.uk'):
                             capture_message('added scheduled nudge-{i}_month email')
