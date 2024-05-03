@@ -1,4 +1,4 @@
-from .sms import send_daily_reminder, send_monthly_reminder
+from .sms import send_daily_reminder, send_monthly_reminder, send_sms_nudge
 from .email import email_daily_reminder, email_monthly_reminder, send_profiler_reminder, send_goal_reminder, send_nudge
 from datetime import datetime, timezone
 import time
@@ -44,6 +44,13 @@ def dailyschedule(today):
         #determine correct action:
         # using firetext, we will send any SMS directly to firetext with a schedule, emails will be added to the daily schedule
         # if no time is specified use 08:00 as per team request
+
+        if(item['type'].split('-')[0] == "nudge"):
+            itemType = "nudge"
+            nudgeType = item['type'].split('-')[1]
+        else: 
+            itemType = item['type']
+            nudgeType = None  
         
         if item['method'] == "email":
             # set up clock time for item:
@@ -51,9 +58,6 @@ def dailyschedule(today):
                 hr, mn = item['time'].split(":")
             else:
                 hr, mn = "08","00"
-
-            itemType = item['type']
-            nudgeType = None
 
             # if(item['to'] == 'mark.turner@ncl.ac.uk'):
             #     payload = {
@@ -63,10 +67,6 @@ def dailyschedule(today):
             #         'nudgeType': item['type'].split('-')[1],
             #     }
             #     capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
-
-            if(item['type'].split('-')[0] == "nudge"):
-                itemType = "nudge"
-                nudgeType = item['type'].split('-')[1]
 
             item_ts = today.replace(hour=int(hr), minute=int(mn)).timestamp()
             item_action = {
@@ -100,9 +100,10 @@ def dailyschedule(today):
             s.enterabs(item_ts, 1, item_action, argument=item_args, kwargs=item_kwargs)
         else:
             item['mobile'] = item['to']
-            if item['type'] == "daily":
-                send_daily_reminder(item, item.get('time', "08:00"))
-            
+            if itemType == "nudge":
+                send_sms_nudge(item, nudgeType, item.get('time', "08:00"))
+            elif itemType == "daily":
+                send_monthly_reminder(item, item.get('time', "08:00"))
             else:
                 send_monthly_reminder(item, item.get('time', '08:00'))
 
