@@ -789,17 +789,19 @@ def get_schedule(day):
         today = date.today()
         days_since_joining = (today - init_date).days
 
-        # if(user['email'] == 'mark.turner@ncl.ac.uk'):
-        #     payload = {
-        #         'userID':user['userID'],
-        #         'email': user['email'],
-        #         'initDate': init_date,
-        #         'today': today,
-        #         'daysSinceJoining': days_since_joining,
-        #         'oneMonth': init_date + relativedelta(months=1),
-        #         'isOneMonth': init_date + relativedelta(months=1) == today,
-        #     }
-        #     capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+        if(user['email'] == 'mark.turner@ncl.ac.uk'):
+            payload = {
+                'userID':user['userID'],
+                'email': user['email'],
+                'hasNudgeMethod': hasattr(user, 'nudgeMethod'),
+                'nudgeMethod': user['nudgeMethod'],
+                'initDate': init_date,
+                'today': today,
+                'daysSinceJoining': days_since_joining,
+                'oneMonth': init_date + relativedelta(months=1),
+                'isOneMonth': init_date + relativedelta(months=1) == today,
+            }
+            capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
 
         try:
             if (days_since_joining == 14):
