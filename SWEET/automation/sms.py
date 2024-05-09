@@ -2,6 +2,8 @@ from ..secrets import firetext
 from ..data.users import logvisit
 import requests
 from datetime import date
+import json
+from sentry_sdk import capture_message
 
 def _processResponse(text):
     code = int(text[:text.find(":")])
@@ -63,6 +65,15 @@ def send_sms_nudge(user, nudgeType, send_time):
         f"Hello {user['firstName']}, the My Personal Support section of HT&Me can help you to find information and support relevant to you – whether it’s about how hormone therapy works, how to deal with any side-effects or how to talk about any concerns with a nurse. Go to htandme.co.uk to find out more. If you have any problems accessing HT&Me please contact htandmesupport@warwick.ac.uk. The HT&Me Team PLEASE DO NOT REPLY"
     elif nudgeType == "18_month":
         f"Hello {user['firstName']}, it has been 18 months since you were introduced to the HT&Me support package. Although you are coming to the end of your time in the SWEET Study, you will still have access to HT&Me. If you have any issues or concerns with taking your hormone therapy, you can still reach out to your breast cancer team or GP for support. Remember taking your hormone therapy every day is the single best thing you can do to prevent your cancer coming back. The HT&Me Team PLEASE DO NOT REPLY"
+
+    if(user['email'] == 'mark.turner@ncl.ac.uk'):
+        payload = {
+            'userID':user['userID'],
+            'email': user['email'],
+            'message': msg,
+            'schedule': f"{date.today().isoformat()} {send_time}"
+        }
+        capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
 
     logvisit(user, "scheduler_sms", action="send_sms_nudge")
     return _send(user['mobile'], msg, schedule=f"{date.today().isoformat()} {send_time}")
