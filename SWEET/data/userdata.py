@@ -793,7 +793,7 @@ def get_schedule(day):
             payload = {
                 'userID':user['userID'],
                 'email': user['email'],
-                'hasNudgeMethod': hasattr(user, 'nudgeMethod'),
+                'hasNudgeMethod': 'nudgeMethod' in user,
                 'nudgeMethod': user['nudgeMethod'],
                 'initDate': init_date,
                 'today': today,
@@ -805,7 +805,7 @@ def get_schedule(day):
 
         try:
             if (days_since_joining == 14):
-                if hasattr(user, 'nudgeMethod') and user['nudgeMethod'] == "sms":
+                if 'nudgeMethod' in user and user['nudgeMethod'] == "sms":
                     sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'],'method': 'sms', 'type': 'nudge-2_week', 'time': '18:00'}
                 else:
                     sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['mobile'],'method': 'email', 'type': 'nudge-2_week', 'time': '18:00'}
