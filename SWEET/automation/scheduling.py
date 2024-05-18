@@ -59,14 +59,15 @@ def dailyschedule(today):
             else:
                 hr, mn = "08","00"
 
-            # if(item['to'] == 'mark.turner@ncl.ac.uk'):
-            #     payload = {
-            #         'itemType': item['type'],
-            #         'itemTypeSplit': item['type'].split('-'),
-            #         'isNudge': item['type'].split('-')[0] == "nudge",
-            #         'nudgeType': item['type'].split('-')[1],
-            #     }
-            #     capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+            if(item['userID'] == 'mark.turner@ncl.ac.uk'):
+                payload = {
+                    'itemType': item['type'],
+                    'itemTypeSplit': item['type'].split('-'),
+                    'isNudge': item['type'].split('-')[0] == "nudge",
+                    'nudgeType': item['type'].split('-')[1],
+                    'to': item['to'],
+                }
+                capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
 
             item_ts = today.replace(hour=int(hr), minute=int(mn)).timestamp()
             item_action = {
