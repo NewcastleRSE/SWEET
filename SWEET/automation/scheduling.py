@@ -51,6 +51,16 @@ def dailyschedule(today):
         else: 
             itemType = item['type']
             nudgeType = None  
+
+        if(item['userID'] == 'mark.turner@ncl.ac.uk'):
+            payload = {
+                'itemType': item['type'],
+                'itemTypeSplit': item['type'].split('-'),
+                'isNudge': item['type'].split('-')[0] == "nudge",
+                'nudgeType': item['type'].split('-')[1],
+                'to': item['to'],
+            }
+            capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
         
         if item['method'] == "email":
             # set up clock time for item:
@@ -58,16 +68,6 @@ def dailyschedule(today):
                 hr, mn = item['time'].split(":")
             else:
                 hr, mn = "08","00"
-
-            if(item['userID'] == 'mark.turner@ncl.ac.uk'):
-                payload = {
-                    'itemType': item['type'],
-                    'itemTypeSplit': item['type'].split('-'),
-                    'isNudge': item['type'].split('-')[0] == "nudge",
-                    'nudgeType': item['type'].split('-')[1],
-                    'to': item['to'],
-                }
-                capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
 
             item_ts = today.replace(hour=int(hr), minute=int(mn)).timestamp()
             item_action = {

@@ -816,7 +816,7 @@ def get_schedule(day):
             else:
                 for i in range(1, 18):
                     if (init_date + relativedelta(months=i) == today):
-                        if hasattr(user, 'nudgeMethod') and user['nudgeMethod'] == "sms":
+                        if 'nudgeMethod' in user and user['nudgeMethod'] == "sms":
                             sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['mobile'], 'method': 'sms', 'type': 'nudge-' + str(i) +'_month', 'time': '18:00'}
                             if(user['email'] == 'mark.turner@ncl.ac.uk'):
                                 capture_message(json.dumps(sched, indent=4, sort_keys=True, default=str))
