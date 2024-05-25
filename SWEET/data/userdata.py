@@ -789,7 +789,7 @@ def get_schedule(day):
         today = date.today()
         days_since_joining = (today - init_date).days
 
-        if(user['email'] == 'mark.turner@ncl.ac.uk'):
+        if(user['email'] == 'mark.turner@ncl.ac.uk' or user['userID'] == 'lmcgeagh@brookes.ac.uk' or user['userID'] == 'sarah-jane.stewart@ucl.ac.uk'):
             payload = {
                 'userID':user['userID'],
                 'email': user['email'],
@@ -807,7 +807,7 @@ def get_schedule(day):
             if (days_since_joining == 14):
                 if 'nudgeMethod' in user and user['nudgeMethod'] == "sms":
                     sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['mobile'], 'method': 'sms', 'type': 'nudge-2_week', 'time': '18:00'}
-                    if(user['email'] == 'mark.turner@ncl.ac.uk'):
+                    if(user['email'] == 'mark.turner@ncl.ac.uk' or user['userID'] == 'lmcgeagh@brookes.ac.uk' or user['userID'] == 'sarah-jane.stewart@ucl.ac.uk'):
                         capture_message(json.dumps(sched, indent=4, sort_keys=True, default=str))
                 else:
                     sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'], 'method': 'email', 'type': 'nudge-2_week', 'time': '18:00'}
@@ -818,12 +818,12 @@ def get_schedule(day):
                     if (init_date + relativedelta(months=i) == today):
                         if 'nudgeMethod' in user and user['nudgeMethod'] == "sms":
                             sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['mobile'], 'method': 'sms', 'type': 'nudge-' + str(i) +'_month', 'time': '18:00'}
-                            if(user['email'] == 'mark.turner@ncl.ac.uk'):
+                            if(user['email'] == 'mark.turner@ncl.ac.uk' or user['userID'] == 'lmcgeagh@brookes.ac.uk' or user['userID'] == 'sarah-jane.stewart@ucl.ac.uk'):
                                 capture_message(json.dumps(sched, indent=4, sort_keys=True, default=str))
                         else:
                             sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'], 'method': 'email', 'type': 'nudge-' + str(i) +'_month', 'time': '18:00'}
                         schedule.append(sched)
-                        if(user['email'] == 'mark.turner@ncl.ac.uk'):
+                        if(user['email'] == 'mark.turner@ncl.ac.uk' or user['userID'] == 'lmcgeagh@brookes.ac.uk' or user['userID'] == 'sarah-jane.stewart@ucl.ac.uk'):
                             capture_message(f"added scheduled nudge-{i}_month message")
         except:
             capture_message('Appending nudge email to schedule failed for user ' + user['userID'] + ' (' + user['email'] + ')')
