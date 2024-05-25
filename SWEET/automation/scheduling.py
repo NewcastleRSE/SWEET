@@ -52,7 +52,7 @@ def dailyschedule(today):
             itemType = item['type']
             nudgeType = None  
 
-        if(item['userID'] == 'mark.turner@ncl.ac.uk'):
+        if(item['userID'] == 'mark.turner@ncl.ac.uk' or item['userID'] == 'lmcgeagh@brookes.ac.uk' or item['userID'] == 'sarah-jane.stewart@ucl.ac.uk'):
             payload = {
                 'itemType': item['type'],
                 'itemTypeSplit': item['type'].split('-'),

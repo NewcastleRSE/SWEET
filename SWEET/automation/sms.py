@@ -67,7 +67,7 @@ def send_sms_nudge(user, nudgeType, send_time):
     elif nudgeType == "18_month":
         msg = f"Hello {user['firstName']}, it has been 18 months since you were introduced to the HT&Me support package. Although you are coming to the end of your time in the SWEET Study, you will still have access to HT&Me. If you have any issues or concerns with taking your hormone therapy, you can still reach out to your breast cancer team or GP for support. Remember taking your hormone therapy every day is the single best thing you can do to prevent your cancer coming back. The HT&Me Team PLEASE DO NOT REPLY"
 
-    if(user['userID'] == 'mark.turner@ncl.ac.uk'):
+    if(user['userID'] == 'mark.turner@ncl.ac.uk' or user['userID'] == 'lmcgeagh@brookes.ac.uk' or user['userID'] == 'sarah-jane.stewart@ucl.ac.uk'):
         payload = {
             'userID':user['userID'],
             'message': msg,
