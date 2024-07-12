@@ -29,10 +29,10 @@ export function userDetailsPageRenderer(section) {
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="nudgeMethod" class="form-label">Nudge Method</label>
+                        <label for="nudgeMethod" class="form-label">How would you prefer to receive your brief monthly notifications from the HT&Me website?</label>
                         <select type="text" class="form-control" name="nudgeMethod" id="nudgeMethod" required>
                             <option value="email" ${this.store.get("currentUser").nudgeMethod === "email" ? "selected" : ""}">Email</option>
-                            <option value="sms" ${this.store.get("currentUser").nudgeMethod === "sms" ? "selected" : ""}>SMS</option>
+                            <option value="sms" ${this.store.get("currentUser").nudgeMethod === "sms" ? "selected" : ""}>Text Message</option>
                         </select>
                     </div>
                     <div class="my-3">
