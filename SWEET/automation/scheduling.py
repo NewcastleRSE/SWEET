@@ -72,7 +72,10 @@ def dailyschedule(today):
             item_ts = today.replace(hour=int(hr), minute=int(mn)).timestamp()
             item_action = {
                 'daily': email_daily_reminder,
+                'take': email_daily_reminder,
                 'monthly': email_monthly_reminder,
+                'order': email_monthly_reminder,
+                'collect': email_monthly_reminder,
                 'profiler-reminder': send_profiler_reminder,
                 'profiler-due': send_profiler_reminder,
                 'goal-reminder': send_goal_reminder,
@@ -103,8 +106,8 @@ def dailyschedule(today):
             item['mobile'] = item['to']
             if itemType == "nudge":
                 send_sms_nudge(item, nudgeType, item.get('time', "08:00"))
-            elif itemType == "daily":
-                send_monthly_reminder(item, item.get('time', "08:00"))
+            elif itemType == "daily" or itemType == "take":
+                send_daily_reminder(item, item.get('time', "08:00"))
             else:
                 send_monthly_reminder(item, item.get('time', '08:00'))
 
