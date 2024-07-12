@@ -5,7 +5,7 @@ export function favouritePageRenderer(section) {
     let holder = document.createElement("section");
     holder.classList.add("all-favourites")
 
-    fetch("/myapp/favourites").then(response => response.json())
+    fetch("/myapp/favourites/").then(response => response.json())
         .then(output => {
             console.log(output)
             output.favourites.forEach(favourite => {
