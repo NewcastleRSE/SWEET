@@ -4,119 +4,166 @@ export function reminderRenderer(section) {
     fetch("/myapp/myreminders").then(response => response.json())
     .then(reminders => {
 
+        console.log(reminders)
+
+        reminders.take ? reminders.take: reminders.take = {}
+        reminders.order ? reminders.order: reminders.order = {}
+        reminders.collect ? reminders.collect: reminders.collect = {}
+
         let currentState = reminders
 
         holder.innerHTML = `
             <form id="diary-reminders">
-            <fieldset><p><input type="checkbox" class="" name="daily" id="daily" ${reminders.daily.reminder? "checked": ""}><label class="h5" for="daily" >I would like a daily reminder to take my hormone therapy</label></p>
-            <p>Remind me every day at <input name="daily-time" type="time" ${reminders.daily.reminder? `value="${reminders.daily.time}`: "disabled"}"/><br><br>
-            Send my reminder by <select name="daily-method"${reminders.daily.reminder? "": " disabled"}><option>---</option><option value="email"${reminders.daily.reminder && reminders.daily.method=="email"? " selected":""}>Email</option><option value="sms"${reminders.daily.reminder && reminders.daily.method=="sms"? " selected":""}>Text Message</option></select> to <input name="daily-to" oninput="this.size = this.value.length" type="text" minlength="3" maxlength="50" required ${reminders.daily.reminder? `value="${reminders.daily.to}"`: "disabled"} />.</p>
+            <fieldset><p><input type="checkbox" class="" name="take" id="take" ${reminders.take.reminder? "checked": ""}><label class="h5" for="take" >I would like a take reminder to take my hormone therapy</label></p>
+            <p>Remind me every day at <input name="take-time" type="time" ${reminders.take.reminder? `value="${reminders.take.time}`: "disabled"}"/><br><br>
+            Send my reminder by <select name="take-method"${reminders.take.reminder? "": " disabled"}><option>---</option><option value="email"${reminders.take.reminder && reminders.take.method=="email"? " selected":""}>Email</option><option value="sms"${reminders.take.reminder && reminders.take.method=="sms"? " selected":""}>Text Message</option></select> to <input name="take-to" oninput="this.size = this.value.length" type="text" minlength="3" maxlength="50" required ${reminders.take.reminder? `value="${reminders.take.to}"`: "disabled"} />.</p>
             </fieldset>
-            <fieldset><p><input type="checkbox" name="monthly" id="monthly" ${ reminders.monthly.reminder? "checked": ""}><label class="h5" for="monthly">I would like a regular reminder to collect my prescription</label></p>
+            <fieldset><p><input type="checkbox" name="order" id="order" ${ reminders.order.reminder? "checked": ""}><label class="h5" for="order">I would like a regular reminder to order my prescription</label></p>
             
-            <p>Remind me every <select name="monthly-freq"${reminders.monthly.reminder? "": " disabled"}>
-            <option value="one"${reminders.monthly.reminder && reminders.monthly.frequency=="one"? " selected":""}>Month</option>
-            <option value="two"${reminders.monthly.reminder && reminders.monthly.frequency=="two"? " selected":""}>Two Months</option>
-            <option value="three"${reminders.monthly.reminder && reminders.monthly.frequency=="three"? " selected":""}>Three Months</option>
-            </select> starting on <input name="monthly-start" type="date" required ${reminders.monthly.reminder? `value="${reminders.monthly.start}"`: "disabled"} />.<br><br>
+            <p>Remind me every <select name="order-freq"${reminders.order.reminder? "": " disabled"}>
+            <option value="one"${reminders.order.reminder && reminders.order.frequency=="one"? " selected":""}>Month</option>
+            <option value="two"${reminders.order.reminder && reminders.order.frequency=="two"? " selected":""}>Two Months</option>
+            <option value="three"${reminders.order.reminder && reminders.order.frequency=="three"? " selected":""}>Three Months</option>
+            </select> starting on <input name="order-start" type="date" required ${reminders.order.reminder? `value="${reminders.order.start}"`: "disabled"} />.<br><br>
             
-            Send my reminder by <select name="monthly-method"${reminders.monthly.reminder? "": " disabled"}><option>---</option><option value="email"${reminders.monthly.reminder && reminders.monthly.method=="email"? " selected":""}>Email</option><option value="sms"${reminders.monthly.reminder && reminders.monthly.method=="sms"? " selected":""}>Text Message</option></select> to <input name="monthly-to" oninput="this.size = this.value.length" type="text" minlength="3" maxlength="50" required ${reminders.monthly.reminder? `value="${reminders.monthly.to}"`: "disabled"} /></p>
+            Send my reminder by <select name="order-method"${reminders.order.reminder? "": " disabled"}><option>---</option><option value="email"${reminders.order.reminder && reminders.order.method=="email"? " selected":""}>Email</option><option value="sms"${reminders.order.reminder && reminders.order.method=="sms"? " selected":""}>Text Message</option></select> to <input name="order-to" oninput="this.size = this.value.length" type="text" minlength="3" maxlength="50" required ${reminders.order.reminder? `value="${reminders.order.to}"`: "disabled"} /></p>
+            </fieldset>
+            <fieldset><p><input type="checkbox" name="collect" id="collect" ${ reminders.collect.reminder? "checked": ""}><label class="h5" for="order">I would like a regular reminder to collect my prescription</label></p>
+            
+            <p>Remind me every <select name="collect-freq"${reminders.collect.reminder? "": " disabled"}>
+            <option value="one"${reminders.collect.reminder && reminders.collect.frequency=="one"? " selected":""}>Month</option>
+            <option value="two"${reminders.collect.reminder && reminders.collect.frequency=="two"? " selected":""}>Two Months</option>
+            <option value="three"${reminders.collect.reminder && reminders.collect.frequency=="three"? " selected":""}>Three Months</option>
+            </select> starting on <input name="collect-start" type="date" required ${reminders.collect.reminder? `value="${reminders.collect.start}"`: "disabled"} />.<br><br>
+            
+            Send my reminder by <select name="collect-method"${reminders.collect.reminder? "": " disabled"}><option>---</option><option value="email"${reminders.collect.reminder && reminders.collect.method=="email"? " selected":""}>Email</option><option value="sms"${reminders.collect.reminder && reminders.collect.method=="sms"? " selected":""}>Text Message</option></select> to <input name="collect-to" oninput="this.size = this.value.length" type="text" minlength="3" maxlength="50" required ${reminders.collect.reminder? `value="${reminders.collect.to}"`: "disabled"} /></p>
             </fieldset>
             <input type="submit" value="Update Reminders" class="btn btn-primary" disabled>
             </form>
         `
         // grow 'to' boxes to fit content if there is anything saved
-        if (reminders.monthly.to) {
-            let value = this.store.get("currentUser")[reminders.monthly.method=="sms" ? "mobile":"email"];
-            holder.querySelector(`[name='monthly-to']`).setAttribute('size', value.length)
+        if (reminders.collect.to) {
+            let value = this.store.get("currentUser")[reminders.collect.method=="sms" ? "mobile":"email"];
+            holder.querySelector(`[name='collect-to']`).setAttribute('size', value.length)
         }
-        if (reminders.daily.to) {
-            let value = this.store.get("currentUser")[reminders.daily.method=="sms" ? "mobile":"email"];
-            holder.querySelector(`[name='daily-to']`).setAttribute('size', value.length)
+        if (reminders.order.to) {
+            let value = this.store.get("currentUser")[reminders.order.method=="sms" ? "mobile":"email"];
+            holder.querySelector(`[name='order-to']`).setAttribute('size', value.length)
+        }
+        if (reminders.take.to) {
+            let value = this.store.get("currentUser")[reminders.take.method=="sms" ? "mobile":"email"];
+            holder.querySelector(`[name='take-to']`).setAttribute('size', value.length)
         }
 
 
         holder.querySelector("form").addEventListener("submit", e => {
             e.preventDefault();
             let form = e.currentTarget;
-            let dailyModifier = "";
-            let monthlyModifier = "";
-            let message;
+            let takeModifier = "";
+            let orderModifier = "";
+            let collectModifier = "";
+            let message = "";
 
             let reminders = {
-                'daily': {
-                    'reminder': form.elements['daily'].checked,
-                    'time': form.elements['daily'].checked? form.elements['daily-time'].value: "",
-                    'method': form.elements['daily'].checked? form.elements['daily-method'].value: "",
-                    'to': form.elements['daily'].checked? form.elements['daily-to'].value: ""
+                'take': {
+                    'reminder': form.elements['take'].checked,
+                    'time': form.elements['take'].checked? form.elements['take-time'].value: "",
+                    'method': form.elements['take'].checked? form.elements['take-method'].value: "",
+                    'to': form.elements['take'].checked? form.elements['take-to'].value: ""
                 },
-                'monthly': {
-                    'reminder': form.elements['monthly'].checked,
-                    'frequency': form.elements['monthly'].checked? form.elements['monthly-freq'].value: "",
-                    'start': form.elements['monthly'].checked? form.elements['monthly-start'].value: "",
-                    'method': form.elements['monthly'].checked? form.elements['monthly-method'].value: "",
-                    'to': form.elements['monthly'].checked? form.elements['monthly-to'].value: ""
+                'order': {
+                    'reminder': form.elements['order'].checked,
+                    'frequency': form.elements['order'].checked? form.elements['order-freq'].value: "",
+                    'start': form.elements['order'].checked? form.elements['order-start'].value: "",
+                    'method': form.elements['order'].checked? form.elements['order-method'].value: "",
+                    'to': form.elements['order'].checked? form.elements['order-to'].value: ""
+                },
+                'collect': {
+                    'reminder': form.elements['collect'].checked,
+                    'frequency': form.elements['collect'].checked? form.elements['collect-freq'].value: "",
+                    'start': form.elements['collect'].checked? form.elements['collect-start'].value: "",
+                    'method': form.elements['collect'].checked? form.elements['collect-method'].value: "",
+                    'to': form.elements['collect'].checked? form.elements['collect-to'].value: ""
                 }
             }
 
-            // New daily reminder
-            if((!currentState.daily.reminder && form.elements['daily'].checked)) {
-                dailyModifier = "created a"
+            // New take reminder
+            if((!currentState.take.reminder && form.elements['take'].checked)) {
+                takeModifier = "created a"
             }
-            // Updated daily reminder
-            else if (currentState.daily.reminder && form.elements['daily'].checked) {
-                if(JSON.stringify(currentState.daily) !== JSON.stringify(reminders.daily)){
+            // Updated take reminder
+            else if (currentState.take.reminder && form.elements['take'].checked) {
+                if(JSON.stringify(currentState.take) !== JSON.stringify(reminders.take)){
                     // Objects are different so there are changes
-                    dailyModifier = "updated your"
+                    takeModifier = "updated your"
                 }
             }
-            // Deleted daily reminder
-            else if (currentState.daily.reminder && !form.elements['daily'].checked) {
-                dailyModifier = "deleted your"
+            // Deleted take reminder
+            else if (currentState.take.reminder && !form.elements['take'].checked) {
+                takeModifier = "deleted your"
             }
             else {
                 console.error("Invalid reminder state change")
             }
 
-            // New monthly reminder
-            if((!currentState.monthly.reminder && form.elements['monthly'].checked)) {
-                monthlyModifier = "created a"
+            // New order reminder
+            if((!currentState.order.reminder && form.elements['order'].checked)) {
+                orderModifier = "created a"
             }
-            // Updated monthly reminder
-            else if (currentState.monthly.reminder && form.elements['monthly'].checked) {
-                if(JSON.stringify(currentState.monthly) !== JSON.stringify(reminders.monthly)){
+            // Updated order reminder
+            else if (currentState.order.reminder && form.elements['order'].checked) {
+                if(JSON.stringify(currentState.order) !== JSON.stringify(reminders.order)){
                     // Objects are different so there are changes
-                    monthlyModifier = "updated your"
+                    orderModifier = "updated your"
                 }
             }
-            // Deletes monthly reminder
-            else if (currentState.monthly.reminder && !form.elements['monthly'].checked) {
-                monthlyModifier = "deleted your"
+            // Deletes order reminder
+            else if (currentState.order.reminder && !form.elements['order'].checked) {
+                orderModifier = "deleted your"
+            }
+            else {
+                console.error("Invalid reminder state change")
+            }
+
+            // New collect reminder
+            if((!currentState.collect.reminder && form.elements['collect'].checked)) {
+                collectModifier = "created a"
+            }
+            // Updated collect reminder
+            else if (currentState.collect.reminder && form.elements['collect'].checked) {
+                if(JSON.stringify(currentState.collect) !== JSON.stringify(reminders.collect)){
+                    // Objects are different so there are changes
+                    collectModifier = "updated your"
+                }
+            }
+            // Deletes collect reminder
+            else if (currentState.collect.reminder && !form.elements['collect'].checked) {
+                collectModifier = "deleted your"
             }
             else {
                 console.error("Invalid reminder state change")
             }
 
             // Build popup message
-            if(dailyModifier && monthlyModifier) {
-                message = `Great! You've ${dailyModifier} daily reminder and ${monthlyModifier} monthly reminder.`
+            if(takeModifier) {
+                message += ` You've ${takeModifier} daily reminder.`
             }
-            else if(dailyModifier && !monthlyModifier) {
-                message = `Great! You've ${dailyModifier} daily reminder.`
+            if(orderModifier) {
+                message += ` You've ${takeModifier} order reminder.`
             }
-            else if(!dailyModifier && monthlyModifier) {
-                message = `Great! You've ${monthlyModifier} monthly reminder.`
+            if(collectModifier) {
+                message += ` You've ${orderModifier} collection reminder.`
             }
 
             this.post("/myapp/myreminders/", reminders).then(() => {
                 currentState = reminders;
                 e.submitter.setAttribute("disabled", "")
             });
-            this.showPopupMessage(message);
+            this.showPopupMessage(`Great!${message}`);
         })
 
-        holder.querySelector("input[name='daily']").addEventListener("change", e => {
-            holder.querySelectorAll("[name^='daily-']").forEach(f => {
+        holder.querySelector("input[name='take']").addEventListener("change", e => {
+            holder.querySelectorAll("[name^='take-']").forEach(f => {
                 if (e.target.checked) {
                     f.removeAttribute("disabled");
                 } else {
@@ -128,8 +175,21 @@ export function reminderRenderer(section) {
             holder.querySelector("input[type='submit']").removeAttribute("disabled");
         })
 
-        holder.querySelector("input[name='monthly']").addEventListener("change", e => {
-            holder.querySelectorAll("[name^='monthly-']").forEach(f => {
+        holder.querySelector("input[name='order']").addEventListener("change", e => {
+            holder.querySelectorAll("[name^='order-']").forEach(f => {
+                if (e.target.checked) {
+                    f.removeAttribute("disabled");
+                } else {
+                    f.setAttribute("disabled", "");
+                    f.value = "";
+                }
+            })
+
+            holder.querySelector("input[type='submit']").removeAttribute("disabled");
+        })
+
+        holder.querySelector("input[name='collect']").addEventListener("change", e => {
+            holder.querySelectorAll("[name^='collect-']").forEach(f => {
                 if (e.target.checked) {
                     f.removeAttribute("disabled");
                 } else {
