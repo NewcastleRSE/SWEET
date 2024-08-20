@@ -90,15 +90,20 @@ export function userDetailsPageRenderer(section) {
 
         modal.body.querySelector("form").addEventListener("submit", e => {
             e.preventDefault(); e.stopPropagation();
-
+           
             let form = e.target;
-            if (form.elements["password"].value != form.elements["newPasswordConfirmation"].value) {
+            
+            
+
+            
+            if (form.elements["newPassword"].value != form.elements["newPasswordConfirmation"].value) {
                 form.querySelector("#errors").innerHTML = `<p>The new password and password confirmation do not match. Please retype them and try again.</p>`;
                 return false;
             } else {
                 let user = Object.assign({}, this.store.get("currentUser"));
                 user.currentPassword = form.elements["currentPassword"].value;
                 user.newPassword = form.elements["newPassword"].value;
+                
 
                 this.post("/myapp/mydetails/", user).then(response => response.json())
                     .then(output => {
