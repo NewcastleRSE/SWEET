@@ -1,7 +1,6 @@
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, jsonify
 )
-
 from .data.users import updateUser, validateUser, logvisit
 
 from .data.userdata import (
@@ -247,21 +246,23 @@ def getMyDetails():
 @bp.route("/mydetails/", methods=["POST"])
 @login_required
 def updateMyProfile():
+    
+
     if request.is_json:
         profile = request.json
         if "userID" in profile:
             del profile["userID"]
 
-        if "password" in profile:
+        if "newPassword" in profile:
             # if password is in the profile this is a password change request
             # we need to validate the user's old password before updating,
             # and send ONLY the password to update as all other values should be unchanged.
-            success = validateUser(g.user['userID'], profile["oldpass"])[0]
+            success = validateUser(g.user['userID'], profile["currentPassword"])[0]
 
             if not success:
                 return {"status": "error", "message": "Old password was provided incorrectly; please retype then try again."}, 409
 
-            profile = {"password": profile["password"]}
+            profile = {"password": profile["newPassword"]}
             
         updateUser(g.user['userID'], **profile)
 
