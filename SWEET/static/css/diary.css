@@ -100,34 +100,34 @@ table.calendar div.events div.diary-item.side-effect i {
     border-radius: 0.5em;
 }
 
-table.calendar div.events div.diary-item i.side-effect-hf {
-    background-color: #633188;
+table.calendar div.events div.diary-item circle.side-effect-hf {
+    fill: #633188;
 }
-table.calendar div.events div.diary-item i.side-effect-arth {
-    background-color: #3535ee;
+table.calendar div.events div.diary-item circle.side-effect-arth {
+    fill: #3535ee;
 }
-table.calendar div.events div.diary-item i.side-effect-ftg {
-    background-color: #196b1d;
+table.calendar div.events div.diary-item circle.side-effect-ftg {
+    fill: #196b1d;
 }
-table.calendar div.events div.diary-item i.side-effect-mood {
-    background-color: var(--SWEET-grey);
+table.calendar div.events div.diary-item circle.side-effect-mood {
+    fill: var(--SWEET-grey);
 }
-table.calendar div.events div.diary-item i.side-effect-sleep {
-    background-color: var(--SWEET-lilac);
+table.calendar div.events div.diary-item circle.side-effect-sleep {
+    fill: var(--SWEET-lilac);
 }
-table.calendar div.events div.diary-item i.side-effect-ns {
-    background-color: #f1dc1f;
-}
-
-table.calendar div.events div.diary-item i.side-effect-other {
-    background-color: #40e0d0;
+table.calendar div.events div.diary-item circle.side-effect-ns {
+    fill: #f1dc1f;
 }
 
-table.calendar div.events div.diary-item.adherence i {
+table.calendar div.events div.diary-item circle.side-effect-other {
+    fill: #40e0d0;
+}
+
+table.calendar div.events div.adherence i {
     color: green;
 }
 
-table.calendar div.events div.diary-item.notes i {
+table.calendar div.events div.notes i {
     color: orangered;
     
 }
