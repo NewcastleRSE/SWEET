@@ -36,6 +36,7 @@ export function diaryCalendarRenderer(section) {
             // this is acheived with a holder div, a displayed i, and a section that is
             // display: none normally, and display: inline when the div is :hover
             function diaryitem() {
+
                 let holder = document.createElement("div");
                 holder.classList.add("diary-item");
                 holder.appendChild(document.createElement("i"));
@@ -71,7 +72,21 @@ export function diaryCalendarRenderer(section) {
 
                             let i = diaryitem();
                             i.classList.add("side-effect");
-                            i.querySelector("i").classList.add(`side-effect-${se.type}`)
+
+                            var dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                            dot.setAttribute("cx", 10);
+                            dot.setAttribute("cy", 10);
+                            dot.setAttribute("r", 10);
+                            dot.setAttribute("class", `side-effect-${se.type}`);
+                            var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                            svg.setAttribute("width", 20);
+                            svg.setAttribute("height", 20);
+                            svg.appendChild(dot);
+                            i.prepend(svg);
+
+
+                            i.querySelector("i").remove();
+
                             let section = i.querySelector("section")
                             section.innerHTML = `
                             <h4>${se.description? se.description:se.type}</h4>
@@ -91,7 +106,7 @@ export function diaryCalendarRenderer(section) {
                     // -- no additional details
                     
                     let i = diaryitem();
-                    i.classList.add(`adherence`)
+                    i.classList.add(`adherence`);
                     i.querySelector("i").classList.add("bi-check-lg")
 
                     // no additional details: remove section
