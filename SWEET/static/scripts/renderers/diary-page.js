@@ -501,10 +501,11 @@ export function diaryGraphRenderer(section) {
     <div class="chart-controls">
         <button class="btn btn-light btn-sm" id="resetZoom">Reset</button>
         <div class="btn-group">
-            <button class="btn btn-light btn-sm" id="zoomWeek">7 Days</button>
-            <button class="btn btn-primary btn-sm" id="zoomFortnight">14 Days</button>
-            <button class="btn btn-light btn-sm" id="zoomMonth">30 Days</button>
-            <button class="btn btn-light btn-sm" id="zoomQuarter">90 Days</button>
+            <button class="btn btn-light btn-sm" id="zoom1Month">1 Month</button>
+            <button class="btn btn-primary btn-sm" id="zoom3Months">3 Months</button>
+            <button class="btn btn-light btn-sm" id="zoom6Months">6 Months</button>
+            <button class="btn btn-light btn-sm" id="zoom12Months">12 Months</button>
+            <button class="btn btn-light btn-sm" id="zoom18Months">18 Months</button>
         </div>
     </div>
     <div class="chart-container" style="position: relative;">
@@ -514,11 +515,12 @@ export function diaryGraphRenderer(section) {
 
     function updateChart(entries, drugs, schema) {
         var now = new Date();
-        var week = new Date().setDate(now.getDate() - 7);
-        var fortnight = new Date().setDate(now.getDate() - 14);
-        var month = new Date().setDate(now.getDate() - 30);
-        var quarter = new Date().setDate(now.getDate() - 90);
-        var selectedZoom = "zoomFortnight";
+        var oneMonth = new Date().setDate(now.getDate() - 30);
+        var threeMonths = new Date().setDate(now.getDate() - 91);
+        var sixMonths = new Date().setDate(now.getDate() - 182);
+        var twelveMonths = new Date().setDate(now.getDate() - 365);
+        var eighteenMonths = new Date().setDate(now.getDate() - 548);
+        var selectedZoom = "zoom3Months";
 
         var colours = {
             HotFlushes: '#633188',
@@ -598,7 +600,7 @@ export function diaryGraphRenderer(section) {
                     x: {
                         labelString: 'Date',
                         type: 'time',
-                        min: fortnight,
+                        min: threeMonths,
                         max: now,
                         time: {
                             unit: 'day',
@@ -663,11 +665,11 @@ export function diaryGraphRenderer(section) {
                         document.getElementById(selectedZoom).classList.remove('btn-primary');
                         document.getElementById(selectedZoom).classList.add('btn-light');
                         selectedZoom = e.target.id
-                        document.getElementById('zoomFortnight').classList.remove('btn-light');
-                        document.getElementById('zoomFortnight').classList.add('btn-primary');
+                        document.getElementById('zoom3Months').classList.remove('btn-light');
+                        document.getElementById('zoom3Months').classList.add('btn-primary');
                         break;
-                    case 'zoomWeek':
-                        seChart.options.scales.x.min = week
+                    case 'zoom1Month':
+                        seChart.options.scales.x.min = oneMonth
                         seChart.update();
                         document.getElementById(selectedZoom).classList.remove('btn-primary');
                         document.getElementById(selectedZoom).classList.add('btn-light');
@@ -675,8 +677,8 @@ export function diaryGraphRenderer(section) {
                         e.target.classList.remove('btn-light');
                         e.target.classList.add('btn-primary');
                         break;
-                    case 'zoomFortnight':
-                        seChart.options.scales.x.min = fortnight
+                    case 'zoom3Months':
+                        seChart.options.scales.x.min = threeMonths
                         seChart.update();
                         document.getElementById(selectedZoom).classList.remove('btn-primary');
                         document.getElementById(selectedZoom).classList.add('btn-light');
@@ -684,8 +686,8 @@ export function diaryGraphRenderer(section) {
                         e.target.classList.remove('btn-light');
                         e.target.classList.add('btn-primary');
                         break;
-                    case 'zoomMonth':
-                        seChart.options.scales.x.min = month
+                    case 'zoom6Months':
+                        seChart.options.scales.x.min = sixMonths
                         seChart.update();
                         document.getElementById(selectedZoom).classList.remove('btn-primary');
                         document.getElementById(selectedZoom).classList.add('btn-light');
@@ -693,8 +695,17 @@ export function diaryGraphRenderer(section) {
                         e.target.classList.remove('btn-light');
                         e.target.classList.add('btn-primary');
                         break;
-                    case 'zoomQuarter':
-                        seChart.options.scales.x.min = quarter
+                    case 'zoom12Months':
+                        seChart.options.scales.x.min = twelveMonths
+                        seChart.update();
+                        document.getElementById(selectedZoom).classList.remove('btn-primary');
+                        document.getElementById(selectedZoom).classList.add('btn-light');
+                        selectedZoom = e.target.id
+                        e.target.classList.remove('btn-light');
+                        e.target.classList.add('btn-primary');
+                        break;
+                    case 'zoom18Months':
+                        seChart.options.scales.x.min = eighteenMonths
                         seChart.update();
                         document.getElementById(selectedZoom).classList.remove('btn-primary');
                         document.getElementById(selectedZoom).classList.add('btn-light');
