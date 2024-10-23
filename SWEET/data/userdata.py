@@ -753,6 +753,8 @@ def get_schedule(day):
         if d.get('reminder', False):
             rd = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'daily'}
             rd.update(d)
+            if(user['userID'] == 'katemarycourt@gmail.com' or user['userID'] == 'kate.court@newcastle.ac.uk' or user['userID'] == 'jane.parker72@yahoo.co.uk' or user['userID'] == 'mark.turner@ncl.ac.uk'):
+                capture_message(json.dumps(rd, indent=4, sort_keys=True, default=str))
             schedule.append(rd)
 
         if m.get('reminder', False):

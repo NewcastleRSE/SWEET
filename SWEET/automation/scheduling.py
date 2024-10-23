@@ -63,7 +63,7 @@ def dailyschedule(today):
             capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
         
         # problem solving text message issue #499
-        if(item['userID'] == 'katemarycourt@gmail.com' or item['userID'] == 'kate.court@newcastle.ac.uk' or item['userID'] == 'jane.parker72@yahoo.co.uk'):
+        if(item['userID'] == 'katemarycourt@gmail.com' or item['userID'] == 'kate.court@newcastle.ac.uk' or item['userID'] == 'jane.parker72@yahoo.co.uk' or item['userID'] == 'mark.turner@ncl.ac.uk'):
             payload = {
                 'messageorigin': 'daily schedule item list',
                 'itemType': item['type'],
@@ -114,7 +114,7 @@ def dailyschedule(today):
         else:
             item['mobile'] = item['to']
             # problem solving text message issue #499
-            if(item['userID'] == 'katemarycourt@gmail.com' or item['userID'] == 'kate.court@newcastle.ac.uk' or item['userID'] == 'jane.parker72@yahoo.co.uk'):
+            if(item['userID'] == 'katemarycourt@gmail.com' or item['userID'] == 'kate.court@newcastle.ac.uk' or item['userID'] == 'jane.parker72@yahoo.co.uk' or item['userID'] == 'mark.turner@ncl.ac.uk'):
                 payload = {
                     'messageorigin': 'daily schedule mobile item list',
                     'itemType': item['type'],
@@ -125,7 +125,7 @@ def dailyschedule(today):
                 send_sms_nudge(item, nudgeType, item.get('time', "08:00"))
             elif itemType == "daily" or itemType == "take":
                 # problem solving text message issue #499
-                if(item['userID'] == 'katemarycourt@gmail.com' or item['userID'] == 'kate.court@newcastle.ac.uk' or item['userID'] == 'jane.parker72@yahoo.co.uk'):
+                if(item['userID'] == 'katemarycourt@gmail.com' or item['userID'] == 'kate.court@newcastle.ac.uk' or item['userID'] == 'jane.parker72@yahoo.co.uk' or item['userID'] == 'mark.turner@ncl.ac.uk'):
                     payload = {
                         'messageorigin': 'send daily reminder',
                         'item': item,

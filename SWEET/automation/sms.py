@@ -81,7 +81,7 @@ def send_sms_nudge(user, nudgeType, send_time):
 def send_daily_reminder(user, send_time):
     msg = f"Hi {user['firstName']}, remember your hormone therapy today."
     # problem solving text message issue #499
-    if(user['userID'] == 'katemarycourt@gmail.com' or user['userID'] == 'kate.court@newcastle.ac.uk' or user['userID'] == 'jane.parker72@yahoo.co.uk'):
+    if(user['userID'] == 'katemarycourt@gmail.com' or user['userID'] == 'kate.court@newcastle.ac.uk' or user['userID'] == 'jane.parker72@yahoo.co.uk' or user['userID'] == 'mark.turner@ncl.ac.uk'):
         payload = {
             'messageorigin': 'sms file send daily reminder',
             'msg': msg,
