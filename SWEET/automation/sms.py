@@ -1,4 +1,4 @@
-from ..secrets import firetext
+from ..secrets import firetext, hostname
 from ..data.users import logvisit
 import requests
 from datetime import date
@@ -67,13 +67,13 @@ def send_sms_nudge(user, nudgeType, send_time):
     elif nudgeType == "18_month":
         msg = f"Hello {user['firstName']}, it has been 18 months since you were introduced to the HT&Me support package. Although you are coming to the end of your time in the SWEET Study, you will still have access to HT&Me. If you have any issues or concerns with taking your hormone therapy, you can still reach out to your breast cancer team or GP for support. Remember taking your hormone therapy every day is the single best thing you can do to prevent your cancer coming back. The HT&Me Team PLEASE DO NOT REPLY"
 
-    if(user['userID'] == 'mark.turner@ncl.ac.uk' or user['userID'] == 'lmcgeagh@brookes.ac.uk' or user['userID'] == 'sarah-jane.stewart@ucl.ac.uk'):
-        payload = {
-            'userID':user['userID'],
-            'message': msg,
-            'schedule': f"{date.today().isoformat()} {send_time}"
-        }
-        capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+    # if(user['userID'] == 'mark.turner@ncl.ac.uk' or user['userID'] == 'lmcgeagh@brookes.ac.uk' or user['userID'] == 'sarah-jane.stewart@ucl.ac.uk'):
+    #     payload = {
+    #         'userID':user['userID'],
+    #         'message': msg,
+    #         'schedule': f"{date.today().isoformat()} {send_time}"
+    #     }
+    #     capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
 
     logvisit(user, "scheduler_sms", action="send_sms_nudge")
     return _send(user['mobile'], msg, schedule=f"{date.today().isoformat()} {send_time}")
@@ -81,13 +81,21 @@ def send_sms_nudge(user, nudgeType, send_time):
 def send_daily_reminder(user, send_time):
     msg = f"Hi {user['firstName']}, remember your hormone therapy today."
     # problem solving text message issue #499
-    if(user['userID'] == 'katemarycourt@gmail.com' or user['userID'] == 'kate.court@newcastle.ac.uk' or user['userID'] == 'jane.parker72@yahoo.co.uk' or user['userID'] == 'mark.turner@ncl.ac.uk'):
-        payload = {
-            'messageorigin': 'sms file send daily reminder',
-            'msg': msg,
-            'mobile': user['mobile'],
-        }
-        capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+    if hostname == "sweet.ncldata.dev":
+        msg = f"[STAGING] {msg}"
+    payload = {
+        'messageorigin': 'sms file send daily reminder',
+        'msg': msg,
+        'mobile': user['mobile'],
+        'userID':user['userID'],
+    }
+    # if(user['userID'] == 'katemarycourt@gmail.com' or user['userID'] == 'kate.court@newcastle.ac.uk' or user['userID'] == 'jane.parker72@yahoo.co.uk' or user['userID'] == 'mark.turner@ncl.ac.uk'):
+    #     payload = {
+    #         'messageorigin': 'sms file send daily reminder',
+    #         'msg': msg,
+    #         'mobile': user['mobile'],
+    #     }
+    capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
     logvisit(user, "scheduler_sms", action="send_daily_reminder")
     return _send(user['mobile'], msg, schedule=f"{date.today().isoformat()} {send_time}")
 
