@@ -85,16 +85,9 @@ def send_daily_reminder(user, send_time):
         msg = f"[STAGING] {msg}"
     payload = {
         'messageorigin': 'sms file send daily reminder',
-        'msg': msg,
-        'mobile': user['mobile'],
-        'userID':user['userID'],
+        'mobile': user['mobile']
     }
-    # if(user['userID'] == 'katemarycourt@gmail.com' or user['userID'] == 'kate.court@newcastle.ac.uk' or user['userID'] == 'jane.parker72@yahoo.co.uk' or user['userID'] == 'mark.turner@ncl.ac.uk'):
-    #     payload = {
-    #         'messageorigin': 'sms file send daily reminder',
-    #         'msg': msg,
-    #         'mobile': user['mobile'],
-    #     }
+
     capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
     logvisit(user, "scheduler_sms", action="send_daily_reminder")
     return _send(user['mobile'], msg, schedule=f"{date.today().isoformat()} {send_time}")
