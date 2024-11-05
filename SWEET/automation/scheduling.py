@@ -108,6 +108,7 @@ def dailyschedule(today):
             elif itemType == "daily" or itemType == "take":
                 send_daily_reminder(item, item.get('time', "08:00"))
             else:
+                #  todo add behaviour here for collect reminders
                 send_monthly_reminder(item, item.get('time', '08:00'))
 
     # thread will exit when scheduler stops, i.e. when all the scheduled items have been run.
