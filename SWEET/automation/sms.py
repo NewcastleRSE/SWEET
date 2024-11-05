@@ -97,4 +97,9 @@ def send_monthly_reminder(user, send_time):
     logvisit(user, "scheduler_sms", action="send_monthly_reminder")
     return _send(user['mobile'], msg, schedule=f"{date.today().isoformat()} {send_time}")
 
+def send_monthly_collect_reminder(user, send_time):
+    msg = f"Hi {user['firstName']}, this is a reminder to collect your next hormone therapy prescription."
+    logvisit(user, "scheduler_sms", action="send_monthly_collect_reminder")
+    return _send(user['mobile'], msg, schedule=f"{date.today().isoformat()} {send_time}")
+
 

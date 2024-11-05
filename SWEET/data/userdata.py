@@ -748,14 +748,20 @@ def get_schedule(day):
         # print(days_since_joining)
 
 
-        d, m = ur['daily'], ur['monthly']
+        d, m, t, c, o = ur['daily'], ur['monthly'], ur['take'], ur['collect'], ur['order']  
+
+        #  Daily and take reminders are sent every day
+        if t.get('reminder', False):
+            rd = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'take'}
+            rd.update(t)
+            schedule.append(rd)  
 
         if d.get('reminder', False):
             rd = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'daily'}
             rd.update(d)
-            if(user['userID'] == 'katemarycourt@gmail.com' or user['userID'] == 'kate.court@newcastle.ac.uk' or user['userID'] == 'jane.parker72@yahoo.co.uk' or user['userID'] == 'mark.turner@ncl.ac.uk'):
-                capture_message(json.dumps(rd, indent=4, sort_keys=True, default=str))
             schedule.append(rd)
+
+        #  todo - Are collect and order reminders being added to the schedule?
 
         if m.get('reminder', False):
             lastrem = date.fromisoformat(m.get('lastSent', m.get('start', date.today().isoformat())))
