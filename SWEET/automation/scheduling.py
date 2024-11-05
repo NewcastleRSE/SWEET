@@ -52,31 +52,6 @@ def dailyschedule(today):
             itemType = item['type']
             nudgeType = None  
 
-        if(item['type'] == 'take'):
-            payload = {
-                'messageorigin': 'daily schedule item list',
-                'itemType': item['type'],
-                'to': item['to'],
-            }
-            capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
-        # if(item['userID'] == 'mark.turner@ncl.ac.uk' or item['userID'] == 'lmcgeagh@brookes.ac.uk' or item['userID'] == 'sarah-jane.stewart@ucl.ac.uk'):
-        #     payload = {
-        #         'itemType': item['type'],
-        #         'itemTypeSplit': item['type'].split('-'),
-        #         'isNudge': item['type'].split('-')[0] == "nudge",
-        #         'nudgeType': item['type'].split('-')[1] if item['type'].split('-')[0] == "nudge" else None,
-        #         'to': item['to'],
-        #     }
-        #     capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
-        
-        # problem solving text message issue #499
-        # if(item['userID'] == 'katemarycourt@gmail.com' or item['userID'] == 'kate.court@newcastle.ac.uk' or item['userID'] == 'jane.parker72@yahoo.co.uk' or item['userID'] == 'mark.turner@ncl.ac.uk'):
-        #     payload = {
-        #         'messageorigin': 'daily schedule item list',
-        #         'itemType': item['type'],
-        #         'to': item['to'],
-        #     }
-        #     capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
         
         if item['method'] == "email":
             # set up clock time for item:
@@ -120,30 +95,17 @@ def dailyschedule(today):
             s.enterabs(item_ts, 1, item_action, argument=item_args, kwargs=item_kwargs)
         else:
             item['mobile'] = item['to']
-            # problem solving text message issue #499
+            # problem solving text message issue #499 - this message sent for Staging Kate and Linda
             payload = {
                 'messageorigin': 'daily schedule item list not email',
                 'item': item,
                 'to': item['to'],
             }
             capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
-            # if(item['userID'] == 'katemarycourt@gmail.com' or item['userID'] == 'kate.court@newcastle.ac.uk' or item['userID'] == 'jane.parker72@yahoo.co.uk' or item['userID'] == 'mark.turner@ncl.ac.uk'):
-            #     payload = {
-            #         'messageorigin': 'daily schedule mobile item list',
-            #         'itemType': item['type'],
-            #         'to': item['to'],
-            #     }
-            #     capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+           
             if itemType == "nudge":
                 send_sms_nudge(item, nudgeType, item.get('time', "08:00"))
             elif itemType == "daily" or itemType == "take":
-                # problem solving text message issue #499
-                # if(item['userID'] == 'katemarycourt@gmail.com' or item['userID'] == 'kate.court@newcastle.ac.uk' or item['userID'] == 'jane.parker72@yahoo.co.uk' or item['userID'] == 'mark.turner@ncl.ac.uk'):
-                #     payload = {
-                #         'messageorigin': 'send daily reminder',
-                #         'item': item,
-                #     }
-                #     capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
                 send_daily_reminder(item, item.get('time', "08:00"))
             else:
                 send_monthly_reminder(item, item.get('time', '08:00'))
