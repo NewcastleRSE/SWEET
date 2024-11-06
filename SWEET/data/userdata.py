@@ -748,13 +748,31 @@ def get_schedule(day):
         # print(days_since_joining)
 
 
-        d, m, t, c, o = ur['daily'], ur['monthly'], ur['take'], ur['collect'], ur['order']  
+        d, m = ur['daily'], ur['monthly']
 
-        #  Daily and take reminders are sent every day
-        if t.get('reminder', False):
-            rd = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'take'}
-            rd.update(t)
-            schedule.append(rd)  
+        # Depending on whether the file was created before or after update around take, collect and order reminder fields, 
+        # these fields may or may not exist
+        if (ur.get('take', False)):
+            payload = {
+                'userID':user['userID'],
+                'message': 'reached take reminder',
+                'userID':user['userID']
+            }
+            capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+            t = ur['take']
+            #  Daily and take reminders are sent every day
+            if t.get('reminder', False):
+                rd = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'take'}
+                rd.update(t)
+                schedule.append(rd)  
+                payload = {
+                'userID':user['userID'],
+                'message': 'reached take reminder add to schedule',
+                'userID':user['userID']
+                }
+                capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+        
+        # to do collect and order
 
         if d.get('reminder', False):
             rd = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'daily'}
