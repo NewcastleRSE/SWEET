@@ -750,12 +750,36 @@ def get_schedule(day):
 
         d, m = ur['daily'], ur['monthly']
 
+        # Depending on whether the file was created before or after update around take, collect and order reminder fields, 
+        # these fields may or may not exist
+        if (ur.get('take', False)):
+            payload = {
+                'userID':user['userID'],
+                'message': 'reached take reminder',
+                'userID':user['userID']
+            }
+            capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+            t = ur['take']
+            #  Daily and take reminders are sent every day
+            if t.get('reminder', False):
+                rd = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'take'}
+                rd.update(t)
+                schedule.append(rd)  
+                payload = {
+                'userID':user['userID'],
+                'message': 'reached take reminder add to schedule',
+                'userID':user['userID']
+                }
+                capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+        
+        # to do collect and order
+
         if d.get('reminder', False):
             rd = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'daily'}
             rd.update(d)
-            if(user['userID'] == 'katemarycourt@gmail.com' or user['userID'] == 'kate.court@newcastle.ac.uk' or user['userID'] == 'jane.parker72@yahoo.co.uk' or user['userID'] == 'mark.turner@ncl.ac.uk'):
-                capture_message(json.dumps(rd, indent=4, sort_keys=True, default=str))
             schedule.append(rd)
+
+        #  todo - Are collect and order reminders being added to the schedule?
 
         if m.get('reminder', False):
             lastrem = date.fromisoformat(m.get('lastSent', m.get('start', date.today().isoformat())))
