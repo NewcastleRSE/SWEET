@@ -748,8 +748,9 @@ def get_schedule(day):
         # print(days_since_joining)
 
 
-        d, m = ur['daily'], ur['monthly']
+        d = ur['daily']
 
+        #  ------ DAILY REMINDERS ------
         # Depending on whether the file was created before or after update around take, collect and order reminder fields, 
         # these fields may or may not exist
         if (ur.get('take', False)):
@@ -772,37 +773,54 @@ def get_schedule(day):
                 }
                 capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
         
-        # to do collect and order
 
         if d.get('reminder', False):
             rd = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'daily'}
             rd.update(d)
             schedule.append(rd)
 
-        #  todo - Are collect and order reminders being added to the schedule?
+        #  ------ MONTHLY REMINDERS ------
+        # Group order and collect reminders together to see if they need to be added to the schedule
+        monthly = []
+        if (ur.get('order', False)):
+            take = ur['order']
+            # add type to json and add to list
+            ur['order']['type'] = 'order'
+            monthly.append(ur['order'])
+        
+        if (ur.get('collect', False)):
+            # add type to json and add to list
+            ur['collect']['type'] = 'collect'
+            monthly.append(ur['collect'])
+        
+        if (ur.get('monthly', False)):
+            # add type to json and add to list
+            ur['monthly']['type'] = 'monthly'
+            monthly.append(ur['monthly'])
 
-        if m.get('reminder', False):
-            lastrem = date.fromisoformat(m.get('lastSent', m.get('start', date.today().isoformat())))
+        for m in monthly:
+            if m.get('reminder', False):
+                lastrem = date.fromisoformat(m.get('lastSent', m.get('start', date.today().isoformat())))
 
-            # interval can be 1, 2 or 3 monthly
-            interval = 1 
-            if m.get('frequency', "") == "three":
-                interval = 3
-            else:
-                interval = 2 
+                # interval can be 1, 2 or 3 monthly
+                interval = 1 
+                if m.get('frequency', "") == "three":
+                    interval = 3
+                else:
+                    interval = 2 
 
-            # if the reminder hasn't been sent before AND day == start (which is held in lastrem)
-            # we want to send the reminder on lastrem - i.e. the start date.
-            # This will deal with start dates set in the past:
-            # # they will not be sent immediately and will wait for the appropriate interval
-            target = lastrem if day == lastrem and 'lastSent' not in m else fixdate(lastrem.year, lastrem.month + interval, lastrem.day)
-            if target <= day:
-                rm = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': 'monthly'}
-                rm.update(m)
-                schedule.append(rm)
+                # if the reminder hasn't been sent before AND day == start (which is held in lastrem)
+                # we want to send the reminder on lastrem - i.e. the start date.
+                # This will deal with start dates set in the past:
+                # # they will not be sent immediately and will wait for the appropriate interval
+                target = lastrem if day == lastrem and 'lastSent' not in m else fixdate(lastrem.year, lastrem.month + interval, lastrem.day)
+                if target <= day:
+                    rm = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': user['type']}
+                    rm.update(m)
+                    schedule.append(rm)
 
-                m['lastSent'] = date.today().isoformat()
-                ur.commit()
+                    m['lastSent'] = date.today().isoformat()
+                    ur.commit()
 
         p = getLatestProfiler(user)
         if "reminderDate" in p and p["reminderDate"] == day.isoformat():
