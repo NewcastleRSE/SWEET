@@ -70,6 +70,11 @@ def email_monthly_reminder(user):
     _send_message(f"{fullname} <{user['email']}>", "monthly_reminder", fullname=user['firstName'])
     logvisit(user, "scheduler_email", action="email_monthly_reminder")
 
+def email_monthly_reminder_collect(user):
+    fullname = f"{user['firstName']} {user['lastName']}"
+    _send_message(f"{fullname} <{user['email']}>", "monthly_reminder_collect", fullname=user['firstName'])
+    logvisit(user, "scheduler_email", action="email_monthly_reminder_collect")
+
 def send_password_reset(user, token):
     fullname = f"{user['firstName']} {user['lastName']}"
     _send_message(f"{fullname} <{user['email']}>", "password_reset", fullname=user['firstName'], token=token, uid=user['userID'], hostname=hostname)
