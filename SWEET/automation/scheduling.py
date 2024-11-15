@@ -1,4 +1,4 @@
-from .sms import send_daily_reminder, send_monthly_reminder, send_sms_nudge
+from .sms import send_daily_reminder, send_monthly_reminder, send_sms_nudge, send_monthly_collect_reminder
 from .email import email_daily_reminder, email_monthly_reminder, email_monthly_reminder_collect, send_profiler_reminder, send_goal_reminder, send_nudge
 from datetime import datetime, timezone
 import time
@@ -108,8 +108,10 @@ def dailyschedule(today):
                 send_sms_nudge(item, nudgeType, item.get('time', "08:00"))
             elif itemType == "daily" or itemType == "take":
                 send_daily_reminder(item, item.get('time', "08:00"))
+            elif itemType == "collect":
+                send_monthly_collect_reminder(item, item.get('time', "08:00"))
             else:
-                #  todo add behaviour here for collect reminders
+                # order or monthly
                 send_monthly_reminder(item, item.get('time', '08:00'))
 
     # thread will exit when scheduler stops, i.e. when all the scheduled items have been run.
