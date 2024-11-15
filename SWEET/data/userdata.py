@@ -754,12 +754,6 @@ def get_schedule(day):
         # Depending on whether the file was created before or after update around take, collect and order reminder fields, 
         # these fields may or may not exist
         if (ur.get('take', False)):
-            payload = {
-                'userID':user['userID'],
-                'message': 'reached take reminder',
-                'userID':user['userID']
-            }
-            capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
             t = ur['take']
             #  Daily and take reminders are sent every day
             if t.get('reminder', False):
@@ -799,6 +793,13 @@ def get_schedule(day):
             monthly.append(ur['monthly'])
 
         for m in monthly:
+            payload = {
+                'name': user['firstName'],
+                'userID':user['userID'],
+                'message': 'reached monthly reminder',
+                'type': m['type']
+            }
+            capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
             if m.get('reminder', False):
                 lastrem = date.fromisoformat(m.get('lastSent', m.get('start', date.today().isoformat())))
 
@@ -815,10 +816,16 @@ def get_schedule(day):
                 # # they will not be sent immediately and will wait for the appropriate interval
                 target = lastrem if day == lastrem and 'lastSent' not in m else fixdate(lastrem.year, lastrem.month + interval, lastrem.day)
                 if target <= day:
-                    rm = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': user['type']}
+                    rm = {'userID':user['userID'],'firstName': user['firstName'], 'lastName': user['lastName'], 'type': m['type']}
                     rm.update(m)
                     schedule.append(rm)
-
+                    payload = {
+                    'name': user['firstName'],
+                    'userID':user['userID'],
+                    'message': 'reached schedule add',
+                    'type': m['type']
+                    }
+                    capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
                     m['lastSent'] = date.today().isoformat()
                     ur.commit()
 
