@@ -83,6 +83,14 @@ def dailyschedule(today):
                 
             item_kwargs = {} # currently no kwargs for emails.
 
+             # problem solving text message issue #499 - this message sent for Staging Kate and Linda
+            payload = {
+                'messageorigin': 'daily schedule item list email',
+                'to': item['to'],
+                'action': item_action
+            }
+            capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+
             # if(item['to'] == 'mark.turner@ncl.ac.uk'):
             #     payload = {
             #         'action': item_action,
@@ -95,13 +103,6 @@ def dailyschedule(today):
             s.enterabs(item_ts, 1, item_action, argument=item_args, kwargs=item_kwargs)
         else:
             item['mobile'] = item['to']
-            # problem solving text message issue #499 - this message sent for Staging Kate and Linda
-            payload = {
-                'messageorigin': 'daily schedule item list not email',
-                'item': item,
-                'to': item['to'],
-            }
-            capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
            
             if itemType == "nudge":
                 send_sms_nudge(item, nudgeType, item.get('time', "08:00"))
