@@ -1,4 +1,4 @@
-from .sms import send_daily_reminder, send_monthly_reminder, send_sms_nudge
+from .sms import send_daily_reminder, send_monthly_reminder, send_sms_nudge, send_monthly_collect_reminder
 from .email import email_daily_reminder, email_monthly_reminder, email_monthly_reminder_collect, send_profiler_reminder, send_goal_reminder, send_nudge
 from datetime import datetime, timezone
 import time
@@ -83,6 +83,14 @@ def dailyschedule(today):
                 
             item_kwargs = {} # currently no kwargs for emails.
 
+             # problem solving text message issue #499 - this message sent for Staging Kate and Linda
+            payload = {
+                'messageorigin': 'daily schedule item list email',
+                'to': item['to'],
+                'action': item_action
+            }
+            capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+
             # if(item['to'] == 'mark.turner@ncl.ac.uk'):
             #     payload = {
             #         'action': item_action,
@@ -95,20 +103,15 @@ def dailyschedule(today):
             s.enterabs(item_ts, 1, item_action, argument=item_args, kwargs=item_kwargs)
         else:
             item['mobile'] = item['to']
-            # problem solving text message issue #499 - this message sent for Staging Kate and Linda
-            payload = {
-                'messageorigin': 'daily schedule item list not email',
-                'item': item,
-                'to': item['to'],
-            }
-            capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
            
             if itemType == "nudge":
                 send_sms_nudge(item, nudgeType, item.get('time', "08:00"))
             elif itemType == "daily" or itemType == "take":
                 send_daily_reminder(item, item.get('time', "08:00"))
+            elif itemType == "collect":
+                send_monthly_collect_reminder(item, item.get('time', "08:00"))
             else:
-                #  todo add behaviour here for collect reminders
+                # order or monthly
                 send_monthly_reminder(item, item.get('time', '08:00'))
 
     # thread will exit when scheduler stops, i.e. when all the scheduled items have been run.
