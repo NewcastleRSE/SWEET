@@ -83,12 +83,12 @@ def send_daily_reminder(user, send_time):
     # problem solving text message issue #499
     if hostname == "sweet.ncldata.dev":
         msg = f"[STAGING] {msg}"
-    payload = {
-        'messageorigin': 'sms file send daily reminder',
-        'mobile': user['mobile']
-    }
+    # payload = {
+    #     'messageorigin': 'sms file send daily reminder',
+    #     'mobile': user['mobile']
+    # }
 
-    capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+    # capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
     logvisit(user, "scheduler_sms", action="send_daily_reminder")
     return _send(user['mobile'], msg, schedule=f"{date.today().isoformat()} {send_time}")
 
