@@ -84,12 +84,12 @@ def dailyschedule(today):
             item_kwargs = {} # currently no kwargs for emails.
 
              # problem solving text message issue #499 - this message sent for Staging Kate and Linda
-            payload = {
-                'messageorigin': 'daily schedule item list email',
-                'to': item['to'],
-                'action': item_action
-            }
-            capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+            # payload = {
+            #     'messageorigin': 'daily schedule item list email',
+            #     'to': item['to'],
+            #     'action': item_action
+            # }
+            # capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
 
             # if(item['to'] == 'mark.turner@ncl.ac.uk'):
             #     payload = {

@@ -765,7 +765,8 @@ def get_schedule(day):
                 'message': 'reached take reminder add to schedule',
                 'userID':user['userID']
                 }
-                capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+          
+          
         
 
         if d.get('reminder', False):
@@ -797,9 +798,10 @@ def get_schedule(day):
                 'name': user['firstName'],
                 'userID':user['userID'],
                 'message': 'reached monthly reminder',
-                'type': m['type']
+                'type': m['type'],
+                
             }
-            capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+            
             if m.get('reminder', False):
                 lastrem = date.fromisoformat(m.get('lastSent', m.get('start', date.today().isoformat())))
 
@@ -825,7 +827,7 @@ def get_schedule(day):
                     'message': 'reached schedule add',
                     'type': m['type']
                     }
-                    capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+                    
                     m['lastSent'] = date.today().isoformat()
                     ur.commit()
 
@@ -852,7 +854,7 @@ def get_schedule(day):
                 'oneMonth': init_date + relativedelta(months=1),
                 'isOneMonth': init_date + relativedelta(months=1) == today,
             }
-            capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+            
 
         try:
             if (days_since_joining == 14):
