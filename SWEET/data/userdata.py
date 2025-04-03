@@ -842,19 +842,19 @@ def get_schedule(day):
         today = date.today()
         days_since_joining = (today - init_date).days
 
-        if(user['email'] == 'mark.turner@ncl.ac.uk' or user['email'] == 'kate.court@newcastle.ac.uk' or user['email'] == 'kellyleavy79@gmail.com'):
-            payload = {
-                'userID':user['userID'],
-                'email': user['email'],
-                'hasNudgeMethod': 'nudgeMethod' in user,
-                'nudgeMethod': user['nudgeMethod'],
-                'initDate': init_date,
-                'today': today,
-                'daysSinceJoining': days_since_joining,
-                'oneMonth': init_date + relativedelta(months=1),
-                'isOneMonth': init_date + relativedelta(months=1) == today,
-            }
-        capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
+        # if(user['email'] == 'mark.turner@ncl.ac.uk' or user['email'] == 'kate.court@newcastle.ac.uk' or user['email'] == 'kellyleavy79@gmail.com'):
+        #     payload = {
+        #         'userID':user['userID'],
+        #         'email': user['email'],
+        #         'hasNudgeMethod': 'nudgeMethod' in user,
+        #         'nudgeMethod': user['nudgeMethod'],
+        #         'initDate': init_date,
+        #         'today': today,
+        #         'daysSinceJoining': days_since_joining,
+        #         'oneMonth': init_date + relativedelta(months=1),
+        #         'isOneMonth': init_date + relativedelta(months=1) == today,
+        #     }
+        # capture_message(json.dumps(payload, indent=4, sort_keys=True, default=str))
 
         try:
             if (days_since_joining == 14):
@@ -868,15 +868,15 @@ def get_schedule(day):
                 schedule.append(sched)
             else:
                 for i in range(1, 18):
-                    if(user['email'] == 'mark.turner@ncl.ac.uk' or user['email'] == 'kate.court@newcastle.ac.uk' or user['email'] == 'kellyleavy79@gmail.com'):
-                        capture_message(f"months calculation for {user['email']} is {init_date} + {relativedelta(months=i)}")
+                    # if(user['email'] == 'mark.turner@ncl.ac.uk' or user['email'] == 'kate.court@newcastle.ac.uk' or user['email'] == 'kellyleavy79@gmail.com'):
+                    #     capture_message(f"months calculation for {user['email']} is {init_date} + {relativedelta(months=i)}")
                                
                     if (init_date + relativedelta(months=i) == today):
                         if 'nudgeMethod' in user and user['nudgeMethod'] == "sms":
                             sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['mobile'], 'method': 'sms', 'type': 'nudge-' + str(i) +'_month', 'time': '18:00'}
-                            if(user['email'] == 'mark.turner@ncl.ac.uk' or user['email'] == 'kate.court@newcastle.ac.uk' or user['email'] == 'kellyleavy79@gmail.com'):
-                                capture_message(f"line 875 added scheduled nudge-{i}_month message for {user['email']}")
-                                capture_message(json.dumps(sched, indent=4, sort_keys=True, default=str))
+                            # if(user['email'] == 'mark.turner@ncl.ac.uk' or user['email'] == 'kate.court@newcastle.ac.uk' or user['email'] == 'kellyleavy79@gmail.com'):
+                            #     capture_message(f"line 875 added scheduled nudge-{i}_month message for {user['email']}")
+                            #     capture_message(json.dumps(sched, indent=4, sort_keys=True, default=str))
                         else:
                             sched = {'userID':user['userID'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'to': user['email'], 'method': 'email', 'type': 'nudge-' + str(i) +'_month', 'time': '18:00'}
                         schedule.append(sched)
