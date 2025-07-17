@@ -867,7 +867,7 @@ def get_schedule(day):
                 
                 schedule.append(sched)
             else:
-                for i in range(1, 18):
+                for i in range(1, 19):
                     # if(user['email'] == 'mark.turner@ncl.ac.uk' or user['email'] == 'kate.court@newcastle.ac.uk' or user['email'] == 'kellyleavy79@gmail.com'):
                     #     capture_message(f"months calculation for {user['email']} is {init_date} + {relativedelta(months=i)}")
                                
