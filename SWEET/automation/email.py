@@ -81,9 +81,11 @@ def send_password_reset(user, token):
     logvisit(user, "scheduler_email", action="send_password_reset")
 
 def send_profiler_reminder(user):
-    fullname = f"{user['firstName']} {user['lastName']}"
-    _send_message(f"{fullname} <{user['email']}>", "profiler_reminder", fullname=user['firstName'], hostname=hostname)
-    logvisit(user, "scheduler_email", action="send_profiler_reminder")
+    # no longer needed
+    pass
+    # fullname = f"{user['firstName']} {user['lastName']}"
+    # _send_message(f"{fullname} <{user['email']}>", "profiler_reminder", fullname=user['firstName'], hostname=hostname)
+    # logvisit(user, "scheduler_email", action="send_profiler_reminder")
 
 def send_profiler_due(user):
     fullname = f"{user['firstName']} {user['lastName']}"
