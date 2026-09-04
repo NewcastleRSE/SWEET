@@ -71,6 +71,7 @@ After cloning the repository into a new directory (e.g. ~/sweet/), make a virtua
 (venv) [user@system sweet]$ pip install -r requirements.txt
 ```
 
+Note that now there are newer versions of Python that aren't compatible with some of the requirements, run `python3.10 -m venv venv`.
 
 Running SWEET locally for development purposes is the same as running any other flask app. Once you've installed the app as above and set the variables in `secrets.py`, set the `FLASK_APP` environment variable to 'SWEET', optionally set the `FLASK_ENV` environment variable, then execute `flask run`. e.g. (on linux)
 
